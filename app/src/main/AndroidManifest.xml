@@ -10,10 +10,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.OmInfo">
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:name=".ui.kata_chithi.KataChithiActivity"
+            android:exported="true"
+            android:screenOrientation="fullSensor"
+            android:theme="@style/AppTheme.FullScreen"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".ui.dashboard.DashbooardActivity"
+            android:exported="true"
+            android:screenOrientation="fullSensor"
+            android:theme="@style/AppTheme.FullScreen"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".ui.login.LoginActivity"
+            android:exported="true"
+            android:screenOrientation="fullSensor"
+            android:theme="@style/AppTheme.FullScreen"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

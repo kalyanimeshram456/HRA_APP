@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.appbar.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layId"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_100dp"
+    android:fitsSystemWindows="true"
+    android:background="@color/color_main"
+    android:theme="@style/AppTheme.White"
+    >
+
+    <com.google.android.material.appbar.CollapsingToolbarLayout
+        android:id="@+id/collapsing_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        app:collapsedTitleTextAppearance="@style/AppTheme_collapsedAppBar"
+        app:contentScrim="@android:color/transparent"
+        app:expandedTitleGravity="bottom"
+        app:expandedTitleMarginBottom="@dimen/_16dp"
+        app:expandedTitleMarginEnd="6dp"
+        app:expandedTitleMarginStart="@dimen/_16dp"
+        app:expandedTitleTextAppearance="@style/AppTheme_expandedAppBar"
+        app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/img_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            app:layout_collapseMode="parallax" />
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_100dp"
+            app:layout_collapseMode="pin"
+            android:paddingTop="@dimen/_30dp"
+            app:popupTheme="@style/AppTheme.White"
+            app:statusBarScrim="@android:color/transparent"
+            android:background="@android:color/transparent"
+             >
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/layHeaderToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:weightSum="2"
+                android:layout_marginBottom="25dp"
+                >
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                >
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgBack"
+                    android:layout_width="@dimen/_22dp"
+                    android:layout_height="@dimen/_22dp"
+                    android:layout_gravity="left|center"
+                    android:gravity="left"
+                    android:onClick="onClick"
+                    android:clickable="true"
+                    android:src="@drawable/ic_menu" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:layout_marginRight="@dimen/_16dp"
+                >
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgCall"
+                    android:layout_width="@dimen/_22dp"
+                    android:layout_height="@dimen/_22dp"
+                    android:clickable="true"
+                    android:onClick="onClick"
+                    android:src="@drawable/ic_phone"
+                    android:visibility="visible" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgReport"
+                    android:layout_width="@dimen/_22dp"
+                    android:layout_height="@dimen/_22dp"
+                    android:layout_marginHorizontal="@dimen/_20dp"
+                    android:layout_toRightOf="@+id/imgCall"
+                    android:clickable="true"
+                    android:onClick="onClick"
+                    android:src="@drawable/ic_complaint"
+                    android:visibility="visible" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgNotify"
+                    android:layout_width="@dimen/_22dp"
+                    android:layout_height="@dimen/_22dp"
+                    android:layout_toRightOf="@+id/imgReport"
+                    android:clickable="true"
+                    android:onClick="onClick"
+                    android:src="@drawable/ic_bell" />
+
+            </RelativeLayout>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvWelcomeBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="@dimen/_16dp"
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/_100dp"
+            android:fontFamily="@font/poppins_regular"
+            android:text="welcome_back"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_14sp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvHeaderUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="@dimen/_16dp"
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/_120dp"
+            android:fontFamily="@font/poppins_semibold"
+            android:text=""
+            android:textColor="@color/white"
+            android:textSize="@dimen/_28sp" />
+
+
+    </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+</com.google.android.material.appbar.AppBarLayout>

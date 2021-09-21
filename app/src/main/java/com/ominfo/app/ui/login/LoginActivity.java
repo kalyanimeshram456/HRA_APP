@@ -10,6 +10,7 @@ import androidx.appcompat.widget.AppCompatEditText;
 
 import com.ominfo.app.R;
 import com.ominfo.app.basecontrol.BaseActivity;
+import com.ominfo.app.ui.dashboard.DashbooardActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,19 +44,19 @@ public class LoginActivity extends BaseActivity {
         mContext = this;
     }
 
-   /* *//*perform click actions*//*
-    @OnClick({R.id.layLoginButton})
+    //perform click actions
+    @OnClick({R.id.loginButton})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
-            case R.id.layLoginButton:
-                if(isDetailsValid()) {
-                    //launchScreen(mContext, UserListActivity.class);
-                }
+            case R.id.loginButton:
+                //if(isDetailsValid()) {
+                    launchScreen(mContext, DashbooardActivity.class);
+                //}
                 break;
 
         }
-    }*/
+    }
 
     /*check validations on field*/
     private boolean isDetailsValid() {
