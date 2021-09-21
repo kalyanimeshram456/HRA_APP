@@ -61,8 +61,8 @@
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgBack"
-                    android:layout_width="@dimen/_22dp"
-                    android:layout_height="@dimen/_22dp"
+                    android:layout_width="@dimen/_30dp"
+                    android:layout_height="@dimen/_30dp"
                     android:layout_gravity="left|center"
                     android:gravity="left"
                     android:onClick="onClick"
@@ -82,8 +82,8 @@
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgCall"
-                    android:layout_width="@dimen/_22dp"
-                    android:layout_height="@dimen/_22dp"
+                    android:layout_width="@dimen/_20dp"
+                    android:layout_height="@dimen/_20dp"
                     android:clickable="true"
                     android:onClick="onClick"
                     android:src="@drawable/ic_phone"
@@ -91,8 +91,8 @@
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgReport"
-                    android:layout_width="@dimen/_22dp"
-                    android:layout_height="@dimen/_22dp"
+                    android:layout_width="@dimen/_20dp"
+                    android:layout_height="@dimen/_20dp"
                     android:layout_marginHorizontal="@dimen/_20dp"
                     android:layout_toRightOf="@+id/imgCall"
                     android:clickable="true"
@@ -102,8 +102,8 @@
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgNotify"
-                    android:layout_width="@dimen/_22dp"
-                    android:layout_height="@dimen/_22dp"
+                    android:layout_width="@dimen/_20dp"
+                    android:layout_height="@dimen/_20dp"
                     android:layout_toRightOf="@+id/imgReport"
                     android:clickable="true"
                     android:onClick="onClick"
