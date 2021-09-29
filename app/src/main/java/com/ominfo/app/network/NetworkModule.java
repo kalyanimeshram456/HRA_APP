@@ -119,7 +119,7 @@ public class NetworkModule {
                     Request.Builder requestBuilder = original.newBuilder();
 //                    if(SharedPref.getInstance(BaseApplication.getInstance().getApplicationContext()).read(SharedPrefKey.ACCESS_TOKEN,"true"))
                     requestBuilder.addHeader("Content-Type", contentType);
-                    requestBuilder.addHeader("app-id", "61151dc619e074b995f40062");
+                    //requestBuilder.addHeader("app-id", "61151dc619e074b995f40062");
                     requestBuilder.method(original.method(), original.body());
                     request = requestBuilder.build();
                     response = chain.proceed(request);

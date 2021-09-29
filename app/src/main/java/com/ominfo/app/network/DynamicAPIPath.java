@@ -6,9 +6,9 @@ public class DynamicAPIPath {
 
     public static final String regenerateCallWithCode = "/profile-services/customers/regenerate-otp-dial";
     public static final String uploadPublicKey = "/shared/encryption-handler/device-key/upload";
-    public static final String POST_LOGIN = "auth/site_officer_login";
-    public static final String POST_PUSH_EVENT = "push_event";
-    public static final String GET_WELCOME = "welcome_page";
+    public static final String POST_LOGIN = "index_with_DRapp.php?action=login";
+    public static final String POST_FETCH_KATA_CHITTI = "index_with_DRapp.php?action=getKantaChitthi";
+    public static final String POST_SAVE_KATA_CHITTI = "index_with_DRapp.php";
     public static final String GET_CHECK_SETUP = "check_setup_screen";
     public static final String GET_DASHBOARD = "dashboard_screen";
     public static final String RESEND_otp = "resend-otp";

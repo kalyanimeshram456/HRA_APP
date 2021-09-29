@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <font-family xmlns:app="http://schemas.android.com/apk/res-auto">
     <font
-        app:font="@font/poppins_regular"
+        app:font="@font/gilroy_regular"
         app:fontStyle="normal" />
 </font-family>
+
+<!--<?xml version="1.0" encoding="utf-8"?>
+<font-family xmlns:app="http://schemas.android.com/apk/res-auto">
+    <font
+        app:font="@font/poppins_regular"
+        app:fontStyle="normal" />
+</font-family>-->

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/_300dp"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/_10dp"
+    android:layout_marginTop="@dimen/_10dp"
+    android:background="@drawable/shape_round_dialog"
+    android:fitsSystemWindows="true"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/_16dp"
+    android:paddingTop="@dimen/_12dp"
+    android:paddingBottom="@dimen/_16dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:fontFamily="@font/gilroy_bold"
+            android:gravity="left"
+            android:text="@string/scr_lbl_raise_issue"
+            android:textColor="@color/color_main"
+            android:textSize="@dimen/_16sp" />
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgCancel"
+            android:layout_width="@dimen/_16dp"
+            android:layout_height="@dimen/_16dp"
+            android:layout_centerInParent="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/ic_close" />
+
+    </RelativeLayout>
+
+    <!--TAG Text box-->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/input_text"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_4dp"
+        android:layout_marginTop="@dimen/_20dp"
+        android:layout_marginBottom="@dimen/_10dp"
+        android:imeOptions="actionDone"
+        app:boxCornerRadiusBottomEnd="@dimen/_0dp"
+        app:boxCornerRadiusBottomStart="@dimen/_0dp"
+        app:boxCornerRadiusTopEnd="@dimen/_0dp"
+        app:boxCornerRadiusTopStart="@dimen/_0dp"
+        app:hintTextAppearance="@style/Editext.Theme"
+        app:placeholderTextAppearance="@style/Editext.Theme">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etLocationDescr"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_80dp"
+            android:background="@drawable/round_corner_shape_without_fill_thin_grey"
+            android:gravity="start"
+            android:imeOptions="actionDone"
+            android:inputType="textMultiLine"
+            android:overScrollMode="always"
+            android:scrollbarStyle="insideInset"
+            android:scrollbars="vertical"
+            android:singleLine="false"
+            android:hint="@string/scr_lbl_description"
+            android:textAlignment="textStart"
+            android:textSize="@dimen/_14sp"
+            app:errorEnabled="true" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_20dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgRecord"
+            android:layout_width="@dimen/_45dp"
+            android:layout_height="@dimen/_45dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/ic_play_button" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgStop"
+            android:visibility="gone"
+            android:layout_width="@dimen/_45dp"
+            android:layout_height="@dimen/_45dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/ic_stop_button" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:fontFamily="@font/font_regular"
+        android:layout_marginTop="@dimen/_6dp"
+        android:gravity="left"
+        android:layout_marginBottom="@dimen/_20dp"
+        android:text="@string/scr_lbl_start_recording"
+        android:textColor="@color/back_text_colour"
+        android:textSize="@dimen/_13sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/okayButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom"
+            android:background="@drawable/bg_button_round_corner_5"
+            android:fontFamily="@font/gilroy_semibold"
+            android:gravity="center"
+            android:paddingTop="@dimen/_2dp"
+            android:text="@string/scr_lbl_submit"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_14sp" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

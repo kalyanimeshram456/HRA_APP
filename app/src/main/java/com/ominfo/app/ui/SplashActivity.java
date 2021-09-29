@@ -3,11 +3,16 @@ package com.ominfo.app.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.ominfo.app.R;
 import com.ominfo.app.interfaces.Constants;
+import com.ominfo.app.interfaces.SharedPrefKey;
+import com.ominfo.app.ui.dashboard.DashbooardActivity;
+import com.ominfo.app.ui.login.LoginActivity;
+import com.ominfo.app.util.SharedPref;
 
 
 public class SplashActivity extends AppCompatActivity {
@@ -17,7 +22,10 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        //getmWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        //for full screen toolbar
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         setTimeStamp();
     }
 
@@ -28,12 +36,12 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 try {
                     //get login status
-                   /* Boolean iSLoggedIn = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.IS_LOGGED_IN, false);
+                    Boolean iSLoggedIn = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.IS_LOGGED_IN, false);
                     if (iSLoggedIn){
-                        launchScreen(LoginActivity.class);
+                        launchScreen(DashbooardActivity.class);
                     }else {
                         launchScreen(LoginActivity.class);
-                    }*/
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/pro_white_bg"
+    android:background="@color/color_main"
     tools:context=".ui.SplashActivity">
 
     <com.google.android.material.circularreveal.CircularRevealRelativeLayout
@@ -16,8 +16,10 @@
             android:id="@+id/tv_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/_48sp"
-            android:textColor="@color/pro_black"
+            android:textSize="@dimen/_22sp"
+            android:fontFamily="@font/gilroy_bold"
+            android:text="@string/app_name"
+            android:textColor="@color/white"
             android:layout_centerInParent="true"
             />
         <!-- android:fontFamily="@font/montserrat_semibold"
@@ -26,10 +28,13 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/_48sp"
-            android:textColor="@color/pro_blue"
+            android:textSize="@dimen/_14sp"
+            android:visibility="visible"
+            android:textColor="@color/pro_light_grey"
             android:layout_centerInParent="true"
             android:textAlignment="center"
+            android:text="Driver App"
+            android:fontFamily="@font/gilroy_semibold"
             android:layout_below="@+id/tv_header"
             android:gravity="center_horizontal" />
         <!--android:fontFamily="@font/montserrat_semibold"

@@ -31,6 +31,7 @@ public class BaseApplication extends MultiDexApplication {
     private AppDatabase mDB;
     private final String DB_NAME = "sendbits";
     public boolean isApplicationBackgruond = false;
+    private Context mCtx;
 
     // for the sake of simplicity. use DI in real apps instead
     public static LocaleManager localeManager;
@@ -48,7 +49,13 @@ public class BaseApplication extends MultiDexApplication {
         sInstance = this;
         //change application mode
         mApplicationMode = ApplicationMode.PRODUCTION;
-        initAppDatabase();
+    }
+
+    public static synchronized BaseApplication getInstance(Context mCtx) {
+        if (sInstance == null) {
+            sInstance = new BaseApplication(mCtx);
+        }
+        return sInstance;
     }
 
 
@@ -68,25 +75,6 @@ public class BaseApplication extends MultiDexApplication {
         return sInstance;
     }
 
-
-    public void initAppDatabase() {
-
-        /*SQLCipherUtils.State state = SQLCipherUtils.getDatabaseState(this, DB_NAME);
-        if (state != null) {
-            if (state.equals(SQLCipherUtils.State.UNENCRYPTED)) {
-                try {
-                    SQLCipherUtils.encrypt(this, DB_NAME, getEditText().getText());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                initEncryptedDB();
-            } else {
-                initEncryptedDB();
-            }
-        } else {
-            initEncryptedDB();
-        }*/
-    }
 
     private EditText getEditText() {
 
@@ -113,10 +101,12 @@ public class BaseApplication extends MultiDexApplication {
         return editText;
     }
 
-    private void initEncryptedDB() {
+    private BaseApplication(Context mCtx) {
+        this.mCtx = mCtx;
 
-        //SafeHelperFactory factory = SafeHelperFactory.fromUser(getEditText().getText());
-        this.mDB = Room.databaseBuilder(getApplicationContext(),
+        //creating the app database with Room database builder
+        //MyToDos is the name of the database
+        mDB = Room.databaseBuilder(mCtx,
                 AppDatabase.class, DB_NAME)
                 .allowMainThreadQueries()
                 .fallbackToDestructiveMigration()
@@ -124,6 +114,7 @@ public class BaseApplication extends MultiDexApplication {
                 //   .addMigrations(DBMigration.MIGRATION_2_3)
                 .build();
     }
+
 
     public AppDatabase getAppDatabase() {
         return mDB;

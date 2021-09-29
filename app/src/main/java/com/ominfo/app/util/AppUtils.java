@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -155,6 +156,48 @@ public class AppUtils {
         }
     }
 
+    /**
+     * Load image with URL
+     *
+     * @param context    context
+     * @param url        target URL
+     * @param mImageView target view
+     */
+    public static void loadImage(Context context, String url, AppCompatImageView mImageView, ProgressBar mProgressBar) {
+        Glide.with(context)
+                .load(url)
+                .placeholder(R.drawable.ic_launcher_background)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .fitCenter()
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        try{mProgressBar.setVisibility(View.GONE);}catch (Exception en){}
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        try{mProgressBar.setVisibility(View.GONE);}catch (Exception en){}
+                        return false;
+                    }
+                })
+                .into(mImageView);
+    }
+
+    public static Bitmap getBitmapFromView(AppCompatImageView imageView){
+        Bitmap bitmap = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
+        return bitmap;
+    }
+
+    public static String convertBitmapToBas64(Bitmap bitmap){
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream .toByteArray();
+        String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+        return encoded;
+    }
+
     public static String dateFormate(String sDate) {
         String sDateFormate = "";
         try {
@@ -250,36 +293,6 @@ public class AppUtils {
     }
 
 
-    /**
-     * Load image with URL
-     *
-     * @param context    context
-     * @param url        target URL
-     * @param mImageView target view
-     */
-    public static void loadImage(Context context, String url, AppCompatImageView mImageView, ProgressBar mProgressBar) {
-        Glide.with(context)
-                .load(url)
-                .placeholder(R.drawable.ic_launcher_background)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                .fitCenter()
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        mProgressBar.setVisibility(View.GONE);
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        mProgressBar.setVisibility(View.GONE);
-                        return false;
-                    }
-                })
-                .into(mImageView);
-    }
-
-
 
     /**
      * Returns the consumer friendly device name
@@ -347,11 +360,21 @@ public class AppUtils {
 
     /*created by kalyani*/
     /*get date and time in 2021-04-08 16:45:14.084445 format*/
-    public static String getDateTime(){
+    public static String getCurrentDateTime(){
         Calendar c = Calendar.getInstance();
         //System.out.println("Current time => "+c.getTime());
         //2021-04-08 16:45:14.084445
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        String formattedDate = df.format(c.getTime());
+        // formattedDate have current date/time
+        return formattedDate;
+    }
+
+    public static String getCurrentDateTime_(){
+        Calendar c = Calendar.getInstance();
+        //System.out.println("Current time => "+c.getTime());
+        //2021-04-08 16:45:14.084445
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = df.format(c.getTime());
         // formattedDate have current date/time
         return formattedDate;

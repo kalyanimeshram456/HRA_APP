@@ -1,9 +1,73 @@
 <resources>
-    <string name="app_name">OmInfo</string>
+    <string name="app_name">Om Turanth</string>
     <string name="scr_lbl_please_enter_your_username_and_password">Please enter your \nUsername and password</string>
     <string name="scr_lbl_username">Username</string>
     <string name="scr_lbl_password">Password</string>
     <string name="scr_lbl_truck_details"><u>Truck Details</u></string>
     <string name="scr_lbl_cleaner_details"><u>Cleaner Details</u></string>
+    <string name="scr_lbl_cleaner_batta">क्लीनर भत्ता</string>
+    <string name="scr_lbl_cleaner_bhatta">ड्राइवर भत्ता ( टोटल दिन : 03 )</string>
+    <string name="scr_lbl_cleaner_bhatta_new">ड्राइवर भत्ता</string>
+    <string name="scr_lbl_trip_kharcha">ट्रिप खर्चा</string>
+    <string name="scr_lbl_okay">OKAY</string>
+    <string name="err_msg_connection_was_refused">Please check your internet connection or try again later</string>
+    <string name="scr_lbl_add_kharcha">खर्चा ऐड करे</string>
+    <string name="scr_lbl_total_hisab">टोटल हिसाब</string>
+    <string name="scr_message_please_wait">Please wait..</string>
+
+    <string name="scr_lbl_upload">UPLOAD</string>
+    <string name="scr_lbl_save">SAVE</string>
+    <string name="scr_lbl_total_kharcha">टोटल खर्चा</string>
+    <string name="scr_lbl_kharcha_add_kijiye">खर्चा ऐड कीजिए</string>
+    <string name="scr_lbl_kitna_kharcha">कितना खर्चा</string>
+    <string name="msg_kharcha_saved">Kharcha Saved Successfully!</string>
+    <string name="msg_kharcha_uploaded">Kharcha Uploaded Successfully!</string>
+    <string name="scr_lbl_pending_hisab">पेंडिंग हिसाब :</string>
+    <string name="scr_lbl_gadi_no">गाड़ी नं.</string>
+    <string name="scr_lbl_awadhi">अवधि</string>
+    <string name="scr_lbl_trip">ट्रिप</string>
+    <string name="scr_lbl_pass_hisab">Pass Hisab</string>
+    <string name="scr_title_purana_hisab">पुराना हिसाब</string>
+    <string name="scr_lbl_cleaner_name">क्लीनर नाम :</string>
+    <string name="scr_lbl_aur_janiye">और जानिए</string>
+    <string name="scr_lbl_complaint">COMPLAINT</string>
+    <string name="scr_lbl_check_issue">Check Issue</string>
+    <string name="scr_lbl_toll_kharcha">टोल खर्चा</string>
+    <string name="scr_lbl_submit">SUBMIT</string>
+    <string name="scr_lbl_start_recording">Start Recording</string>
+    <string name="scr_lbl_description">डिस्क्रिप्शन</string>
+    <string name="msg_issue_submitted">Issue Submitted Successfully!</string>
+    <string name="scr_lbl_raise_issue">Raise Issue</string>
+    <string name="scr_lbl_issue_recording">Issue Recording</string>
+    <string name="scr_lbl_cancel">CANCEL</string>
+    <string name="scr_lbl_eway_bill">इ-वे बिल</string>
+    <string name="scr_lbl_details">Details</string>
+
+    <string name="val_msg_please_enter_email">Please enter username.</string>
+    <string name="val_msg_please_enter_password">Please Enter Password.</string>
+    <string name="val_msg_minimum_password">Required password is between 6 to 12 characters</string>
+    <string name="scr_lbl_general_manager">General Manager</string>
+    <string name="scr_lbl_call_manager">कॉल मॅनेजर</string>
+    <string name="scr_lbl_dept_manager">Dept. Manager     </string>
+    <string name="scr_lbl_asst_manager">Asst. Manager         </string>
+    <string name="scr_lbl_all_contacts">All Contacts</string>
+    <string name="scr_lbl_branch_contacts">ब्रांच कॉन्टेक्ट्स</string>
+    <string name="scr_lbl_call">Call</string>
+    <string name="scr_lbl_driver_hisab">Driver Hisab</string>
+    <string name="scr_lbl_passed_hisab">Passed Hisab</string>
+    <string name="scr_title_complaints">कम्प्लेंट्स</string>
+    <string name="scr_title_notifications">नोटिफिकेशन्स</string>
+    <string name="scr_lbl_hisab_upload">Hisab Upload</string>
+    <string name="scr_lbl_trip_kharcha_alert">ट्रिप खर्चा अलर्ट</string>
+    <string name="scr_lbl_advance_prapt">एडवांस प्राप्त हुआ</string>
+    <string name="scr_lbl_branch_nam">ब्रांच नाम</string>
+    <string name="scr_lbl_staff_nam">स्टाफ नाम</string>
+    <string name="scr_lbl_truck_details_hindi">ट्रक डिटेल्स</string>
+    <string name="scr_lbl_puc">पि - यु - सी सर्टिफिकेट</string>
+    <string name="scr_lbl_issurance_cert">इन्शुरन्स सर्टिफिकेट</string>
+    <string name="scr_lbl_contacts">कॉन्ट्रैक्ट</string>
+    <string name="scr_lbl_cleaner_details_marathi">क्लीनर डिटेल्स</string>
+    <string name="msg_weight_submitted">Weight Submitted Successfully!</string>
+
 
 </resources>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/_300dp"
+    android:layout_height="wrap_content"
+    android:fitsSystemWindows="true"
+    android:paddingBottom="@dimen/_16dp"
+    android:paddingTop="@dimen/_12dp"
+    android:paddingHorizontal="@dimen/_16dp"
+    android:gravity="center"
+    android:background="@drawable/shape_round_dialog"
+    android:layout_marginTop="@dimen/_10dp"
+    android:layout_marginHorizontal="@dimen/_10dp"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvCallName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:fontFamily="@font/gilroy_bold"
+            android:gravity="left"
+            android:text="Masjid"
+            android:textColor="@color/color_main"
+            android:textSize="@dimen/_16sp" />
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgCancel"
+            android:layout_width="@dimen/_16dp"
+            android:layout_height="@dimen/_16dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_close" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:layout_marginTop="@dimen/_24dp"
+        android:layout_marginHorizontal="@dimen/_12dp"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgBuilding"
+            android:layout_width="@dimen/_20dp"
+            android:layout_height="@dimen/_20dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_branch" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center"
+            android:layout_marginLeft="@dimen/_8dp"
+            android:layout_toRightOf="@+id/imgBuilding"
+            android:fontFamily="@font/gilroy_semibold"
+            android:gravity="left|center"
+            android:text="110,K N road,Chinch Bunder,
+Dogri,NR Bhatt Bazar,India"
+            android:textColor="@color/back_text_colour"
+            android:textSize="@dimen/_14sp" />
+
+
+    </RelativeLayout>
+
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:layout_marginTop="@dimen/_10dp"
+        android:layout_marginHorizontal="@dimen/_12dp"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgUser"
+            android:layout_width="@dimen/_20dp"
+            android:layout_height="@dimen/_20dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_user" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center"
+            android:layout_marginLeft="@dimen/_8dp"
+            android:layout_toRightOf="@+id/imgUser"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/gilroy_semibold"
+            android:gravity="left|center"
+            android:text="Umesh"
+            android:textColor="@color/back_text_colour"
+            android:textSize="@dimen/_14sp" />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:layout_marginTop="@dimen/_10dp"
+        android:layout_marginBottom="@dimen/_24dp"
+        android:layout_marginHorizontal="@dimen/_12dp"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgCall"
+            android:layout_width="@dimen/_20dp"
+            android:layout_height="@dimen/_20dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_call_grey" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="left|center"
+            android:layout_marginLeft="@dimen/_8dp"
+            android:layout_toRightOf="@+id/imgCall"
+            android:fontFamily="@font/gilroy_semibold"
+            android:gravity="left|center"
+            android:text="9988776889, 9856743456"
+            android:textColor="@color/back_text_colour"
+            android:textSize="@dimen/_14sp" />
+
+
+    </RelativeLayout>
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/detailsButton"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40dp"
+        android:layout_weight="1"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bg_button_round_corner_5"
+        android:fontFamily="@font/gilroy_semibold"
+        android:gravity="center"
+        android:paddingTop="@dimen/_2dp"
+        android:text="@string/scr_lbl_call"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_14sp" />
+
+</LinearLayout>

@@ -1,5 +1,7 @@
 package com.ominfo.app.network;
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.ominfo.app.ui.login.model.LoginRequest;
 
 import io.reactivex.Observable;
 import okhttp3.MultipartBody;
@@ -13,12 +15,16 @@ public class Service {
         this.networkAPIServices = networkAPIServices;
     }
 
-    public Observable<JsonElement> executeWelcomeAPI() {
-        return networkAPIServices.welcome(DynamicAPIPath.makeDynamicEndpointAPIGateWay(NetworkURLs.BASE_URL, DynamicAPIPath.GET_WELCOME));
+    public Observable<JsonElement> executeLoginAPI(String request) {
+        return networkAPIServices.login(DynamicAPIPath.makeDynamicEndpointAPIGateWay(NetworkURLs.BASE_URL, DynamicAPIPath.POST_LOGIN),request);
     }
 
-    public Observable<JsonElement> executeBookWithTopicApi(String mTopicName) {
-        return networkAPIServices.getBookWithTopic(DynamicAPIPath.makeDynamicEndpointAPIGateWay(NetworkURLs.BASE_URL, DynamicAPIPath.GET_BOOK_TOPIC+mTopicName));
+    public Observable<JsonElement> executeFetchKataChitthiAPI(String request) {
+        return networkAPIServices.fetchKataChitthi(DynamicAPIPath.makeDynamicEndpointAPIGateWay(NetworkURLs.BASE_URL, DynamicAPIPath.POST_FETCH_KATA_CHITTI),request);
+    }
+
+    public Observable<JsonElement> executeSaveKataChitthiAPI( RequestBody mRequestBodyType, RequestBody mRequestBodyTypeImage) {
+        return networkAPIServices.saveKataChitthi(DynamicAPIPath.makeDynamicEndpointAPIGateWay(NetworkURLs.BASE_URL, DynamicAPIPath.POST_SAVE_KATA_CHITTI),mRequestBodyType,mRequestBodyTypeImage);
     }
 
     public Observable<JsonElement> executeUserListApi(String mLimit) {

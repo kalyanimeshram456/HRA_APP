@@ -5,15 +5,18 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import com.ominfo.app.ui.login.model.LoginRequest;
+import com.ominfo.app.ui.login.model.LoginResultTable;
+
 
 @Dao
 public interface DBDAO {
 
-    /*// For welcome form Data
+    // For welcome form Data
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertWelcomeForm(CommonLoginResponse welcomeData);
+    void insertLoginData(LoginResultTable loginResultTable);
 
-    @Query("SELECT * FROM login")
-    CommonLoginResponse getWelcomeForm();*/
+    @Query("SELECT * FROM table_login")
+    LoginResultTable getLoginData();
 
 }

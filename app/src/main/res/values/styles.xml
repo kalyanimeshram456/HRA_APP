@@ -3,9 +3,9 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/deep_blue</item>
-        <item name="colorPrimaryDark">@color/deep_blue</item>
-        <item name="colorAccent">@color/deep_blue</item>
+        <item name="colorPrimary">@color/color_main</item>
+        <item name="colorPrimaryDark">@color/color_main</item>
+        <item name="colorAccent">@color/color_main</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowDisablePreview">true</item>//TODO - added for blank screen
@@ -14,12 +14,18 @@
     <style name="Editext.Theme" parent="TextAppearance.AppCompat">
         <item name="android:textSize">@dimen/_12sp</item>
         <item name="colorAccent">@color/light_grey</item>
-        <item name="android:textColor">@color/black</item>
-        <item name="android:textColorHint">@color/color_text_filed_hint</item>
+        <item name="android:textColor">@color/back_text_colour</item>
+        <item name="android:textColorHint">@color/light_grey_10</item>
         <!--<item name="android:fontFamily">@font/poppins_bold</item>-->
         <item name="colorPrimary">@color/light_grey</item>
         <item name="colorPrimaryDark">@color/light_grey</item>
     </style>
+
+    <style name="AppSearchView" parent="Widget.AppCompat.SearchView" >
+        <item name="android:textAlignment">center</item>
+        <item name="android:textSize">@dimen/_14sp</item>
+    </style>
+
 
     <!-- Base application theme. -->
     <style name="AppThemeBackground" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -42,8 +48,8 @@
     <style name="AppTheme.White" parent="AppTheme">
         <!--Required Api 21 above-->
         <item name="android:windowLightStatusBar">true</item>
-        <item name="colorPrimary">@color/deep_blue</item>
-        <item name="colorPrimaryDark">@color/deep_blue</item>
+        <item name="colorPrimary">@color/color_main</item>
+        <item name="colorPrimaryDark">@color/color_main</item>
         <!--  <item name="android:windowBackground">@drawable/get_started_theme</item>-->
     </style>
 
@@ -150,7 +156,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">55dp</item>
        <!-- <item name="android:fontFamily">@font/sf_pro_text_semibold</item>-->
-        <item name="android:textColor">@color/deep_blue</item>
+        <item name="android:textColor">@color/color_main</item>
         <item name="android:textSize">@dimen/_18sp</item>
         <!--<item name="android:background">@drawable/round_corner_shape_without_fill</item>-->
     </style>
@@ -159,7 +165,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">55dp</item>
         <!--<item name="android:fontFamily">@font/sf_pro_text_semibold</item>-->
-        <item name="android:textColor">@color/deep_blue</item>
+        <item name="android:textColor">@color/color_main</item>
         <item name="android:textSize">@dimen/_18sp</item>
         <!--<item name="android:background">@drawable/round_corner_shape_with_white_fill</item>-->
     </style>
@@ -169,7 +175,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">48dp</item>
        <!-- <item name="android:fontFamily">@font/gilroy_medium</item>-->
-        <item name="android:textColor">@color/deep_blue</item>
+        <item name="android:textColor">@color/color_main</item>
         <item name="android:textSize">@dimen/_16sp</item>
        <!-- <item name="android:background">@drawable/round_corner_shape_without_fill</item>-->
     </style>
@@ -178,7 +184,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">55dp</item>
         <!--<item name="android:fontFamily">@font/gilroy_medium</item>-->
-        <item name="android:textColor">@color/deep_blue</item>
+        <item name="android:textColor">@color/color_main</item>
         <item name="android:textSize">@dimen/_18sp</item>
        <!-- <item name="android:background">@drawable/round_corner_shape_without_fill</item>-->
     </style>

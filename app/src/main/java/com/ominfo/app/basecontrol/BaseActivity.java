@@ -1,6 +1,7 @@
 package com.ominfo.app.basecontrol;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,7 +26,10 @@ import android.view.animation.TranslateAnimation;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatEditText;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.Lifecycle;
@@ -353,5 +358,64 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         super.onPause();
     }
 
+    public void showSuccessDialog(String msg) {
+        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
+        mDialog.setContentView(R.layout.dialog_weight_submitted);
+        mDialog.setCanceledOnTouchOutside(true);
+        AppCompatTextView mTextViewTitle = mDialog.findViewById(R.id.tv_dialogTitle);
+        mTextViewTitle.setText(msg);
+        //AppCompatButton appCompatButton = mDialog.findViewById(R.id.btn_done);
+        //LinearLayoutCompat appCompatLayout = mDialog.findViewById(R.id.layPopup);
+        /*appCompatButton.setVisibility(View.VISIBLE);
+        appCompatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(TextUtils.isEmpty(mEditTextNote.getText().toString()))
+                {
+                    LogUtil.printToastMSG(mContext,getString(R.string.val_msg_please_enter_note));
+                }
+                else {
+                    callUpdateMarkApi(mEditTextNote.getText().toString());
+                    mDialog.dismiss();
+                }
+            }
+        });*/
+        mDialog.show();
+    }
+
+    public void showUploadDialog() {
+        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
+        mDialog.setContentView(R.layout.dialog_upload_total_hisab);
+        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
+        AppCompatButton okayButton = mDialog.findViewById(R.id.uploadButton);
+        AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
+
+        okayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+                showSuccessDialog(getString(R.string.msg_kharcha_uploaded));
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                }, 700);
+            }
+        });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+        mDialog.show();
+    }
 
 }
