@@ -489,9 +489,9 @@
                         android:layout_gravity="bottom|right"
                         android:layout_weight="2"
                         android:clickable="true"
-                        android:paddingRight="@dimen/_10dp"
                         android:gravity="bottom|right"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:paddingRight="@dimen/_10dp">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvAurJaniye"
@@ -509,7 +509,7 @@
                             android:layout_width="@dimen/_30dp"
                             android:layout_height="@dimen/_20dp"
                             android:layout_gravity="center"
-                            android:background="@drawable/ic_up" />
+                            android:background="@drawable/ic_down" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 

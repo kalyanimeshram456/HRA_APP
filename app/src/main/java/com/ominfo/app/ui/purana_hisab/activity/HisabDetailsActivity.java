@@ -237,7 +237,7 @@ public class HisabDetailsActivity extends BaseActivity {
                                     .getDisplayMetrics());
                     setMargins(layTotalHisab,0,marginInDp,0,0);
                     setMargins(rvDriverHisab,0,marginInDp40,0,0);
-                    imgExpandSheet.setBackgroundDrawable(getDrawable(R.drawable.ic_up));
+                    imgExpandSheet.setBackgroundDrawable(getDrawable(R.drawable.ic_down));
                     layTotalBhatta.setVisibility(View.GONE);
 
                 }
@@ -251,7 +251,7 @@ public class HisabDetailsActivity extends BaseActivity {
                                     .getDisplayMetrics());
                     setMargins(layTotalHisab,0,marginInDp230,0,0);
                     setMargins(rvDriverHisab,0,marginInDp40,0,0);
-                    imgExpandSheet.setBackgroundDrawable(getDrawable(R.drawable.ic_down));
+                    imgExpandSheet.setBackgroundDrawable(getDrawable(R.drawable.ic_up));
                     layTotalBhatta.setVisibility(View.VISIBLE);
 
                 }
