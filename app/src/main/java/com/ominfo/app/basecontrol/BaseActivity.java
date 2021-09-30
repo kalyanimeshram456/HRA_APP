@@ -120,6 +120,23 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         return view;
     }
 
+    /*  openContactSupportEmail(this, getString(R.string.app_name),
+                       "sendbits@gmail.com", "");*/
+    /*send email*/
+    public static void openContactSupportEmail(Context context, String subject, String email, String body) {
+        /*Create an ACTION_SEND Intent*/
+        Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+        /*This will be the actual content you wish you share.*/
+        String shareBody = "Here is the share content body";
+        /*The type of the content is text, obviously.*/
+        intent.setType("text/plain");
+        /*Applying information Subject and Body.*/
+        intent.putExtra(android.content.Intent.EXTRA_SUBJECT,subject);
+        intent.putExtra(android.content.Intent.EXTRA_TEXT, body);
+        /*Fire!*/
+        context.startActivity(Intent.createChooser(intent, "Share via"));
+    }
+
     /**
      * show error when edit text is empty
      *

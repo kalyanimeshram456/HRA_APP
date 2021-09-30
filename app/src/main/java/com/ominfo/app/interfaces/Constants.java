@@ -12,7 +12,7 @@ public interface Constants {
     String OTP = "otp";
     String RESEND_OTP = "resend_otp";
     String UPDATE_PROFILE_INFO = "update_profile_info";
-    String FILE_NAME = "/OmTuranth";
+    String FILE_NAME = "OmTuranth";
     int SPLAHS_TIME_OUT = 1000;
     String ANDROID = "Android";
     String DEVICE_OS_VALUE = Build.VERSION.RELEASE;

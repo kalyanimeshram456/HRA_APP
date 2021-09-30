@@ -51,6 +51,8 @@ import com.ominfo.app.interfaces.SharedPrefKey;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -167,6 +169,7 @@ public class AppUtils {
         Glide.with(context)
                 .load(url)
                 .placeholder(R.drawable.ic_launcher_background)
+                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) // don't use target size, load full image
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .fitCenter()
                 .listener(new RequestListener<Drawable>() {
@@ -196,6 +199,24 @@ public class AppUtils {
         byte[] byteArray = byteArrayOutputStream .toByteArray();
         String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
         return encoded;
+    }
+
+    /* For get base64 from image path */
+    public static String getBase64images(String path) {
+        File imageFile = new File(path);
+        if (imageFile.exists()) {
+            try {
+                FileInputStream fis = new FileInputStream(imageFile);
+                Bitmap bm = BitmapFactory.decodeStream(fis);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] b = baos.toByteArray();
+                return Base64.encodeToString(b, Base64.DEFAULT);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return "";
     }
 
     public static String dateFormate(String sDate) {
@@ -378,6 +399,16 @@ public class AppUtils {
         String formattedDate = df.format(c.getTime());
         // formattedDate have current date/time
         return formattedDate;
+    }
+
+    public static String getconvertedKataData(String currentString){
+        try {
+            String[] separated = currentString.split("-");
+            String val = separated[2] + "/" + separated[1] + "/" + separated[0]; // this will contain " they taste good"
+            return val;
+        }catch (Exception e){
+            return "";
+        }
     }
 
     public static Bitmap getResizedBitmap(Bitmap image, int maxSize) {

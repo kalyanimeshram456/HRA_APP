@@ -3,7 +3,7 @@
     <string name="scr_lbl_please_enter_your_username_and_password">Please enter your \nUsername and password</string>
     <string name="scr_lbl_username">Username</string>
     <string name="scr_lbl_password">Password</string>
-    <string name="scr_lbl_truck_details"><u>Truck Details</u></string>
+    <string name="scr_lbl_truck_details"><u>Truck Documents</u></string>
     <string name="scr_lbl_cleaner_details"><u>Cleaner Details</u></string>
     <string name="scr_lbl_cleaner_batta">क्लीनर भत्ता</string>
     <string name="scr_lbl_cleaner_bhatta">ड्राइवर भत्ता ( टोटल दिन : 03 )</string>

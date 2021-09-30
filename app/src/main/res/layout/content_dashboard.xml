@@ -170,7 +170,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/font_regular"
-                                android:text="गाड़ी नं.   :   M"
+                                android:text="गाड़ी नं.  ."
                                 android:visibility="invisible"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_13sp" />

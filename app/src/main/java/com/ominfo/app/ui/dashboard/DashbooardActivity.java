@@ -12,6 +12,7 @@ import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import com.ominfo.app.interfaces.SharedPrefKey;
 import com.ominfo.app.ui.contacts.AllContactsActivity;
 import com.ominfo.app.ui.driver_hisab.DriverHisabActivity;
 import com.ominfo.app.ui.kata_chithi.KataChithiActivity;
+import com.ominfo.app.ui.login.LoginActivity;
 import com.ominfo.app.ui.login.model.LoginResultTable;
 import com.ominfo.app.ui.notifications.NotificationsActivity;
 import com.ominfo.app.ui.purana_hisab.PuranaHisabActivity;
@@ -80,12 +82,17 @@ public class DashbooardActivity extends BaseActivity {
 
     //perform click actions
     @OnClick({R.id.layKataChithi,R.id.layDriverHisab,R.id.layPuranaHisab,R.id.layEwayBill,R.id.imgCall
-    ,R.id.imgReport,R.id.tvTruckDetails,R.id.tvCleanerDetails})
+    ,R.id.imgReport,R.id.tvTruckDetails,R.id.tvCleanerDetails,R.id.imgLogout})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
             case R.id.layKataChithi:
                 launchScreen(mContext, KataChithiActivity.class);
+                break;
+            case R.id.imgLogout:
+                finishAffinity();
+                SharedPref.getInstance(this).write(SharedPrefKey.IS_LOGGED_IN, false);
+                launchScreen(mContext, LoginActivity.class);
                 break;
             case R.id.imgNotify:
                 launchScreen(mContext, NotificationsActivity.class);
@@ -174,12 +181,22 @@ public class DashbooardActivity extends BaseActivity {
         mDialog.setContentView(R.layout.dialog_eway_bill);
         AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
         AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
+        AppCompatImageView imgShare = mDialog.findViewById(R.id.imgShare);
+        AppCompatTextView tvTitle = mDialog.findViewById(R.id.tvNumberTitle);
+        AppCompatTextView tvTitleValue = mDialog.findViewById(R.id.tvNumberTitleValue);
 
         okayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDialog.dismiss();
+            }
+        });
+
+        imgShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+                openContactSupportEmail(mContext,"Share "+tvTitle.getText().toString(),"",tvTitle.getText().toString()+"\n"+tvTitleValue.getText().toString());
             }
         });
 
@@ -191,6 +208,7 @@ public class DashbooardActivity extends BaseActivity {
         });
         mDialog.show();
     }
+
 
     //show call manager popup
     public void showCallManagerDialog() {

@@ -31,8 +31,8 @@ public class ViewDialog {
                 dialog = null;
             }
         }
-        dialog = new Dialog(activity, R.style.Widget_AppCompat_ActionBar);
-        View view = activity.getLayoutInflater().inflate(R.layout.worm_dot_layout, null);
+        dialog = new Dialog(activity, R.style.ThemeDialogCustomFullScreen);
+        View view = activity.getLayoutInflater().inflate(R.layout.layout_progress_loader, null);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         //...set cancelable false so that it's never get hidden
         dialog.setCancelable(false);
@@ -40,7 +40,7 @@ public class ViewDialog {
         //...that's the layout i told you will inflate later
         dialog.setContentView(view);
         //dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        AppCompatTextView appCompatTextView = dialog.findViewById(R.id.message);
+        AppCompatTextView appCompatTextView = dialog.findViewById(R.id.mMessage);
         appCompatTextView.setText(message);
         //...initialize the imageView form infalted layout
         //  ImageView gifImageView = dialog.findViewById(R.id.custom_loading_imageView);
@@ -64,7 +64,7 @@ public class ViewDialog {
         // For Full Screen Dialog Box
         if (dialog.getWindow() != null) {
             dialog.getWindow().setFlags(0, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            dialog.getWindow().setStatusBarColor(activity.getResources().getColor(R.color.cardview_dark_background));
+            dialog.getWindow().setStatusBarColor(activity.getResources().getColor(R.color.colorSemiTransparentWhite));
         }
 
         if (!activity.isDestroyed() && !activity.isFinishing() && !dialog.isShowing())

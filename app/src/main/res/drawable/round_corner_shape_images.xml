@@ -8,8 +8,8 @@
         android:bottomRightRadius="@dimen/_8dp"
         android:topLeftRadius="@dimen/_8dp"
         android:topRightRadius="@dimen/_8dp" />
-<solid android:color="@color/white"/>
+<solid android:color="@color/black"/>
 
     <stroke android:width="@dimen/_1dp"
-        android:color="@color/white"/>
+        android:color="@color/black"/>
 </shape>

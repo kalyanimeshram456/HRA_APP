@@ -109,7 +109,18 @@
                     android:layout_toRightOf="@+id/imgReport"
                     android:clickable="true"
                     android:onClick="onClick"
+                    android:layout_marginRight="@dimen/_20dp"
                     android:src="@drawable/ic_bell" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgLogout"
+                    android:layout_width="@dimen/_20dp"
+                    android:layout_height="@dimen/_20dp"
+                    android:layout_toRightOf="@+id/imgNotify"
+                    android:clickable="true"
+                    android:onClick="onClick"
+                    android:src="@drawable/ic_logout" />
+
 
             </RelativeLayout>
 

@@ -13,6 +13,8 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -41,12 +43,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
+import com.ominfo.app.BuildConfig;
 import com.ominfo.app.R;
 import com.ominfo.app.basecontrol.BaseActivity;
 import com.ominfo.app.basecontrol.BaseApplication;
+import com.ominfo.app.common.TouchImageView;
 import com.ominfo.app.database.AppDatabase;
 import com.ominfo.app.interfaces.Constants;
 import com.ominfo.app.interfaces.SharedPrefKey;
@@ -99,7 +104,7 @@ import okhttp3.RequestBody;
 public class KataChithiActivity extends BaseActivity {
 
     Context mContext;
-    private static final int CAMERA_REQUEST = 1888;
+    private static final int REQUEST_CAMERA = 0;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
     private Uri picUri;
     private String tempUri;
@@ -141,7 +146,8 @@ public class KataChithiActivity extends BaseActivity {
 
     private void init() {
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
-        tvDateValue.setText(AppUtils.getCurrentDateTime());
+        String mDate = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.KATA_CHITTI_DATE, AppUtils.getCurrentDateTime_());
+        tvDateValue.setText(AppUtils.getconvertedKataData(mDate));
         callFetchKataChitthiApi();
         setAdapterForPuranaHisabList();
     }
@@ -183,19 +189,40 @@ public class KataChithiActivity extends BaseActivity {
     }
 
     //show truck details popup
-    public void showFullImageDialog(Bitmap img, Bitmap imgUrl) {
+    public void showFullImageDialog(DriverHisabModel model,Bitmap imgUrl) {
         Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
         mDialog.setContentView(R.layout.dialog_doc_full_view);
         AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
         AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-        AppCompatImageView imgShow = mDialog.findViewById(R.id.imgShow);
-        //File imgFile = new File(img);
-        imgShow.setImageBitmap(img);
-        if (img != null) {
-            imgShow.setImageBitmap(img);
+        TouchImageView imgShow = mDialog.findViewById(R.id.imgShowPhoto);
+        AppCompatImageView imgShare = mDialog.findViewById(R.id.imgShare);
+
+        //imgShow.setImageBitmap(img);
+        if (model.getDriverHisabValue().equals("1")) {
+            File imgFile = new File(model.getDriverHisabTitle());
+            imgShow.setImageURI(Uri.fromFile(imgFile));
+            imgShare.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        //sendPhotoToOtherApps(Uri.fromFile(imgFile));
+                        shareToInstant("Shared Kata chitthi photo",imgFile,view);
+                    }catch (Exception e){}
+                }
+            });
         } else {
             imgShow.setImageBitmap(imgUrl);
+            imgShare.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        openContactSupportEmail(mContext,"Share Image","",model.getDriverHisabTitle());
+                    }catch (Exception e){}
+                }
+            });
+            //AppUtils.loadImage(mContext, model.getDriverHisabTitle(), imgShow, null);
         }
+
         okayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -210,6 +237,65 @@ public class KataChithiActivity extends BaseActivity {
             }
         });
         mDialog.show();
+    }
+
+    // Function to send the image through mail
+    public void sendPhotoToOtherApps(Uri fileUri)
+    {
+        Toast.makeText(
+                this,
+                "Now, sending the mail",
+                Toast.LENGTH_LONG)
+                .show();
+
+        Intent emailIntent
+                = new Intent(
+                android.content.Intent.ACTION_SEND);
+        emailIntent.setType("application/image");
+        emailIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // granting perm!
+        emailIntent.putExtra(
+                android.content.Intent.EXTRA_EMAIL,
+                new String[] {
+
+                        // default receiver id
+                        "enquiry@geeksforgeeks.org" });
+
+        // Subject of the mail
+        emailIntent.putExtra(
+                android.content.Intent.EXTRA_SUBJECT,
+                "New photo");
+
+        // Body of the mail
+        emailIntent.putExtra(
+                android.content.Intent.EXTRA_TEXT,
+                "Here's a captured image");
+
+        // Set the location of the image file
+        // to be added as an attachment
+        emailIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+
+        // Start the email activity
+        // to with the prefilled information
+        startActivity(
+                Intent.createChooser(emailIntent,
+                        "Send mail..."));
+    }
+
+    private static void shareToInstant(String content, File imageFile, View view) {
+
+        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+        sharingIntent.setType("image/png");
+        sharingIntent.setType("text/plain");
+        sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        sharingIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        sharingIntent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(view.getContext(), BuildConfig.APPLICATION_ID + ".provider", imageFile));
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, content);
+
+        try {
+            view.getContext().startActivity(Intent.createChooser(sharingIntent, "Share it Via"));
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(view.getContext(), R.string.err_msg_connection_was_refused, Toast.LENGTH_SHORT).show();
+        }
     }
 
     //set date picker view
@@ -262,8 +348,39 @@ public class KataChithiActivity extends BaseActivity {
     }
 
     private void cameraIntent() {
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraIntent, CAMERA_REQUEST);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        picUri = getOutputPhotoFile();//Uri.fromFile(getOutputPhotoFile());
+        //tempUri=picUri;
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, picUri);
+        //intent.putExtra("URI", picUri);
+        startActivityForResult(intent, REQUEST_CAMERA);
+    }
+
+    private Uri getOutputPhotoFile() {
+        File directory = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), Constants.FILE_NAME);
+        tempUri = directory.getPath();
+        if (!directory.exists()) {
+            if (!directory.mkdirs()) {
+                Log.e("getOutputPhotoFile", "Failed to create storage directory.");
+                return null;
+            }
+        }
+
+        Uri path;
+        if (Build.VERSION.SDK_INT > 23) {
+            File oldPath = new File(directory.getPath() + File.separator + "IMG_temp.jpg");
+            String fileUrl = oldPath.getPath();
+            if (fileUrl.substring(0, 7).matches("file://")) {
+                fileUrl = fileUrl.substring(7);
+            }
+            File file = new File(fileUrl);
+
+            path = FileProvider.getUriForFile(mContext, this.getPackageName() + ".provider", file);
+        } else {
+            path = Uri.fromFile(new File(directory.getPath() + File.separator + "IMG_temp.jpg"));
+        }
+        return path;
     }
 
     /* Call Api to fetch kata chitthi */
@@ -271,11 +388,12 @@ public class KataChithiActivity extends BaseActivity {
         if (NetworkCheck.isInternetAvailable(KataChithiActivity.this)) {
             LoginResultTable loginResultTable = mDb.getDbDAO().getLoginData();
             if (loginResultTable != null) {
+                String mDate = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.KATA_CHITTI_DATE, AppUtils.getCurrentDateTime_());
                 FetchKataChitthiRequest mLoginRequest = new FetchKataChitthiRequest();
                 mLoginRequest.setDriverID(loginResultTable.getDriverId()); //6b07b768-926c-49b6-ac1c-89a9d03d4c3b
                 mLoginRequest.setUserkey(loginResultTable.getUserKey());
                 mLoginRequest.setVehicleID("6");
-                mLoginRequest.setTransactionDate(AppUtils.getCurrentDateTime_());
+                mLoginRequest.setTransactionDate(mDate);
                 Gson gson = new Gson();
                 String bodyInStringFormat = gson.toJson(mLoginRequest);
                 LogUtil.printLog("request fetch", bodyInStringFormat);
@@ -306,7 +424,7 @@ public class KataChithiActivity extends BaseActivity {
             List<String> mImageList = new ArrayList<>();
             for (int i = 0; i < driverHisabModelList.size(); i++) {
                 if (driverHisabModelList.get(i).getDriverHisabValue().equals("1")) {
-                    String mBase64 = AppUtils.convertBitmapToBas64(driverHisabModelList.get(i).getImgBitmap());
+                    String mBase64 = AppUtils.getBase64images(driverHisabModelList.get(i).getDriverHisabTitle());
                     mImageList.add("data:image/png;base64," + mBase64);
                 }
             }
@@ -324,6 +442,7 @@ public class KataChithiActivity extends BaseActivity {
                     String bodyInStringFormat = gson.toJson(mLoginRequest);
                     RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), "saveKantaChitthi");
                     RequestBody mRequestBodyTypeImage = RequestBody.create(MediaType.parse("text/plain"), bodyInStringFormat);
+                    SharedPref.getInstance(this).write(SharedPrefKey.KATA_CHITTI_DATE, getDate(tvDateValue.getText().toString()));
 
                /* RequestBody requestBody = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
@@ -358,12 +477,20 @@ public class KataChithiActivity extends BaseActivity {
             mImagesAdapter = new ImagesAdapter(mContext, driverHisabModelList, new ImagesAdapter.ListItemSelectListener() {
                 @Override
                 public void onItemClick(DriverHisabModel mDataTicket, Bitmap bitmap) {
-                    showFullImageDialog(mDataTicket.getImgBitmap(), bitmap);
+                    try {
+                        showFullImageDialog(mDataTicket, bitmap);
+                    }catch (Exception e){
+                        LogUtil.printToastMSG(mContext,"Fail to load Image.");
+                    }
                 }
             });
 
             recyclerViewImages.setHasFixedSize(true);
-            recyclerViewImages.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
+            //Grid layout, 2 columns
+            //RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(mContext,3,LinearLayoutManager.VERTICAL,false);
+            //recyclerViewImages.setLayoutManager(mLayoutManager);
+            //recyclerViewImages.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
+            recyclerViewImages.setLayoutManager(new GridLayoutManager(mContext, 4));
             recyclerViewImages.setItemAnimator(new DefaultItemAnimator());
             recyclerViewImages.setAdapter(mImagesAdapter);
             recyclerViewImages.setVisibility(View.VISIBLE);
@@ -378,7 +505,58 @@ public class KataChithiActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+        if (requestCode == REQUEST_CAMERA  && resultCode == Activity.RESULT_OK) {
+            if (resultCode == RESULT_OK) {
+                try {
+
+                    File file = new File(tempUri + "/IMG_temp.jpg");
+
+                    Bitmap mImgaeBitmap = null;
+                    try {
+                       /* mImgaeBitmap = new Compressor(this)
+                                //.setMaxWidth(640)
+                                //.setMaxHeight(480)
+                                .setQuality(10)
+                                .setCompressFormat(Bitmap.CompressFormat.WEBP)
+                                .compressToBitmap(file);*/
+                        //passing bitmap for converting it to base64
+                        //mImageViewNumberPlate.setImageBitmap(mImgaeBitmap);mImgaeBitmap =  new Compressor(this).compressToBitmap(file);
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inJustDecodeBounds = true;
+                        BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+
+                        // Calculate inSampleSize
+                        options.inSampleSize = Util.calculateInSampleSize(options, 600, 600);
+
+                        // Decode bitmap with inSampleSize set
+                        options.inJustDecodeBounds = false;
+                        Bitmap scaledBitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+
+                        //check the rotation of the image and display it properly
+                        ExifInterface exif;
+                        exif = new ExifInterface(file.getAbsolutePath());
+                        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0);
+                        Matrix matrix = new Matrix();
+                        if (orientation == 6) {
+                            matrix.postRotate(90);
+                        } else if (orientation == 3) {
+                            matrix.postRotate(180);
+                        } else if (orientation == 8) {
+                            matrix.postRotate(270);
+                        }
+                        mImgaeBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+                        SaveImageMM(mImgaeBitmap);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+//                    CropImage.activity(picUri).start(this);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+       /* if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
 
             //setAdapterForPuranaHisabList();
@@ -389,7 +567,70 @@ public class KataChithiActivity extends BaseActivity {
                 driverHisabModelList.add(new DriverHisabModel("", "1", photo));
                 setAdapterForPuranaHisabList();
             }
+        }*/
+    }
+
+    private void saveImage(Bitmap bitmap, @NonNull String name) throws IOException {
+        boolean saved;
+        OutputStream fos;
+        File dir = new File( Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "Camera");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ContentResolver resolver = mContext.getContentResolver();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
+            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, "DCIM/" + "Camera");
+            Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+            fos = resolver.openOutputStream(imageUri);
+        } else {
+            String imagesDir = Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_PICTURES).toString() + File.separator+ "Camera";
+
+            File file = new File(imagesDir);
+
+            if (!file.exists()) {
+                file.mkdir();
+            }
+
+            File image = new File(imagesDir, name + ".jpg");
+            fos = new FileOutputStream(image);
+
         }
+
+        saved = bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        fos.flush();
+        fos.close();
+    }
+    //TODO will add comments later
+    private void SaveImageMM(Bitmap finalBitmap) {
+        File myDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), Constants.FILE_NAME);
+        myDir.mkdirs();
+        String timeStamp = new SimpleDateFormat("yyyMMdd_HHmmss", Locale.US).format(new Date());
+        String fname = "Image_" + timeStamp + "_capture.jpg";
+        File file = new File(myDir, fname);
+        if (file.exists()) file.delete();
+        try {
+            //new ImageCompression(this,file.getAbsolutePath()).execute(finalBitmap);
+            FileOutputStream out = new FileOutputStream(file);
+            //finalBitmap = Bitmap.createScaledBitmap(finalBitmap,(int)1080/2,(int)1920/2, true);
+            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 60, out); //less than 300 kb
+            out.flush();
+            out.close();
+            String oldFname = "IMG_temp.jpg";
+            File oldFile = new File(myDir, oldFname);
+            if (oldFile.exists()) oldFile.delete();
+            //save image to db
+            int id = 0;
+            String pathDb = file.getPath();
+            //set image list adapter
+            driverHisabModelList.add(new DriverHisabModel(pathDb, "1", null));
+            setAdapterForPuranaHisabList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 

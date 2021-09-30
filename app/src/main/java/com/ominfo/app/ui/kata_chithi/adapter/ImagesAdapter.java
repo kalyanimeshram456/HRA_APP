@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ominfo.app.R;
 import com.ominfo.app.ui.driver_hisab.model.DriverHisabModel;
 import com.ominfo.app.util.AppUtils;
+import com.ominfo.app.util.LogUtil;
 
 import java.io.File;
 import java.util.List;
@@ -60,10 +61,10 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         if (mListData != null) {
-            //File imgFile = new File(mListData.get(position).getDriverHisabTitle());
-            if(mListData.get(position).getImgBitmap()!=null) {
+            File imgFile = new File(mListData.get(position).getDriverHisabTitle());
+            if(mListData.get(position).getDriverHisabValue().equals("1")) {
                 holder.mProgressBar.setVisibility(View.GONE);
-                holder.imgShow.setImageBitmap(mListData.get(position).getImgBitmap());
+                holder.imgShow.setImageURI(Uri.fromFile(imgFile));
             }else {
                 AppUtils.loadImage(mContext, mListData.get(position).getDriverHisabTitle(), holder.imgShow, holder.mProgressBar);
             }
@@ -72,8 +73,12 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ViewHolder
         holder.layClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bitmap bitmap = getBitmapFromView(holder.imgShow);
-                listItemSelectListener.onItemClick(mListData.get(position),bitmap);
+                try {
+                    Bitmap bitmap = getBitmapFromView(holder.imgShow);
+                    listItemSelectListener.onItemClick(mListData.get(position), bitmap);
+                }catch (Exception e){
+                    LogUtil.printToastMSG(mContext,"Fail to load Image");
+                }
             }
         });
 

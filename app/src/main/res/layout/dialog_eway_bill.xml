@@ -40,29 +40,51 @@
 
     </RelativeLayout>
 
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/poppins_semibold"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:layout_marginTop="@dimen/_30dp"
-        android:text="CEWB Number"
-        android:textColor="@color/back_text_colour"
-        android:textSize="@dimen/_14sp" />
+        android:layout_marginHorizontal="@dimen/_20dp"
+        >
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/poppins_regular"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:layout_marginBottom="@dimen/_30dp"
-        android:text="90908 76756"
-        android:textColor="@color/back_text_colour"
-        android:textSize="@dimen/_18sp" />
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvNumberTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginTop="@dimen/_30dp"
+                android:fontFamily="@font/poppins_semibold"
+                android:gravity="left"
+                android:text="CEWB Number"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvNumberTitleValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginBottom="@dimen/_30dp"
+                android:fontFamily="@font/poppins_regular"
+                android:gravity="left"
+                android:text="90908 76756"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_18sp" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgShare"
+            android:layout_width="@dimen/_20dp"
+            android:layout_height="@dimen/_20dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_share_black" />
+    </RelativeLayout>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/detailsButton"

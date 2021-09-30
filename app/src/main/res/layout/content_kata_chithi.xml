@@ -68,93 +68,111 @@
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="122dp"
-        android:background="@drawable/layout_round_shape_corners"
-        android:orientation="vertical"
-        android:paddingHorizontal="@dimen/_16dp">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_30dp">
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvStart"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/gilroy_semibold"
-                android:text="तारीख        :        "
-                android:textColor="@color/back_text_colour"
-                android:textSize="@dimen/_16sp" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvDateValue"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/tvStart"
-                android:background="@drawable/bottom_line_textview"
-                android:fontFamily="@font/font_semibold"
-                android:text=""
-                android:textColor="@color/back_text_colour"
-                android:textSize="@dimen/_16sp" />
-        </RelativeLayout>
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_12dp"
-            android:fontFamily="@font/gilroy_semibold"
-            android:text="गैलरी"
-            android:textColor="@color/back_text_colour"
-            android:textSize="@dimen/_16sp" />
-
+        android:background="@drawable/layout_round_shape_corners">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10dp"
-            android:gravity="left"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvImages"
-                android:layout_width="230dp"
-                android:layout_height="@dimen/_70dp"
-                android:layout_marginRight="@dimen/_20dp"
-                android:visibility="gone"
-                tools:listitem="@layout/row_images_kata_chithi" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_16dp"
+                android:layout_marginTop="@dimen/_30dp">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/imgNoImage"
-                android:layout_width="@dimen/_70dp"
-                android:layout_height="@dimen/_70dp"
-                android:background="@drawable/round_corner_shape_images"
-                android:elevation="10dp"
-                android:gravity="center"
-                android:layout_marginRight="@dimen/_20dp"
-                android:visibility="visible"
-                app:cardCornerRadius="@dimen/_8dp">
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvStart"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="तारीख        :        "
+                    android:textColor="@color/back_text_colour"
+                    android:textSize="@dimen/_16sp" />
 
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/imgShow"
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvDateValue"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/tvStart"
+                    android:background="@drawable/bottom_line_textview"
+                    android:fontFamily="@font/font_semibold"
+                    android:text=""
+                    android:textColor="@color/back_text_colour"
+                    android:textSize="@dimen/_16sp" />
+            </RelativeLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_16dp"
+                android:layout_marginTop="@dimen/_16dp"
+                android:fontFamily="@font/gilroy_semibold"
+                android:text="गैलरी"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_16sp" />
+
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_16dp"
+                android:layout_marginTop="@dimen/_6dp"
+                android:layout_marginRight="@dimen/_2dp"
+                android:gravity="top"
+                android:orientation="horizontal">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvImages"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="top"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:nestedScrollingEnabled="true"
+                    android:visibility="gone"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="4"
+                    tools:listitem="@layout/row_images_kata_chithi" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/imgNoImage"
                     android:layout_width="@dimen/_70dp"
                     android:layout_height="@dimen/_70dp"
-                    android:layout_weight="1"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:layout_marginRight="@dimen/_20dp"
+                    android:background="@drawable/round_corner_shape_images"
+                    android:elevation="10dp"
                     android:gravity="center"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/no_image"
-                    android:visibility="visible" />
+                    android:visibility="visible"
+                    app:cardCornerRadius="@dimen/_8dp">
 
-            </androidx.cardview.widget.CardView>
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/imgShow"
+                        android:layout_width="@dimen/_70dp"
+                        android:layout_height="@dimen/_70dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/no_image"
+                        android:visibility="visible" />
+
+                </androidx.cardview.widget.CardView>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgCapture"
                 android:layout_width="@dimen/_70dp"
                 android:layout_height="@dimen/_70dp"
                 android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="@dimen/_16dp"
+                android:layout_marginTop="@dimen/_14dp"
+                android:layout_marginBottom="@dimen/_80dp"
                 android:clickable="true"
                 android:gravity="center"
                 android:scaleType="fitXY"
@@ -163,8 +181,7 @@
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
+    </ScrollView>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/submitButton"

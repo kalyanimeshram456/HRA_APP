@@ -22,7 +22,7 @@ public interface SharedPrefKey {
     String IS_LOCK_BALANCE = "is_lock_balance";
     String ACCESS_TOKEN = "acces_token";
     String IS_LOGGED_IN = "is_logged_in";
-    String IS_LOGIN_LOGGED = "IS_LOGIN_LOGGED";
+    String KATA_CHITTI_DATE = "KATA_CHITTI_DATE";
     String IS_INVALID_PASSWORD = "IS_INVALID_PASSWORD";
     String FILE_PATH = "FILE_PATH";
     String IS_COMPLETE_REGISTRATION = "IS_COMPLETE_REGISTRATION";

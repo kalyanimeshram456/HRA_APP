@@ -65,7 +65,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_26dp"
-                    android:layout_marginBottom="@dimen/_20dp"
+                    android:layout_marginBottom="@dimen/_10dp"
                     android:backgroundTint="@android:color/transparent"
                     android:hint="@string/scr_lbl_username"
                     app:boxCornerRadiusBottomEnd="@dimen/_5dp"
@@ -74,6 +74,7 @@
                     app:boxCornerRadiusTopStart="@dimen/_5dp"
                     app:boxStrokeWidth="0dp"
                     app:boxStrokeWidthFocused="0dp"
+                    android:paddingBottom="@dimen/_10dp"
                     app:hintTextAppearance="@style/Editext.Theme"
                     app:hintTextColor="@color/light_grey_30"
                     app:placeholderTextAppearance="@style/Editext.Theme">
@@ -105,6 +106,7 @@
                     app:boxCornerRadiusTopStart="@dimen/_5dp"
                     app:boxStrokeWidth="0dp"
                     app:boxStrokeWidthFocused="0dp"
+                    android:paddingBottom="@dimen/_10dp"
                     app:hintTextAppearance="@style/Editext.Theme"
                     app:hintTextColor="@color/light_grey_30"
                     app:placeholderTextAppearance="@style/Editext.Theme">
@@ -127,7 +129,7 @@
                     android:layout_height="55dp"
                     android:layout_alignParentBottom="true"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="@dimen/_35dp"
+                    android:layout_marginTop="@dimen/_25dp"
                     android:layout_marginBottom="@dimen/_20dp"
                     android:background="@drawable/bg_button_round_corner_5"
                     android:fontFamily="@font/gilroy_semibold"
