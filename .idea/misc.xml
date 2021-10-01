@@ -8,6 +8,7 @@
         <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/drawable-v24/layout_round_corner.xml" value="0.17916666666666667" />
         <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/drawable-v24/layout_round_shape_corners_15.xml" value="0.19479166666666667" />
         <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/drawable-v24/layout_round_shape_corners_15_blue.xml" value="0.17916666666666667" />
+        <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/drawable-v24/layout_round_shape_corners_15_light_blue.xml" value="0.2046875" />
         <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/drawable-v24/layout_round_shape_corners_15_white.xml" value="0.17864583333333334" />
         <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/drawable-v24/layout_round_shape_corners_8.xml" value="0.17916666666666667" />
         <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/drawable-v24/layout_round_shape_corners_8_grey.xml" value="0.17916666666666667" />
@@ -51,10 +52,10 @@
         <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/layout/activity_purana_hisab.xml" value="0.1403985507246377" />
         <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/layout/activity_splash.xml" value="0.25" />
         <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/layout/content_all_contacts.xml" value="0.25" />
-        <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/layout/content_collapse_dashboard_header.xml" value="0.22" />
+        <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/layout/content_collapse_dashboard_header.xml" value="0.25" />
         <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/layout/content_collapse_driver_hisab_header.xml" value="0.14945652173913043" />
         <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/layout/content_complaints.xml" value="0.1" />
-        <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/layout/content_dashboard.xml" value="0.5" />
+        <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/layout/content_dashboard.xml" value="0.35208333333333336" />
         <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/layout/content_driver_hisab.xml" value="0.25" />
         <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/layout/content_hisab_details.xml" value="0.22" />
         <entry key="..\:/Om_informatic_projects/driver_app_github/app/src/main/res/layout/content_kata_chithi.xml" value="0.33" />
