@@ -71,9 +71,15 @@ public class HisabDetailsActivity extends BaseActivity {
 
     private void init(){
         //set toolbar title
-        toolbarTitle.setText(getString(R.string.scr_title_purana_hisab));
+        setToolbar();
         getIntentData();
         setAdapterForActivityList();
+    }
+
+    private void setToolbar(){
+        //set toolbar title
+        toolbarTitle.setText(getString(R.string.scr_title_purana_hisab));
+        initToolbar(1,mContext,R.id.imgBack,R.id.imgReport,R.id.imgNotify,0,R.id.imgCall);
     }
 
     private void getIntentData(){
@@ -204,7 +210,7 @@ public class HisabDetailsActivity extends BaseActivity {
     }
 
     //perform click actions
-    @OnClick({R.id.complaintButton,R.id.imgBack,R.id.tvHisabName,R.id.layAurJaniye,R.id.imgNotify})
+    @OnClick({R.id.complaintButton,R.id.tvHisabName,R.id.layAurJaniye})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
@@ -214,12 +220,6 @@ public class HisabDetailsActivity extends BaseActivity {
                 }else {
                     finish();
                 }
-                break;
-            case R.id.imgBack:
-                finish();
-                break;
-            case R.id.imgNotify:
-                launchScreen(mContext, NotificationsActivity.class);
                 break;
             case R.id.tvHisabName:
                 //showIssueRecordingDialog();

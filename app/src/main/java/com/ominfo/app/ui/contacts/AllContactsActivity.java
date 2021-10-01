@@ -8,6 +8,8 @@ import androidx.appcompat.widget.SearchView;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ExpandableListAdapter;
@@ -58,8 +60,9 @@ public class AllContactsActivity extends BaseActivity {
         ButterKnife.bind(this);
         init();
     }
+
     private void init(){
-        toolbarTitle.setText(R.string.scr_lbl_branch_contacts);
+        setToolbar();
         searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -71,7 +74,15 @@ public class AllContactsActivity extends BaseActivity {
                 }
             }
         });
+        setExpandableList();
+    }
 
+    private void setToolbar(){
+        toolbarTitle.setText(R.string.scr_lbl_branch_contacts);
+        initToolbar(1,mContext,R.id.imgBack,R.id.imgReport,R.id.imgNotify,0,R.id.imgCall);
+    }
+
+    private void setExpandableList(){
         expandableDetailList = ExpandableListDataItems.getData();
         expandableTitleList = new ArrayList<String>(expandableDetailList.keySet());
         expandableListAdapter = new CallExpandableListAdapter(this, expandableTitleList, expandableDetailList);
@@ -112,19 +123,25 @@ public class AllContactsActivity extends BaseActivity {
                 return false;
             }
         });
+
     }
+
     //show call manager popup
     public void showCallDetailsDialog(String callName) {
         Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
         mDialog.setContentView(R.layout.dialog_contact_details);
         AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
+        AppCompatButton mapsButton = mDialog.findViewById(R.id.MapsButton);
         AppCompatTextView tvCallName = mDialog.findViewById(R.id.tvCallName);
         tvCallName.setText(callName);
-        okayButton.setOnClickListener(new View.OnClickListener() {
+        mapsButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 mDialog.dismiss();
+                String url = "http://bit.ly/2VEM3sC";
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
             }
         });
 
@@ -138,14 +155,14 @@ public class AllContactsActivity extends BaseActivity {
     }
 
     //perform click actions
-    @OnClick({R.id.imgBack})
+    @OnClick({/*R.id.imgBack*/})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
-            case R.id.imgBack:
+           /* case R.id.imgBack:
                  finish();
                 break;
-
+*/
         }
     }
 

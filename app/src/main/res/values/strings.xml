@@ -68,6 +68,8 @@
     <string name="scr_lbl_contacts">कॉन्ट्रैक्ट</string>
     <string name="scr_lbl_cleaner_details_marathi">क्लीनर डिटेल्स</string>
     <string name="msg_weight_submitted">Weight Submitted Successfully!</string>
+    <string name="scr_lbl_find_in_maps">Find In Maps</string>
+    <string name="scr_lbl_kata_chitthi_weight">कांटा चिट्ठी वजन</string>
 
 
 </resources>

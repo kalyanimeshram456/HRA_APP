@@ -55,8 +55,14 @@ public class DriverHisabDetailsActivity extends BaseActivity {
     }
 
     private void init(){
+        setToolbar();
         setAdapterForDriverHisabList();
         textViewTotal.setText("₹1200");
+    }
+
+    private void setToolbar(){
+        //toolbarTitle.setText(R.string.scr_lbl_branch_contacts);
+        initToolbar(1,mContext,R.id.imgBack,R.id.imgReport,R.id.imgNotify,0,R.id.imgCall);
     }
 
     private void setAdapterForDriverHisabList() {
@@ -107,7 +113,7 @@ public class DriverHisabDetailsActivity extends BaseActivity {
     }
 
     //perform click actions
-    @OnClick({R.id.saveButton,R.id.uploadButton,R.id.imgAddHisab,R.id.imgNotify})
+    @OnClick({R.id.saveButton,R.id.uploadButton,R.id.imgAddHisab})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
@@ -119,9 +125,6 @@ public class DriverHisabDetailsActivity extends BaseActivity {
                 break;
             case R.id.imgAddHisab:
                 showAddDriverHisabDialog();
-                break;
-            case R.id.imgNotify:
-                launchScreen(mContext, NotificationsActivity.class);
                 break;
         }
     }

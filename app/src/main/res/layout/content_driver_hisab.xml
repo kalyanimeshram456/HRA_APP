@@ -38,10 +38,10 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvDate"
-                        android:layout_width="wrap_content"
+                        android:layout_width="@dimen/_70dp"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/font_regular"
-                        android:text="ट्रिप तारीख : "
+                        android:fontFamily="@font/gilroy_regular"
+                        android:text="ट्रिप तारीख"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_14sp" />
 
@@ -50,7 +50,59 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/font_regular"
-                        android:text="24/08/2021 - 25/08/2021"
+                        android:text=":    24 Aug 2021 - 25 Aug 2021"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_14sp" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_marginTop="@dimen/_25dp"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvMsd"
+                        android:layout_width="@dimen/_70dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/gilroy_regular"
+                        android:text="MSD"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_14sp" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvMsdValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/font_regular"
+                        android:text=":    Pune - Mumbai"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_14sp" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_marginTop="38dp"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvGwt"
+                        android:layout_width="@dimen/_70dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/gilroy_regular"
+                        android:text="GWT"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_14sp" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvGwtValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/font_regular"
+                        android:text=":    Mumbai - Pune"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_14sp" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
@@ -59,15 +111,14 @@
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="155dp"
+                    android:layout_marginTop="@dimen/_160dp"
                     android:background="@drawable/layout_round_shape_corners"
                     android:orientation="vertical"
                     android:paddingHorizontal="@dimen/_16dp">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        >
+                        android:layout_height="wrap_content">
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvDriverHisab"
@@ -212,7 +263,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_16dp"
-                    android:layout_marginTop="@dimen/_35dp"
+                    android:layout_marginTop="@dimen/_60dp"
                     android:background="@drawable/layout_round_shape_corners_15"
                     android:orientation="vertical"
                     android:paddingHorizontal="@dimen/_16dp">

@@ -48,7 +48,13 @@ public class DriverHisabActivity extends BaseActivity {
     }
 
     private void init(){
+        setToolbar();
         setAdapterForActivityList();
+    }
+
+    private void setToolbar(){
+        //toolbarTitle.setText(R.string.scr_lbl_branch_contacts);
+        initToolbar(1,mContext,R.id.imgBack,R.id.imgReport,R.id.imgNotify,0,R.id.imgCall);
     }
 
     private void setAdapterForActivityList() {
@@ -99,13 +105,10 @@ public class DriverHisabActivity extends BaseActivity {
     }
 
     //perform click actions
-    @OnClick({R.id.imgBack,R.id.imgAddHisab,R.id.saveButton,R.id.uploadButton,R.id.imgNotify})
+    @OnClick({R.id.imgAddHisab,R.id.saveButton,R.id.uploadButton})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
-            case R.id.imgBack:
-                finish();
-                break;
             case R.id.imgAddHisab:
                 showAddDriverHisabDialog();
                 break;
@@ -116,9 +119,7 @@ public class DriverHisabActivity extends BaseActivity {
                 finish();
                 launchScreen(mContext, DriverHisabDetailsActivity.class);
                 break;
-            case R.id.imgNotify:
-                launchScreen(mContext, NotificationsActivity.class);
-                break;
+
         }
     }
 }

@@ -43,9 +43,15 @@ import com.ominfo.app.deps.DaggerDeps;
 import com.ominfo.app.deps.Deps;
 import com.ominfo.app.dialog.ViewDialog;
 import com.ominfo.app.interfaces.ServiceCallBackInterface;
+import com.ominfo.app.interfaces.SharedPrefKey;
 import com.ominfo.app.network.NetworkModule;
 import com.ominfo.app.network.ViewModelFactory;
+import com.ominfo.app.ui.contacts.AllContactsActivity;
+import com.ominfo.app.ui.login.LoginActivity;
+import com.ominfo.app.ui.notifications.NotificationsActivity;
+import com.ominfo.app.ui.purana_hisab.activity.ComplaintsActivity;
 import com.ominfo.app.util.CustomAnimationUtil;
+import com.ominfo.app.util.SharedPref;
 
 import javax.inject.Inject;
 
@@ -434,5 +440,85 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         });
         mDialog.show();
     }
+
+    public void initToolbar(int val,Context mContext,int backId,int complaintId,int NotifyId,int logoutId,int callId) {
+        AppCompatImageView imgBack = findViewById(backId);
+        AppCompatImageView imgComplaint = findViewById(complaintId);
+        AppCompatImageView imgNotify = findViewById(NotifyId);
+        AppCompatImageView imgLogout = findViewById(logoutId);
+        AppCompatImageView imgCall = findViewById(callId);
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+        imgCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showCallManagerDialog(mContext);
+            }
+        });
+        imgComplaint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (val == 1) {
+                    finish();
+                    launchScreen(mContext, ComplaintsActivity.class);
+                } else {
+                    launchScreen(mContext, ComplaintsActivity.class);
+                }
+            }
+        });
+
+        imgNotify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (val == 1) {
+                    finish();
+                    launchScreen(mContext, NotificationsActivity.class);
+                } else {
+                    launchScreen(mContext, NotificationsActivity.class);
+                }
+            }
+        });
+        try {
+            imgLogout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    finishAffinity();
+                    SharedPref.getInstance(mContext).write(SharedPrefKey.IS_LOGGED_IN, false);
+                    launchScreen(mContext, LoginActivity.class);
+                }
+            });
+        }catch (Exception e){}
+
+    }
+        //show call manager popup
+        public void showCallManagerDialog(Context mContext) {
+            Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
+            mDialog.setContentView(R.layout.dialog_call_manager);
+            AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
+            AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
+            //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
+
+            okayButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mDialog.dismiss();
+                    launchScreen(mContext, AllContactsActivity.class);
+                }
+            });
+
+            mClose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mDialog.dismiss();
+                }
+            });
+            mDialog.show();
+        }
+
+
 
 }

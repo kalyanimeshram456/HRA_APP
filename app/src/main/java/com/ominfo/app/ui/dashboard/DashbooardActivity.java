@@ -74,31 +74,25 @@ public class DashbooardActivity extends BaseActivity {
     private void init(){
         mDb =BaseApplication.getInstance(mContext).getAppDatabase();
         //requestPermission();
+        setToolbar();
         LoginResultTable loginResultTable = mDb.getDbDAO().getLoginData();
         if(loginResultTable!=null){
             //LogUtil.printToastMSG(mContext,"Welcome "+loginResultTable.getFirstName());
         }
     }
 
+    private void setToolbar(){
+        initToolbar(0,mContext,R.id.imgBack,R.id.imgReport,R.id.imgNotify,R.id.imgLogout,R.id.imgCall);
+    }
+
     //perform click actions
-    @OnClick({R.id.layKataChithi,R.id.layDriverHisab,R.id.layPuranaHisab,R.id.layEwayBill,R.id.imgCall
-    ,R.id.imgReport,R.id.tvTruckDetails,R.id.tvCleanerDetails,R.id.imgLogout})
+    @OnClick({R.id.layKataChithi,R.id.layDriverHisab,R.id.layPuranaHisab,R.id.layEwayBill
+    ,R.id.tvTruckDetails,R.id.tvCleanerDetails})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
             case R.id.layKataChithi:
                 launchScreen(mContext, KataChithiActivity.class);
-                break;
-            case R.id.imgLogout:
-                finishAffinity();
-                SharedPref.getInstance(this).write(SharedPrefKey.IS_LOGGED_IN, false);
-                launchScreen(mContext, LoginActivity.class);
-                break;
-            case R.id.imgNotify:
-                launchScreen(mContext, NotificationsActivity.class);
-                break;
-            case R.id.imgReport:
-                launchScreen(mContext, ComplaintsActivity.class);
                 break;
             case R.id.layDriverHisab:
                 showDriverHisabDialog();
@@ -108,9 +102,6 @@ public class DashbooardActivity extends BaseActivity {
                 break;
             case R.id.layEwayBill:
                 showEwayBillDialog();
-                break;
-            case R.id.imgCall:
-                showCallManagerDialog();
                 break;
             case R.id.tvTruckDetails:
                 showTruckDetailsDialog();
@@ -197,32 +188,6 @@ public class DashbooardActivity extends BaseActivity {
             public void onClick(View v) {
                 mDialog.dismiss();
                 openContactSupportEmail(mContext,"Share "+tvTitle.getText().toString(),"",tvTitle.getText().toString()+"\n"+tvTitleValue.getText().toString());
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }
-
-
-    //show call manager popup
-    public void showCallManagerDialog() {
-        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_call_manager);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                launchScreen(mContext, AllContactsActivity.class);
             }
         });
 

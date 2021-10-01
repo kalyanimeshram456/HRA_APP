@@ -118,6 +118,9 @@ public class KataChithiActivity extends BaseActivity {
     @BindView(R.id.tvDateValue)
     AppCompatTextView tvDateValue;
 
+    @BindView(R.id.toolbarTitle)
+    AppCompatTextView toolbarTitle;
+
     @BindView(R.id.rvImages)
     RecyclerView recyclerViewImages;
 
@@ -147,9 +150,16 @@ public class KataChithiActivity extends BaseActivity {
     private void init() {
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         String mDate = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.KATA_CHITTI_DATE, AppUtils.getCurrentDateTime_());
+        setToolbar();
         tvDateValue.setText(AppUtils.getconvertedKataData(mDate));
         callFetchKataChitthiApi();
         setAdapterForPuranaHisabList();
+    }
+
+    private void setToolbar(){
+        //set toolbar title
+        toolbarTitle.setText(R.string.scr_lbl_kata_chitthi_weight);
+        initToolbar(1,mContext,R.id.imgBack,R.id.imgReport,R.id.imgNotify,0,R.id.imgCall);
     }
 
     private void injectAPI() {
@@ -161,14 +171,11 @@ public class KataChithiActivity extends BaseActivity {
     }
 
     //perform click actions
-    @OnClick({R.id.imgBack, R.id.submitButton, R.id.imgCapture, R.id.tvDateValue, R.id.imgNotify
+    @OnClick({R.id.submitButton, R.id.imgCapture, R.id.tvDateValue
             /*,R.id.imgShow*/})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
-            case R.id.imgBack:
-                finish();
-                break;
            /* case R.id.imgShow:
                 showFullImageDialog();
                 break;*/
@@ -181,9 +188,6 @@ public class KataChithiActivity extends BaseActivity {
                 break;
             case R.id.tvDateValue:
                 openDataPicker(tvDateValue);
-                break;
-            case R.id.imgNotify:
-                launchScreen(mContext, NotificationsActivity.class);
                 break;
         }
     }
@@ -239,48 +243,6 @@ public class KataChithiActivity extends BaseActivity {
         mDialog.show();
     }
 
-    // Function to send the image through mail
-    public void sendPhotoToOtherApps(Uri fileUri)
-    {
-        Toast.makeText(
-                this,
-                "Now, sending the mail",
-                Toast.LENGTH_LONG)
-                .show();
-
-        Intent emailIntent
-                = new Intent(
-                android.content.Intent.ACTION_SEND);
-        emailIntent.setType("application/image");
-        emailIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // granting perm!
-        emailIntent.putExtra(
-                android.content.Intent.EXTRA_EMAIL,
-                new String[] {
-
-                        // default receiver id
-                        "enquiry@geeksforgeeks.org" });
-
-        // Subject of the mail
-        emailIntent.putExtra(
-                android.content.Intent.EXTRA_SUBJECT,
-                "New photo");
-
-        // Body of the mail
-        emailIntent.putExtra(
-                android.content.Intent.EXTRA_TEXT,
-                "Here's a captured image");
-
-        // Set the location of the image file
-        // to be added as an attachment
-        emailIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
-
-        // Start the email activity
-        // to with the prefilled information
-        startActivity(
-                Intent.createChooser(emailIntent,
-                        "Send mail..."));
-    }
-
     private static void shareToInstant(String content, File imageFile, View view) {
 
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
@@ -312,6 +274,9 @@ public class KataChithiActivity extends BaseActivity {
                 String myFormat = "dd/MM/yyyy"; //In which you need put here
                 SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
                 datePickerField.setText(sdf.format(myCalendar.getTime()));
+                driverHisabModelList.removeAll(driverHisabModelList);
+                SharedPref.getInstance(mContext).write(SharedPrefKey.KATA_CHITTI_DATE, getDate(sdf.format(myCalendar.getTime())));
+                callFetchKataChitthiApi();
             }
 
         };
@@ -404,19 +369,6 @@ public class KataChithiActivity extends BaseActivity {
         }
     }
 
-    /* Call Api For update profile *//*
-    private void callUploadImages(File file, int num) {
-        if (NetworkCheck.isInternetAvailable(LprPreviewActivity.this)) {
-            RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-            MultipartBody.Part files = MultipartBody.Part.createFormData("files", file != null ? file.getName() : "", requestFile);
-            String[] mDropdownList = new String[]{mCitationNumberId + "_" + num};
-            RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), "CitationImages");
-            mUploadImageViewModel.hitUploadImagesApi(mDropdownList, mRequestBodyType, files);
-        } else {
-            //LogUtil.printToastMSG(LprPreviewActivity.this, getString(R.string.err_msg_connection_was_refused));
-        }
-    }
-*/
     /* Call Api to save kata chitthi */
     private void callSaveKataChitthiApi() {
         if (NetworkCheck.isInternetAvailable(KataChithiActivity.this)) {
@@ -442,13 +394,6 @@ public class KataChithiActivity extends BaseActivity {
                     String bodyInStringFormat = gson.toJson(mLoginRequest);
                     RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), "saveKantaChitthi");
                     RequestBody mRequestBodyTypeImage = RequestBody.create(MediaType.parse("text/plain"), bodyInStringFormat);
-                    SharedPref.getInstance(this).write(SharedPrefKey.KATA_CHITTI_DATE, getDate(tvDateValue.getText().toString()));
-
-               /* RequestBody requestBody = new MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        .addFormDataPart("action", "saveHisaab")
-                        .addFormDataPart("jsonreq", bodyInStringFormat)
-                        .build();*/
                     LogUtil.printLog("request save", bodyInStringFormat);
                     mSaveKataChitthiViewModel.hitSaveKataChitthi(mRequestBodyType, mRequestBodyTypeImage);
                 }
@@ -486,10 +431,6 @@ public class KataChithiActivity extends BaseActivity {
             });
 
             recyclerViewImages.setHasFixedSize(true);
-            //Grid layout, 2 columns
-            //RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(mContext,3,LinearLayoutManager.VERTICAL,false);
-            //recyclerViewImages.setLayoutManager(mLayoutManager);
-            //recyclerViewImages.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
             recyclerViewImages.setLayoutManager(new GridLayoutManager(mContext, 4));
             recyclerViewImages.setItemAnimator(new DefaultItemAnimator());
             recyclerViewImages.setAdapter(mImagesAdapter);
@@ -513,14 +454,6 @@ public class KataChithiActivity extends BaseActivity {
 
                     Bitmap mImgaeBitmap = null;
                     try {
-                       /* mImgaeBitmap = new Compressor(this)
-                                //.setMaxWidth(640)
-                                //.setMaxHeight(480)
-                                .setQuality(10)
-                                .setCompressFormat(Bitmap.CompressFormat.WEBP)
-                                .compressToBitmap(file);*/
-                        //passing bitmap for converting it to base64
-                        //mImageViewNumberPlate.setImageBitmap(mImgaeBitmap);mImgaeBitmap =  new Compressor(this).compressToBitmap(file);
                         BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inJustDecodeBounds = true;
                         BitmapFactory.decodeFile(file.getAbsolutePath(), options);
@@ -570,38 +503,6 @@ public class KataChithiActivity extends BaseActivity {
         }*/
     }
 
-    private void saveImage(Bitmap bitmap, @NonNull String name) throws IOException {
-        boolean saved;
-        OutputStream fos;
-        File dir = new File( Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "Camera");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            ContentResolver resolver = mContext.getContentResolver();
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
-            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
-            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, "DCIM/" + "Camera");
-            Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
-            fos = resolver.openOutputStream(imageUri);
-        } else {
-            String imagesDir = Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_PICTURES).toString() + File.separator+ "Camera";
-
-            File file = new File(imagesDir);
-
-            if (!file.exists()) {
-                file.mkdir();
-            }
-
-            File image = new File(imagesDir, name + ".jpg");
-            fos = new FileOutputStream(image);
-
-        }
-
-        saved = bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-        fos.flush();
-        fos.close();
-    }
     //TODO will add comments later
     private void SaveImageMM(Bitmap finalBitmap) {
         File myDir = new File(Environment.getExternalStoragePublicDirectory(
@@ -669,34 +570,38 @@ public class KataChithiActivity extends BaseActivity {
                 dismissLoader();
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
-                    if (tag.equalsIgnoreCase("fetch")) {
-                        FetchKataChitthiResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), FetchKataChitthiResponse.class);
-                        if (responseModel != null /*&& responseModel.getStatus().equals("1")*/) {
-                            //LogUtil.printToastMSG(KataChithiActivity.this, responseModel.getMessage());
-                            if (responseModel.getResult() != null) {
-                                for (int i = 0; i < responseModel.getResult().size(); i++) {
-                                    driverHisabModelList.add(new DriverHisabModel(responseModel.getResult().get(i).getUrlPrefix() + responseModel.getResult().get(i).getUrls(), "0", null));
+                    try {
+                        if (tag.equalsIgnoreCase("fetch")) {
+                            FetchKataChitthiResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), FetchKataChitthiResponse.class);
+                            if (responseModel != null /*&& responseModel.getStatus().equals("1")*/) {
+                                //LogUtil.printToastMSG(KataChithiActivity.this, responseModel.getMessage());
+                                if (responseModel.getResult() != null) {
+                                    for (int i = 0; i < responseModel.getResult().size(); i++) {
+                                        driverHisabModelList.add(new DriverHisabModel(responseModel.getResult().get(i).getUrlPrefix() + responseModel.getResult().get(i).getUrls(), "0", null));
+                                    }
                                 }
+                                setAdapterForPuranaHisabList();
+                            } else {
+                                LogUtil.printToastMSG(KataChithiActivity.this, responseModel.getMessage());
                             }
-                            setAdapterForPuranaHisabList();
-                        } else {
-                            LogUtil.printToastMSG(KataChithiActivity.this, responseModel.getMessage());
                         }
-                    }
-                    if (tag.equalsIgnoreCase("save")) {
-                        SaveKataChitthiResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SaveKataChitthiResponse.class);
-                        if (responseModel != null && responseModel.getStatus().equals("1")) {
-                            //LogUtil.printToastMSG(KataChithiActivity.this, responseModel.getMessage());
-                            showSuccessDialog(getString(R.string.msg_weight_submitted));
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    finish();
-                                }
-                            }, 900);
-                        } else {
-                            LogUtil.printToastMSG(KataChithiActivity.this, responseModel.getMessage());
+                        if (tag.equalsIgnoreCase("save")) {
+                            SaveKataChitthiResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SaveKataChitthiResponse.class);
+                            if (responseModel != null && responseModel.getStatus().equals("1")) {
+                                //LogUtil.printToastMSG(KataChithiActivity.this, responseModel.getMessage());
+                                showSuccessDialog(getString(R.string.msg_weight_submitted));
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        finish();
+                                    }
+                                }, 900);
+                            } else {
+                                LogUtil.printToastMSG(KataChithiActivity.this, responseModel.getMessage());
+                            }
                         }
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
                 }
                 break;

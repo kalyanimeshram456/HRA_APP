@@ -47,8 +47,14 @@ public class NotificationsActivity extends BaseActivity {
 
     private void init(){
         //set toolbar
-        toolbarTitle.setText(R.string.scr_title_notifications);
+        setToolbar();
         setAdapterForPuranaHisabList();
+    }
+
+    private void setToolbar(){
+        //set toolbar title
+        toolbarTitle.setText(R.string.scr_title_notifications);
+        initToolbar(1,mContext,R.id.imgBack,R.id.imgReport,R.id.imgNotify,0,R.id.imgCall);
     }
 
     private void setAdapterForPuranaHisabList() {
@@ -76,16 +82,11 @@ public class NotificationsActivity extends BaseActivity {
     }
 
     //perform click actions
-    @OnClick({R.id.imgBack,R.id.imgNotify})
+    @OnClick({/*R.id.imgBack,R.id.imgNotify*/})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
-            case R.id.imgBack:
-                finish();
-                break;
-            case R.id.imgNotify:
-                launchScreen(mContext, NotificationsActivity.class);
-                break;
+
         }
     }
 }

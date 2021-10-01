@@ -51,8 +51,8 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgBuilding"
-            android:layout_width="@dimen/_20dp"
-            android:layout_height="@dimen/_20dp"
+            android:layout_width="@dimen/_16dp"
+            android:layout_height="@dimen/_16dp"
             android:layout_centerVertical="true"
             android:src="@drawable/ic_branch" />
 
@@ -84,18 +84,18 @@ Dogri,NR Bhatt Bazar,India"
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgUser"
-            android:layout_width="@dimen/_20dp"
-            android:layout_height="@dimen/_20dp"
+            android:layout_width="@dimen/_16dp"
+            android:layout_height="@dimen/_16dp"
             android:layout_centerVertical="true"
             android:src="@drawable/ic_user" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_gravity="left|center"
             android:layout_marginLeft="@dimen/_8dp"
             android:layout_toRightOf="@+id/imgUser"
-            android:layout_centerVertical="true"
             android:fontFamily="@font/gilroy_semibold"
             android:gravity="left|center"
             android:text="Umesh"
@@ -106,18 +106,18 @@ Dogri,NR Bhatt Bazar,India"
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/layCall1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:layout_marginTop="@dimen/_10dp"
-        android:layout_marginBottom="@dimen/_24dp"
         android:layout_marginHorizontal="@dimen/_12dp"
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/imgCall"
-            android:layout_width="@dimen/_20dp"
-            android:layout_height="@dimen/_20dp"
+            android:id="@+id/imgCall1"
+            android:layout_width="@dimen/_16dp"
+            android:layout_height="@dimen/_16dp"
             android:layout_centerVertical="true"
             android:src="@drawable/ic_call_grey" />
 
@@ -127,10 +127,43 @@ Dogri,NR Bhatt Bazar,India"
             android:layout_centerVertical="true"
             android:layout_gravity="left|center"
             android:layout_marginLeft="@dimen/_8dp"
-            android:layout_toRightOf="@+id/imgCall"
+            android:layout_toRightOf="@+id/imgCall1"
             android:fontFamily="@font/gilroy_semibold"
             android:gravity="left|center"
-            android:text="9988776889, 9856743456"
+            android:text="9988776889"
+            android:textColor="@color/back_text_colour"
+            android:textSize="@dimen/_14sp" />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layCall2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:layout_marginTop="@dimen/_10dp"
+        android:layout_marginBottom="@dimen/_24dp"
+        android:layout_marginHorizontal="@dimen/_12dp"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgCall2"
+            android:layout_width="@dimen/_16dp"
+            android:layout_height="@dimen/_16dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_call_grey" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="left|center"
+            android:layout_marginLeft="@dimen/_8dp"
+            android:layout_toRightOf="@+id/imgCall2"
+            android:fontFamily="@font/gilroy_semibold"
+            android:gravity="left|center"
+            android:text="9856743456"
             android:textColor="@color/back_text_colour"
             android:textSize="@dimen/_14sp" />
 
@@ -139,7 +172,7 @@ Dogri,NR Bhatt Bazar,India"
 
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/detailsButton"
+        android:id="@+id/MapsButton"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_40dp"
         android:layout_weight="1"
@@ -149,7 +182,7 @@ Dogri,NR Bhatt Bazar,India"
         android:fontFamily="@font/gilroy_semibold"
         android:gravity="center"
         android:paddingTop="@dimen/_2dp"
-        android:text="@string/scr_lbl_call"
+        android:text="@string/scr_lbl_find_in_maps"
         android:textColor="@color/white"
         android:textSize="@dimen/_14sp" />
 
