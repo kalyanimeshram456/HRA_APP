@@ -1,29 +1,20 @@
 package com.ominfo.app.ui.kata_chithi;
 
-import static com.ominfo.app.interfaces.Constants.CAMERA;
-
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -31,21 +22,17 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.ominfo.app.BuildConfig;
 import com.ominfo.app.R;
@@ -58,23 +45,16 @@ import com.ominfo.app.interfaces.SharedPrefKey;
 import com.ominfo.app.network.ApiResponse;
 import com.ominfo.app.network.NetworkCheck;
 import com.ominfo.app.network.ViewModelFactory;
-import com.ominfo.app.ui.dashboard.DashbooardActivity;
 import com.ominfo.app.ui.driver_hisab.model.DriverHisabModel;
 import com.ominfo.app.ui.kata_chithi.adapter.ImagesAdapter;
 import com.ominfo.app.ui.kata_chithi.model.FetchKataChitthiRequest;
 import com.ominfo.app.ui.kata_chithi.model.FetchKataChitthiResponse;
 import com.ominfo.app.ui.kata_chithi.model.FetchKataChitthiViewModel;
+import com.ominfo.app.ui.kata_chithi.model.KataChitthiImageModel;
 import com.ominfo.app.ui.kata_chithi.model.SaveKataChitthiRequest;
 import com.ominfo.app.ui.kata_chithi.model.SaveKataChitthiResponse;
 import com.ominfo.app.ui.kata_chithi.model.SaveKataChitthiViewModel;
-import com.ominfo.app.ui.login.LoginActivity;
-import com.ominfo.app.ui.login.model.LoginRequest;
-import com.ominfo.app.ui.login.model.LoginResponse;
 import com.ominfo.app.ui.login.model.LoginResultTable;
-import com.ominfo.app.ui.login.model.LoginViewModel;
-import com.ominfo.app.ui.notifications.NotificationsActivity;
-import com.ominfo.app.ui.purana_hisab.activity.HisabDetailsActivity;
-import com.ominfo.app.ui.purana_hisab.adapter.PuranaHisabAdapter;
 import com.ominfo.app.util.AppUtils;
 import com.ominfo.app.util.LogUtil;
 import com.ominfo.app.util.SharedPref;
@@ -82,11 +62,8 @@ import com.ominfo.app.util.Util;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -98,7 +75,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 public class KataChithiActivity extends BaseActivity {
@@ -113,7 +89,7 @@ public class KataChithiActivity extends BaseActivity {
     private AppDatabase mDb;
 
     ImagesAdapter mImagesAdapter;
-    List<DriverHisabModel> driverHisabModelList = new ArrayList<>();
+    List<KataChitthiImageModel> kataChitthiImageList = new ArrayList<>();
 
     @BindView(R.id.tvDateValue)
     AppCompatTextView tvDateValue;
@@ -193,7 +169,7 @@ public class KataChithiActivity extends BaseActivity {
     }
 
     //show truck details popup
-    public void showFullImageDialog(DriverHisabModel model,Bitmap imgUrl) {
+    public void showFullImageDialog(KataChitthiImageModel model,Bitmap imgUrl) {
         Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
         mDialog.setContentView(R.layout.dialog_doc_full_view);
         AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
@@ -202,8 +178,8 @@ public class KataChithiActivity extends BaseActivity {
         AppCompatImageView imgShare = mDialog.findViewById(R.id.imgShare);
 
         //imgShow.setImageBitmap(img);
-        if (model.getDriverHisabValue().equals("1")) {
-            File imgFile = new File(model.getDriverHisabTitle());
+        if (model.getImageType()==1) {
+            File imgFile = new File(model.getImagePath());
             imgShow.setImageURI(Uri.fromFile(imgFile));
             imgShare.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -220,7 +196,7 @@ public class KataChithiActivity extends BaseActivity {
                 @Override
                 public void onClick(View view) {
                     try {
-                        openContactSupportEmail(mContext,"Share Image","",model.getDriverHisabTitle());
+                        openContactSupportEmail(mContext,"Share Image","",model.getImagePath());
                     }catch (Exception e){}
                 }
             });
@@ -274,7 +250,7 @@ public class KataChithiActivity extends BaseActivity {
                 String myFormat = "dd/MM/yyyy"; //In which you need put here
                 SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
                 datePickerField.setText(sdf.format(myCalendar.getTime()));
-                driverHisabModelList.removeAll(driverHisabModelList);
+                kataChitthiImageList.removeAll(kataChitthiImageList);
                 SharedPref.getInstance(mContext).write(SharedPrefKey.KATA_CHITTI_DATE, getDate(sdf.format(myCalendar.getTime())));
                 callFetchKataChitthiApi();
             }
@@ -374,9 +350,9 @@ public class KataChithiActivity extends BaseActivity {
         if (NetworkCheck.isInternetAvailable(KataChithiActivity.this)) {
             LoginResultTable loginResultTable = mDb.getDbDAO().getLoginData();
             List<String> mImageList = new ArrayList<>();
-            for (int i = 0; i < driverHisabModelList.size(); i++) {
-                if (driverHisabModelList.get(i).getDriverHisabValue().equals("1")) {
-                    String mBase64 = AppUtils.getBase64images(driverHisabModelList.get(i).getDriverHisabTitle());
+            for (int i = 0; i < kataChitthiImageList.size(); i++) {
+                if (kataChitthiImageList.get(i).getImageType()==1) {
+                    String mBase64 = AppUtils.getBase64images(kataChitthiImageList.get(i).getImagePath());
                     mImageList.add("data:image/png;base64," + mBase64);
                 }
             }
@@ -418,10 +394,10 @@ public class KataChithiActivity extends BaseActivity {
     }
 
     private void setAdapterForPuranaHisabList() {
-        if (driverHisabModelList.size() > 0) {
-            mImagesAdapter = new ImagesAdapter(mContext, driverHisabModelList, new ImagesAdapter.ListItemSelectListener() {
+        if (kataChitthiImageList.size() > 0) {
+            mImagesAdapter = new ImagesAdapter(mContext, kataChitthiImageList, new ImagesAdapter.ListItemSelectListener() {
                 @Override
-                public void onItemClick(DriverHisabModel mDataTicket, Bitmap bitmap) {
+                public void onItemClick(KataChitthiImageModel mDataTicket, Bitmap bitmap) {
                     try {
                         showFullImageDialog(mDataTicket, bitmap);
                     }catch (Exception e){
@@ -526,7 +502,7 @@ public class KataChithiActivity extends BaseActivity {
             int id = 0;
             String pathDb = file.getPath();
             //set image list adapter
-            driverHisabModelList.add(new DriverHisabModel(pathDb, "1", null));
+            kataChitthiImageList.add(new KataChitthiImageModel(pathDb, 1, null));
             setAdapterForPuranaHisabList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -577,7 +553,7 @@ public class KataChithiActivity extends BaseActivity {
                                 //LogUtil.printToastMSG(KataChithiActivity.this, responseModel.getMessage());
                                 if (responseModel.getResult() != null) {
                                     for (int i = 0; i < responseModel.getResult().size(); i++) {
-                                        driverHisabModelList.add(new DriverHisabModel(responseModel.getResult().get(i).getUrlPrefix() + responseModel.getResult().get(i).getUrls(), "0", null));
+                                        kataChitthiImageList.add(new KataChitthiImageModel(responseModel.getResult().get(i).getUrlPrefix() + responseModel.getResult().get(i).getUrls(), 0, null));
                                     }
                                 }
                                 setAdapterForPuranaHisabList();
@@ -590,6 +566,7 @@ public class KataChithiActivity extends BaseActivity {
                             if (responseModel != null && responseModel.getStatus().equals("1")) {
                                 //LogUtil.printToastMSG(KataChithiActivity.this, responseModel.getMessage());
                                 showSuccessDialog(getString(R.string.msg_weight_submitted));
+                                deleteImagesFolder();
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
@@ -610,6 +587,12 @@ public class KataChithiActivity extends BaseActivity {
                 LogUtil.printToastMSG(KataChithiActivity.this, getString(R.string.err_msg_connection_was_refused));
                 break;
         }
+    }
+
+    private void deleteImagesFolder(){
+        File myDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), Constants.FILE_NAME);
+        if (myDir.exists()){ myDir.delete();}
     }
 
 

@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.app.R;
 import com.ominfo.app.ui.driver_hisab.model.DriverHisabModel;
+import com.ominfo.app.ui.kata_chithi.model.KataChitthiImageModel;
 import com.ominfo.app.util.AppUtils;
 import com.ominfo.app.util.LogUtil;
 
@@ -29,7 +30,7 @@ import butterknife.BindView;
 
 public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<DriverHisabModel> mListData;
+    private List<KataChitthiImageModel> mListData;
     private Context mContext;
     private String mDate;
 
@@ -37,7 +38,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ViewHolder
         this.mContext = mContext;
     }
 
-    public ImagesAdapter(Context context, List<DriverHisabModel> listData, ListItemSelectListener itemClickListener) {
+    public ImagesAdapter(Context context, List<KataChitthiImageModel> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -52,7 +53,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ViewHolder
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<DriverHisabModel> list){
+    public void updateList(List<KataChitthiImageModel> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -61,12 +62,12 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         if (mListData != null) {
-            File imgFile = new File(mListData.get(position).getDriverHisabTitle());
-            if(mListData.get(position).getDriverHisabValue().equals("1")) {
+            File imgFile = new File(mListData.get(position).getImagePath());
+            if(mListData.get(position).getImageType()==1) {
                 holder.mProgressBar.setVisibility(View.GONE);
                 holder.imgShow.setImageURI(Uri.fromFile(imgFile));
             }else {
-                AppUtils.loadImage(mContext, mListData.get(position).getDriverHisabTitle(), holder.imgShow, holder.mProgressBar);
+                AppUtils.loadImage(mContext, mListData.get(position).getImagePath(), holder.imgShow, holder.mProgressBar);
             }
         }
 
@@ -105,6 +106,6 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ViewHolder
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(DriverHisabModel mData,Bitmap bitmap);
+        void onItemClick(KataChitthiImageModel mData,Bitmap bitmap);
     }
 }
