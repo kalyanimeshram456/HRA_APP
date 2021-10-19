@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.appcompat.widget.AppCompatTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:ellipsize="start"
+    android:maxLines="3"
+    android:paddingVertical="16dp"
+    android:paddingHorizontal="@dimen/_6dp"
+    android:textSize="@dimen/_12sp"
+    android:textColor="@color/back_text_colour"
+    android:textColorHint="@color/light_grey_30"
+    android:textAppearance="?attr/textAppearanceListItemSmall" />
+

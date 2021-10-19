@@ -60,9 +60,9 @@
                 android:id="@+id/tvGadiNoColon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tvGadiNo"
                 android:fontFamily="@font/font_regular"
                 android:text=" : "
-                android:layout_toRightOf="@+id/tvGadiNo"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 

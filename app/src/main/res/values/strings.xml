@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Om Turanth</string>
+    <string name="app_name">Turanth Suvidha</string>
     <string name="scr_lbl_please_enter_your_username_and_password">Please enter your \nUsername and password</string>
     <string name="scr_lbl_username">Username</string>
     <string name="scr_lbl_password">Password</string>
@@ -7,9 +7,10 @@
     <string name="scr_lbl_cleaner_details"><u>Cleaner Details</u></string>
     <string name="scr_lbl_cleaner_batta">क्लीनर भत्ता</string>
     <string name="scr_lbl_cleaner_bhatta">ड्राइवर भत्ता ( टोटल दिन : 03 )</string>
-    <string name="scr_lbl_cleaner_bhatta_new">ड्राइवर भत्ता</string>
+    <string name="scr_lbl_cleaner_bhatta_new">ड्राइवर भत्ता ( टोटल दिन : 03 )</string>
     <string name="scr_lbl_trip_kharcha">ट्रिप खर्चा</string>
     <string name="scr_lbl_okay">OKAY</string>
+    <string name="scr_lbl_not_okay">NOT OKAY</string>
     <string name="err_msg_connection_was_refused">Please check your internet connection or try again later</string>
     <string name="scr_lbl_add_kharcha">खर्चा ऐड करे</string>
     <string name="scr_lbl_total_hisab">टोटल हिसाब</string>
@@ -28,9 +29,9 @@
     <string name="scr_lbl_trip">ट्रिप</string>
     <string name="scr_lbl_pass_hisab">Pass Hisab</string>
     <string name="scr_title_purana_hisab">पुराना हिसाब</string>
-    <string name="scr_lbl_cleaner_name">क्लीनर नाम :</string>
+    <string name="scr_lbl_cleaner_name">क्लीनर : </string>
     <string name="scr_lbl_aur_janiye">और जानिए</string>
-    <string name="scr_lbl_complaint">COMPLAINT</string>
+    <string name="scr_lbl_complaint">COMPLAIN</string>
     <string name="scr_lbl_check_issue">Check Issue</string>
     <string name="scr_lbl_toll_kharcha">टोल खर्चा</string>
     <string name="scr_lbl_submit">SUBMIT</string>
@@ -70,6 +71,24 @@
     <string name="msg_weight_submitted">Weight Submitted Successfully!</string>
     <string name="scr_lbl_find_in_maps">Find In Maps</string>
     <string name="scr_lbl_kata_chitthi_weight">कांटा चिट्ठी वजन</string>
-
+    <string name="scr_lbl_unresolved">Unresolved</string>
+    <string name="scr_lbl_stop_recording">Recording Completed</string>
+    <string name="scr_lbl_advance_assign">Advance Assigned</string>
+    <string name="scr_lbl_enter_lp_no">Enter your LR number</string>
+    <string name="scr_lbl_add_lr">Add LR</string>
+    <string name="scr_lbl_search_all">List LRs</string>
+    <string name="scr_lbl_selected_lr_number">List all LRs</string>
+    <string name="scr_lbl_lr_date">LR Date</string>
+    <string name="scr_lbl_vehicle_no">Vehicle No.</string>
+    <string name="scr_lbl_plant">Plant</string>
+    <string name="scr_lbl_no_of_lr">No Of LR</string>
+    <string name="scr_lbl_add_new_lr">Add New LR</string>
+    <string name="scr_lbl_lr_no">LR No.</string>
+    <string name="scr_lbl_lr_details">LR Details</string>
+    <string name="scr_lbl_data_loading">Please wait, data is loading.....</string>
+    <string name="scr_lbl_lr_data_loading">Please wait, Lr data is loading.....</string>
+    <string name="scr_lbl_no_data_available">No Data Available.</string>
+    <string name="msg_no_such_lr">No such LR found!</string>
+    <string name="scr_lbl_no_pending">No Pending Record</string>
 
 </resources>

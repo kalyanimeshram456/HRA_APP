@@ -49,8 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center"
-                android:weightSum="2"
+                android:gravity="left"
                 android:paddingTop="@dimen/_10dp"
                 >
 
@@ -58,16 +57,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_weight="1"
+               android:layout_gravity="left"
+                android:gravity="left"
                 >
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgBack"
-                    android:layout_width="@dimen/_22dp"
-                    android:layout_height="@dimen/_22dp"
+                    android:layout_width="@dimen/_40dp"
+                    android:layout_height="@dimen/_40dp"
                     android:layout_gravity="left|center"
                     android:gravity="left"
                     android:onClick="onClick"
+                    android:paddingRight="@dimen/_10dp"
+                    android:paddingVertical="@dimen/_10dp"
                     android:clickable="true"
                     android:src="@drawable/ic_back" />
 
@@ -76,13 +78,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginLeft="@dimen/_20dp"
+                    android:layout_marginLeft="@dimen/_10dp"
                     android:fontFamily="@font/gilroy_semibold"
                     android:gravity="center_vertical"
                     android:paddingTop="@dimen/_0dp"
                     android:text="ड्राइवर हिसाब"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_23sp" />
+                    android:textSize="@dimen/_22sp" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -90,7 +92,7 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+
                     android:gravity="right"
                     android:layout_marginRight="@dimen/_16dp"
                     >
@@ -99,10 +101,11 @@
                         android:id="@+id/imgCall"
                         android:layout_width="@dimen/_20dp"
                         android:layout_height="@dimen/_20dp"
+                        android:layout_marginHorizontal="@dimen/_20dp"
                         android:clickable="true"
                         android:onClick="onClick"
                         android:src="@drawable/ic_phone"
-                        android:visibility="visible" />
+                        android:visibility="invisible" />
 
 
                     <androidx.appcompat.widget.AppCompatImageView
@@ -114,7 +117,7 @@
                         android:clickable="true"
                         android:onClick="onClick"
                         android:src="@drawable/ic_complaint"
-                        android:visibility="visible" />
+                        android:visibility="gone" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvComplaintCount"
@@ -122,9 +125,10 @@
                         android:layout_height="@dimen/_15dp"
                         android:layout_marginLeft="@dimen/_32dp"
                         android:layout_toRightOf="@+id/imgCall"
-                        android:background="@drawable/layout_round_shape_corners_15_light_blue"
+                        android:background="@drawable/layout_round_shape_corners_15_light_yellow"
                         android:fontFamily="@font/gilroy_semibold"
                         android:text="6"
+                        android:visibility="gone"
                         android:textAlignment="center"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_12sp" />
@@ -133,10 +137,11 @@
                         android:id="@+id/imgNotify"
                         android:layout_width="@dimen/_20dp"
                         android:layout_height="@dimen/_20dp"
+                        android:layout_marginRight="@dimen/_0dp"
                         android:layout_toRightOf="@+id/imgReport"
                         android:clickable="true"
                         android:onClick="onClick"
-                        android:layout_marginRight="@dimen/_0dp"
+                        android:visibility="invisible"
                         android:src="@drawable/ic_bell" />
 
 
@@ -144,12 +149,13 @@
                         android:id="@+id/tvNotifyCount"
                         android:layout_width="@dimen/_15dp"
                         android:layout_height="@dimen/_15dp"
+                        android:layout_marginLeft="@dimen/_12dp"
+                        android:layout_toRightOf="@+id/imgReport"
+                        android:background="@drawable/layout_round_shape_corners_15_light_blue"
                         android:fontFamily="@font/gilroy_semibold"
                         android:text="6"
-                        android:layout_toRightOf="@+id/imgReport"
-                        android:layout_marginLeft="@dimen/_12dp"
+                        android:visibility="invisible"
                         android:textAlignment="center"
-                        android:background="@drawable/layout_round_shape_corners_15_light_blue"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_12sp" />
 
@@ -175,7 +181,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:layout_marginLeft="@dimen/_16dp"
             android:visibility="gone"
             android:layout_marginTop="@dimen/_100dp"
             android:fontFamily="@font/poppins_regular"

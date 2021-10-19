@@ -3,7 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_below="@+id/toolbar_layout"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:background="@drawable/bg_dashboard_actual"
     android:orientation="vertical">
 
@@ -46,11 +49,12 @@
                     android:layout_gravity="left"
                     android:layout_marginBottom="@dimen/_10dp"
                     android:fontFamily="@font/gilroy_semibold"
-                    android:text="Ram Singh !"
+                    android:text="Staff !"
                     android:textColor="@color/white"
                     android:textSize="23sp" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/layTrucking"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_35dp"
@@ -65,153 +69,72 @@
                         android:src="@drawable/ic_trucking_small" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
-                <androidx.cardview.widget.CardView
-                    android:layout_below="@+id/tvDriverName"
+
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/cardOne"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_70dp"
-                    android:layout_marginBottom="@dimen/_3dp"
-                    android:layout_weight="1"
-                    android:clipChildren="false"
-                    android:clipToPadding="false"
-                    android:layout_marginTop="@dimen/_15dp"
-                    android:elevation="@dimen/_12dp"
-                    app:cardCornerRadius="@dimen/_15dp"
-                    app:cardElevation="@dimen/_3dp">
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/layTrucking"
+                    android:layout_gravity="right|center"
+                    android:layout_marginTop="@dimen/_2dp"
+                    android:background="@color/color_blue_90"
+                    android:gravity="top|center"
+                    android:orientation="horizontal">
 
-                    <androidx.appcompat.widget.LinearLayoutCompat
+                    <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/_70dp"
-                        android:background="@color/color_blue_90"
-                        android:orientation="vertical"
-                        android:layout_gravity="right|center"
-                        android:gravity="right|center"
-                        android:paddingVertical="@dimen/_10dp"
-                        android:paddingHorizontal="@dimen/_10dp">
+                        android:layout_height="@dimen/_45dp"
+                        android:layout_marginRight="6dp"
+                        android:layout_weight="5"
+                        android:visibility="gone"
+                        android:background="@drawable/layout_round_shape_corners_8"
+                        android:padding="@dimen/_14dp"
+                        android:src="@drawable/ic_indian_rupee" />
 
-                        <androidx.appcompat.widget.LinearLayoutCompat
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="@dimen/_0dp"
+                        android:layout_weight="1"
+                        android:layout_height="@dimen/_45dp"
+                        android:paddingHorizontal="@dimen/_16dp"
+                        android:imeOptions="actionDone"
+                        android:background="@drawable/layout_round_shape_corners_8"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/tvSearchView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:weightSum="2"
-                            android:orientation="horizontal">
+                            android:layout_centerVertical="true"
+                            android:backgroundTint="@android:color/transparent"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:hint="@string/scr_lbl_enter_lp_no"
+                            android:inputType="text"
+                            android:imeOptions="actionDone"
+                            android:textColor="@color/back_text_colour"
+                            android:textColorHint="@color/light_grey"
+                            android:textSize="@dimen/_16sp" />
 
-                            <RelativeLayout
-                                android:layout_weight="1"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                >
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/imgSearchLr"
+                            android:layout_width="@dimen/_22dp"
+                            android:layout_height="@dimen/_22dp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentRight="true"
+                            android:src="@drawable/ic_search_lr"
+                            />
 
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/tvStart"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="@font/font_regular"
-                                    android:text="गाड़ी नं.   :   "
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/_13sp" />
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/tvStarting"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_alignParentEnd="true"
-                                    android:layout_toRightOf="@+id/tvStart"
-                                    android:fontFamily="@font/font_semibold"
-                                    android:gravity="left"
-                                    android:text="MH 04 CV 1234"
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/_13sp" />
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:layout_weight="1"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                >
-
-                            <RelativeLayout
-                                android:layout_alignParentEnd="true"
-                                android:layout_width="match_parent"
-                                android:gravity="right"
-                                android:layout_height="wrap_content"
-                                >
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/tvEnd"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="@font/font_regular"
-                                    android:text="क्लीनर   :   "
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/_13sp" />
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/tvEnding"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_toRightOf="@+id/tvEnd"
-                                    android:fontFamily="@font/font_semibold"
-                                    android:gravity="start"
-                                    android:text="Ravi Sharma"
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/_13sp" />
-                            </RelativeLayout>
-                            </RelativeLayout>
-
-                        </androidx.appcompat.widget.LinearLayoutCompat>
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/tvTest"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/font_regular"
-                                android:text="गाड़ी नं.  ."
-                                android:visibility="invisible"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/_13sp" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/tvTruckDetails"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_toRightOf="@+id/tvTest"
-                                android:layout_weight="1"
-                                android:fontFamily="@font/font_semibold"
-                                android:gravity="right"
-                                android:text="@string/scr_lbl_truck_details"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/_13sp" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/tvCleanerDetails"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_weight="1"
-                                android:fontFamily="@font/font_semibold"
-                                android:gravity="right"
-                                android:text="@string/scr_lbl_cleaner_details"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/_13sp" />
-                        </RelativeLayout>
-
-                    </androidx.appcompat.widget.LinearLayoutCompat>
+                    </RelativeLayout>
 
 
-
-                </androidx.cardview.widget.CardView>
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/layCardOne"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/cardOne"
-                    android:layout_marginTop="@dimen/_12dp"
+                    android:layout_marginTop="@dimen/_16dp"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
@@ -231,7 +154,7 @@
                         >
 
                         <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/layKataChithi"
+                            android:id="@+id/layAddLr"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:background="@color/white"
@@ -245,19 +168,20 @@
                                 android:layout_centerVertical="true"
                                 android:layout_gravity="center"
                                 android:layout_weight="1"
-                                android:src="@drawable/ic_kata_chitti"
-                                 />
+                                android:src="@drawable/ic_add"
+                                />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
+                                android:textAlignment="center"
                                 android:layout_marginTop="@dimen/_6dp"
                                 android:fontFamily="@font/gilroy_semibold"
-                                android:text="कांटा चिट्ठी"
+                                android:text="@string/scr_lbl_add_lr"
                                 android:textColor="@color/back_text_colour"
                                 android:textSize="@dimen/_14sp"
-                                 />
+                                />
 
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -278,7 +202,7 @@
                         >
 
                         <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/layDriverHisab"
+                            android:id="@+id/layViewAll"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:background="@color/white"
@@ -292,7 +216,7 @@
                                 android:layout_centerVertical="true"
                                 android:layout_gravity="center"
                                 android:layout_weight="1"
-                                android:src="@drawable/ic_driver_hisab" />
+                                android:src="@drawable/ic_search" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:layout_width="wrap_content"
@@ -300,7 +224,7 @@
                                 android:layout_gravity="center"
                                 android:layout_marginTop="@dimen/_6dp"
                                 android:fontFamily="@font/gilroy_semibold"
-                                android:text="ड्राइवर हिसाब"
+                                android:text="@string/scr_lbl_search_all"
                                 android:textColor="@color/back_text_colour"
                                 android:textSize="@dimen/_14sp" />
 
@@ -310,111 +234,6 @@
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/layCardOne"
-                    android:layout_marginTop="@dimen/_12dp"
-                    android:orientation="horizontal"
-                    android:weightSum="2">
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_3dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginBottom="@dimen/_3dp"
-                        android:layout_weight="1"
-                        android:clipChildren="false"
-                        android:clipToPadding="false"
-                        android:elevation="@dimen/_12dp"
-                        app:cardCornerRadius="@dimen/_15dp"
-                        app:cardElevation="@dimen/_3dp"
-                        >
-
-                        <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/layPuranaHisab"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@color/white"
-                            android:orientation="vertical"
-                            android:paddingVertical="@dimen/_50dp"
-                            >
-
-                            <androidx.appcompat.widget.AppCompatImageView
-                                android:layout_width="@dimen/_50dp"
-                                android:layout_height="@dimen/_50dp"
-                                android:layout_centerVertical="true"
-                                android:layout_gravity="center"
-                                android:layout_weight="1"
-                                android:src="@drawable/ic_purana_hisab"
-                                />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_marginTop="@dimen/_6dp"
-                                android:fontFamily="@font/gilroy_semibold"
-                                android:text="पुराना हिसाब"
-                                android:textColor="@color/back_text_colour"
-                                android:textSize="@dimen/_14sp"
-                                 />
-
-
-                        </androidx.appcompat.widget.LinearLayoutCompat>
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="@dimen/_3dp"
-                        android:layout_marginBottom="@dimen/_3dp"
-                        android:layout_weight="1"
-                        android:clipChildren="false"
-                        android:clipToPadding="false"
-                        android:elevation="@dimen/_12dp"
-                        app:cardCornerRadius="@dimen/_15dp"
-                        app:cardElevation="@dimen/_3dp"
-                       >
-
-                        <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/layEwayBill"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@color/white"
-                            android:orientation="vertical"
-                            android:paddingVertical="@dimen/_42dp"
-                            >
-
-                            <androidx.appcompat.widget.AppCompatImageView
-                                android:layout_width="@dimen/_54dp"
-                                android:layout_height="@dimen/_50dp"
-                                android:layout_centerVertical="true"
-                                android:layout_gravity="center"
-                                android:layout_weight="1"
-                                android:src="@drawable/ic_eway_bill"
-                                 />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/tvScanCount"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:textAlignment="center"
-                                android:layout_marginTop="@dimen/_6dp"
-                                android:fontFamily="@font/gilroy_semibold"
-                                android:text="इ-वे बिल \n( Eway Bill )"
-                                android:textColor="@color/back_text_colour"
-                                android:textSize="@dimen/_14sp"
-                                 />
-
-
-                        </androidx.appcompat.widget.LinearLayoutCompat>
-                    </androidx.cardview.widget.CardView>
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
 
             </RelativeLayout>
 

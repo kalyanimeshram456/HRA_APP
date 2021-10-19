@@ -58,7 +58,7 @@
         android:elevation="10dp"
         app:cardCornerRadius="@dimen/_15dp">
 
-        <com.ominfo.app.common.TouchImageView
+        <com.ominfo.staff.common.TouchImageView
             android:id="@+id/imgShowPhoto"
             android:layout_width="@dimen/_320dp"
             android:layout_height="@dimen/_600dp"
