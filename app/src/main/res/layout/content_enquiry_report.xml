@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_below="@+id/toolbar_layout"
+    android:background="@color/white"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:orientation="vertical">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/cl_mainlayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_layout">
+
+        <include layout="@layout/content_collapse_common_header" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/layTop"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_50dp"
+                        android:layout_marginTop="@dimen/_0dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:layout_weight="1">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/imgSales"
+                            android:layout_width="@dimen/_50dp"
+                            android:layout_height="@dimen/_50dp"
+                            android:layout_gravity="right"
+                            android:layout_marginHorizontal="@dimen/_16dp"
+                            android:background="@drawable/layout_round_shape_corners_yellow"
+                            android:padding="@dimen/_10dp"
+                            android:src="@drawable/ic_om_enquiry"
+                            android:visibility="visible" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvSearchView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom"
+                            android:layout_marginTop="@dimen/_6dp"
+                            android:layout_toRightOf="@+id/imgSales"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:gravity="left|center"
+                            android:imeOptions="actionDone"
+                            android:inputType="text"
+                            android:text="@string/scr_lbl_enquiry_report"
+                            android:textColor="@color/back_text_colour"
+                            android:textColorHint="@color/back_text_colour"
+                            android:textSize="@dimen/_16sp" />
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_30dp"
+                            android:layout_below="@+id/tvSearchView"
+                            android:layout_centerInParent="true"
+                            android:layout_marginBottom="@dimen/_6dp"
+                            android:gravity="bottom"
+                            android:orientation="horizontal">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginLeft="82dp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/gilroy_semibold"
+                                android:gravity="center|left"
+                                android:imeOptions="actionDone"
+                                android:inputType="text"
+                                android:text="40 NSD"
+                                android:textColor="@color/back_text_colour"
+                                android:textColorHint="@color/back_text_colour"
+                                android:textSize="@dimen/_14sp" />
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="bottom"
+                                android:layout_marginRight="@dimen/_16dp"
+                                android:layout_marginBottom="@dimen/_2dp"
+                                android:layout_weight="1"
+                                android:orientation="horizontal"
+                                android:visibility="visible">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/fromDate"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1"
+                                    android:fontFamily="@font/gilroy_semibold"
+                                    android:gravity="right"
+                                    android:hint="@string/scr_lbl_dashboard"
+                                    android:imeOptions="actionDone"
+                                    android:inputType="text"
+                                    android:text="20/10/2021"
+                                    android:textColor="@color/back_text_colour"
+                                    android:textColorHint="@color/back_text_colour"
+                                    android:textSize="@dimen/_14sp" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/toDateDash"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.7"
+                                    android:fontFamily="@font/gilroy_semibold"
+                                    android:gravity="center"
+                                    android:imeOptions="actionDone"
+                                    android:inputType="text"
+                                    android:text=" - "
+                                    android:textColor="@color/back_text_colour"
+                                    android:textColorHint="@color/back_text_colour"
+                                    android:textSize="@dimen/_14sp" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/toDate"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1"
+                                    android:fontFamily="@font/gilroy_semibold"
+                                    android:gravity="left"
+                                    android:imeOptions="actionDone"
+                                    android:inputType="text"
+                                    android:text="20/10/2021"
+                                    android:textColor="@color/back_text_colour"
+                                    android:textColorHint="@color/back_text_colour"
+                                    android:textSize="@dimen/_14sp" />
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    </RelativeLayout>
+
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/layTop"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_marginVertical="@dimen/_16dp"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/layout_round_shape_blue_border"
+                    android:orientation="vertical"
+
+                    android:paddingBottom="@dimen/_10dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_14dp">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom"
+                            android:layout_marginLeft="@dimen/_16dp"
+                            android:layout_marginBottom="@dimen/_2dp"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:gravity="left|bottom"
+                            android:imeOptions="actionDone"
+                            android:inputType="text"
+                            android:text="@string/scr_lbl_report"
+                            android:textColor="@color/back_text_colour"
+                            android:textColorHint="@color/back_text_colour"
+                            android:textSize="@dimen/_15sp" />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/imgFilter"
+                            android:layout_width="@dimen/_18dp"
+                            android:layout_height="@dimen/_18dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_gravity="right"
+                            android:layout_marginRight="55dp"
+                            android:visibility="visible" />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/imgGraph"
+                            android:layout_width="@dimen/_18dp"
+                            android:layout_height="@dimen/_18dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_gravity="right"
+                            android:layout_marginRight="55dp"
+                            android:visibility="gone" />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/imgTable"
+                            android:layout_width="@dimen/_18dp"
+                            android:layout_height="@dimen/_18dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_gravity="right"
+                            android:layout_marginHorizontal="@dimen/_16dp"
+                            android:visibility="visible" />
+
+                    </RelativeLayout>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/layList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_6dp"
+                        android:background="@drawable/layout_round_shape_grey_border_small"
+                        android:orientation="vertical"
+                        android:visibility="visible">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="@dimen/_10dp">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_marginTop="@dimen/_10dp"
+                                android:gravity="left">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvCompanyName"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:fontFamily="@font/gilroy_bold"
+                                    android:gravity="left"
+                                    android:imeOptions="actionDone"
+                                    android:inputType="text"
+                                    android:text="@string/scr_lbl_enquiry_number"
+                                    android:textColor="@color/back_text_colour"
+                                    android:textColorHint="@color/back_text_colour"
+                                    android:textSize="@dimen/_12sp" />
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="@dimen/_12dp"
+                                    android:layout_height="@dimen/_12dp"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginLeft="@dimen/_2dp"
+                                    android:layout_toRightOf="@+id/tvCompanyName"
+                                    android:src="@drawable/ic_om_sort" />
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_10dp"
+                                android:gravity="center"
+                                android:inputType="text"
+                                android:paddingLeft="@dimen/_24dp">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvOverall"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/gilroy_bold"
+                                    android:gravity="center"
+                                    android:imeOptions="actionDone"
+                                    android:inputType="textMultiLine"
+                                    android:maxLines="2"
+                                    android:paddingLeft="@dimen/_24dp"
+                                    android:text="@string/scr_lbl_company_name"
+                                    android:textColor="@color/back_text_colour"
+                                    android:textColorHint="@color/back_text_colour"
+                                    android:textSize="@dimen/_12sp" />
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="@dimen/_12dp"
+                                    android:layout_height="@dimen/_12dp"
+                                    android:layout_alignParentTop="true"
+                                    android:layout_marginLeft="@dimen/_2dp"
+                                    android:layout_marginTop="@dimen/_3dp"
+                                    android:layout_toRightOf="@+id/tvOverall"
+                                    android:src="@drawable/ic_om_sort" />
+                            </RelativeLayout>
+
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginTop="@dimen/_10dp"
+                                android:gravity="right">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvAmount"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:fontFamily="@font/gilroy_bold"
+                                    android:gravity="right|center"
+                                    android:imeOptions="actionDone"
+                                    android:inputType="textMultiLine"
+                                    android:text="@string/scr_lbl_enquiry_status"
+                                    android:textColor="@color/back_text_colour"
+                                    android:textColorHint="@color/back_text_colour"
+                                    android:textSize="@dimen/_12sp" />
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="@dimen/_12dp"
+                                    android:layout_height="@dimen/_12dp"
+                                    android:layout_alignParentTop="true"
+                                    android:layout_marginLeft="@dimen/_2dp"
+                                    android:layout_marginTop="@dimen/_3dp"
+                                    android:layout_toRightOf="@+id/tvAmount"
+                                    android:src="@drawable/ic_om_sort"
+                                    android:visibility="visible" />
+                            </RelativeLayout>
+
+
+                        </RelativeLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvSalesList"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/_6dp"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            android:nestedScrollingEnabled="true"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            tools:listitem="@layout/row_sales_credit_table" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <RelativeLayout
+                        android:id="@+id/layPagination"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_10dp"
+                        android:visibility="gone">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvPage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_gravity="left"
+                            android:layout_marginLeft="@dimen/_10dp"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:text="Showing 01 to 12 of 50 \nEntries"
+                            android:textColor="@color/gray"
+                            android:textSize="@dimen/_12sp" />
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="@dimen/_150dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_gravity="right"
+                            android:layout_marginRight="@dimen/_10dp"
+                            android:background="@drawable/layout_round_shap_grey_grey_6"
+                            android:orientation="horizontal"
+                            android:paddingVertical="@dimen/_2dp">
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="@dimen/_12dp"
+                                android:layout_height="@dimen/_16dp"
+                                android:layout_alignParentEnd="true"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:src="@drawable/ic_om_left"
+                                android:visibility="visible" />
+
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:layout_width="@dimen/_20dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/gilroy_regular"
+                                android:gravity="center"
+                                android:hint="@string/scr_lbl_dashboard"
+                                android:imeOptions="actionDone"
+                                android:inputType="text"
+                                android:paddingVertical="@dimen/_5dp"
+                                android:text="01"
+                                android:textAlignment="center"
+                                android:textColor="@color/color_blue_icon"
+                                android:textColorHint="@color/back_text_colour"
+                                android:textSize="@dimen/_14sp" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:layout_width="@dimen/_20dp"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_button_round_corner_2"
+                                android:fontFamily="@font/gilroy_regular"
+                                android:hint="@string/scr_lbl_dashboard"
+                                android:imeOptions="actionDone"
+                                android:inputType="text"
+                                android:paddingVertical="@dimen/_5dp"
+                                android:text="02"
+                                android:textAlignment="center"
+                                android:textColor="@color/white"
+                                android:textColorHint="@color/back_text_colour"
+                                android:textSize="@dimen/_14sp" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:layout_width="@dimen/_20dp"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/gilroy_regular"
+                                android:hint="@string/scr_lbl_dashboard"
+                                android:imeOptions="actionDone"
+                                android:inputType="text"
+                                android:paddingVertical="@dimen/_5dp"
+                                android:text="03"
+                                android:textAlignment="center"
+                                android:textColor="@color/color_blue_icon"
+                                android:textColorHint="@color/back_text_colour"
+                                android:textSize="@dimen/_14sp" />
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="@dimen/_12dp"
+                                android:layout_height="@dimen/_16dp"
+                                android:layout_alignParentEnd="true"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:src="@drawable/ic_om_right"
+                                android:visibility="visible" />
+
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                    </RelativeLayout>
+
+                    <include layout="@layout/content_enquiry_filter" />
+
+
+                    <!--Ui component for our bar chart-->
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/idBarChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="220dp"
+                        android:layout_below="@+id/laySelect"
+                        android:layout_marginHorizontal="@dimen/_5dp"
+                        android:layout_marginTop="@dimen/_10dp"
+                        android:visibility="gone" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </RelativeLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

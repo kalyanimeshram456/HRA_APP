@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/ic_om_reminder_alert"
+    tools:context=".ui.SplashActivity">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/tv_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:layout_weight="12"
+            android:orientation="vertical"
+            android:gravity="center"
+            >
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:fontFamily="@font/gilroy_regular"
+                android:text="Reminder"
+                android:textSize="@dimen/_28sp"
+                android:textColor="@color/back_text_colour"
+                android:layout_marginHorizontal="@dimen/_16dp"
+                />
+            <RelativeLayout
+                android:layout_width="@dimen/_250dp"
+                android:layout_height="@dimen/_250dp"
+                android:background="@drawable/ic_om_bg_clock"
+                >
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_weight="15"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:gravity="center"
+                    android:text="02:00 PM"
+                    android:textColor="@color/color_main"
+                    android:textSize="@dimen/_34sp" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_below="@+id/tvTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_weight="15"
+                    android:fontFamily="@font/gilroy_regular"
+                    android:gravity="center"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:text="Schedule Demo"
+                    android:textColor="@color/color_main"
+                    android:textSize="@dimen/_16sp" />
+            </RelativeLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:fontFamily="@font/gilroy_regular"
+                android:text="Mon, Oct 18"
+                android:textSize="@dimen/_18sp"
+                android:textColor="@color/back_text_colour"
+                android:layout_marginHorizontal="@dimen/_16dp"
+                />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_weight="7"
+            android:layout_marginHorizontal="@dimen/_16dp"
+            android:layout_alignParentBottom="true"
+            >
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Swipe left to mark completed"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/_22dp"
+                android:fontFamily="@font/gilroy_regular"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_12sp"/>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_80dp"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="@dimen/_4dp"
+            android:src="@drawable/ic_om_alarm_slider" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Swipe right to mark continue task"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/_22dp"
+                android:fontFamily="@font/gilroy_regular"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_12sp"/>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>>
+</androidx.constraintlayout.widget.ConstraintLayout>

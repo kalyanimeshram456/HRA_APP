@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".MainActivity">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+
+    <RelativeLayout
+        android:id="@+id/laySelect"
+        android:layout_below="@+id/idBarChart"
+        android:layout_marginTop="@dimen/_30dp"
+        android:gravity="right"
+        android:layout_marginRight="@dimen/_16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/imgGroup"
+            android:layout_width="@dimen/_100dp"
+            android:layout_height="@dimen/_40dp"
+            android:background="@android:color/holo_blue_light"
+            android:text="By Group"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_18sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/imgOverall"
+            android:layout_width="@dimen/_100dp"
+            android:layout_height="@dimen/_40dp"
+            android:layout_marginLeft="@dimen/_16dp"
+            android:layout_toRightOf="@+id/imgGroup"
+            android:background="@color/app_gray"
+            android:text="Overall"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_18sp" />
+    </RelativeLayout>
+
+    <!--Ui component for our bar chart-->
+    <com.github.mikephil.charting.charts.BarChart
+        android:layout_below="@+id/laySelect"
+        android:id="@+id/idBarChart"
+        android:layout_width="match_parent"
+        android:layout_height="270dp"
+        android:layout_marginHorizontal="@dimen/_5dp"
+        android:layout_marginTop="@dimen/_16dp" />
+
+    <RelativeLayout
+        android:id="@+id/layLR"
+        android:layout_below="@+id/idBarChart"
+        android:layout_marginTop="@dimen/_10dp"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/imgLeft"
+            android:layout_width="@dimen/_100dp"
+            android:layout_height="@dimen/_40dp"
+            android:background="@android:color/holo_blue_light"
+            android:text="Pre"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_18sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/imgRight"
+            android:layout_width="@dimen/_100dp"
+            android:layout_height="@dimen/_40dp"
+            android:layout_marginLeft="@dimen/_16dp"
+            android:layout_toRightOf="@+id/imgLeft"
+            android:text="Next"
+            android:background="@android:color/holo_blue_light"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_18sp" />
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_below="@id/layLR"
+        android:id="@+id/rvSalesList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_16dp"
+        android:layout_marginBottom="@dimen/_16dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:nestedScrollingEnabled="true"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/row_sales_credit_table" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.core.widget.NestedScrollView>

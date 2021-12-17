@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_below="@+id/toolbar_layout"
-    android:background="@color/color_main"
+    android:background="@color/white"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical">
@@ -37,8 +37,7 @@
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="@dimen/_10dp"
-                    android:background="@drawable/layout_round_shape_corners"
+                    android:layout_marginTop="@dimen/_0dp"
                     android:orientation="vertical">
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -49,6 +48,7 @@
                         android:layout_marginTop="@dimen/_16dp"
                         android:layout_marginBottom="@dimen/_16dp"
                         android:focusable="false"
+                        android:visibility="gone"
                         android:focusableInTouchMode="false"
                         android:nestedScrollingEnabled="true"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

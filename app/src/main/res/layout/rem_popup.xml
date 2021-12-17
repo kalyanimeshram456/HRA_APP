@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:orientation="horizontal">
+    <FrameLayout
+        android:visibility="visible"
+        android:id="@+id/layStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:background="@android:color/transparent"
+        android:layout_marginTop="@dimen/_16dp"
+        android:layout_marginRight="@dimen/_16dp"
+        >
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:layout_gravity="right"
+            android:background="@drawable/shape_round_dialog"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgClose"
+                android:layout_width="@dimen/_20dp"
+                android:layout_height="@dimen/_20dp"
+                android:layout_marginTop="@dimen/_10dp"
+                android:layout_marginRight="@dimen/_10dp"
+                android:src="@drawable/ic_om_down_blue"
+                />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/appcomptext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginTop="@dimen/_6dp"
+                android:layout_marginLeft="@dimen/_10dp"
+                android:layout_marginRight="@dimen/_30dp"
+                android:fontFamily="@font/gilroy_semibold"
+                android:text="Task Completed"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.8dp"
+                android:layout_marginVertical="@dimen/_10dp"
+                android:layout_marginLeft="@dimen/_10dp"
+                android:layout_marginRight="@dimen/_30dp"
+                android:background="@color/light_grey_30"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginLeft="@dimen/_10dp"
+                android:layout_marginRight="@dimen/_30dp"
+                android:fontFamily="@font/gilroy_semibold"
+                android:text="Remind Me Later"
+                android:layout_marginBottom="@dimen/_10dp"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </FrameLayout>
+</LinearLayout>

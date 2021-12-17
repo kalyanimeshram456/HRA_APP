@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layClick"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/_10dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="horizontal"
+    android:paddingVertical="@dimen/_12dp">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvCompanyName"
+        android:layout_width="@dimen/_100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:fontFamily="@font/gilroy_regular"
+        android:imeOptions="actionDone"
+        android:inputType="textMultiLine"
+        android:maxLines="2"
+        android:text="Technologies co. pvt. lmt."
+        android:layout_weight="0.5"
+        android:textColor="@color/back_text_colour"
+        android:textColorHint="@color/back_text_colour"
+        android:textSize="@dimen/_12sp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvState"
+        android:layout_width="@dimen/_100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:layout_marginHorizontal="@dimen/_5dp"
+        android:fontFamily="@font/gilroy_regular"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:imeOptions="actionDone"
+        android:inputType="textMultiLine"
+        android:text="3 days"
+        android:layout_marginLeft="@dimen/_16dp"
+        android:textColor="@color/back_text_colour"
+        android:textColorHint="@color/back_text_colour"
+        android:textSize="@dimen/_12sp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvRS"
+        android:layout_width="@dimen/_100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:fontFamily="@font/gilroy_regular"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:layout_alignParentTop="true"
+        android:imeOptions="actionDone"
+        android:inputType="textMultiLine"
+        android:text="₹232"
+        android:textColor="@color/Dark_Red"
+        android:textColorHint="@color/back_text_colour"
+        android:textSize="@dimen/_12sp" />
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

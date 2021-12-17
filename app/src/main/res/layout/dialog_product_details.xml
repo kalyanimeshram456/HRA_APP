@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/_300dp"
+    android:layout_height="wrap_content"
+    android:fitsSystemWindows="true"
+    android:paddingBottom="@dimen/_10dp"
+    android:paddingTop="@dimen/_12dp"
+    android:paddingHorizontal="@dimen/_12dp"
+    android:gravity="center"
+    android:background="@drawable/shape_round_dialog"
+    android:layout_marginTop="@dimen/_10dp"
+    android:layout_marginHorizontal="@dimen/_10dp"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="0dp"
+            android:fontFamily="@font/gilroy_bold"
+            android:gravity="left"
+            android:text="@string/scr_lbl_product_details"
+            android:textColor="@color/color_main"
+            android:textSize="@dimen/_16sp" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgCancel"
+            android:layout_width="@dimen/_16dp"
+            android:layout_height="@dimen/_16dp"
+            android:layout_centerInParent="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/ic_close" />
+
+    </RelativeLayout>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/_10dp"
+        android:background="@drawable/shape_round_white_round_dialog"
+>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_10dp"
+        android:layout_marginTop="@dimen/_16dp">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvCompany"
+            android:layout_width="@dimen/_110dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/gilroy_regular"
+            android:textAlignment="textStart"
+            android:text="Product Name"
+            android:textColor="@color/back_text_colour"
+            android:textSize="@dimen/_14sp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvCompanyColon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/tvCompany"
+            android:fontFamily="@font/gilroy_regular"
+            android:gravity="center"
+            android:text="  :  "
+            android:textColor="@color/back_text_colour"
+            android:textSize="@dimen/_14sp" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvKyaKhracha"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+           android:layout_toRightOf="@+id/tvCompanyColon"
+            android:fontFamily="@font/gilroy_semibold"
+            android:gravity="start"
+            android:inputType="textCapCharacters"
+            android:textColor="@color/back_text_colour"
+            android:text="Pressure relief valve"
+            android:textSize="@dimen/_14sp" />
+
+    </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_10dp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvAmount"
+                android:layout_width="@dimen/_110dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/gilroy_regular"
+                android:gravity="left"
+                android:text="@string/scr_lbl_product_code"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvAmountColon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/tvAmount"
+                android:fontFamily="@font/gilroy_regular"
+                android:gravity="center"
+                android:text="  :  "
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvAmountValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tvAmountColon"
+                android:fontFamily="@font/gilroy_semibold"
+                android:gravity="start"
+                android:inputType="textCapCharacters"
+                android:text="EM/2021/FF"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_10dp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvRM"
+                android:layout_width="@dimen/_110dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/gilroy_regular"
+                android:gravity="left"
+                android:text="@string/scr_lbl_product_quantity"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvRMColon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/tvRM"
+                android:fontFamily="@font/gilroy_regular"
+                android:gravity="center"
+                android:text="  :  "
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvRMValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tvRMColon"
+                android:fontFamily="@font/gilroy_semibold"
+                android:gravity="start|center"
+                android:layout_centerVertical="true"
+                android:inputType="textCapCharacters"
+                android:text="200 NOS"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_10dp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvState"
+                android:layout_width="@dimen/_110dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/gilroy_regular"
+                android:gravity="left"
+                android:text="@string/scr_lbl_sales_amount"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvStateColon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/tvState"
+                android:fontFamily="@font/gilroy_regular"
+                android:gravity="center"
+                android:text="  :  "
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvStateValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tvStateColon"
+                android:fontFamily="@font/gilroy_semibold"
+                android:gravity="start"
+                android:inputType="textCapCharacters"
+                android:text="₹ 878463.99"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+        </RelativeLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/closeButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom"
+            android:background="@drawable/bg_button_round_corner_5"
+            android:fontFamily="@font/gilroy_semibold"
+            android:gravity="center"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:paddingTop="@dimen/_2dp"
+            android:layout_marginTop="@dimen/_20dp"
+            android:layout_marginBottom="@dimen/_10dp"
+            android:text="@string/scr_lbl_close"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_14sp" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+
+</LinearLayout>

@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.appbar.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layId"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_90dp"
+    android:fitsSystemWindows="true"
+    app:elevation="0dp"
+    android:background="@android:color/transparent"
+    android:theme="@style/AppTheme.White"
+    >
+
+    <com.google.android.material.appbar.CollapsingToolbarLayout
+        android:id="@+id/collapsing_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        app:collapsedTitleTextAppearance="@style/AppTheme_collapsedAppBar"
+        app:contentScrim="@android:color/transparent"
+        app:expandedTitleGravity="bottom"
+        app:expandedTitleMarginBottom="@dimen/_16dp"
+        app:expandedTitleMarginEnd="6dp"
+        app:expandedTitleMarginStart="@dimen/_16dp"
+        app:expandedTitleTextAppearance="@style/AppTheme_expandedAppBar"
+        app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/img_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            app:layout_collapseMode="parallax" />
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_90dp"
+            android:background="@android:color/transparent"
+            android:paddingTop="@dimen/_30dp"
+            app:elevation="0dp"
+            app:layout_collapseMode="pin"
+            app:popupTheme="@style/AppTheme.White"
+            app:statusBarScrim="@android:color/transparent">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/layHeaderToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="bottom"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="@dimen/_30dp"
+                android:weightSum="2">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/layBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:onClick="onClick"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/imgBack"
+                        android:layout_width="@dimen/_20dp"
+                        android:layout_height="@dimen/_18dp"
+                        android:layout_gravity="left|center"
+                        android:gravity="left"
+                        android:layout_marginRight="@dimen/_14dp"
+                        android:src="@drawable/ic_om_arrow_back"
+                        android:visibility="visible" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvSearchView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center_vertical"
+                        android:fontFamily="@font/gilroy_bold"
+                        android:gravity="left"
+                        android:hint="My Account"
+                        android:imeOptions="actionDone"
+                        android:inputType="text"
+                        android:textColor="@color/back_text_colour"
+                        android:textColorHint="@color/back_text_colour"
+                        android:textSize="@dimen/_18sp" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/toolbarTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center_vertical"
+                        android:fontFamily="@font/gilroy_bold"
+                        android:gravity="left"
+                        android:hint="@string/scr_lbl_dashboard"
+                        android:imeOptions="actionDone"
+                        android:inputType="text"
+                        android:visibility="gone"
+                        android:textColor="@color/back_text_colour"
+                        android:textColorHint="@color/back_text_colour"
+                        android:textSize="@dimen/_18sp" />
+
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/_16dp"
+                    android:layout_weight="1"
+                    android:gravity="right">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/imgCall"
+                        android:layout_width="@dimen/_20dp"
+                        android:layout_height="@dimen/_20dp"
+                        android:layout_marginHorizontal="@dimen/_20dp"
+                        android:clickable="true"
+                        android:onClick="onClick"
+                        android:src="@drawable/ic_phone"
+                        android:visibility="invisible" />
+
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/imgReport"
+                        android:layout_width="@dimen/_25dp"
+                        android:layout_height="@dimen/_25dp"
+                        android:layout_marginHorizontal="@dimen/_20dp"
+                        android:layout_toRightOf="@+id/imgCall"
+                        android:clickable="true"
+                        android:onClick="onClick"
+                        android:src="@drawable/ic_om_reminder"
+                        android:visibility="gone" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvComplaintCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="61dp"
+                        android:layout_toRightOf="@+id/imgCall"
+                        android:background="@drawable/layout_round_shape_corners_15_light_yellow"
+                        android:fontFamily="@font/gilroy_semibold"
+                        android:text="6"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_12sp"
+                        android:visibility="gone" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/imgNotify"
+                        android:layout_width="@dimen/_25dp"
+                        android:layout_height="@dimen/_25dp"
+                        android:layout_marginRight="@dimen/_0dp"
+                        android:layout_toRightOf="@+id/imgReport"
+                        android:clickable="true"
+                        android:onClick="onClick"
+                        android:src="@drawable/ic_om_notify"
+                        android:visibility="visible" />
+
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvNotifyCount"
+                        android:layout_width="@dimen/_15dp"
+                        android:layout_height="@dimen/_15dp"
+                        android:layout_marginLeft="@dimen/_12dp"
+                        android:layout_toRightOf="@+id/imgReport"
+                        android:background="@drawable/layout_round_shape_corners_15_light_blue"
+                        android:fontFamily="@font/gilroy_semibold"
+                        android:text="6"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_12sp"
+                        android:visibility="visible" />
+
+                    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/imgLogout"
+                        android:layout_width="@dimen/_25dp"
+                        android:layout_height="@dimen/_25dp"
+                        android:layout_toRightOf="@+id/imgNotify"
+                        android:clickable="true"
+                        android:onClick="onClick"
+                        android:src="@drawable/ic_om_businessman"
+                        android:visibility="gone"
+                        app:civ_border_color="@color/back_text_colour"
+                        app:civ_border_width="1dp" />
+
+
+                </RelativeLayout>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvWelcomeBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="@dimen/_16dp"
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/_100dp"
+            android:fontFamily="@font/poppins_regular"
+            android:text="welcome_back"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_14sp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvHeaderUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="@dimen/_16dp"
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/_120dp"
+            android:fontFamily="@font/poppins_semibold"
+            android:text=""
+            android:textColor="@color/white"
+            android:textSize="@dimen/_28sp" />
+
+
+    </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+</com.google.android.material.appbar.AppBarLayout>

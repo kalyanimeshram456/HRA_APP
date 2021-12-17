@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:id="@+id/layClick"
+        android:paddingHorizontal="@dimen/_10dp"
+        android:paddingVertical="@dimen/_12dp"
+        android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvCompanyName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:fontFamily="@font/gilroy_regular"
+        android:gravity="left"
+        android:imeOptions="actionDone"
+        android:inputType="text"
+        android:text="09/11/21"
+        android:layout_weight="1.1"
+        android:textColor="@color/back_text_colour"
+        android:textColorHint="@color/back_text_colour"
+        android:textSize="@dimen/_12sp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/gilroy_regular"
+            android:imeOptions="actionDone"
+            android:gravity="center"
+            android:layout_weight="0.9"
+            android:ellipsize="end"
+            android:paddingHorizontal="@dimen/_6dp"
+            android:maxLines="2"
+            android:singleLine="false"
+            android:inputType="textMultiLine"
+            android:scrollHorizontally="false"
+            android:text="CRM/21-21/Q/00056"
+            android:textColor="@color/back_text_colour"
+            android:textColorHint="@color/back_text_colour"
+            android:textSize="@dimen/_12sp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvRS"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:fontFamily="@font/gilroy_regular"
+        android:gravity="center"
+        android:hint="@string/scr_lbl_dashboard"
+        android:imeOptions="actionDone"
+        android:inputType="textMultiLine"
+        android:layout_weight="1"
+        android:text="₹09,12,123.00"
+        android:paddingRight="@dimen/_6dp"
+        android:textColor="@color/back_text_colour"
+        android:textColorHint="@color/back_text_colour"
+        android:textSize="@dimen/_12sp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvEnd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:fontFamily="@font/gilroy_regular"
+        android:gravity="right"
+        android:hint="@string/scr_lbl_dashboard"
+        android:imeOptions="actionDone"
+        android:inputType="textMultiLine"
+        android:layout_weight="1"
+        android:text="₹09,12,123.98"
+        android:textColor="@color/back_text_colour"
+        android:textColorHint="@color/back_text_colour"
+        android:textSize="@dimen/_12sp" />
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>

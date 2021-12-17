@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--driver app colours-->
-    <color name="color_main">#4D37B3</color>
+    <color name="color_main">#0062CC</color>
+    <color name="color_blue_icon">#007AFF</color>
     <color name="bg_white">#FFFFFF</color>
     <color name="back_text_colour">#282828</color>
     <color name="color_blue_90">#CC4D37B3</color>
@@ -11,6 +12,8 @@
 
     <color name="green">#71C951</color>
 
+    <color name="blue_graph">#ff33b5e5</color>
+    <color name="status_bar_color">#E0E7FB</color>
 
     <!--textfiled colours-->
     <color name="color_text_filed">#EEEFF1</color>
@@ -27,13 +30,32 @@
     <color name="pro_grey">#A0A0A0</color>
     <color name="pro_light_grey">#F0F0F6</color>
 
+    <color name="Light_Green">#1ECA44</color>
+    <color name="Dark_Green">#28A745</color>
+    <color name="Light_Green_quo">#32D256</color>
+    <color name="Dark_Green_quo">#28A945</color>
+    <color name="Light_Blue">#1FC5BC</color>
+    <color name="Dark_Blue">#17A4B8</color>
+    <color name="Light_Blue_rec">#42CAFD</color>
+    <color name="Dark_Blue_rec">#3bb8e6</color>
+    <color name="Light_Blue_cust">#305999</color>
+    <color name="Dark_Blue_cust">#1F3C68</color>
+    <color name="Light_Red">#FC5161</color>
+    <color name="Dark_Red">#DD3647</color>
+    <color name="Light_Yellow">#FECB31</color>
+    <color name="Dark_Yellow">#FFC208</color>
+    <color name="Light_Yellow_dis">#FDC70F</color>
+    <color name="Dark_Yellow_dis">#DFB00A</color>
+    <color name="Light_Voilet">#D35CAC</color>
+    <color name="Dark_Voilet">#CC0594</color>
 
     <color name="_FF5C47">#FF5C47</color>
+
 
     <!-- dots inactive colors -->
 
     <!-- dots active colors -->
-
+    <color name="bg_dialog_grey">#144D37B3</color>
     <color name="app_gray">#bcbcbc</color>
     <color name="deep_blue">#044271</color>
     <color name="deep_green">#026112</color>
@@ -54,5 +76,8 @@
     <color name="black_tv">#060606</color>
     <color name="bg_semi_white">#FFFFFF</color>
     <color name="_E5E5E5">#E5E5E5</color>
+
+    <color name="login_blue">#0062CC</color>
+
 
 </resources>

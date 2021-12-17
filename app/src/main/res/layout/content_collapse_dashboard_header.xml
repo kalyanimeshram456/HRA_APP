@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layId"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/_100dp"
+    android:layout_height="@dimen/_90dp"
     android:fitsSystemWindows="true"
     app:elevation="0dp"
-    android:background="@color/color_main"
+    android:background="@color/white"
     android:theme="@style/AppTheme.White"
     >
 
@@ -35,7 +35,7 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_100dp"
+            android:layout_height="@dimen/_90dp"
             app:layout_collapseMode="pin"
             android:paddingTop="@dimen/_30dp"
             app:elevation="0dp"
@@ -49,17 +49,33 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center"
+                android:gravity="bottom"
+                android:layout_gravity="bottom"
                 android:weightSum="2"
-                android:layout_marginBottom="@dimen/_20dp"
+                android:layout_marginBottom="@dimen/_30dp"
                 >
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:layout_weight="1"
                 >
+
+                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/imgProfileDash"
+                    android:layout_width="@dimen/_30dp"
+                    android:layout_height="@dimen/_30dp"
+                    android:layout_gravity="left|center"
+                    android:gravity="left"
+                    android:clickable="true"
+                    android:onClick="onClick"
+                    android:visibility="visible"
+                    android:layout_marginRight="@dimen/_10dp"
+                    android:src="@drawable/ic_om_businessman"
+                    app:civ_border_color="@color/back_text_colour"
+                    app:civ_border_width="1dp" />
+
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgBack"
@@ -68,9 +84,25 @@
                     android:layout_gravity="left|center"
                     android:gravity="left"
                     android:onClick="onClick"
-                    android:visibility="invisible"
+                    android:visibility="gone"
                     android:clickable="true"
                     android:src="@drawable/ic_menu" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvSearchView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:hint="Harshal Wagh"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:gravity="left"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/back_text_colour"
+                    android:textColorHint="@color/back_text_colour"
+                    android:textSize="@dimen/_18sp" />
+
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -96,43 +128,43 @@
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgReport"
-                    android:layout_width="@dimen/_20dp"
-                    android:layout_height="@dimen/_20dp"
+                    android:layout_width="@dimen/_25dp"
+                    android:layout_height="@dimen/_25dp"
                     android:layout_marginHorizontal="@dimen/_20dp"
                     android:layout_toRightOf="@+id/imgCall"
                     android:clickable="true"
                     android:onClick="onClick"
-                    android:src="@drawable/ic_complaint"
+                    android:src="@drawable/ic_om_reminder"
                     android:visibility="gone" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvComplaintCount"
-                    android:layout_width="@dimen/_15dp"
-                    android:layout_height="@dimen/_15dp"
-                    android:layout_marginLeft="@dimen/_32dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="61dp"
                     android:layout_toRightOf="@+id/imgCall"
-                    android:visibility="gone"
                     android:background="@drawable/layout_round_shape_corners_15_light_yellow"
                     android:fontFamily="@font/gilroy_semibold"
                     android:text="6"
                     android:textAlignment="center"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_12sp" />
+                    android:textSize="@dimen/_12sp"
+                    android:visibility="gone" />
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgNotify"
-                    android:layout_width="@dimen/_20dp"
-                    android:layout_height="@dimen/_20dp"
-                    android:layout_marginRight="@dimen/_20dp"
+                    android:layout_width="@dimen/_25dp"
+                    android:layout_height="@dimen/_25dp"
+                    android:layout_marginRight="@dimen/_0dp"
                     android:layout_toRightOf="@+id/imgReport"
                     android:clickable="true"
                     android:onClick="onClick"
-                    android:visibility="invisible"
-                    android:src="@drawable/ic_bell" />
+                    android:src="@drawable/ic_om_notify"
+                    android:visibility="visible" />
 
 
                 <androidx.appcompat.widget.AppCompatTextView
-                   android:id="@+id/tvNotifyCount"
+                    android:id="@+id/tvNotifyCount"
                     android:layout_width="@dimen/_15dp"
                     android:layout_height="@dimen/_15dp"
                     android:layout_marginLeft="@dimen/_12dp"
@@ -140,19 +172,22 @@
                     android:background="@drawable/layout_round_shape_corners_15_light_blue"
                     android:fontFamily="@font/gilroy_semibold"
                     android:text="6"
-                    android:visibility="invisible"
                     android:textAlignment="center"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_12sp" />
+                    android:textSize="@dimen/_12sp"
+                    android:visibility="visible" />
 
-                <androidx.appcompat.widget.AppCompatImageView
+                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/imgLogout"
-                    android:layout_width="@dimen/_22dp"
-                    android:layout_height="@dimen/_22dp"
+                    android:layout_width="@dimen/_25dp"
+                    android:layout_height="@dimen/_25dp"
                     android:layout_toRightOf="@+id/imgNotify"
                     android:clickable="true"
                     android:onClick="onClick"
-                    android:src="@drawable/ic_logout" />
+                    android:visibility="gone"
+                    android:src="@drawable/ic_om_businessman"
+                    app:civ_border_color="@color/back_text_colour"
+                    app:civ_border_width="1dp" />
 
 
             </RelativeLayout>

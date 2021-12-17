@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layClick"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:focusable="false"
+    android:orientation="horizontal"
+    android:focusableInTouchMode="false"
+    android:paddingHorizontal="@dimen/_10dp"
+    android:paddingVertical="@dimen/_12dp">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvCompanyName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:fontFamily="@font/gilroy_regular"
+        android:gravity="left"
+        android:layout_weight="1"
+        android:imeOptions="actionDone"
+        android:inputType="textMultiLine"
+        android:text="ABC Pvt. Lmt."
+        android:textColor="@color/back_text_colour"
+        android:textColorHint="@color/back_text_colour"
+        android:textSize="@dimen/_12sp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvState"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/gilroy_regular"
+        android:gravity="right"
+        android:imeOptions="actionDone"
+        android:inputType="textMultiLine"
+        android:text="RE/20-21/AAB"
+        android:layout_weight="1"
+        android:layout_marginLeft="@dimen/_16dp"
+        android:textColor="@color/back_text_colour"
+        android:textColorHint="@color/back_text_colour"
+        android:textSize="@dimen/_12sp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvRS"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:fontFamily="@font/gilroy_regular"
+        android:gravity="right"
+        android:layout_weight="1"
+        android:imeOptions="actionDone"
+        android:inputType="textMultiLine"
+        android:text="₹ 23288.00"
+        android:textColor="@color/Light_Green"
+        android:textColorHint="@color/back_text_colour"
+        android:textSize="@dimen/_12sp" />
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

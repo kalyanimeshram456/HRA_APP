@@ -55,14 +55,23 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="colorPrimary">@color/color_main</item>
         <item name="colorPrimaryDark">@color/color_main</item>
+        <item name="colorAccent">@color/color_main</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <!--  <item name="android:windowBackground">@drawable/get_started_theme</item>-->
     </style>
 
     <style name="AppTheme.FullScreen" parent="AppTheme">
         <!-- Customize your theme here. -->
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="colorPrimary">@color/color_main</item>
+        <item name="colorPrimaryDark">@color/color_main</item>
+        <item name="colorAccent">@color/color_main</item>
+        <item name="android:statusBarColor">#E0E7FB</item>
+        <item name="android:windowLightStatusBar">true</item>
+<!--
+        <item name="android:statusBarColor">@android:color/transparent</item>
+-->
+
     </style>
 
 
