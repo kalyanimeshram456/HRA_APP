@@ -80,15 +80,16 @@
 
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvKyaKhracha"
+            android:id="@+id/tvProdName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-           android:layout_toRightOf="@+id/tvCompanyColon"
+            android:layout_toRightOf="@+id/tvCompanyColon"
             android:fontFamily="@font/gilroy_semibold"
             android:gravity="start"
-            android:inputType="textCapCharacters"
+            android:inputType="textMultiLine"
+            android:maxLines="3"
+            android:text=""
             android:textColor="@color/back_text_colour"
-            android:text="Pressure relief valve"
             android:textSize="@dimen/_14sp" />
 
     </RelativeLayout>
@@ -107,6 +108,7 @@
                 android:layout_centerVertical="true"
                 android:fontFamily="@font/gilroy_regular"
                 android:gravity="left"
+                android:maxLines="3"
                 android:text="@string/scr_lbl_product_code"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
@@ -124,14 +126,14 @@
                 android:textSize="@dimen/_14sp" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvAmountValue"
+                android:id="@+id/tvProdCode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/tvAmountColon"
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
-                android:inputType="textCapCharacters"
-                android:text="EM/2021/FF"
+                android:inputType="textMultiLine"
+                android:text=""
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
@@ -171,12 +173,13 @@
                 android:id="@+id/tvRMValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_toRightOf="@+id/tvRMColon"
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start|center"
-                android:layout_centerVertical="true"
                 android:inputType="textCapCharacters"
-                android:text="200 NOS"
+                android:text=""
+                android:hint="@string/scr_lbl_unavailable"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
@@ -220,7 +223,8 @@
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
                 android:inputType="textCapCharacters"
-                android:text="₹ 878463.99"
+                android:hint="@string/scr_lbl_unavailable"
+                android:text=""
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 

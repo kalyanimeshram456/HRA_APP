@@ -17,15 +17,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -46,15 +50,42 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.model.GradientColor;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.gson.Gson;
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.basecontrol.BaseActivity;
+import com.ominfo.crm_solution.basecontrol.BaseApplication;
 import com.ominfo.crm_solution.basecontrol.BaseFragment;
+import com.ominfo.crm_solution.database.AppDatabase;
 import com.ominfo.crm_solution.interfaces.Constants;
+import com.ominfo.crm_solution.network.ApiResponse;
+import com.ominfo.crm_solution.network.DynamicAPIPath;
+import com.ominfo.crm_solution.network.NetworkCheck;
+import com.ominfo.crm_solution.network.ViewModelFactory;
+import com.ominfo.crm_solution.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
+import com.ominfo.crm_solution.ui.enquiry_report.adapter.EnquiryPageAdapter;
+import com.ominfo.crm_solution.ui.enquiry_report.adapter.EnquiryReportAdapter;
+import com.ominfo.crm_solution.ui.enquiry_report.adapter.RmTagAdapter;
+import com.ominfo.crm_solution.ui.enquiry_report.model.EnquiryPagermodel;
+import com.ominfo.crm_solution.ui.enquiry_report.model.EnquiryStatusResponse;
+import com.ominfo.crm_solution.ui.enquiry_report.model.EnquiryStatusViewModel;
+import com.ominfo.crm_solution.ui.enquiry_report.model.EnquiryStatuslist;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetEnquiry;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetEnquiryRequest;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetEnquiryResponse;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetEnquiryViewModel;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmResponse;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmViewModel;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmlist;
+import com.ominfo.crm_solution.ui.login.model.LoginTable;
+import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.sale.adapter.CompanyTagAdapter;
+import com.ominfo.crm_solution.ui.sale.model.RmListModel;
 import com.ominfo.crm_solution.ui.sales_credit.activity.View360Activity;
 import com.ominfo.crm_solution.ui.sales_credit.adapter.SalesCreditAdapter;
 import com.ominfo.crm_solution.ui.sales_credit.model.GraphModel;
+import com.ominfo.crm_solution.util.AppUtils;
+import com.ominfo.crm_solution.util.LogUtil;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -66,9 +97,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 //https://github.com/PhilJay/MPAndroidChart/wiki/Modifying-the-Viewport
 
 /**
@@ -79,7 +114,7 @@ import butterknife.OnClick;
 public class TopCustomerFragment extends BaseFragment {
 
     Context mContext;
-    SalesCreditAdapter salesCreditAdapter;
+    EnquiryReportAdapter enquiryReportAdapter;
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
     /*@BindView(R.id.fromDate)
@@ -94,6 +129,8 @@ public class TopCustomerFragment extends BaseFragment {
     RelativeLayout layPagination;
     @BindView(R.id.idBarChart)
     PieChart pieChart;
+    @BindView(R.id.tvNotifyCount)
+    AppCompatTextView tvNotifyCount;
     @BindView(R.id.imgTable)
     AppCompatImageView imgTable;
     @BindView(R.id.imgGraph)
@@ -104,11 +141,18 @@ public class TopCustomerFragment extends BaseFragment {
     LinearLayoutCompat layFilter;
     @BindView(R.id.rvImages)
     RecyclerView rvImages;
+    @BindView(R.id.imgBack)
+    AppCompatImageView imgBack;
+    @BindView(R.id.imgNotify)
+    AppCompatImageView imgNotify;
     List<DashModel> tagList = new ArrayList<>();
     CompanyTagAdapter addTagAdapter;
-/*
-    @BindView(R.id.add_fab)
-    FloatingActionButton add_fab;*/
+    @BindView(R.id.submitButton)
+    AppCompatButton submitButton;
+    @Inject
+    ViewModelFactory mViewModelFactory;
+    private GetEnquiryViewModel getEnquiryViewModel;
+    private GetRmViewModel getRmViewModel;
 
     BarData barData;
     List<GradientColor> list = new ArrayList<>();
@@ -124,11 +168,44 @@ public class TopCustomerFragment extends BaseFragment {
     private String[] DAYSY = new String[100];/*{"5", "60", "15", "70", "25",
            "10"*//*, "45","90", "95","50", "55","60", "65"*//*};*/
     int startPos = 0 , endPos = 0;
-
+    @BindView(R.id.empty_layoutActivity)
+    LinearLayoutCompat emptyLayout;
+    @BindView(R.id.iv_emptyLayimage)
+    AppCompatImageView iv_emptyLayimage;
+    @BindView(R.id.nextPage)
+    AppCompatImageView nextPage;
+    @BindView(R.id.prePage)
+    AppCompatImageView prePage;
+    @BindView(R.id.tv_emptyLayTitle)
+    AppCompatTextView tv_emptyLayTitle;
+    @BindView(R.id.tvTotalCount)
+    AppCompatTextView tvTotalCount;
+    @BindView(R.id.rvEnquiryPager)
+    RecyclerView rvEnquiryPager;
+    @BindView(R.id.inputInvMinAmount)
+    AppCompatEditText inputInvMinAmount;
+    @BindView(R.id.inputInvMaxAmount)
+    AppCompatEditText inputInvMaxAmount;
+    @BindView(R.id.inputMaxSaleAmount)
+    AppCompatEditText inputMaxSaleAmount;
+    @BindView(R.id.inputMinSaleAmount)
+    AppCompatEditText inputMinSaleAmount;
+    List<RmListModel> tagRmList = new ArrayList<>();
+    List<EnquiryPagermodel> enquiryPageList = new ArrayList<>();
+    RmTagAdapter addRmTagAdapter;
+    EnquiryPageAdapter enquiryPageAdapter;
+    List<GetRmlist> RMDropdown = new ArrayList<>();
+    List<GetEnquiry> enquiryResultArrayList = new ArrayList<>();
+    GetRmlist selectedRM = new GetRmlist();
+    final Calendar myCalendar = Calendar.getInstance();
+    @BindView(R.id.progressBarHolder)
+    FrameLayout mProgressBarHolder;
     List<DashModel> dashboardList = new ArrayList<>();
     List<GraphModel> graphModelsList = new ArrayList<>();
-
-    final Calendar myCalendar = Calendar.getInstance();
+    private AppDatabase mDb;
+    @BindView(R.id.rvRm)
+    RecyclerView rvRm;
+    private String pagerClicked = "No";
     public TopCustomerFragment() {
         // Required empty public constructor
     }
@@ -160,6 +237,9 @@ public class TopCustomerFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ((BaseActivity)mContext).getDeps().inject(this);
+        mDb = BaseApplication.getInstance(mContext).getAppDatabase();
+        injectAPI();
         init();
         //fromDate.setPaintFlags(fromDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
         //toDate.setPaintFlags(toDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
@@ -171,27 +251,36 @@ public class TopCustomerFragment extends BaseFragment {
         //requestPermission();
         layList.setVisibility(View.VISIBLE);
         layPagination.setVisibility(View.VISIBLE);
-        //add_fab.setVisibility(View.VISIBLE);
+        imgGraph.setVisibility(View.GONE);
         imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
         imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
         imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
         layFilter.setVisibility(View.GONE);
 
         setToolbar();
-        dashboardList.add(new DashModel("Sales Credit","₹13245647",mContext.getDrawable(R.drawable.ic_om_sales_credit)));
-        dashboardList.add(new DashModel("Receipt","₹13245647",mContext.getDrawable(R.drawable.ic_om_receipt)));
-        dashboardList.add(new DashModel("Top Customer","₹13245647",mContext.getDrawable(R.drawable.ic_om_rating)));
-        dashboardList.add(new DashModel("Total Quotation Amount","₹13245647",mContext.getDrawable(R.drawable.ic_om_total_quotation)));
-        dashboardList.add(new DashModel("Dispatch Pending","₹13245647",mContext.getDrawable(R.drawable.ic_om_dispatch_pending)));
-        dashboardList.add(new DashModel("Enquiry Report","₹13245647",mContext.getDrawable(R.drawable.ic_om_enquiry_report)));
-        dashboardList.add(new DashModel("Visit Report","₹13245647",mContext.getDrawable(R.drawable.ic_om_visit_report)));
-        dashboardList.add(new DashModel("Products","₹13245647",mContext.getDrawable(R.drawable.ic_om_product)));
-        dashboardList.add(new DashModel("Sales Credit","₹13245647",mContext.getDrawable(R.drawable.ic_om_sales_credit)));
-        //dashboardList.add(new DashModel("Receipt","₹13245647",mContext.getDrawable(R.drawable.ic_om_receipt)));
-        //dashboardList.add(new DashModel("Top Customer","₹13245647",mContext.getDrawable(R.drawable.ic_om_rating)));
-
-        setAdapterForDashboardList();
-
+        setEnquiryPagerList(1);
+        callGetEnquiryApi("0");
+        setAdapterForEnquiryList();
+        setAddTagList();
+        setAddRmTagList();
+        rvImages.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (tagList.size() == 1 || tagList.size() == 2) {
+                    addTagAdapter.updateList(tagList, 1);
+                }
+                return false;
+            }
+        });
+        rvRm.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (tagRmList.size() == 1 || tagRmList.size() == 2) {
+                    addRmTagAdapter.updateList(tagRmList, 1);
+                }
+                return false;
+            }
+        });
         graphModelsList.removeAll(dashboardList);
         graphModelsList.add(new GraphModel("State C1", "Company Test 1", "5"));
         graphModelsList.add(new GraphModel("State C2", "Company Test 2", "60"));
@@ -207,17 +296,82 @@ public class TopCustomerFragment extends BaseFragment {
         graphModelsList.add(new GraphModel("State C12", "Company Test 12", "60"));
         setGraphData(3);
 
-        setAddTagList();
-        rvImages.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if(tagList.size()==1||tagList.size()==2){
-                    addTagAdapter.updateList(tagList,1);
-                }
-                return false;
-            }
-        });
     }
+
+    private void injectAPI() {
+        getEnquiryViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetEnquiryViewModel.class);
+        getEnquiryViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_ENQUIRY));
+
+        getRmViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetRmViewModel.class);
+        getRmViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_RM));
+  }
+
+
+    /* Call Api For RM */
+    private void callGetEnquiryApi(String pageNo) {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_enquiry);
+                RequestBody mRequestBodyTypeEnquiry = RequestBody.create(MediaType.parse("text/plain"), "0");//loginTable.getEmployeeId());//loginTable.getEmployeeId());
+                RequestBody mRequestBodyTypeComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+               /* String mStringFrmDate = AppUtils.splitsEnquiryDate(fromDate.getText().toString().trim()),
+                        mStringToDate = AppUtils.splitsEnquiryDate(toDate.getText().toString().trim());*/
+                RequestBody mRequestBodyTypeFromDate = RequestBody.create(MediaType.parse("text/plain"), "2022-12-02");
+                RequestBody mRequestBodyTypeToDate = RequestBody.create(MediaType.parse("text/plain"), "2022-12-02");
+                RequestBody mRequestBodyTypePageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);//selectedRM.getEmpId());
+                RequestBody mRequestBodyTypePageSize = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
+                String mCompanyNameList="",mRMList="";
+                for(int i=0;i<tagList.size();i++){
+                    if(i==0){
+                        mCompanyNameList = tagList.get(i).getTitle();
+                    }
+                    else {
+                        mCompanyNameList = mCompanyNameList+"~"+tagList.get(i).getTitle();
+                    }
+                }
+                for(int i=0;i<tagRmList.size();i++){
+                    if(i==0){
+                        mRMList = tagRmList.get(i).getTitle();
+                    }
+                    else {
+                        mRMList = mRMList+"~"+tagRmList.get(i).getTitle();
+                    }
+                }
+                RequestBody mRequestBodyTypeENo = RequestBody.create(MediaType.parse("text/plain"), "");
+                ///Gson gson = new Gson();
+                ///String bodyInStringFormat = gson.toJson(mCompanyNameList);
+                RequestBody mRequestBodyTypeCName = RequestBody.create(MediaType.parse("text/plain"), mCompanyNameList);
+                RequestBody mRequestBodyTypeEStatus = RequestBody.create(MediaType.parse("text/plain"), "");
+                RequestBody mRequestBodyTypeCloseReason = RequestBody.create(MediaType.parse("text/plain"), "");
+                RequestBody mRequestBodyTypeRm = RequestBody.create(MediaType.parse("text/plain"), mRMList);
+
+                GetEnquiryRequest getEnquiryRequest = new GetEnquiryRequest();
+                getEnquiryRequest.setAction(mRequestBodyAction);
+                getEnquiryRequest.setEnquiry(mRequestBodyTypeEnquiry);
+                getEnquiryRequest.setCompanyId(mRequestBodyTypeComId);
+                getEnquiryRequest.setEmployee(mRequestBodyTypeEmpId);
+                getEnquiryRequest.setFromDate(mRequestBodyTypeFromDate);
+                getEnquiryRequest.setToDate(mRequestBodyTypeToDate);
+                getEnquiryRequest.setPageNumber(mRequestBodyTypePageNo);
+                getEnquiryRequest.setPageSize(mRequestBodyTypePageSize);
+                getEnquiryRequest.setFilterEnquiryNo(mRequestBodyTypeENo);
+                getEnquiryRequest.setFilterCustomerName(mRequestBodyTypeCName);
+                getEnquiryRequest.setFilterEnquiryStatus(mRequestBodyTypeEStatus);
+                getEnquiryRequest.setFilterCloseReason(mRequestBodyTypeCloseReason);
+                getEnquiryRequest.setFilterRm(mRequestBodyTypeRm);
+
+                getEnquiryViewModel.hitGetEnquiryApi(getEnquiryRequest);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
 
     private void setAddTagList() {
         tagList.removeAll(tagList);
@@ -471,15 +625,18 @@ public class TopCustomerFragment extends BaseFragment {
         return data;
     }
 
-    private void setAdapterForDashboardList() {
-        if (dashboardList.size() > 0) {
+    private void setAdapterForEnquiryList() {
+        if (enquiryResultArrayList.size() > 0) {
             rvSalesList.setVisibility(View.VISIBLE);
+            emptyLayout.setVisibility(View.GONE);
         } else {
             rvSalesList.setVisibility(View.GONE);
+            emptyLayout.setVisibility(View.VISIBLE);
         }
-        salesCreditAdapter = new SalesCreditAdapter(mContext, dashboardList, new SalesCreditAdapter.ListItemSelectListener() {
+
+        enquiryReportAdapter = new EnquiryReportAdapter(mContext, enquiryResultArrayList, new EnquiryReportAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket) {
+            public void onItemClick(int mDataTicket,GetEnquiry getEnquiry) {
                 //For not killing pre fragment
                 showReceiptDetailsDialog();
             }
@@ -487,44 +644,8 @@ public class TopCustomerFragment extends BaseFragment {
 
         rvSalesList.setHasFixedSize(true);
         rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
-        rvSalesList.setAdapter(salesCreditAdapter);
+        rvSalesList.setAdapter(enquiryReportAdapter);
         final boolean[] check = {false};
-        rvSalesList.addOnItemTouchListener(
-                new RecyclerView.OnItemTouchListener() {
-
-                    @Override
-                    public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                        if(!check[0]) {
-                            //View item = rv.findChildViewUnder(e.getX(),e.getY()); //finding the view that clicked , using coordinates X and Y
-                            //int position = rv.getChildLayoutPosition(item); //getting the position of the item inside the list
-                            //rv.getChildAdapterPosition(rv.findViewById(R.id.tvCompanyName));
-                            Intent i = new Intent(getActivity(), View360Activity.class);
-                            i.putExtra(Constants.TRANSACTION_ID, "1");
-                            startActivity(i);
-                            ((Activity) getActivity()).overridePendingTransition(0, 0);
-                            check[0] = true;
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    check[0] = false;
-                                }
-                            }, 150);
-                        } return false;
-
-                    }
-
-                    @Override
-                    public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                       // Toast.makeText(mContext, "View where A: " + rv.getAdapter().getItemCount() + " is Clicked", Toast.LENGTH_SHORT).show();
-
-                    }
-
-                    @Override
-                    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-                    }
-                }
-        );
 
     }
 
@@ -572,7 +693,20 @@ public class TopCustomerFragment extends BaseFragment {
     private void setToolbar() {
         //set toolbar title
         //toolbarTitle.setText(R.string.scr_lbl_add_new_lr);
-        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify, R.id.layBack, R.id.imgCall);
+        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.layBack, R.id.imgCall);
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Fragment fragment = new DashboardFragment();
+                ((BaseActivity)mContext).moveFragment(mContext,fragment);
+            }
+        });
+        imgNotify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((BaseActivity)mContext).launchScreen(mContext, NotificationsActivity.class);;
+            }
+        });
     }
 
 
@@ -632,10 +766,27 @@ public class TopCustomerFragment extends BaseFragment {
         pieChart.setTransparentCircleRadius(45f);
         pieChart.invalidate();
     }
+    /* Call Api For RM */
+    private void callRMApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_rm);
+                RequestBody mRequestBodyTypeImage = RequestBody.create(MediaType.parse("text/plain"), "0");//loginTable.getEmployeeId());
+                RequestBody mRequestBodyTypeImage1 = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
+                getRmViewModel.hitGetRmApi(mRequestBodyType, mRequestBodyTypeImage, mRequestBodyTypeImage1);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
 
 
     //perform click actions
-    @OnClick({R.id.imgGraph,R.id.imgTable,/*,R.id.add_fab,*/R.id.imgFilter,R.id.resetButton})
+    @OnClick({R.id.imgGraph,R.id.imgTable,R.id.resetButton,R.id.imgFilter,R.id.submitButton})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
@@ -645,9 +796,11 @@ public class TopCustomerFragment extends BaseFragment {
                 layList.setVisibility(View.GONE);
                 layPagination.setVisibility(View.GONE);
                 layFilter.setVisibility(View.VISIBLE);
+                submitButton.setVisibility(View.VISIBLE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_table_blue));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_blue));
+                callRMApi();
                 break;
 
             case R.id.imgGraph:
@@ -656,6 +809,7 @@ public class TopCustomerFragment extends BaseFragment {
                 layList.setVisibility(View.GONE);
                 layPagination.setVisibility(View.GONE);
                 layFilter.setVisibility(View.GONE);
+                submitButton.setVisibility(View.GONE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_blue));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_table_blue));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
@@ -667,20 +821,39 @@ public class TopCustomerFragment extends BaseFragment {
                 layList.setVisibility(View.VISIBLE);
                 layPagination.setVisibility(View.VISIBLE);
                 layFilter.setVisibility(View.GONE);
+                submitButton.setVisibility(View.GONE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
                 break;
 
-            case R.id.resetButton:
+            case R.id.submitButton:
+                enquiryResultArrayList.clear();
+                setEnquiryPagerList(0);
+                setAdapterForEnquiryList();
+                tvPage.setText("Showing " + String.valueOf(0) + " to " +
+                        String.valueOf(0) + " of " + String.valueOf(0) + "\nEntries");
+                try {
+                    callGetEnquiryApi("0");
+                }catch (Exception e){e.printStackTrace();}
                 //add_fab.setVisibility(View.VISIBLE);
                 pieChart.setVisibility(View.GONE);
                 layList.setVisibility(View.VISIBLE);
                 layPagination.setVisibility(View.VISIBLE);
                 layFilter.setVisibility(View.GONE);
+                submitButton.setVisibility(View.GONE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
+                break;
+            case R.id.resetButton:
+                inputInvMaxAmount.setText("");
+                inputInvMinAmount.setText("");
+                inputMinSaleAmount.setText("");
+                inputMaxSaleAmount.setText("");
+                setAddTagList();
+                setAddRmTagList();
+                callRMApi();
                 break;
         }
     }
@@ -943,23 +1116,186 @@ public class TopCustomerFragment extends BaseFragment {
 
         }
     }
+    private void setAddRmTagList() {
+        tagRmList.removeAll(tagRmList);
+        tagRmList.add(new RmListModel("","1",null));
+        if (tagRmList.size() > 0) {
+            rvRm.setVisibility(View.VISIBLE);
+        } else {
+            rvRm.setVisibility(View.GONE);
+        }
+        addRmTagAdapter = new RmTagAdapter(mContext, tagRmList, new RmTagAdapter.ListItemSelectListener() {
+            @Override
+            public void onItemClick(List<RmListModel> mDataTicket) {
+                tagRmList =  mDataTicket;
+                addRmTagAdapter.updateList(tagRmList,0);
+                if(tagList.size()>0){
+                    int marginInDp40 = (int) TypedValue.applyDimension(
+                            TypedValue.COMPLEX_UNIT_DIP, 90, getResources()
+                                    .getDisplayMetrics());
+                    rvRm.setMinimumHeight(marginInDp40);
+                    //setMargins(rvImages, 0, marginInDp40, 0, 0);
+                }
+            }
+        });
+        rvRm.setHasFixedSize(true);
+        rvRm.setLayoutManager(new GridLayoutManager(mContext, 1));
+        rvRm.setItemAnimator(new DefaultItemAnimator());
+        rvRm.setAdapter(addRmTagAdapter);
+        final boolean[] check = {false};
 
-    /*@Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finishAffinity();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(receiver, intentFilter);
+    private void setPagerEnquiryList(long pageNo){
+        for(int i=0;i<pageNo;i++) {
+            if (pagerClicked.equals("No")) {
+                if (i == 0) {
+                    rvEnquiryPager.scrollToPosition(i+1);
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 1));
+                } else {
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 0));
+                }
+            } else {
+                if (i == Integer.parseInt(pagerClicked)) {
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 1));
+                } else {
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 0));
+                }
+            }
+        }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(receiver);
-    }*/
+    private void setEnquiryPagerList(long pageNo) {
+        enquiryPageList.clear();
+        if(pageNo==0) {
+            pageNo = 1;
+        }
+        setPagerEnquiryList(pageNo);
+        if (enquiryPageList.size() > 0) {
+            rvEnquiryPager.setVisibility(View.VISIBLE);
+        } else {
+            rvEnquiryPager.setVisibility(View.GONE);
+        }
+        enquiryPageAdapter = new EnquiryPageAdapter(mContext, enquiryPageList, new EnquiryPageAdapter.ListItemSelectListener() {
+            @Override
+            public void onItemClick(EnquiryPagermodel mData,List<EnquiryPagermodel> mDataList) {
+                enquiryPageList = mDataList;
+                try {
+                    pagerClicked = String.valueOf(Integer.parseInt(mData.getPageNo())-1);
+                    enquiryPageAdapter.updateList(mDataList);
+                }catch (Exception e){e.printStackTrace();}
+                try {
+                    callGetEnquiryApi(String.valueOf(Integer.parseInt(mData.getPageNo()) - 1));
+                }catch (Exception e){e.printStackTrace();}
+            }
+        });
+        rvEnquiryPager.setHasFixedSize(true);
+        //rvEnquiryPager.setLayoutManager(new GridLayoutManager(mContext, 3));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false);
+        rvEnquiryPager.setLayoutManager(layoutManager);
+        rvEnquiryPager.setItemAnimator(new DefaultItemAnimator());
+        rvEnquiryPager.setAdapter(enquiryPageAdapter);
+        try{
+            rvEnquiryPager.scrollToPosition(Integer.parseInt(pagerClicked));}catch (Exception e){e.printStackTrace();}
+        final boolean[] check = {false};
+        prePage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //try{
+                /*LogUtil.printToastMSG(mContext,"prev");
+                int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+                rvEnquiryPager.scrollToPosition(firstVisiblePosition-1);
+                //int firstVisiblePositionNew = layoutManager.findFirstVisibleItemPosition();
+                enquiryPageAdapter.updatePageList(firstVisiblePosition-1);
+                }catch (Exception e){e.printStackTrace();*/
+                //}catch (Exception e){e.printStackTrace();}
+            }
+        });
+        nextPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    /*LogUtil.printToastMSG(mContext,"next");
+                    int firstVisiblePositionLast = layoutManager.findLastVisibleItemPosition();
+                    int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+                    rvEnquiryPager.scrollToPosition(firstVisiblePositionLast-1);
+                    //int firstVisiblePositionNew = layoutManager.findFirstVisibleItemPosition();
+                    enquiryPageAdapter.updatePageList(firstVisiblePosition + 1);*/
+                }catch (Exception e){e.printStackTrace();}
+            }
+        });
+
+    }
+
+    /*Api response */
+    private void consumeResponse(ApiResponse apiResponse, String tag) {
+        switch (apiResponse.status) {
+
+            case LOADING:
+                ((BaseActivity) mContext).showSmallProgressBar(mProgressBarHolder);
+                break;
+
+            case SUCCESS:
+                ((BaseActivity)getActivity()).dismissSmallProgressBar(mProgressBarHolder);
+                if (!apiResponse.data.isJsonNull()) {
+                    LogUtil.printLog(tag, apiResponse.data.toString());
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_ENQUIRY)) {
+                            GetEnquiryResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetEnquiryResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                long totalPage = 0;
+                                tvTotalCount.setText(String.valueOf(responseModel.getResult().getTotalEnquiries()));
+                                try {
+                                    if (responseModel.getResult().getEnquiries() != null && responseModel.getResult().getEnquiries().size()>0) {
+                                        enquiryResultArrayList.clear();
+                                        enquiryResultArrayList = responseModel.getResult().getEnquiries();
+                                        totalPage=responseModel.getResult().getTotalpages();
+
+                                        if(responseModel.getResult().getNextpage()==1) {
+                                            tvPage.setText("Showing " + String.valueOf(responseModel.getResult().getNextpage()) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1) + enquiryResultArrayList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalEnquiries()) + "\nEntries"));
+                                        }
+                                        else {
+                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getResult().getNextpage()-1)*7)+1) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1)*7)+enquiryResultArrayList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalEnquiries()) + "\nEntries");
+                                        }
+                                    }
+                                    else{
+                                        totalPage=0;
+                                        enquiryResultArrayList.clear();
+                                    }
+
+                                }catch(Exception e){
+                                    e.printStackTrace();
+                                    totalPage=0;
+                                    enquiryResultArrayList.clear();
+                                }
+                                setEnquiryPagerList(totalPage);
+                                setAdapterForEnquiryList();
+                            }
+                        }
+                    }catch (Exception e){e.printStackTrace();}
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_RM)) {
+                            GetRmResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetRmResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                RMDropdown.removeAll(RMDropdown);
+                                RMDropdown = responseModel.getResult().getRmlist();
+                                ///setDropdownRM();
+                                addRmTagAdapter.updateRmList(RMDropdown);
+                            } else {
+                                LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
+                            }
+                        }
+                    }catch (Exception e){e.printStackTrace();}
+                }
+                break;
+            case ERROR:
+                ((BaseActivity)getActivity()).dismissSmallProgressBar(mProgressBarHolder);
+                LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+                break;
+        }
+    }
+
 
 }

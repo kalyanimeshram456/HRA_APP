@@ -14,20 +14,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetEnquiry;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetEnquiryResult;
 
 import java.util.List;
 
 public class EnquiryReportAdapter extends RecyclerView.Adapter<EnquiryReportAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<DashModel> mListData;
+    private List<GetEnquiry> mListData;
     private Context mContext;
-    private String mDate;
 
     public EnquiryReportAdapter(Context mContext) {
         this.mContext = mContext;
     }
 
-    public EnquiryReportAdapter(Context context, List<DashModel> listData, ListItemSelectListener itemClickListener) {
+    public EnquiryReportAdapter(Context context, List<GetEnquiry> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -42,7 +43,7 @@ public class EnquiryReportAdapter extends RecyclerView.Adapter<EnquiryReportAdap
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<DashModel> list){
+    public void updateList(List<GetEnquiry> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -52,32 +53,11 @@ public class EnquiryReportAdapter extends RecyclerView.Adapter<EnquiryReportAdap
 
         if(mListData.size()>0) {
             holder.setIsRecyclable(false);
-            if(mListData.get(position).getValue().equals("quote"))
-            {
-                holder.tvState.setText("CRM/2021/ARC");
-                holder.tvRs.setText("Accepted");
-                holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
-            }
-            if(mListData.get(position).getValue().equals("dispatch"))
-            {
-                holder.tvState.setText("PO3048");
-                holder.tvRs.setText("Steel");
-                holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
-            }
-            if(mListData.get(position).getValue().equals("report"))
-            {
-                holder.tvCompanyName.setText("CRM/2021/HH");
-                holder.tvState.setText("Steel private Lmt.");
-                holder.tvRs.setText("Quotation Converted");
-                holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
-            }
-            if(mListData.get(position).getValue().equals("visit"))
-            {
-                holder.tvCompanyName.setText("Steel private Lmt.");
-                holder.tvState.setText("Mumbai");
-                holder.tvRs.setText("Interested");
-                holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
-            }
+            GetEnquiry mData = mListData.get(position);
+            holder.tvCompanyName.setText(mData.getCustName());
+            holder.tvEnquiryStatus.setText(mData.getStatus());
+            holder.tvEnquiryNo.setText(mData.getEnquiryNo());
+            holder.tvEnquiryStatus.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
 
             if (position % 2 != 0) {
                 holder.layClick.setBackground(mContext.getResources().getDrawable(R.drawable.shape_round_white_left_right_border_dialog));
@@ -89,33 +69,25 @@ public class EnquiryReportAdapter extends RecyclerView.Adapter<EnquiryReportAdap
             holder.setIsRecyclable(true);
         }
 
-       /* View view = holder.itemView;
-
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Toast.makeText(mContext, "View where A: " + position + " is Clicked", Toast.LENGTH_SHORT).show();
-            }
-        });*/
-        holder.tvState.setOnClickListener(new View.OnClickListener() {
+        holder.tvEnquiryStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(1);
+                listItemSelectListener.onItemClick(1,mListData.get(position));
             }
         });
-        holder.tvRs.setOnClickListener(new View.OnClickListener() {
+        holder.tvEnquiryStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(1);
+                listItemSelectListener.onItemClick(1,mListData.get(position));
             }
         });
         holder.tvCompanyName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(0);
+                listItemSelectListener.onItemClick(0,mListData.get(position));
             }
         });
 
@@ -129,25 +101,20 @@ public class EnquiryReportAdapter extends RecyclerView.Adapter<EnquiryReportAdap
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        AppCompatTextView tvCompanyName , tvState , tvRs;
+        AppCompatTextView tvEnquiryNo , tvCompanyName , tvEnquiryStatus;
         LinearLayoutCompat layClick;
         AppCompatImageView imgDash;
 
         ViewHolder(View itemView) {
             super(itemView);
             layClick = itemView.findViewById(R.id.layClick);
-            tvCompanyName = itemView.findViewById(R.id.tvCompanyName);
-            tvState = itemView.findViewById(R.id.tvState);
-            tvRs = itemView.findViewById(R.id.tvRS);
-
-          /*  tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvRs = itemView.findViewById(R.id.tvRs);
-            layClick = itemView.findViewById(R.id.layClick);
-            imgDash = itemView.findViewById(R.id.imgDash);
-       */ }
+            tvEnquiryNo = itemView.findViewById(R.id.tvCompanyName);
+            tvCompanyName = itemView.findViewById(R.id.tvState);
+            tvEnquiryStatus = itemView.findViewById(R.id.tvRS);
+        }
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(int mData);
+        void onItemClick(int mData,GetEnquiry getEnquiry);
     }
 }

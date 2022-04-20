@@ -7,13 +7,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
@@ -22,6 +22,9 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,15 +38,37 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.model.GradientColor;
+import com.google.gson.Gson;
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.basecontrol.BaseActivity;
+import com.ominfo.crm_solution.basecontrol.BaseApplication;
 import com.ominfo.crm_solution.basecontrol.BaseFragment;
+import com.ominfo.crm_solution.database.AppDatabase;
 import com.ominfo.crm_solution.interfaces.Constants;
+import com.ominfo.crm_solution.network.ApiResponse;
+import com.ominfo.crm_solution.network.DynamicAPIPath;
+import com.ominfo.crm_solution.network.NetworkCheck;
+import com.ominfo.crm_solution.network.ViewModelFactory;
+import com.ominfo.crm_solution.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
-import com.ominfo.crm_solution.ui.enquiry_report.adapter.EnquiryReportAdapter;
+import com.ominfo.crm_solution.ui.enquiry_report.adapter.EnquiryPageAdapter;
+import com.ominfo.crm_solution.ui.enquiry_report.adapter.RmTagAdapter;
+import com.ominfo.crm_solution.ui.enquiry_report.model.EnquiryPagermodel;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmResponse;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmViewModel;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmlist;
+import com.ominfo.crm_solution.ui.login.model.LoginTable;
+import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.product.adapter.ProductAdapter;
+import com.ominfo.crm_solution.ui.product.model.ProductRequest;
+import com.ominfo.crm_solution.ui.product.model.ProductResponse;
+import com.ominfo.crm_solution.ui.product.model.ProductResult;
+import com.ominfo.crm_solution.ui.product.model.ProductViewModel;
+import com.ominfo.crm_solution.ui.sale.adapter.CompanyTagAdapter;
+import com.ominfo.crm_solution.ui.sale.model.RmListModel;
 import com.ominfo.crm_solution.ui.sales_credit.activity.View360Activity;
 import com.ominfo.crm_solution.ui.sales_credit.model.GraphModel;
+import com.ominfo.crm_solution.util.LogUtil;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -54,6 +79,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -71,10 +98,10 @@ public class ProductFragment extends BaseFragment {
     ProductAdapter enquiryReportAdapter;
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
-    @BindView(R.id.fromDate)
+   /* @BindView(R.id.fromDate)
     AppCompatTextView fromDate;
     @BindView(R.id.toDate)
-    AppCompatTextView toDate;
+    AppCompatTextView toDate;*/
     @BindView(R.id.tvPage)
     AppCompatTextView tvPage;
     @BindView(R.id.layList)
@@ -89,8 +116,13 @@ public class ProductFragment extends BaseFragment {
     AppCompatImageView imgGraph;
     @BindView(R.id.imgFilter)
     AppCompatImageView imgFilter;
-    @BindView(R.id.layFilter)
-    LinearLayoutCompat layFilter;
+   /* @BindView(R.id.layFilter)
+    LinearLayoutCompat layFilter;*/
+    @BindView(R.id.imgBack)
+    AppCompatImageView imgBack;
+    @BindView(R.id.imgNotify)
+    AppCompatImageView imgNotify;
+    private AppDatabase mDb;
 /*
     @BindView(R.id.add_fab)
     FloatingActionButton add_fab;*/
@@ -110,10 +142,49 @@ public class ProductFragment extends BaseFragment {
            "10"*//*, "45","90", "95","50", "55","60", "65"*//*};*/
     int startPos = 0 , endPos = 0;
 
-    List<DashModel> dashboardList = new ArrayList<>();
+    List<ProductResult> productResultList = new ArrayList<>();
     List<GraphModel> graphModelsList = new ArrayList<>();
-
+    @Inject
+    ViewModelFactory mViewModelFactory;
+    private ProductViewModel productViewModel;
+    private GetRmViewModel getRmViewModel;
     final Calendar myCalendar = Calendar.getInstance();
+    List<DashModel> tagList = new ArrayList<>();
+    CompanyTagAdapter addTagAdapter;
+    List<String> mCompnyList = new ArrayList<>();
+    //test
+    List<String> mTRMList = new ArrayList<>();
+    @BindView(R.id.rvEnquiryPager)
+    RecyclerView rvEnquiryPager;
+    private String pagerClicked = "No";
+ /*   @BindView(R.id.tvTotalCount)
+    AppCompatTextView tvTotalCount;*/
+    List<EnquiryPagermodel> enquiryPageList = new ArrayList<>();
+    EnquiryPageAdapter enquiryPageAdapter;
+    List<RmListModel> tagRmList = new ArrayList<>();
+   /* @BindView(R.id.rvRm)
+    RecyclerView rvRm;*/
+    RmTagAdapter addRmTagAdapter;
+    @BindView(R.id.nextPage)
+    AppCompatImageView nextPage;
+    @BindView(R.id.prePage)
+    AppCompatImageView prePage;
+    @BindView(R.id.tvNotifyCount)
+    AppCompatTextView tvNotifyCount;
+    private Calendar calendar;
+    private SimpleDateFormat dateFormat;
+  /*  @BindView(R.id.tvQutationNo)
+    AppCompatEditText tvQutationNo;
+    @BindView(R.id.tvMinAmount)
+    AppCompatEditText tvMinAmount;
+    @BindView(R.id.tvMaxAmount)
+    AppCompatEditText tvMaxAmount;*/
+    @BindView(R.id.empty_layoutActivity)
+    LinearLayoutCompat emptyLayout;
+    List<GetRmlist> RMDropdown = new ArrayList<>();
+    String date = "";
+    @BindView(R.id.progressBarHolder)
+    FrameLayout mProgressBarHolder;
     public ProductFragment() {
         // Required empty public constructor
     }
@@ -145,11 +216,21 @@ public class ProductFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ((BaseActivity)mContext).getDeps().inject(this);
+        mDb = BaseApplication.getInstance(mContext).getAppDatabase();
+        injectAPI();
         init();
-        fromDate.setPaintFlags(fromDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
-        toDate.setPaintFlags(toDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
+        //fromDate.setPaintFlags(fromDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
+        //toDate.setPaintFlags(toDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
     }
 
+    private void injectAPI() {
+        productViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ProductViewModel.class);
+        productViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_PRODUCT));
+
+        getRmViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetRmViewModel.class);
+        getRmViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_RM));
+    }
 
     private void init(){
         //mDb =BaseApplication.getInstance(mContext).getAppDatabase();
@@ -160,24 +241,15 @@ public class ProductFragment extends BaseFragment {
         imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
         imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
         imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
-        layFilter.setVisibility(View.GONE);
+        //layFilter.setVisibility(View.GONE);
 
         setToolbar();
-        dashboardList.add(new DashModel("Sales Credit","visit",mContext.getDrawable(R.drawable.ic_om_sales_credit)));
-        dashboardList.add(new DashModel("Receipt","visit",mContext.getDrawable(R.drawable.ic_om_receipt)));
-        dashboardList.add(new DashModel("Top Customer","visit",mContext.getDrawable(R.drawable.ic_om_rating)));
-        dashboardList.add(new DashModel("Total Quotation Amount","visit",mContext.getDrawable(R.drawable.ic_om_total_quotation)));
-        dashboardList.add(new DashModel("visit Pending","visit",mContext.getDrawable(R.drawable.ic_om_enquiry_report)));
-        dashboardList.add(new DashModel("Enquiry visit","visit",mContext.getDrawable(R.drawable.ic_om_total_quotation)));
-        dashboardList.add(new DashModel("Visit visit","visit",mContext.getDrawable(R.drawable.ic_om_total_quotation)));
-        dashboardList.add(new DashModel("Products","visit",mContext.getDrawable(R.drawable.ic_om_product)));
-        dashboardList.add(new DashModel("Sales Credit","visit",mContext.getDrawable(R.drawable.ic_om_sales_credit)));
-        //dashboardList.add(new DashModel("Receipt","visit",mContext.getDrawable(R.drawable.ic_om_receipt)));
-        //dashboardList.add(new DashModel("Top Customer","visit",mContext.getDrawable(R.drawable.ic_om_rating)));
+        setDate();
+        setEnquiryPagerList(1);
+        setAdapterForProductList();
+        callProductApi("0");
 
-        setAdapterForDashboardList();
-
-        graphModelsList.removeAll(dashboardList);
+        graphModelsList.removeAll(productResultList);
         graphModelsList.add(new GraphModel("State C1", "Company Test 1", "5"));
         graphModelsList.add(new GraphModel("State C2", "Company Test 2", "60"));
         graphModelsList.add(new GraphModel("State C3", "Company Test 3", "15"));
@@ -191,6 +263,128 @@ public class ProductFragment extends BaseFragment {
         graphModelsList.add(new GraphModel("State C11", "Company Test 11", "55"));
         graphModelsList.add(new GraphModel("State C12", "Company Test 12", "60"));
         setGraphData(3);
+    }
+
+    private void setDate(){
+        calendar = Calendar.getInstance();
+        dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        date = dateFormat.format(calendar.getTime());
+        //toDate.setText(date);fromDate.setText(date);
+    }
+
+    /* Call Api For Sales */
+    private void callProductApi(String pageNo) {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                String mCompanyNameList="",mRMList="";
+                /*for(int i=0;i<tagList.size();i++){
+                    if(i==0){
+                        mCompanyNameList = tagList.get(i).getTitle();
+                    }
+                    else {
+                        mCompanyNameList = mCompanyNameList+"~"+tagList.get(i).getTitle();
+                    }
+                }*/
+                for(int i=0;i<tagRmList.size();i++){
+                    mTRMList.add(tagRmList.get(i).getValue());
+                }
+               /* String mStringFrmDate = AppUtils.splitsEnquiryDate(fromDate.getText().toString().trim()),
+                        mStringToDate = AppUtils.splitsEnquiryDate(toDate.getText().toString().trim());
+               */ mCompnyList.clear();
+                mCompnyList.add("93"); mCompnyList.add("1");
+                ProductRequest request = new ProductRequest();
+                request.setPageno(pageNo);
+                request.setPagesize(Constants.MIN_PAG_SIZE);
+                productViewModel.hitProductApi(request);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    private void setPagerEnquiryList(long pageNo){
+        for(int i=0;i<pageNo;i++) {
+            if (pagerClicked.equals("No")) {
+                if (i == 0) {
+                    rvEnquiryPager.scrollToPosition(i+1);
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 1));
+                } else {
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 0));
+                }
+            } else {
+                if (i == Integer.parseInt(pagerClicked)) {
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 1));
+                } else {
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 0));
+                }
+            }
+        }
+    }
+
+    private void setEnquiryPagerList(long pageNo) {
+        enquiryPageList.clear();
+        if(pageNo==0) {
+            pageNo = 1;
+        }
+        setPagerEnquiryList(pageNo);
+        if (enquiryPageList.size() > 0) {
+            rvEnquiryPager.setVisibility(View.VISIBLE);
+        } else {
+            rvEnquiryPager.setVisibility(View.GONE);
+        }
+        enquiryPageAdapter = new EnquiryPageAdapter(mContext, enquiryPageList, new EnquiryPageAdapter.ListItemSelectListener() {
+            @Override
+            public void onItemClick(EnquiryPagermodel mData, List<EnquiryPagermodel> mDataList) {
+                enquiryPageList = mDataList;
+                try {
+                    pagerClicked = String.valueOf(Integer.parseInt(mData.getPageNo())-1);
+                    enquiryPageAdapter.updateList(mDataList);
+                }catch (Exception e){e.printStackTrace();}
+                try {
+                    callProductApi(String.valueOf(Integer.parseInt(mData.getPageNo()) - 1));
+                }catch (Exception e){e.printStackTrace();}
+            }
+        });
+        rvEnquiryPager.setHasFixedSize(true);
+        //rvEnquiryPager.setLayoutManager(new GridLayoutManager(mContext, 3));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false);
+        rvEnquiryPager.setLayoutManager(layoutManager);
+        rvEnquiryPager.setItemAnimator(new DefaultItemAnimator());
+        rvEnquiryPager.setAdapter(enquiryPageAdapter);
+        try{
+            rvEnquiryPager.scrollToPosition(Integer.parseInt(pagerClicked));}catch (Exception e){e.printStackTrace();}
+        final boolean[] check = {false};
+        prePage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //try{
+                /*LogUtil.printToastMSG(mContext,"prev");
+                int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+                rvEnquiryPager.scrollToPosition(firstVisiblePosition-1);
+                //int firstVisiblePositionNew = layoutManager.findFirstVisibleItemPosition();
+                enquiryPageAdapter.updatePageList(firstVisiblePosition-1);
+                }catch (Exception e){e.printStackTrace();*/
+                //}catch (Exception e){e.printStackTrace();}
+            }
+        });
+        nextPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    /*LogUtil.printToastMSG(mContext,"next");
+                    int firstVisiblePositionLast = layoutManager.findLastVisibleItemPosition();
+                    int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+                    rvEnquiryPager.scrollToPosition(firstVisiblePositionLast-1);
+                    //int firstVisiblePositionNew = layoutManager.findFirstVisibleItemPosition();
+                    enquiryPageAdapter.updatePageList(firstVisiblePosition + 1);*/
+                }catch (Exception e){e.printStackTrace();}
+            }
+        });
+
     }
 
     private void setGraphData(int initStatus) {
@@ -331,15 +525,17 @@ public class ProductFragment extends BaseFragment {
         return data;
     }
 
-    private void setAdapterForDashboardList() {
-        if (dashboardList.size() > 0) {
+    private void setAdapterForProductList() {
+        if (productResultList.size() > 0) {
             rvSalesList.setVisibility(View.VISIBLE);
+            emptyLayout.setVisibility(View.GONE);
         } else {
+            emptyLayout.setVisibility(View.VISIBLE);
             rvSalesList.setVisibility(View.GONE);
         }
-        enquiryReportAdapter = new ProductAdapter(mContext, dashboardList, new ProductAdapter.ListItemSelectListener() {
+        enquiryReportAdapter = new ProductAdapter(mContext, productResultList, new ProductAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket) {
+            public void onItemClick(int mDataTicket,ProductResult productResult) {
                 //For not killing pre fragment
                 if(mDataTicket==0) {
                     Intent i = new Intent(getActivity(), View360Activity.class);
@@ -348,7 +544,7 @@ public class ProductFragment extends BaseFragment {
                     ((Activity) getActivity()).overridePendingTransition(0, 0);
                 }
                 if(mDataTicket==1){
-                    showVisitDetailsDialog();
+                    showVisitDetailsDialog(productResult);
                 }
             }
         });
@@ -356,20 +552,20 @@ public class ProductFragment extends BaseFragment {
         rvSalesList.setHasFixedSize(true);
         rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
         rvSalesList.setAdapter(enquiryReportAdapter);
-        final boolean[] check = {false};
-
     }
 
     //show Receipt Details popup
-    public void showVisitDetailsDialog() {
+    public void showVisitDetailsDialog(ProductResult productResult) {
         Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialog.setContentView(R.layout.dialog_product_details);
         mDialog.setCanceledOnTouchOutside(true);
         AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
         AppCompatButton closeButton = mDialog.findViewById(R.id.closeButton);
 
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-
+        AppCompatTextView tvProdCode = mDialog.findViewById(R.id.tvProdCode);
+        AppCompatTextView tvProdName = mDialog.findViewById(R.id.tvProdName);
+        tvProdName.setText(productResult.getProdName()+"...");
+        tvProdCode.setText(productResult.getProdCode());
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -404,7 +600,20 @@ public class ProductFragment extends BaseFragment {
     private void setToolbar() {
         //set toolbar title
         //toolbarTitle.setText(R.string.scr_lbl_add_new_lr);
-        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify, R.id.layBack, R.id.imgCall);
+        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.layBack, R.id.imgCall);
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Fragment fragment = new DashboardFragment();
+                ((BaseActivity)mContext).moveFragment(mContext,fragment);
+            }
+        });
+        imgNotify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((BaseActivity)mContext).launchScreen(mContext, NotificationsActivity.class);;
+            }
+        });
     }
 
 
@@ -467,23 +676,23 @@ public class ProductFragment extends BaseFragment {
 
 
     //perform click actions
-    @OnClick({R.id.imgGraph,R.id.imgTable,/*,R.id.add_fab,*/R.id.imgFilter,R.id.resetButton
+    @OnClick({R.id.imgGraph,R.id.imgTable,/*,R.id.add_fab,*/R.id.imgFilter/*,R.id.resetButton*/
     ,R.id.toDate,R.id.fromDate})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
             case R.id.toDate:
-                openDataPicker(1,toDate);
+                //openDataPicker(1,toDate);
                 break;
             case R.id.fromDate:
-                openDataPicker(0,fromDate);
+                //openDataPicker(0,fromDate);
                 break;
             case R.id.imgFilter:
                 //add_fab.setVisibility(View.GONE);
                 pieChart.setVisibility(View.GONE);
                 layList.setVisibility(View.GONE);
                 layPagination.setVisibility(View.GONE);
-                layFilter.setVisibility(View.VISIBLE);
+                //layFilter.setVisibility(View.VISIBLE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_table_blue));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_blue));
@@ -494,7 +703,7 @@ public class ProductFragment extends BaseFragment {
                 pieChart.setVisibility(View.VISIBLE);
                 layList.setVisibility(View.GONE);
                 layPagination.setVisibility(View.GONE);
-                layFilter.setVisibility(View.GONE);
+                //layFilter.setVisibility(View.GONE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_blue));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_table_blue));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
@@ -505,22 +714,22 @@ public class ProductFragment extends BaseFragment {
                 pieChart.setVisibility(View.GONE);
                 layList.setVisibility(View.VISIBLE);
                 layPagination.setVisibility(View.VISIBLE);
-                layFilter.setVisibility(View.GONE);
+               // layFilter.setVisibility(View.GONE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
                 break;
 
-            case R.id.resetButton:
+          /*  case R.id.resetButton:
                 //add_fab.setVisibility(View.VISIBLE);
                 pieChart.setVisibility(View.GONE);
                 layList.setVisibility(View.VISIBLE);
                 layPagination.setVisibility(View.VISIBLE);
-                layFilter.setVisibility(View.GONE);
+                //layFilter.setVisibility(View.GONE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
-                break;
+                break;*/
         }
     }
 
@@ -578,187 +787,11 @@ public class ProductFragment extends BaseFragment {
     }
 
 
-
-    /*private void injectAPI() {
-        mGetVehicleViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetVehicleViewModel.class);
-        mGetVehicleViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_GET_VEHICLE));
-    }*/
-
-  /*  *//* Call Api For Vehicle List *//*
-    private void callVehicleListApi(String fromDate,String toDate) {
-        if (NetworkCheck.isInternetAvailable(mContext)) {
-            GetVehicleListRequest mRequest = new GetVehicleListRequest();
-            mRequest.setUserkey(mUserKey);//mUserKey); //6b07b768-926c-49b6-ac1c-89a9d03d4c3b
-            mRequest.setFromDate(fromDate);
-            mRequest.setToDate(toDate);
-            Gson gson = new Gson();
-            String bodyInStringFormat = gson.toJson(mRequest);
-            mGetVehicleViewModel.hitGetVehicleApi(bodyInStringFormat);
-        } else {
-            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
-        }
-    }*/
-
-
-
-  /*  private void setAdapterForVehicleList() {
-        if (vehicleModelList.size() > 0) {
-            mLrNumberAdapter = new LrNumberAdapter(mContext, vehicleModelList, new LrNumberAdapter.ListItemSelectListener() {
-                @Override
-                public void onItemClick(GetVehicleListResult mDataTicket) {
-                    Intent intent = new Intent(mContext,AddLrActivity.class);
-                    intent.putExtra(Constants.TRANSACTION_ID, mDataTicket.getTransactionID());
-                    intent.putExtra(Constants.FROM_SCREEN, Constants.LIST);
-                    startActivity(intent);
-                }
-            });
-            mRecylerViewLrNumber.setHasFixedSize(true);
-            mRecylerViewLrNumber.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
-            mRecylerViewLrNumber.setAdapter(mLrNumberAdapter);
-            mRecylerViewLrNumber.setVisibility(View.VISIBLE);
-            linearLayoutEmptyActivity.setVisibility(View.GONE);
-            imgEmptyImage.setBackground(getResources().getDrawable(R.drawable.ic_error_load));
-            tvEmptyLayTitle.setText(getString(R.string.scr_lbl_data_loading));
-        } else {
-            mRecylerViewLrNumber.setVisibility(View.GONE);
-            linearLayoutEmptyActivity.setVisibility(View.VISIBLE);
-            imgEmptyImage.setBackground(getResources().getDrawable(R.drawable.ic_error_load));
-            tvEmptyLayTitle.setText(R.string.scr_lbl_no_data_available);
-        }
-    }*/
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mContext = context;
     }
-
-
-  /*  //set date picker view
-    private void openDataPicker(AppCompatTextView datePickerField,int mFrom) {
-        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-                // TODO Auto-generated method stub
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                String myFormat="";
-                if(mFrom==0) {
-                    myFormat = "dd MMM yyyy"; //In which you need put here
-                }
-                else{
-                    myFormat = "dd/MM/yyyy"; //In which you need put here
-                }
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-                datePickerField.setText(sdf.format(myCalendar.getTime()));
-            }
-
-        };
-
-        new DatePickerDialog(this, date, myCalendar
-                .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-
-    }
-
-    //show truck details popup
-    public void showTruckDetailsDialog() {
-        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_truck_details);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-        RelativeLayout relRC = mDialog.findViewById(R.id.relRC);
-        RelativeLayout relPUC = mDialog.findViewById(R.id.relPUC);
-        RelativeLayout relIss = mDialog.findViewById(R.id.relIss);
-
-        relRC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        relPUC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        relIss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }
-
-    //show truck details popup
-    public void showFullImageDialog() {
-        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_doc_full_view);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }*/
-
-
-    /*//request camera and storage permission
-    private void requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (mContext.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-            ) {
-
-                requestPermissions(new String[]
-                                { Manifest.permission.CAMERA,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                },
-                        1000);
-
-            } else {
-                //createFolder();
-            }
-        } else {
-            //createFolder();
-        }
-    }
-*/
 
     /*
      * ACCESS_FINE_LOCATION permission result
@@ -782,23 +815,73 @@ public class ProductFragment extends BaseFragment {
 
         }
     }
+    /*Api response */
+    private void consumeResponse(ApiResponse apiResponse, String tag) {
+        switch (apiResponse.status) {
 
-    /*@Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finishAffinity();
+            case LOADING:
+                ((BaseActivity) mContext).showSmallProgressBar(mProgressBarHolder);
+                break;
+
+            case SUCCESS:
+                ((BaseActivity)getActivity()).dismissSmallProgressBar(mProgressBarHolder);
+                if (!apiResponse.data.isJsonNull()) {
+                    LogUtil.printLog(tag, apiResponse.data.toString());
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_PRODUCT)) {
+                            ProductResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ProductResponse.class);
+                            if (responseModel != null && responseModel.getStatus()==1) {
+                                productResultList.clear();
+                                long totalPage = 0;
+                                //tvTotalCount.setText(String.valueOf(responseModel.getTotalenquiries()));
+                                try {
+                                    if (responseModel.getProducts() != null && responseModel.getProducts().size()>0) {
+                                        productResultList = responseModel.getProducts();
+                                        totalPage = responseModel.getTotalpages();
+                                        if(responseModel.getNextpage()==1) {
+                                            tvPage.setText("Showing " + String.valueOf(responseModel.getNextpage()) + " to " +
+                                                    String.valueOf(((responseModel.getNextpage()-1) + productResultList.size()) + " of " + String.valueOf(responseModel.getTotalproducts()) + "\nEntries"));
+                                        }
+                                        else {
+                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getNextpage()-1)*4)+1) + " to " +
+                                                    String.valueOf(((responseModel.getNextpage()-1)*4)+productResultList.size()) + " of " + String.valueOf(responseModel.getTotalproducts()) + "\nEntries");
+                                        }
+                                    }
+
+                                }catch(Exception e){
+                                    totalPage = 0;
+                                    productResultList.clear();
+                                    e.printStackTrace();
+
+                                }
+                                setEnquiryPagerList(totalPage);
+                                setAdapterForProductList();
+                            }
+
+                        }
+                        try {
+                            if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_RM)) {
+                                GetRmResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetRmResponse.class);
+                                if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                    RMDropdown.removeAll(RMDropdown);
+                                    RMDropdown = responseModel.getResult().getRmlist();
+                                    ///setDropdownRM();
+                                    addRmTagAdapter.updateRmList(RMDropdown);
+                                } else {
+                                    LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
+                                }
+                            }
+                        }catch (Exception e){e.printStackTrace();}
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case ERROR:
+                ((BaseActivity)getActivity()).dismissSmallProgressBar(mProgressBarHolder);
+                LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+                break;
+        }
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(receiver, intentFilter);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(receiver);
-    }*/
 
 }

@@ -14,7 +14,7 @@
         android:id="@+id/cl_mainlayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_layout">
+        >
 
         <include layout="@layout/content_collapse_dashboard_header" />
 
@@ -41,20 +41,44 @@
                     android:background="@drawable/layout_round_shape_corners_8"
                     android:orientation="vertical">
 
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/tvSearchView"
+                  <!--  &lt;!&ndash;TAG Text filed&ndash;&gt;
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/input_textState"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:hintEnabled="false"
+                        app:boxCornerRadiusTopEnd="@dimen/_0dp"
+                        app:boxCornerRadiusTopStart="@dimen/_0dp"
+                        app:boxCornerRadiusBottomEnd="@dimen/_0dp"
+                        app:boxCornerRadiusBottomStart="@dimen/_0dp"
+                        app:hintTextAppearance="@style/Editext.Theme"
+                        app:startIconContentDescription="$"
+                        android:backgroundTint="@android:color/transparent"
+                        android:background="@android:color/transparent"
+                        app:endIconDrawable="@android:color/transparent"
+                        app:placeholderTextAppearance="@style/Editext.Theme">
+-->
+
+                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                        android:id="@+id/tvHighlight"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:backgroundTint="@android:color/transparent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:focusableInTouchMode="false"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:hint="Todays Highlights"
+                        android:hint=""
                         android:imeOptions="actionDone"
                         android:inputType="text"
-                        android:enabled="false"
                         android:textColor="@color/back_text_colour"
                         android:textColorHint="@color/back_text_colour"
                         android:textSize="@dimen/_14sp" />
+<!--
+                    </com.google.android.material.textfield.TextInputLayout>
+-->
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/imgSearchLr"
@@ -127,13 +151,14 @@
                                 android:background="@color/pro_light_grey"/>
 
                             <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvSale"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:textAlignment="center"
                                 android:layout_marginTop="@dimen/_3dp"
                                 android:fontFamily="@font/gilroy_semibold"
-                                android:text="₹1245656"
+                                android:text="0"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_14sp"
                                 />
@@ -189,12 +214,13 @@
                                 android:background="@color/pro_light_grey" />
 
                             <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvQuotationCount"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:layout_marginTop="@dimen/_3dp"
                                 android:fontFamily="@font/gilroy_semibold"
-                                android:text="04"
+                                android:text="0"
                                 android:textAlignment="center"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_14sp" />
@@ -203,6 +229,7 @@
                     </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/cardLostOpportunity"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="5dp"
@@ -252,13 +279,14 @@
                                 android:background="@color/pro_light_grey"/>
 
                             <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvLostApp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:textAlignment="center"
                                 android:layout_marginTop="@dimen/_3dp"
                                 android:fontFamily="@font/gilroy_semibold"
-                                android:text="04"
+                                android:text="0"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_14sp"
                                 />
@@ -316,13 +344,14 @@
                                 android:background="@color/pro_light_grey"/>
 
                             <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvEnquiryCount"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:textAlignment="center"
                                 android:layout_marginTop="@dimen/_3dp"
                                 android:fontFamily="@font/gilroy_semibold"
-                                android:text="07"
+                                android:text="0"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_14sp"
                                 />
@@ -353,11 +382,11 @@
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvVisitNo"
-                            android:layout_width="@dimen/_90dp"
+                            android:layout_width="@dimen/_45dp"
                             android:layout_height="wrap_content"
                             android:layout_alignParentStart="true"
                             android:fontFamily="@font/font_semibold"
-                            android:text="@string/scr_lbl_vehicle_number"
+                            android:text="Visit No"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_12sp" />
 
@@ -378,7 +407,7 @@
                             android:layout_height="wrap_content"
                             android:layout_toRightOf="@+id/tvVisitNoColon"
                             android:fontFamily="@font/gilroy_bold"
-                            android:text="V11234"
+                            android:text="0"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_12sp" />
 
@@ -386,22 +415,27 @@
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1.8
+                        android:layout_weight="2
 "
                         />
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="1.1"
+                        android:layout_gravity="right"
+                        android:gravity="right"
                         >
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvGadiNo"
-                            android:layout_width="@dimen/_80dp"
+                            android:layout_width="@dimen/_50dp"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentStart="true"
                             android:fontFamily="@font/font_semibold"
-                            android:text="@string/scr_lbl_visit_duration"
+                            android:text="Duration"
+                            android:layout_gravity="right"
+                            android:gravity="right"
+                            android:layout_marginRight="67dp"
+                            android:layout_alignParentRight="true"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_12sp" />
 
@@ -409,9 +443,12 @@
                             android:id="@+id/tvGadiNoColon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_toRightOf="@+id/tvGadiNo"
                             android:fontFamily="@font/font_semibold"
                             android:text=" :  "
+                            android:layout_marginRight="@dimen/_50dp"
+                            android:layout_gravity="right"
+                            android:layout_alignParentRight="true"
+                            android:gravity="right"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_12sp" />
 
@@ -421,9 +458,11 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="0dp"
-                            android:layout_toRightOf="@+id/tvGadiNoColon"
                             android:fontFamily="@font/gilroy_bold"
                             android:text="00:00:00"
+                            android:layout_gravity="right"
+                            android:layout_alignParentRight="true"
+                            android:gravity="right"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_12sp" />
                         <!---->
@@ -458,6 +497,36 @@
 
         </androidx.core.widget.NestedScrollView>
 
+
+        <com.ominfo.crm_solution.ui.attendance.ripple_effect.RippleBackground
+            android:layout_width="@dimen/_140dp"
+            android:layout_height="@dimen/_120dp"
+            android:id="@+id/rippleEffect"
+            app:rb_color="@color/blue_graph"
+            app:rb_radius="@dimen/_6dp"
+            app:rb_type="fillRipple"
+            app:rb_strokeWidth="@dimen/_10dp"
+            app:rb_rippleAmount="6"
+            app:rb_duration="3000"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_gravity="right|bottom"
+            android:foreground="?selectableItemBackground"
+            android:background="@drawable/layout_ripple_round"
+            android:layout_alignParentRight="true"
+            app:rb_scale="6">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/add_attendance"
+                android:layout_width="@dimen/_40dp"
+                android:layout_height="@dimen/_40dp"
+                android:contentDescription="TODO"
+                android:layout_centerInParent="true"
+                app:fabSize="mini"
+                app:maxImageSize="@dimen/_16dp"
+                android:foreground="@drawable/attention_gradient_blue"
+                />
+        </com.ominfo.crm_solution.ui.attendance.ripple_effect.RippleBackground>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

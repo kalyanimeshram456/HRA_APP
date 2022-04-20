@@ -2,75 +2,89 @@ package com.ominfo.crm_solution.ui.sales_credit.fragment;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.DatePicker;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.model.GradientColor;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.basecontrol.BaseActivity;
 import com.ominfo.crm_solution.basecontrol.BaseApplication;
 import com.ominfo.crm_solution.basecontrol.BaseFragment;
 import com.ominfo.crm_solution.database.AppDatabase;
 import com.ominfo.crm_solution.interfaces.Constants;
+import com.ominfo.crm_solution.network.ApiResponse;
+import com.ominfo.crm_solution.network.DynamicAPIPath;
+import com.ominfo.crm_solution.network.NetworkCheck;
 import com.ominfo.crm_solution.network.ViewModelFactory;
-import com.ominfo.crm_solution.ui.dashboard.DashbooardActivity;
-import com.ominfo.crm_solution.ui.dashboard.adapter.CrmAdapter;
+import com.ominfo.crm_solution.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
+import com.ominfo.crm_solution.ui.enquiry_report.adapter.EnquiryPageAdapter;
+import com.ominfo.crm_solution.ui.enquiry_report.adapter.RmTagAdapter;
+import com.ominfo.crm_solution.ui.enquiry_report.model.EnquiryPagermodel;
+import com.ominfo.crm_solution.ui.enquiry_report.model.EnquiryStatuslist;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetEnquiry;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmResponse;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmViewModel;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmlist;
+import com.ominfo.crm_solution.ui.login.model.LoginTable;
+import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
+import com.ominfo.crm_solution.ui.receipt.model.ReceiptResult;
 import com.ominfo.crm_solution.ui.sale.adapter.CompanyTagAdapter;
-import com.ominfo.crm_solution.ui.sales_credit.activity.FilterActivity;
+import com.ominfo.crm_solution.ui.sale.model.RmListModel;
 import com.ominfo.crm_solution.ui.sales_credit.activity.View360Activity;
-import com.ominfo.crm_solution.ui.sales_credit.adapter.SalesCreditAdapter;
+import com.ominfo.crm_solution.ui.sales_credit.adapter.SalesCreditReportAdapter;
 import com.ominfo.crm_solution.ui.sales_credit.model.GraphModel;
+import com.ominfo.crm_solution.ui.sales_credit.model.SalesCreditReport;
+import com.ominfo.crm_solution.ui.sales_credit.model.SalesCreditRequest;
+import com.ominfo.crm_solution.ui.sales_credit.model.SalesCreditResponse;
+import com.ominfo.crm_solution.ui.sales_credit.model.SalesCreditViewModel;
+import com.ominfo.crm_solution.util.AppUtils;
 import com.ominfo.crm_solution.util.LogUtil;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -80,6 +94,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 //https://github.com/PhilJay/MPAndroidChart/wiki/Modifying-the-Viewport
 /**
  * A simple {@link androidx.fragment.app.Fragment} subclass.
@@ -89,7 +105,7 @@ import butterknife.OnClick;
 public class SalesCreditFragment extends BaseFragment {
 
     Context mContext;
-    SalesCreditAdapter salesCreditAdapter;
+    SalesCreditReportAdapter salesCreditReportAdapter;
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
     @BindView(R.id.fromDate)
@@ -98,6 +114,12 @@ public class SalesCreditFragment extends BaseFragment {
     AppCompatTextView toDate;
     @BindView(R.id.tvPage)
     AppCompatTextView tvPage;
+    @BindView(R.id.tvOverdueByDays)
+    AppCompatEditText tvOverdueByDays;
+    @BindView(R.id.input_textAmount)
+    AppCompatEditText inputMinAmount;
+    @BindView(R.id.input_textMaxAmount)
+    AppCompatEditText inputMaxAmount;
     @BindView(R.id.layList)
     LinearLayoutCompat layList;
     @BindView(R.id.layPagination)
@@ -114,17 +136,25 @@ public class SalesCreditFragment extends BaseFragment {
     LinearLayoutCompat layFilter;
     @BindView(R.id.rvImages)
     RecyclerView rvImages;
+    @BindView(R.id.imgBack)
+    AppCompatImageView imgBack;
+    @BindView(R.id.submitButton)
+    AppCompatButton submitButton;
+    @BindView(R.id.imgNotify)
+    AppCompatImageView imgNotify;
+    @BindView(R.id.tvNotifyCount)
+    AppCompatTextView tvNotifyCount;
     List<DashModel> tagList = new ArrayList<>();
+    List<RmListModel> tagRmList = new ArrayList<>();
+    List<EnquiryPagermodel> enquiryPageList = new ArrayList<>();
     CompanyTagAdapter addTagAdapter;
-/*
-    @BindView(R.id.add_fab)
-    FloatingActionButton add_fab;*/
-
+    RmTagAdapter addRmTagAdapter;
+    EnquiryPageAdapter enquiryPageAdapter;
     BarData barData;
     List<GradientColor> list = new ArrayList<>();
     // variable for our bar data set.
     BarDataSet barDataSet;
-
+    List<EnquiryStatuslist> EnquiryStatusDropdown = new ArrayList<>();
     // array list for storing entries.
     ArrayList barEntriesArrayList;
     //private static final String[] DATA_BAR_GRAPH = new String[6];//{"","09:00",
@@ -134,11 +164,54 @@ public class SalesCreditFragment extends BaseFragment {
     private String[] DAYSY = new String[100];/*{"5", "60", "15", "70", "25",
            "10"*//*, "45","90", "95","50", "55","60", "65"*//*};*/
     int startPos = 0 , endPos = 0;
-
-    List<DashModel> dashboardList = new ArrayList<>();
+    List<GetRmlist> RMDropdown = new ArrayList<>();
+    List<SalesCreditReport> salesCreditReportList = new ArrayList<>();
+    private Calendar calendar;
+    private SimpleDateFormat dateFormat;
+    private String pagerClicked = "No";
     List<GraphModel> graphModelsList = new ArrayList<>();
-
+    @Inject
+    ViewModelFactory mViewModelFactory;
+    private SalesCreditViewModel salesCreditViewModel;
+    @BindView(R.id.tv_emptyLayTitle)
+    AppCompatTextView tv_emptyLayTitle;
+    @BindView(R.id.tvTotalCount)
+    AppCompatTextView tvTotalCount;
+    @BindView(R.id.empty_layoutActivity)
+    LinearLayoutCompat emptyLayout;
+    @BindView(R.id.iv_emptyLayimage)
+    AppCompatImageView iv_emptyLayimage;
+    @BindView(R.id.rvEnquiryPager)
+    RecyclerView rvEnquiryPager;
+    @BindView(R.id.nextPage)
+    AppCompatImageView nextPage;
+    @BindView(R.id.prePage)
+    AppCompatImageView prePage;
+    private GetRmViewModel getRmViewModel;
     final Calendar myCalendar = Calendar.getInstance();
+    private AppDatabase mDb;
+    @BindView(R.id.progressBarHolder)
+    FrameLayout mProgressBarHolder;
+    @BindView(R.id.rvRm)
+    RecyclerView rvRm;
+
+    @BindView(R.id.tvCompanyName)
+    AppCompatTextView tvCompanyName;
+    @BindView(R.id.imgCompanySort)
+    AppCompatImageView imgCompanySort;
+    @BindView(R.id.tvBalance)
+    AppCompatTextView tvBalance;
+    @BindView(R.id.imgBalance)
+    AppCompatImageView imgBalance;
+    @BindView(R.id.tvOverdue)
+    AppCompatTextView tvOverdue;
+    @BindView(R.id.imgOverdue)
+    AppCompatImageView imgOverdue;
+    @BindView(R.id.tvLimit)
+    AppCompatTextView tvLimit;
+    @BindView(R.id.imgLimit)
+    AppCompatImageView imgLimit;
+
     public SalesCreditFragment() {
         // Required empty public constructor
     }
@@ -170,6 +243,9 @@ public class SalesCreditFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ((BaseActivity)mContext).getDeps().inject(this);
+        mDb = BaseApplication.getInstance(mContext).getAppDatabase();
+        injectAPI();
         init();
         fromDate.setPaintFlags(fromDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
         toDate.setPaintFlags(toDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
@@ -181,28 +257,38 @@ public class SalesCreditFragment extends BaseFragment {
         //requestPermission();
         layList.setVisibility(View.VISIBLE);
         layPagination.setVisibility(View.VISIBLE);
-        //add_fab.setVisibility(View.VISIBLE);
+        imgGraph.setVisibility(View.GONE);
         imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_bar_graph));
         imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
         imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
         layFilter.setVisibility(View.GONE);
 
         setToolbar();
-        dashboardList.add(new DashModel("Sales Credit","₹13245647",mContext.getDrawable(R.drawable.ic_om_sales_credit)));
-        dashboardList.add(new DashModel("Receipt","₹13245647",mContext.getDrawable(R.drawable.ic_om_receipt)));
-        dashboardList.add(new DashModel("Top Customer","₹13245647",mContext.getDrawable(R.drawable.ic_om_rating)));
-        dashboardList.add(new DashModel("Total Quotation Amount","₹13245647",mContext.getDrawable(R.drawable.ic_om_total_quotation)));
-        dashboardList.add(new DashModel("Dispatch Pending","₹13245647",mContext.getDrawable(R.drawable.ic_om_dispatch_pending)));
-        dashboardList.add(new DashModel("Enquiry Report","₹13245647",mContext.getDrawable(R.drawable.ic_om_enquiry_report)));
-        dashboardList.add(new DashModel("Visit Report","₹13245647",mContext.getDrawable(R.drawable.ic_om_visit_report)));
-        //dashboardList.add(new DashModel("Products","₹13245647",mContext.getDrawable(R.drawable.ic_om_product)));
-        //dashboardList.add(new DashModel("Sales Credit","₹13245647",mContext.getDrawable(R.drawable.ic_om_sales_credit)));
-        //dashboardList.add(new DashModel("Receipt","₹13245647",mContext.getDrawable(R.drawable.ic_om_receipt)));
-        //dashboardList.add(new DashModel("Top Customer","₹13245647",mContext.getDrawable(R.drawable.ic_om_rating)));
+        setEnquiryPagerList(1);
+        callGetSalesCreditApi("0");
+        setAdapterForSalesCreditList();
+        setAddTagList();
+        setAddRmTagList();
+        rvImages.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (tagList.size() == 1 || tagList.size() == 2) {
+                    addTagAdapter.updateList(tagList, 1);
+                }
+                return false;
+            }
+        });
+        rvRm.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (tagRmList.size() == 1 || tagRmList.size() == 2) {
+                    addRmTagAdapter.updateList(tagRmList, 1);
+                }
+                return false;
+            }
+        });
 
-        setAdapterForDashboardList();
-
-        graphModelsList.removeAll(dashboardList);
+        graphModelsList.removeAll(graphModelsList);
         graphModelsList.add(new GraphModel("State C1", "Company Test 1", "5"));
         graphModelsList.add(new GraphModel("State C2", "Company Test 2", "60"));
         graphModelsList.add(new GraphModel("State C3", "Company Test 3", "15"));
@@ -227,6 +313,44 @@ public class SalesCreditFragment extends BaseFragment {
                 return false;
             }
         });
+    }
+
+    private void injectAPI() {
+        salesCreditViewModel = ViewModelProviders.of(this, mViewModelFactory).get(SalesCreditViewModel.class);
+        salesCreditViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_SALES_CREDIT));
+
+        getRmViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetRmViewModel.class);
+        getRmViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_RM));
+    }
+
+    private void setAddRmTagList() {
+        tagRmList.removeAll(tagRmList);
+        tagRmList.add(new RmListModel("","1",null));
+        if (tagRmList.size() > 0) {
+            rvRm.setVisibility(View.VISIBLE);
+        } else {
+            rvRm.setVisibility(View.GONE);
+        }
+        addRmTagAdapter = new RmTagAdapter(mContext, tagRmList, new RmTagAdapter.ListItemSelectListener() {
+            @Override
+            public void onItemClick(List<RmListModel> mDataTicket) {
+                tagRmList =  mDataTicket;
+                addRmTagAdapter.updateList(tagRmList,0);
+                if(tagList.size()>0){
+                    int marginInDp40 = (int) TypedValue.applyDimension(
+                            TypedValue.COMPLEX_UNIT_DIP, 90, getResources()
+                                    .getDisplayMetrics());
+                    rvRm.setMinimumHeight(marginInDp40);
+                    //setMargins(rvImages, 0, marginInDp40, 0, 0);
+                }
+            }
+        });
+        rvRm.setHasFixedSize(true);
+        rvRm.setLayoutManager(new GridLayoutManager(mContext, 1));
+        rvRm.setItemAnimator(new DefaultItemAnimator());
+        rvRm.setAdapter(addRmTagAdapter);
+        final boolean[] check = {false};
+
     }
 
     private void setAddTagList() {
@@ -477,72 +601,32 @@ public class SalesCreditFragment extends BaseFragment {
         return data;
     }
 
-    private void setAdapterForDashboardList() {
-        if (dashboardList.size() > 0) {
+    private void setAdapterForSalesCreditList() {
+        if (salesCreditReportList.size() > 0) {
             rvSalesList.setVisibility(View.VISIBLE);
+            emptyLayout.setVisibility(View.GONE);
         } else {
             rvSalesList.setVisibility(View.GONE);
+            emptyLayout.setVisibility(View.VISIBLE);
         }
-        salesCreditAdapter = new SalesCreditAdapter(mContext, dashboardList, new SalesCreditAdapter.ListItemSelectListener() {
+
+        salesCreditReportAdapter = new SalesCreditReportAdapter(mContext, salesCreditReportList, new SalesCreditReportAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket) {
+            public void onItemClick(int mDataTicket,SalesCreditReport getEnquiry) {
                 //For not killing pre fragment
-                //if(mDataTicket==0) {
+               // if(mDataTicket==0) {
                     Intent i = new Intent(getActivity(), View360Activity.class);
                     i.putExtra(Constants.TRANSACTION_ID, "1");
                     startActivity(i);
                     ((Activity) getActivity()).overridePendingTransition(0, 0);
-                //}else {
-                    //Toast.makeText(mContext,"sales clicked",Toast.LENGTH_SHORT).show();
-               //
-                // }
 
             }
         });
 
         rvSalesList.setHasFixedSize(true);
         rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
-        rvSalesList.setAdapter(salesCreditAdapter);
+        rvSalesList.setAdapter(salesCreditReportAdapter);
         final boolean[] check = {false};
-       /* rvSalesList.addOnItemTouchListener(
-                new RecyclerView.OnItemTouchListener() {
-
-                    @Override
-                    public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                        if(!check[0]) {
-                            View item = rv.findChildViewUnder(e.getX(),e.getY()); //finding the view that clicked , using coordinates X and Y
-                            //int position = rv.getChildLayoutPosition(item); //getting the position of the item inside the list
-                            //rv.getChildAdapterPosition(rv.findViewById(R.id.tvCompanyName));
-                             check[0] = true;
-                             if(item.getId()==(R.id.layClick)){
-                                 Intent i = new Intent(getActivity(), View360Activity.class);
-                                 i.putExtra(Constants.TRANSACTION_ID, "1");
-                                 startActivity(i);
-                                 ((Activity) getActivity()).overridePendingTransition(0, 0);
-                             }
-
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    check[0] = false;
-                                }
-                            }, 150);
-                        } return false;
-
-                    }
-
-                    @Override
-                    public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                       // Toast.makeText(mContext, "View where A: " + rv.getAdapter().getItemCount() + " is Clicked", Toast.LENGTH_SHORT).show();
-
-                    }
-
-                    @Override
-                    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-                    }
-                }
-        );*/
 
     }
 
@@ -566,24 +650,72 @@ public class SalesCreditFragment extends BaseFragment {
     private void setToolbar() {
         //set toolbar title
         //toolbarTitle.setText(R.string.scr_lbl_add_new_lr);
-        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify, R.id.layBack, R.id.imgCall);
+        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.layBack, R.id.imgCall);
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Fragment fragment = new DashboardFragment();
+                ((BaseActivity)mContext).moveFragment(mContext,fragment);
+            }
+        });
+        imgNotify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((BaseActivity)mContext).launchScreen(mContext, NotificationsActivity.class);;
+            }
+        });
     }
 
-
     //perform click actions
-    @OnClick({R.id.imgGraph,R.id.imgTable,/*,R.id.add_fab,*/R.id.imgFilter,R.id.resetButton})
+    @OnClick({R.id.imgGraph,R.id.imgTable,R.id.resetButton,R.id.imgFilter,R.id.submitButton
+            ,R.id.imgCompanySort, R.id.tvCompanyName, R.id.tvBalance, R.id.imgBalance,
+            R.id.tvOverdue,R.id.imgOverdue, R.id.tvLimit,R.id.imgLimit})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
+            case R.id.tvLimit:
+                setSortIconComQuoAmo(1);
+                sortforLimit();
+                break;
+            case R.id.imgLimit:
+                setSortIconComQuoAmo(1);
+                sortforLimit();
+                break;
+            case R.id.tvBalance:
+                setSortIconComQuoAmo(2);
+                sortforBalance();
+                break;
+            case R.id.imgBalance:
+                setSortIconComQuoAmo(2);
+                sortforBalance();
+                break;
+            case R.id.tvOverdue:
+                setSortIconComQuoAmo(3);
+                sortforOverdue();
+                break;
+            case R.id.imgOverdue:
+                setSortIconComQuoAmo(3);
+                sortforOverdue();
+                break;
+            case R.id.imgCompanySort:
+                setSortIconComQuoAmo(0);
+                sortforCompany();
+                break;
+            case R.id.tvCompanyName:
+                setSortIconComQuoAmo(0);
+                sortforCompany();
+                break;
             case R.id.imgFilter:
                 //add_fab.setVisibility(View.GONE);
                 barChart.setVisibility(View.GONE);
                 layList.setVisibility(View.GONE);
                 layPagination.setVisibility(View.GONE);
+                submitButton.setVisibility(View.VISIBLE);
                 layFilter.setVisibility(View.VISIBLE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_bar_graph));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_table_blue));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_blue));
+                callRMApi();
                 break;
 
             case R.id.imgGraph:
@@ -592,6 +724,7 @@ public class SalesCreditFragment extends BaseFragment {
                 layList.setVisibility(View.GONE);
                 layPagination.setVisibility(View.GONE);
                 layFilter.setVisibility(View.GONE);
+                submitButton.setVisibility(View.GONE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_bar_graph_blue));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_table_blue));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
@@ -603,22 +736,285 @@ public class SalesCreditFragment extends BaseFragment {
                 layList.setVisibility(View.VISIBLE);
                 layPagination.setVisibility(View.VISIBLE);
                 layFilter.setVisibility(View.GONE);
+                submitButton.setVisibility(View.GONE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_bar_graph));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
                 break;
 
-            case R.id.resetButton:
+            case R.id.submitButton:
                 //add_fab.setVisibility(View.VISIBLE);
+                salesCreditReportList.clear();
+                setEnquiryPagerList(0);
+                setAdapterForSalesCreditList();
+                tvPage.setText("Showing " + String.valueOf(0) + " to " +
+                        String.valueOf(0) + " of " + String.valueOf(0) + "\nEntries");
+                try {
+                    callGetSalesCreditApi("0");
+                }catch (Exception e){e.printStackTrace();}
                 barChart.setVisibility(View.GONE);
                 layList.setVisibility(View.VISIBLE);
                 layPagination.setVisibility(View.VISIBLE);
                 layFilter.setVisibility(View.GONE);
+                submitButton.setVisibility(View.GONE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_bar_graph));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
                 break;
+            case R.id.resetButton:
+                inputMinAmount.setText("");
+                inputMaxAmount.setText("");
+                tvOverdueByDays.setText("");
+                setAddTagList();
+                setAddRmTagList();
+                callRMApi();
+                break;
         }
+    }
+    private void setSortIconComQuoAmo(int res){
+        if(res==0){
+            imgLimit.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            imgCompanySort.setImageDrawable(getResources().getDrawable(R.drawable.ic_sort_blue));
+            imgBalance.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            imgOverdue.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            tvCompanyName.setTextColor(getResources().getColor(R.color.color_main));
+            tvLimit.setTextColor(getResources().getColor(R.color.back_text_colour));
+            tvOverdue.setTextColor(getResources().getColor(R.color.back_text_colour));
+            tvBalance.setTextColor(getResources().getColor(R.color.back_text_colour));
+        }
+        else if(res==1){
+            imgBalance.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            imgCompanySort.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            imgLimit.setImageDrawable(getResources().getDrawable(R.drawable.ic_sort_blue));
+            imgOverdue.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            tvCompanyName.setTextColor(getResources().getColor(R.color.back_text_colour));
+            tvLimit.setTextColor(getResources().getColor(R.color.color_main));
+            tvOverdue.setTextColor(getResources().getColor(R.color.back_text_colour));
+            tvBalance.setTextColor(getResources().getColor(R.color.back_text_colour));
+        }
+        else if(res==2){
+            imgBalance.setImageDrawable(getResources().getDrawable(R.drawable.ic_sort_blue));
+            imgCompanySort.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            imgLimit.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            imgOverdue.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            tvCompanyName.setTextColor(getResources().getColor(R.color.back_text_colour));
+            tvBalance.setTextColor(getResources().getColor(R.color.color_main));
+            tvLimit.setTextColor(getResources().getColor(R.color.back_text_colour));
+            tvOverdue.setTextColor(getResources().getColor(R.color.back_text_colour));
+        }
+        else {
+            imgBalance.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            imgCompanySort.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            imgLimit.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            imgOverdue.setImageDrawable(getResources().getDrawable(R.drawable.ic_sort_blue));
+            tvCompanyName.setTextColor(getResources().getColor(R.color.back_text_colour));
+            tvBalance.setTextColor(getResources().getColor(R.color.back_text_colour));
+            tvLimit.setTextColor(getResources().getColor(R.color.back_text_colour));
+            tvOverdue.setTextColor(getResources().getColor(R.color.color_main));
+        }
+    }
+    private void sortforCompany(){
+        Collections.sort(salesCreditReportList, new Comparator<SalesCreditReport>() {
+            @Override
+            public int compare(SalesCreditReport item, SalesCreditReport t1) {
+                String s1 = item.getCustomerName();
+                String s2 = t1.getCustomerName();
+                return s1.compareToIgnoreCase(s2);
+            }
+        });
+        salesCreditReportAdapter.notifyDataSetChanged();
+    }
+    private void sortforLimit(){
+
+        Collections.sort(salesCreditReportList, new Comparator<SalesCreditReport>() {
+            @Override
+            public int compare(SalesCreditReport item, SalesCreditReport t1) {
+                return Long.compare(Long.valueOf(item.getCreditLimit()), Long.valueOf(t1.getCreditLimit()));
+                //return s1.compareToIgnoreCase(s2);
+            }
+        });
+        salesCreditReportAdapter.notifyDataSetChanged();
+    }
+    private void sortforBalance(){
+        Collections.sort(salesCreditReportList, new Comparator<SalesCreditReport>() {
+            @Override
+            public int compare(SalesCreditReport item, SalesCreditReport t1) {
+                return Long.compare(Long.valueOf(item.getBalance()), Long.valueOf(t1.getBalance()));
+                //return s1.compareToIgnoreCase(s2);
+            }
+        });
+        salesCreditReportAdapter.notifyDataSetChanged();
+    }
+    private void sortforOverdue(){
+        Collections.sort(salesCreditReportList, new Comparator<SalesCreditReport>() {
+            @Override
+            public int compare(SalesCreditReport item, SalesCreditReport t1) {
+                return Long.compare(Long.valueOf(item.getOverdue()), Long.valueOf(t1.getOverdue()));
+                //return s1.compareToIgnoreCase(s2);
+            }
+        });
+        salesCreditReportAdapter.notifyDataSetChanged();
+    }
+
+    /* Call Api For RM */
+    private void callRMApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_rm);
+                RequestBody mRequestBodyTypeImage = RequestBody.create(MediaType.parse("text/plain"), "0");//loginTable.getEmployeeId());
+                RequestBody mRequestBodyTypeImage1 = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
+                getRmViewModel.hitGetRmApi(mRequestBodyType, mRequestBodyTypeImage, mRequestBodyTypeImage1);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    /* Call Api For Sales credit report */
+    private void callGetSalesCreditApi(String pageNo) {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_sales_credit);
+                RequestBody mRequestBodyTypeIsAdmin = RequestBody.create(MediaType.parse("text/plain"), loginTable.getIsadmin());//loginTable.getEmployeeId());//loginTable.getEmployeeId());
+                RequestBody mRequestBodyTypeComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                String mStringFrmDate = AppUtils.splitsEnquiryDate(fromDate.getText().toString().trim()),
+                        mStringToDate = AppUtils.splitsEnquiryDate(toDate.getText().toString().trim());
+                //RequestBody mRequestBodyTypeFromDate = RequestBody.create(MediaType.parse("text/plain"), mStringFrmDate);
+                //RequestBody mRequestBodyTypeToDate = RequestBody.create(MediaType.parse("text/plain"), mStringToDate);
+                RequestBody mRequestBodyTypePageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);//selectedRM.getEmpId());
+                RequestBody mRequestBodyTypePageSize = RequestBody.create(MediaType.parse("text/plain"), Constants.MIN_PAG_SIZE);
+                String mCompanyNameList="",mRMList="";
+                for(int i=0;i<tagList.size();i++){
+                    if(tagList.get(i).getTitle()!=null && !tagList.get(i).getTitle().equals("")) {
+                        if (i == 0) {
+                            mCompanyNameList = tagList.get(i).getTitle();
+                        } else {
+                            mCompanyNameList = mCompanyNameList + "~" + tagList.get(i).getTitle();
+                        }
+                    }
+                }
+                for(int i=0;i<tagRmList.size();i++){
+                    if(tagRmList.get(i).getTitle()!=null && !tagRmList.get(i).getTitle().equals("")) {
+                        if (i == 0) {
+                            mRMList = tagRmList.get(i).getTitle();
+                        } else {
+                            mRMList = mRMList + "~" + tagRmList.get(i).getTitle();
+                        }
+                    }
+                }
+                //RequestBody mRequestBodyTypeENo = RequestBody.create(MediaType.parse("text/plain"), "");
+                ///Gson gson = new Gson();
+                ///String bodyInStringFormat = gson.toJson(mCompanyNameList);
+                RequestBody mRequestBodyTypeCName = RequestBody.create(MediaType.parse("text/plain"), mCompanyNameList);
+              /*  RequestBody mRequestBodyTypeEStatus = RequestBody.create(MediaType.parse("text/plain"), "");
+                RequestBody mRequestBodyTypeCloseReason = RequestBody.create(MediaType.parse("text/plain"), "");
+              */  RequestBody mRequestBodyTypeRm = RequestBody.create(MediaType.parse("text/plain"), mRMList);
+
+                SalesCreditRequest salesCreditRequest = new SalesCreditRequest();
+                salesCreditRequest.setAction(mRequestBodyAction);
+                salesCreditRequest.setIsAdmin(mRequestBodyTypeIsAdmin);
+                salesCreditRequest.setCompanyId(mRequestBodyTypeComId);
+                salesCreditRequest.setEmployeeId(mRequestBodyTypeEmpId);
+                salesCreditRequest.setPageNumber(mRequestBodyTypePageNo);
+                salesCreditRequest.setPageSize(mRequestBodyTypePageSize);
+                salesCreditRequest.setFilterCustomerName(mRequestBodyTypeCName);
+                salesCreditRequest.setFilterRm(mRequestBodyTypeRm);
+
+                salesCreditViewModel.hitGetSalesCreditApi(salesCreditRequest);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    private void setPagerEnquiryList(long pageNo){
+        for(int i=0;i<pageNo;i++) {
+            if (pagerClicked.equals("No")) {
+                if (i == 0) {
+                    rvEnquiryPager.scrollToPosition(i+1);
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 1));
+                } else {
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 0));
+                }
+            } else {
+                if (i == Integer.parseInt(pagerClicked)) {
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 1));
+                } else {
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 0));
+                }
+            }
+        }
+    }
+
+    private void setEnquiryPagerList(long pageNo) {
+        enquiryPageList.clear();
+        if(pageNo==0) {
+            pageNo = 1;
+        }
+        setPagerEnquiryList(pageNo);
+        if (enquiryPageList.size() > 0) {
+            rvEnquiryPager.setVisibility(View.VISIBLE);
+        } else {
+            rvEnquiryPager.setVisibility(View.GONE);
+        }
+        enquiryPageAdapter = new EnquiryPageAdapter(mContext, enquiryPageList, new EnquiryPageAdapter.ListItemSelectListener() {
+            @Override
+            public void onItemClick(EnquiryPagermodel mData,List<EnquiryPagermodel> mDataList) {
+                enquiryPageList = mDataList;
+                try {
+                    pagerClicked = String.valueOf(Integer.parseInt(mData.getPageNo())-1);
+                    enquiryPageAdapter.updateList(mDataList);
+                }catch (Exception e){e.printStackTrace();}
+                try {
+                    callGetSalesCreditApi(String.valueOf(Integer.parseInt(mData.getPageNo()) - 1));
+                }catch (Exception e){e.printStackTrace();}
+            }
+        });
+        rvEnquiryPager.setHasFixedSize(true);
+        //rvEnquiryPager.setLayoutManager(new GridLayoutManager(mContext, 3));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false);
+        rvEnquiryPager.setLayoutManager(layoutManager);
+        rvEnquiryPager.setItemAnimator(new DefaultItemAnimator());
+        rvEnquiryPager.setAdapter(enquiryPageAdapter);
+        try{
+            rvEnquiryPager.scrollToPosition(Integer.parseInt(pagerClicked));}catch (Exception e){e.printStackTrace();}
+        final boolean[] check = {false};
+        prePage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //try{
+                /*LogUtil.printToastMSG(mContext,"prev");
+                int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+                rvEnquiryPager.scrollToPosition(firstVisiblePosition-1);
+                //int firstVisiblePositionNew = layoutManager.findFirstVisibleItemPosition();
+                enquiryPageAdapter.updatePageList(firstVisiblePosition-1);
+                }catch (Exception e){e.printStackTrace();*/
+                //}catch (Exception e){e.printStackTrace();}
+            }
+        });
+        nextPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    /*LogUtil.printToastMSG(mContext,"next");
+                    int firstVisiblePositionLast = layoutManager.findLastVisibleItemPosition();
+                    int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+                    rvEnquiryPager.scrollToPosition(firstVisiblePositionLast-1);
+                    //int firstVisiblePositionNew = layoutManager.findFirstVisibleItemPosition();
+                    enquiryPageAdapter.updatePageList(firstVisiblePosition + 1);*/
+                }catch (Exception e){e.printStackTrace();}
+            }
+        });
+
     }
 
     //set date picker view
@@ -675,187 +1071,83 @@ public class SalesCreditFragment extends BaseFragment {
     }
 
 
-
-    /*private void injectAPI() {
-        mGetVehicleViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetVehicleViewModel.class);
-        mGetVehicleViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_GET_VEHICLE));
-    }*/
-
-  /*  *//* Call Api For Vehicle List *//*
-    private void callVehicleListApi(String fromDate,String toDate) {
-        if (NetworkCheck.isInternetAvailable(mContext)) {
-            GetVehicleListRequest mRequest = new GetVehicleListRequest();
-            mRequest.setUserkey(mUserKey);//mUserKey); //6b07b768-926c-49b6-ac1c-89a9d03d4c3b
-            mRequest.setFromDate(fromDate);
-            mRequest.setToDate(toDate);
-            Gson gson = new Gson();
-            String bodyInStringFormat = gson.toJson(mRequest);
-            mGetVehicleViewModel.hitGetVehicleApi(bodyInStringFormat);
-        } else {
-            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
-        }
-    }*/
-
-
-
-  /*  private void setAdapterForVehicleList() {
-        if (vehicleModelList.size() > 0) {
-            mLrNumberAdapter = new LrNumberAdapter(mContext, vehicleModelList, new LrNumberAdapter.ListItemSelectListener() {
-                @Override
-                public void onItemClick(GetVehicleListResult mDataTicket) {
-                    Intent intent = new Intent(mContext,AddLrActivity.class);
-                    intent.putExtra(Constants.TRANSACTION_ID, mDataTicket.getTransactionID());
-                    intent.putExtra(Constants.FROM_SCREEN, Constants.LIST);
-                    startActivity(intent);
-                }
-            });
-            mRecylerViewLrNumber.setHasFixedSize(true);
-            mRecylerViewLrNumber.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
-            mRecylerViewLrNumber.setAdapter(mLrNumberAdapter);
-            mRecylerViewLrNumber.setVisibility(View.VISIBLE);
-            linearLayoutEmptyActivity.setVisibility(View.GONE);
-            imgEmptyImage.setBackground(getResources().getDrawable(R.drawable.ic_error_load));
-            tvEmptyLayTitle.setText(getString(R.string.scr_lbl_data_loading));
-        } else {
-            mRecylerViewLrNumber.setVisibility(View.GONE);
-            linearLayoutEmptyActivity.setVisibility(View.VISIBLE);
-            imgEmptyImage.setBackground(getResources().getDrawable(R.drawable.ic_error_load));
-            tvEmptyLayTitle.setText(R.string.scr_lbl_no_data_available);
-        }
-    }*/
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mContext = context;
     }
 
+    /*Api response */
+    private void consumeResponse(ApiResponse apiResponse, String tag) {
+        switch (apiResponse.status) {
 
-  /*  //set date picker view
-    private void openDataPicker(AppCompatTextView datePickerField,int mFrom) {
-        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            case LOADING:
+                ((BaseActivity) mContext).showSmallProgressBar(mProgressBarHolder);
+                break;
 
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-                // TODO Auto-generated method stub
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                String myFormat="";
-                if(mFrom==0) {
-                    myFormat = "dd MMM yyyy"; //In which you need put here
+            case SUCCESS:
+                ((BaseActivity)getActivity()).dismissSmallProgressBar(mProgressBarHolder);
+                if (!apiResponse.data.isJsonNull()) {
+                    LogUtil.printLog(tag, apiResponse.data.toString());
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_SALES_CREDIT)) {
+                            SalesCreditResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SalesCreditResponse.class);
+                            if (responseModel != null/* && responseModel.getResult().getStatus().equals("success")*/) {
+                                long totalPage = 0;
+                                tvTotalCount.setText(getString(R.string.scr_lbl_rs)+String.valueOf(responseModel.getResult().getTotalenquiries()));
+                                try {
+                                    if (responseModel.getResult().getReport() != null && responseModel.getResult().getReport().size()>0) {
+                                        salesCreditReportList.clear();
+                                        salesCreditReportList = responseModel.getResult().getReport();
+                                        totalPage=responseModel.getResult().getTotalpages();
+
+                                        if(responseModel.getResult().getNextpage()==1) {
+                                            tvPage.setText("Showing " + String.valueOf(responseModel.getResult().getNextpage()) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1) + salesCreditReportList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalenquiries()) + "\nEntries"));
+                                        }
+                                        else {
+                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getResult().getNextpage()-1)*4)+1) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1)*4)+ salesCreditReportList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalenquiries()) + "\nEntries");
+                                        }
+                                    }
+                                    else{
+                                        totalPage=0;
+                                        salesCreditReportList.clear();
+                                    }
+
+                                }catch(Exception e){
+                                    e.printStackTrace();
+                                    totalPage=0;
+                                    salesCreditReportList.clear();
+                                }
+                                setEnquiryPagerList(totalPage);
+                                setAdapterForSalesCreditList();
+                            }
+                        }
+                    }catch (Exception e){e.printStackTrace();}
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_RM)) {
+                            GetRmResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetRmResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                RMDropdown.removeAll(RMDropdown);
+                                RMDropdown = responseModel.getResult().getRmlist();
+                                ///setDropdownRM();
+                                addRmTagAdapter.updateRmList(RMDropdown);
+                            } else {
+                                LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
+                            }
+                        }
+                    }catch (Exception e){e.printStackTrace();}
+
                 }
-                else{
-                    myFormat = "dd/MM/yyyy"; //In which you need put here
-                }
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-                datePickerField.setText(sdf.format(myCalendar.getTime()));
-            }
-
-        };
-
-        new DatePickerDialog(this, date, myCalendar
-                .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-
-    }
-
-    //show truck details popup
-    public void showTruckDetailsDialog() {
-        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_truck_details);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-        RelativeLayout relRC = mDialog.findViewById(R.id.relRC);
-        RelativeLayout relPUC = mDialog.findViewById(R.id.relPUC);
-        RelativeLayout relIss = mDialog.findViewById(R.id.relIss);
-
-        relRC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        relPUC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        relIss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }
-
-    //show truck details popup
-    public void showFullImageDialog() {
-        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_doc_full_view);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }*/
-
-
-    /*//request camera and storage permission
-    private void requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (mContext.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-            ) {
-
-                requestPermissions(new String[]
-                                { Manifest.permission.CAMERA,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                },
-                        1000);
-
-            } else {
-                //createFolder();
-            }
-        } else {
-            //createFolder();
+                break;
+            case ERROR:
+                ((BaseActivity)getActivity()).dismissSmallProgressBar(mProgressBarHolder);
+                LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+                break;
         }
     }
-*/
+
 
     /*
      * ACCESS_FINE_LOCATION permission result
@@ -880,22 +1172,5 @@ public class SalesCreditFragment extends BaseFragment {
         }
     }
 
-    /*@Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finishAffinity();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(receiver, intentFilter);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(receiver);
-    }*/
 
 }

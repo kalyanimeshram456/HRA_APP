@@ -1,19 +1,19 @@
 package com.ominfo.crm_solution.ui.reminders;
 
-import android.app.Activity;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -21,56 +21,95 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
-import android.widget.RelativeLayout;
+import android.widget.FrameLayout;
+import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
+import com.bumptech.glide.Glide;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.model.GradientColor;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
 import com.ominfo.crm_solution.R;
+import com.ominfo.crm_solution.alarm.alarmslist.AlarmRecyclerViewAdapter;
+import com.ominfo.crm_solution.alarm.alarmslist.AlarmsListViewModel;
+import com.ominfo.crm_solution.alarm.alarmslist.OnToggleAlarmListener;
+import com.ominfo.crm_solution.alarm.createalarm.CreateAlarmViewModel;
+import com.ominfo.crm_solution.alarm.data.Alarm;
+import com.ominfo.crm_solution.alarm.get_count.DeleteReminderViewModel;
+import com.ominfo.crm_solution.alarm.get_count.GetCountViewModel;
+import com.ominfo.crm_solution.alarm.get_count.UpdateOnlyRecordIdViewModel;
+import com.ominfo.crm_solution.alarm.get_count.UpdateRecordIdViewModel;
 import com.ominfo.crm_solution.basecontrol.BaseActivity;
+import com.ominfo.crm_solution.basecontrol.BaseApplication;
 import com.ominfo.crm_solution.basecontrol.BaseFragment;
+import com.ominfo.crm_solution.database.AppDatabase;
 import com.ominfo.crm_solution.interfaces.Constants;
+import com.ominfo.crm_solution.interfaces.ErrorCallbacks;
+import com.ominfo.crm_solution.interfaces.SharedPrefKey;
+import com.ominfo.crm_solution.network.ApiResponse;
+import com.ominfo.crm_solution.network.DynamicAPIPath;
+import com.ominfo.crm_solution.network.NetworkCheck;
+import com.ominfo.crm_solution.network.ViewModelFactory;
+import com.ominfo.crm_solution.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
-import com.ominfo.crm_solution.ui.enquiry_report.adapter.EnquiryReportAdapter;
-import com.ominfo.crm_solution.ui.reminders.adapter.AddTagAdapter;
-import com.ominfo.crm_solution.ui.reminders.adapter.ReminderAdapter;
-import com.ominfo.crm_solution.ui.sales_credit.activity.View360Activity;
+import com.ominfo.crm_solution.ui.enquiry_report.adapter.RmTagAdapter;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmResponse;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmViewModel;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmlist;
+import com.ominfo.crm_solution.ui.login.model.LoginTable;
+import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
+import com.ominfo.crm_solution.ui.reminders.model.AddReminderRequest;
+import com.ominfo.crm_solution.ui.reminders.model.AddReminderResponse;
+import com.ominfo.crm_solution.ui.reminders.model.AddReminderViewModel;
+import com.ominfo.crm_solution.ui.reminders.model.EmployeeListViewModel;
+import com.ominfo.crm_solution.ui.reminders.model.ReminderListRequest;
+import com.ominfo.crm_solution.ui.reminders.model.ReminderListResponse;
+import com.ominfo.crm_solution.ui.reminders.model.ReminderListViewModel;
+import com.ominfo.crm_solution.ui.reminders.model.UpdateReminderRequest;
+import com.ominfo.crm_solution.ui.reminders.model.UpdateReminderResponse;
+import com.ominfo.crm_solution.ui.reminders.model.UpdateReminderViewModel;
+import com.ominfo.crm_solution.ui.sale.model.RmListModel;
 import com.ominfo.crm_solution.ui.sales_credit.model.GraphModel;
+import com.ominfo.crm_solution.util.AppUtils;
 import com.ominfo.crm_solution.util.LogUtil;
+import com.ominfo.crm_solution.util.SharedPref;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 //https://github.com/PhilJay/MPAndroidChart/wiki/Modifying-the-Viewport
 
 /**
@@ -78,25 +117,58 @@ import butterknife.OnClick;
  * Use the {@link ReminderFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ReminderFragment extends BaseFragment {
+public class ReminderFragment extends BaseFragment implements OnToggleAlarmListener {
 
-    Context mContext;
-    ReminderAdapter reminderAdapter;
-    AddTagAdapter addTagAdapter;
-    @BindView(R.id.rvSalesList)
-    RecyclerView rvSalesList;
+    public static Context mContext;
+    private static RecyclerView alarmsRecyclerView;
+    //ReminderAdapter reminderAdapter;
+    RmTagAdapter addRmTagAdapter;
+     //RecyclerView alarmsRecyclerView;
 
     @BindView(R.id.imgAddReminder)
     AppCompatImageView imgAddReminder;
 
+    @BindView(R.id.iv_emptyLayimage)
+    AppCompatImageView iv_emptyLayimage;
+
+    @BindView(R.id.tv_emptyLayTitle)
+    AppCompatTextView tv_emptyLayTitle;
+
     @BindView(R.id.tvSearchView)
     AppCompatTextView tvToolbarTitle;
 
+    @BindView(R.id.layReminder)
+    LinearLayoutCompat layReminder;
+
+    @BindView(R.id.empty_layoutActivity)
+    LinearLayoutCompat emptyLayout;
+    AppCompatAutoCompleteTextView AutoComTextViewDesr,AutoComTextViewDate,AutoComTextViewTime;
+
+    @BindView(R.id.imgBack)
+    AppCompatImageView imgBack;
+    @BindView(R.id.imgNotify)
+    AppCompatImageView imgNotify;
+    @BindView(R.id.imgRefresh)
+    AppCompatImageView imgRefresh;
+    @BindView(R.id.tvNotifyCount)
+    AppCompatTextView tvNotifyCount;
+    String mTimeHour = "", mTimeMinute = "";
+    List<RmListModel> tagRmList = new ArrayList<>();
+    public static AlarmRecyclerViewAdapter alarmRecyclerViewAdapter;
+    public static AlarmsListViewModel alarmsListViewModel;
+    public static UpdateRecordIdViewModel updateRecordIdViewModel;
+    public static UpdateOnlyRecordIdViewModel updateOnlyRecordIdViewModel;
+    public static GetCountViewModel getCountViewModel;
+    public static EmployeeListViewModel employeeListViewModel;
+    //private RecyclerView alarmsRecyclerView;
+    //private Button addAlarm;
+    public static CreateAlarmViewModel createAlarmViewModel;
+    public static List<Alarm> allAlarms = new ArrayList<>();
     BarData barData;
     List<GradientColor> list = new ArrayList<>();
     // variable for our bar data set.
     BarDataSet barDataSet;
-
+    String dialogStatus = "";
     // array list for storing entries.
     ArrayList barEntriesArrayList;
     //private static final String[] DATA_BAR_GRAPH = new String[6];//{"","09:00",
@@ -106,12 +178,23 @@ public class ReminderFragment extends BaseFragment {
     private String[] DAYSY = new String[100];/*{"5", "60", "15", "70", "25",
            "10"*//*, "45","90", "95","50", "55","60", "65"*//*};*/
     int startPos = 0 , endPos = 0;
-
+    List<GetRmlist> RMDropdown = new ArrayList<>();
     List<DashModel> dashboardList = new ArrayList<>();
     List<DashModel> tagList = new ArrayList<>();
     List<GraphModel> graphModelsList = new ArrayList<>();
-
+    private AppDatabase mDb;
     final Calendar myCalendar = Calendar.getInstance();
+    @Inject
+    ViewModelFactory mViewModelFactory;
+    private ReminderListViewModel reminderListViewModel;
+    private AddReminderViewModel addReminderViewModel;
+    private GetRmViewModel getRmViewModel;
+    private UpdateReminderViewModel updateReminderViewModel;
+    @BindView(R.id.progressBarHolder)
+    FrameLayout mProgressBarHolder;
+    int incHeight = 3;
+    public static DeleteReminderViewModel deleteReminderViewModel;
+
     public ReminderFragment() {
         // Required empty public constructor
     }
@@ -126,9 +209,61 @@ public class ReminderFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        deleteReminderViewModel = ViewModelProviders.of(this).get(DeleteReminderViewModel .class);
+        getCountViewModel = ViewModelProviders.of(this).get(GetCountViewModel.class);
+        createAlarmViewModel = ViewModelProviders.of(this).get(CreateAlarmViewModel.class);
+        alarmRecyclerViewAdapter = new AlarmRecyclerViewAdapter(this,mContext, alarmRecyclerViewAdapter, new AlarmRecyclerViewAdapter.ListItemSelectListener() {
+            @Override
+            public void onItemClick(Alarm alarm, int checkStatus) {
+              //callUpdateReminderApi();
+                if(checkStatus==0) {
+                    LogUtil.printToastMSG(mContext, "completed");
+                    callUpdateReminderApi(alarm.getRecordId(),"COMPLETED","statuschange",
+                            alarm.getTime(),alarm.getDate());
+                }
+                if(checkStatus==2) {
+                    LogUtil.printToastMSG(mContext, "cancelled");
+                    callUpdateReminderApi(alarm.getRecordId(),"CANCELLED","statuschange",
+                            alarm.getTime(),alarm.getDate());
+                }
+                if(checkStatus==1) {
+                    LogUtil.printToastMSG(mContext, "Snoozed");
+                    callUpdateReminderApi(alarm.getRecordId(),"SNOOZED","snooze",
+                            alarm.getTime(),alarm.getDate());
+                }
+            }
 
-        }
+        });
+        //alarmRecyclerViewAdapter = new AlarmRecyclerViewAdapter(this,mContext, alarmRecyclerViewAdapter);
+        alarmsListViewModel = ViewModelProviders.of(this).get(AlarmsListViewModel.class);
+        updateRecordIdViewModel = ViewModelProviders.of(this).get(UpdateRecordIdViewModel.class);
+        updateOnlyRecordIdViewModel = ViewModelProviders.of(this).get(UpdateOnlyRecordIdViewModel.class);
+        alarmsListViewModel.getAlarmsLiveData().observe(this, new Observer<List<Alarm>>() {
+            @Override
+            public void onChanged(List<Alarm> alarms) {
+                allAlarms = alarms;
+                //if (alarms != null) {
+                for(int i=0;i<alarms.size();i++) {
+                    LogUtil.printLog("alarm_list_test", "title - "+alarms.get(i).getTitle()+" "+alarms.get(i).getDate() + "-yo- "
+                            + alarms.get(i).getTime());
+                }
+                //}
+                if (alarms.size() > 0) {
+                    alarmRecyclerViewAdapter.setAlarms(alarms);
+                    //layReminder.setVisibility(View.VISIBLE);
+                    alarmsRecyclerView.setVisibility(View.VISIBLE);
+                    emptyLayout.setVisibility(View.GONE);
+                } else {
+                    Glide.with(mContext)
+                            .load(R.drawable.img_bg_reminders)
+                            .into(iv_emptyLayimage);
+                    tv_emptyLayTitle.setText(R.string.scr_lbl_no_reminder);
+                    emptyLayout.setVisibility(View.VISIBLE);
+                    alarmsRecyclerView.setVisibility(View.GONE);
+                }
+            }
+        });
+
     }
 
     @Override
@@ -137,15 +272,44 @@ public class ReminderFragment extends BaseFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.activity_reminder, container, false);
         ButterKnife.bind(this, view);
+        try{dialogStatus = getArguments().getString("dialog");}catch (Exception e){e.printStackTrace();}
+        alarmsRecyclerView = view.findViewById(R.id.rvSalesList);
+        showAddReminderDialog(dialogStatus==null || dialogStatus.equals("")?"0":dialogStatus);
+        iv_emptyLayimage.setImageDrawable(mContext.getDrawable(R.drawable.img_bg_reminders));
+        emptyLayout.setVisibility(View.VISIBLE);
+        setAlarmList();
         return view;
+    }
+
+    public static void setAlarmList(){
+        //updateAlarmStatus
+        alarmsRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        alarmsRecyclerView.setAdapter(alarmRecyclerViewAdapter);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ((BaseActivity)mContext).getDeps().inject(this);
+        mDb = BaseApplication.getInstance(mContext).getAppDatabase();
+        injectAPI();
         init();
         //fromDate.setPaintFlags(fromDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
         //toDate.setPaintFlags(toDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
+    }
+
+    private void injectAPI() {
+        reminderListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ReminderListViewModel.class);
+        reminderListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_REMINDER));
+
+        addReminderViewModel = ViewModelProviders.of(this, mViewModelFactory).get(AddReminderViewModel.class);
+        addReminderViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_ADD_REMINDER));
+
+        getRmViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetRmViewModel.class);
+        getRmViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_RM));
+
+        updateReminderViewModel = ViewModelProviders.of(this, mViewModelFactory).get(UpdateReminderViewModel.class);
+        updateReminderViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_UPDATE_REMINDER));
     }
 
     @Override
@@ -159,47 +323,61 @@ public class ReminderFragment extends BaseFragment {
     }
 
 
-
     private void init(){
-        //mDb =BaseApplication.getInstance(mContext).getAppDatabase();
-        //requestPermission();
-        //layList.setVisibility(View.VISIBLE);
-        //layPagination.setVisibility(View.VISIBLE);
-        //add_fab.setVisibility(View.VISIBLE);
-        //imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
-        //imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
-        //imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
-        //layFilter.setVisibility(View.GONE);
-
+        mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         setToolbar();
-        dashboardList.add(new DashModel("Sales Credit","0",mContext.getDrawable(R.drawable.ic_om_sales_credit)));
-        dashboardList.add(new DashModel("Receipt","0",mContext.getDrawable(R.drawable.ic_om_receipt)));
-        //dashboardList.add(new DashModel("Top Customer","1",mContext.getDrawable(R.drawable.ic_om_rating)));
-        //dashboardList.add(new DashModel("Total Quotation Amount","1",mContext.getDrawable(R.drawable.ic_om_total_quotation)));
-        dashboardList.add(new DashModel("visit Pending","1",mContext.getDrawable(R.drawable.ic_om_enquiry_report)));
-        dashboardList.add(new DashModel("Enquiry visit","1",mContext.getDrawable(R.drawable.ic_om_total_quotation)));
-        dashboardList.add(new DashModel("Visit visit","2",mContext.getDrawable(R.drawable.ic_om_total_quotation)));
-        dashboardList.add(new DashModel("Products","2",mContext.getDrawable(R.drawable.ic_om_product)));
-        dashboardList.add(new DashModel("Sales Credit","2",mContext.getDrawable(R.drawable.ic_om_sales_credit)));
-        //dashboardList.add(new DashModel("Receipt","visit",mContext.getDrawable(R.drawable.ic_om_receipt)));
-        //dashboardList.add(new DashModel("Top Customer","visit",mContext.getDrawable(R.drawable.ic_om_rating)));
+        //set empty layout data
+        Glide.with(this)
+                .load(R.drawable.img_bg_reminders)
+                .into(iv_emptyLayimage);
+        tv_emptyLayTitle.setText(R.string.scr_lbl_no_reminder);
+        callReminderListApi();
+        callRMApi();
+    }
 
-        setAdapterForDashboardList();
+    /* Call Api For RM */
+    private void callRMApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_rm);
+                RequestBody mRequestBodyTypeImage = RequestBody.create(MediaType.parse("text/plain"), "0");//loginTable.getEmployeeId());
+                RequestBody mRequestBodyTypeImage1 = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
+                getRmViewModel.hitGetRmApi(mRequestBodyType, mRequestBodyTypeImage, mRequestBodyTypeImage1);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
 
-        graphModelsList.removeAll(dashboardList);
-        graphModelsList.add(new GraphModel("State C1", "Company Test 1", "5"));
-        graphModelsList.add(new GraphModel("State C2", "Company Test 2", "60"));
-        graphModelsList.add(new GraphModel("State C3", "Company Test 3", "15"));
-        graphModelsList.add(new GraphModel("State C4", "Company Test 4", "90"));
-        graphModelsList.add(new GraphModel("State C5", "Company Test 5", "25"));
-        graphModelsList.add(new GraphModel("State C6", "Company Test 6", "10"));
-        graphModelsList.add(new GraphModel("State C7", "Company Test 7", "45"));
-        graphModelsList.add(new GraphModel("State C8", "Company Test 8", "90"));
-        graphModelsList.add(new GraphModel("State C9", "Company Test 9", "95"));
-        graphModelsList.add(new GraphModel("State C10", "Company Test 10", "50"));
-        graphModelsList.add(new GraphModel("State C11", "Company Test 11", "55"));
-        graphModelsList.add(new GraphModel("State C12", "Company Test 12", "60"));
-        setGraphData(3);
+    /* Call Api For Update Reminder */
+    private void callUpdateReminderApi(String recordId,String status,String requestType,String reminder,String dateSnooze) {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                String rem = AppUtils.convert12to24(reminder);
+                //String reminderTime =  AppUtils.addSnoozedTime(rem);
+                //String[] timeMain = rem.split(":");
+                String[] date = dateSnooze.split("/");
+                UpdateReminderRequest updateReminderRequest = new UpdateReminderRequest();
+                updateReminderRequest.setCompanyId(loginTable.getCompanyId());
+                updateReminderRequest.setEmployeeId(loginTable.getEmployeeId());
+                updateReminderRequest.setRequestType(requestType);
+                updateReminderRequest.setDate(date[2]+"-"+date[1]+ "-"+date[0]);
+                updateReminderRequest.setRecordId(recordId);
+                updateReminderRequest.setStatus(status);
+                updateReminderRequest.setTime(rem/*+":00"*/);
+                updateReminderViewModel.hitUpdateReminderApi(updateReminderRequest);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
     }
 
     private void setGraphData(int initStatus) {
@@ -255,146 +433,203 @@ public class ReminderFragment extends BaseFragment {
         }
     }
 
-    //show Quotation popup
-    public void showQuotationDialog() {
-        Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_single_quotation);
-        mDialog.setCanceledOnTouchOutside(true);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton downloadButton = mDialog.findViewById(R.id.downloadButton);
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-
-        downloadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
+    /* Call Api For Reminder */
+    private void callReminderListApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                ReminderListRequest request = new ReminderListRequest();
+                request.setCompanyId(loginTable.getCompanyId());
+                request.setEmployeeId(loginTable.getEmployeeId());
+                reminderListViewModel.hitReminderListApi(request);
             }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
             }
-        });
-        mDialog.show();
-    }
-
-
-
-    private BarData getBarEntries() {
-
-        barEntriesArrayList = new ArrayList<>();
-        for (int i = 0; i < DAYSY.length; i++) {
-            Random r = new Random();
-            float x = i;
-            if(DAYSY[i]!=null) {
-                float y = Integer.parseInt(DAYSY[i]);
-                barEntriesArrayList.add(new BarEntry(x, y));
-            }
-        }
-
-        MyBarDataSet set1 = new MyBarDataSet(barEntriesArrayList, "Test");
-        set1.setBarBorderColor(Color.YELLOW);
-        String dark_Red ="#A10616";
-        String light_Red = "#FB6571";
-        String Yellow = "#F9B747";
-        String pink = "#e12c2c";
-        String darkPink = "#DD3546";
-
-       /* list.add(new GradientColor(Color.parseColor("#F9B747"),
-                Color.parseColor("#A10616")));*/
-        /*list.add(new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(pink)));*/
-       /* list.add(new GradientColor(Color.parseColor(pink),
-                Color.parseColor(darkPink)));*/
-        list.add(new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(darkPink)));
-        list.add(new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(dark_Red)));
-
-        //set1.setColor(R.drawable.chart_fill);
-        set1.setGradientColors(list);
-        /*set1.setGradientColor(new int[]{new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(dark_Red)),
-                new GradientColor(Color.parseColor(Yellow),
-                        Color.parseColor(dark_Red)),
-                        new GradientColor(Color.parseColor(Yellow),
-                                Color.parseColor(dark_Red))});*/
-        //ArrayList<BarDataSet> dataSets = new ArrayList<>();
-        //dataSets.add(set1);
-
-       // BarData data = new BarData(xVals, dataSets);
-
-        //set1.setColor(getResources().getColor(R.color.deep_yellow));
-        set1.setDrawValues(false);
-        ArrayList<IBarDataSet> dataSets = new ArrayList<>();
-
-        set1.setHighlightEnabled(false);
-        set1.setDrawValues(true);
-
-        dataSets.add(set1);
-        // adding color to our bar data set.
-        BarData data = new BarData(dataSets);
-        return data;
-    }
-
-    private void setAdapterForDashboardList() {
-        if (dashboardList.size() > 0) {
-            rvSalesList.setVisibility(View.VISIBLE);
         } else {
-            rvSalesList.setVisibility(View.GONE);
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
         }
-        reminderAdapter = new ReminderAdapter(mContext, dashboardList, new ReminderAdapter.ListItemSelectListener() {
-            @Override
-            public void onItemClick(int mDataTicket,View v) {
-                v.showContextMenu();
-                //For not killing pre fragment
-                /*if(mDataTicket==0) {
-                    Intent i = new Intent(getActivity(), View360Activity.class);
-                    i.putExtra(Constants.TRANSACTION_ID, "1");
-                    startActivity(i);
-                    ((Activity) getActivity()).overridePendingTransition(0, 0);
-                }
-                if(mDataTicket==1){
-                    showVisitDetailsDialog();
-                }*/
-            }
-        });
-        RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecorator(mContext.getDrawable(R.drawable.separator_row_item));
-        rvSalesList.addItemDecoration(dividerItemDecoration);
-        registerForContextMenu(rvSalesList);
-        //rvSalesList.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
-        rvSalesList.setHasFixedSize(true);
-        rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
-        rvSalesList.setAdapter(reminderAdapter);
-        final boolean[] check = {false};
+    }
 
+    /* Call Api For Add Reminder */
+    private void callAddReminderApi(String remark,String descr,String date,String time) {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                List<String> mRMList= new ArrayList<>();
+                mRMList.add(loginTable.getEmployeeId());
+                for(int i=0;i<tagRmList.size();i++){
+                    if(!TextUtils.isEmpty(tagRmList.get(i).getTitle())) {
+                        mRMList.add(tagRmList.get(i).getId());
+                    }
+                }
+                String dateChanged = AppUtils.dateReminder(date);
+                String timeChanged = AppUtils.convert12to24(time);
+                AddReminderRequest request = new AddReminderRequest();
+                request.setCompanyId(loginTable.getCompanyId());
+                request.setRemark(remark);
+                request.setRemDate(dateChanged);
+                request.setEmployeeId(loginTable.getEmployeeId());
+                request.setEmployeelist(mRMList);
+                request.setRemdescription(descr);
+                request.setRemTime(timeChanged/*+":00"*/);
+                request.setRemStatus("CREATED");
+                addReminderViewModel.hitAddReminderApi(request);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    @Override
+    public void onToggle(Alarm alarm) {
+        if (alarm.isStarted()) {
+            alarm.cancelAlarm(getContext());
+            alarmsListViewModel.update(alarm);
+        } else {
+            alarm.schedule(getContext());
+            alarmsListViewModel.update(alarm);
+        }
+    }
+
+
+    //set date picker view
+    private void openDataPicker(AppCompatAutoCompleteTextView datePickerField) {
+        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                // TODO Auto-generated method stub
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                String myFormat="";
+                myFormat = "dd/MM/yyyy"; //In which you need put here
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+                datePickerField.setText(sdf.format(myCalendar.getTime()));
+            }
+
+        };
+
+        new DatePickerDialog(mContext, date, myCalendar
+                .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+
+    }
+
+    private void OpenTimePicker(AppCompatAutoCompleteTextView AutoComTextViewTime){
+        // TODO Auto-generated method stub
+        Calendar mcurrentTime = Calendar.getInstance();
+        int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+        int minute = mcurrentTime.get(Calendar.MINUTE);
+        TimePickerDialog mTimePicker;
+        mTimePicker = new TimePickerDialog(mContext, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                String am_pm = "";
+                myCalendar.set(Calendar.HOUR_OF_DAY, selectedHour);
+                myCalendar.set(Calendar.MINUTE, selectedMinute);
+                if (myCalendar.get(Calendar.AM_PM) == Calendar.AM)
+                    am_pm = "am";
+                else if (myCalendar.get(Calendar.AM_PM) == Calendar.PM)
+                    am_pm = "pm";
+                String strHrsToShow = (String.valueOf(myCalendar.get(Calendar.HOUR)).length() == 1) ? "0"+myCalendar.get(Calendar.HOUR) : myCalendar.get(Calendar.HOUR) + "";
+                //UIHelper.showLongToastInCenter(context, strHrsToShow + ":" + myCalendar.get(Calendar.MINUTE) + " " + am_pm);
+                String min = convertDate(myCalendar.get(Calendar.MINUTE));
+                boolean isPM = (selectedHour >= 12);
+                AutoComTextViewTime.setText(String.format("%02d:%02d %s", (selectedHour == 12 || selectedHour == 0) ? 12 : selectedHour % 12, myCalendar.get(Calendar.MINUTE), isPM ? "pm" : "am"));
+
+               // AutoComTextViewTime.setText(strHrsToShow + ":" + min + " " + am_pm);
+            }
+        }, hour, minute, false);//Yes 24 hour time
+        mTimePicker.setTitle("Select Time");
+        mTimePicker.show();
+    }
+
+    public String convertDate(int input) {
+        if (input >= 10) {
+            return String.valueOf(input);
+        } else {
+            return "0" + String.valueOf(input);
+        }
     }
 
     //show Add Reminder popup
-    public void showAddReminderDialog() {
+    public void showAddReminderDialog(String dialogStatus) {
         Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialog.setContentView(R.layout.dialog_add_reminder);
         mDialog.setCanceledOnTouchOutside(true);
+        AppCompatAutoCompleteTextView AutoComTextViewStatus = mDialog.findViewById(R.id.AutoComTextViewStatus);
         AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
         AppCompatButton addReminderButton = mDialog.findViewById(R.id.addReminderButton);
+        AppCompatEditText etRemark = mDialog.findViewById(R.id.etLocationDescr);
         RecyclerView rvImages = mDialog.findViewById(R.id.rvImages);
-        //LinearLayoutCompat layRecyclerView = mDialog.findViewById(R.id.layRecyclerView);
-        setAddTagList(rvImages);
+         AutoComTextViewDesr = mDialog.findViewById(R.id.AutoComTextViewDesr);
+         AutoComTextViewDate = mDialog.findViewById(R.id.AutoComTextViewDate);
+         AutoComTextViewTime = mDialog.findViewById(R.id.AutoComTextViewTime);
+        TextInputLayout input_text= mDialog.findViewById(R.id.input_text);
+        TextInputLayout input_textDate= mDialog.findViewById(R.id.input_textDate);
+        TextInputLayout input_textTime= mDialog.findViewById(R.id.input_textTime);
+        //setAddTagList(rvImages);
+        setAddRmTagList(rvImages);
+        setDropdownReminder(AutoComTextViewStatus);
         rvImages.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if(tagList.size()==1||tagList.size()==2){
-                    addTagAdapter.updateList(tagList,1);
+                if (tagRmList.size() == 1 || tagRmList.size() == 2) {
+                    addRmTagAdapter.updateList(tagRmList, 1);
                 }
                 return false;
             }
         });
+        AutoComTextViewDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openDataPicker(AutoComTextViewDate);
+            }
+        });
+        AutoComTextViewTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                OpenTimePicker(AutoComTextViewTime);
+            }
+        });
+
+       /* rvImages.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (tagList.size() == 1 || tagList.size() == 2) {
+                    addTagAdapter.updateList(tagList, 1);
+                }
+                return false;
+            }
+        });*/
         addReminderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDialog.dismiss();
+                if (isDetailsValid(AutoComTextViewDesr, input_text, AutoComTextViewDate, input_textDate, AutoComTextViewTime,
+                        input_textTime)) {
+                    mDialog.dismiss();
+                    String currentString = AutoComTextViewTime.getText().toString().trim();
+                    String _24hourFormat = AppUtils.convert12to24(currentString);
+                    String[] separated = _24hourFormat.split(":");
+                    try {
+                        if (separated.length > 0) {
+                            mTimeHour = separated[0];
+                            mTimeMinute = separated[1];
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    //LogUtil.printToastMSG(mContext,mTimeHour+":"+mTimeMinute+"v-"+AutoComTextViewDesr.getText().toString().trim()
+                    //);
+                    callAddReminderApi(etRemark.getText().toString().trim(),AutoComTextViewDesr.getText().toString().trim()
+                            , AutoComTextViewDate.getText().toString().trim(), AutoComTextViewTime.getText().toString().trim());
+                }
             }
         });
 
@@ -404,65 +639,123 @@ public class ReminderFragment extends BaseFragment {
                 mDialog.dismiss();
             }
         });
-        mDialog.show();
+        if(dialogStatus.equals("1")) {
+            mDialog.show();
+        }
     }
 
-    private void setAddTagList(RecyclerView rvImages) {
-        tagList.removeAll(tagList);
-        tagList.add(new DashModel("","1",null));
-        if (tagList.size() > 0) {
-            rvImages.setVisibility(View.VISIBLE);
-        } else {
-            rvImages.setVisibility(View.GONE);
+    //set value to Reminder dropdown
+    private void setDropdownReminder(AppCompatAutoCompleteTextView AutoComTextViewReminder) {
+        List<String> RMDropdown = new ArrayList<>();
+        RMDropdown.add("Call Later");
+        RMDropdown.add("Close");
+        RMDropdown.add("Ongoing Call");
+        RMDropdown.add("Successful");
+
+        try {
+            int pos = 0;
+            if (RMDropdown != null && RMDropdown.size() > 0) {
+                String[] mDropdownList = new String[RMDropdown.size()];
+                for (int i = 0; i < RMDropdown.size(); i++) {
+                    mDropdownList[i] = String.valueOf(RMDropdown.get(i));
+                   /* if (!VehiIdDropdown.equals("")) {
+                        if (RMDropdown.get(i).getId().equals(VehiIdDropdown)) {
+                            pos = i;
+                        }
+                    }*/
+                }
+                //AutoComTextViewVehNo.setText(mDropdownList[pos]);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        mContext,
+                        R.layout.row_dropdown_item,
+                        mDropdownList);
+                //AutoComTextViewVehNo.setThreshold(1);
+                AutoComTextViewReminder.setAdapter(adapter);
+                //mSelectedColor = mDropdownList[pos];
+                AutoComTextViewReminder.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        //mSelectedColor = mDropdownList[position];
+                        AppUtils.hideKeyBoard(getActivity());
+                    }
+                });
+            } else {
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        addTagAdapter = new AddTagAdapter(mContext, tagList, new AddTagAdapter.ListItemSelectListener() {
+    }
+
+    /*check validations on field*/
+    private boolean isDetailsValid(AppCompatAutoCompleteTextView AutoComTextViewDesr,
+                                   TextInputLayout input_text,
+                                   AppCompatAutoCompleteTextView AutoComTextViewDate,
+                                   TextInputLayout input_textDate,
+                                   AppCompatAutoCompleteTextView AutoComTextViewTime,
+                                   TextInputLayout input_textTime) {
+        if (TextUtils.isEmpty(AutoComTextViewDesr.getText().toString().trim())) {
+            setError(input_text, getString(R.string.val_msg_please_enter_description));
+            return false;
+        } else if (isTitleExits(AutoComTextViewDesr.getText().toString().trim())) {
+            setError(input_text, getString(R.string.val_msg_please_enter_valid_description));
+            return false;
+        } else if (TextUtils.isEmpty(AutoComTextViewDate.getText().toString().trim())) {
+            setError(input_textDate, getString(R.string.val_msg_please_enter_password));
+            return false;
+        }  else if (TextUtils.isEmpty(AutoComTextViewTime.getText().toString().trim())) {
+            setError(input_textTime, getString(R.string.val_msg_please_enter_password));
+        return false;
+    }
+        return true;
+    }
+
+    private boolean isTitleExits(String value) {
+        boolean Status  = false;
+        for (int i = 0; i < allAlarms.size(); i++) {
+            if (allAlarms.get(i).getTitle().equals(value)) {
+                Status = true;
+            }
+        }
+        return Status;
+    }
+
+    private void setAddRmTagList(RecyclerView rvRm) {
+        tagRmList.clear();
+        tagRmList.add(new RmListModel("","1",""));
+        if (tagRmList.size() > 0) {
+            rvRm.setVisibility(View.VISIBLE);
+        } else {
+            rvRm.setVisibility(View.GONE);
+        }
+
+        addRmTagAdapter = new RmTagAdapter(mContext, tagRmList, new RmTagAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(List<DashModel> mDataTicket) {
-                tagList =  mDataTicket;
-                addTagAdapter.updateList(tagList,0);
-                if(tagList.size()>3){
+            public void onItemClick(List<RmListModel> mDataTicket) {
+                tagRmList =  mDataTicket;
+                addRmTagAdapter.updateList(tagRmList,0);
+                if(tagRmList.size()>1 && tagRmList.size()%(incHeight)==0){
+                    int calHeight = tagRmList.size()/2;
                     int marginInDp40 = (int) TypedValue.applyDimension(
-                            TypedValue.COMPLEX_UNIT_DIP, 90, getResources()
+                            TypedValue.COMPLEX_UNIT_DIP, 90*(calHeight>0?calHeight:1), getResources()
                                     .getDisplayMetrics());
-                    rvImages.setMinimumHeight(marginInDp40);
+                    ViewGroup.LayoutParams params = rvRm.getLayoutParams();
+                   // Changes the height and width to the specified *pixels*
+                    params.height = marginInDp40;
+                    params.width = MATCH_PARENT;
+                    rvRm.setLayoutParams(params);
+                    incHeight = incHeight + 2;
+                    //rvRm.setMinimumHeight(marginInDp40);
                     //setMargins(rvImages, 0, marginInDp40, 0, 0);
                 }
             }
         });
-        rvImages.setHasFixedSize(true);
-        rvImages.setLayoutManager(new GridLayoutManager(mContext, 3));
-        rvImages.setItemAnimator(new DefaultItemAnimator());
-        rvImages.setAdapter(addTagAdapter);
-        final boolean[] check = {false};
+        rvRm.setHasFixedSize(true);
+        rvRm.setLayoutManager(new GridLayoutManager(mContext, 2));
+        rvRm.setItemAnimator(new DefaultItemAnimator());
+        rvRm.setAdapter(addRmTagAdapter);
 
     }
 
-
-    //show Receipt Details popup
-    public void showVisitDetailsDialog() {
-        Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.activity_reminder_alert);
-        mDialog.setCanceledOnTouchOutside(true);
-        //AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        //AppCompatButton closeButton = mDialog.findViewById(R.id.closeButton);
-
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-
-        /*closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });*/
-        mDialog.show();
-    }
 
     private void deleteDir(){
         File dir = new File(Environment.getExternalStoragePublicDirectory(
@@ -482,29 +775,77 @@ public class ReminderFragment extends BaseFragment {
     private void setToolbar() {
         //set toolbar title
         tvToolbarTitle.setText(R.string.scr_lbl_reminders);
-        ((BaseActivity)mContext).initToolbar(5, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify, R.id.layBack, R.id.imgCall);
+      /*  String notiCount = SharedPref.getInstance(mContext).read(SharedPrefKey.IS_NOTIFY_COUNT, "0");
+        tvNotifyCount.setText(notiCount);*/
+        ((BaseActivity)mContext).initToolbar(5, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.layBack, R.id.imgCall);
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Fragment fragment = new DashboardFragment();
+                ((BaseActivity)mContext).moveFragment(mContext,fragment);
+            }
+        });
+        imgNotify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((BaseActivity)mContext).launchScreen(mContext, NotificationsActivity.class);;
+            }
+        });
     }
 
 
 
     //perform click actions
-    @OnClick({R.id.imgAddReminder/*R.id.imgGraph,R.id.imgTable,*//*,R.id.add_fab,*//*R.id.imgFilter,R.id.resetButton
+    @OnClick({R.id.imgAddReminder,R.id.imgRefresh/*R.id.imgGraph,R.id.imgTable,*//*,R.id.add_fab,*//*R.id.imgFilter,R.id.resetButton
     ,R.id.toDate,R.id.fromDate*/})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
             case R.id.imgAddReminder:
-                //showVisitDetailsDialog();
-                showAddReminderDialog();
+                callRMApi();
+                showAddReminderDialog("1");
                 break;
-           /* case R.id.toDate:
-
-                //openDataPicker(1,toDate);
+            case R.id.imgRefresh:
+                Glide.with(this)
+                        .load(R.drawable.img_bg_reminders)
+                        .into(iv_emptyLayimage);
+                tv_emptyLayTitle.setText(R.string.scr_lbl_no_reminder);
+                callReminderListApi();
+                callRMApi();
                 break;
-            case R.id.fromDate:
-                //openDataPicker(0,fromDate);
-                break;*/
         }
+    }
+
+    private void scheduleAlarm(String hour,String min,String desr,String date,String time
+            ,String recordId ,String status) {
+        int alarmId = new Random().nextInt(Integer.MAX_VALUE);
+        //String _24Hour= AppUtils.convert12to24(hour);
+        long _24DateMin =  AppUtils.DateToMilise(date+" "+hour+":"+min);
+        Alarm alarm = new Alarm(
+                alarmId,
+                Integer.parseInt(hour),
+                Integer.parseInt(min),
+                desr,
+                _24DateMin,/*System.currentTimeMillis(),*/
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                date,
+                time,
+                "0",
+                recordId,
+                status
+        );
+
+        createAlarmViewModel.insert(alarm);
+
+        alarm.schedule(getContext());
     }
 
     //set date picker view
@@ -538,7 +879,6 @@ public class ReminderFragment extends BaseFragment {
 
     public class MyBarDataSet extends BarDataSet {
 
-
         public MyBarDataSet(List<BarEntry> yVals, String label) {
             super(yVals, label);
         }
@@ -560,188 +900,11 @@ public class ReminderFragment extends BaseFragment {
 
     }
 
-
-
-    /*private void injectAPI() {
-        mGetVehicleViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetVehicleViewModel.class);
-        mGetVehicleViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_GET_VEHICLE));
-    }*/
-
-  /*  *//* Call Api For Vehicle List *//*
-    private void callVehicleListApi(String fromDate,String toDate) {
-        if (NetworkCheck.isInternetAvailable(mContext)) {
-            GetVehicleListRequest mRequest = new GetVehicleListRequest();
-            mRequest.setUserkey(mUserKey);//mUserKey); //6b07b768-926c-49b6-ac1c-89a9d03d4c3b
-            mRequest.setFromDate(fromDate);
-            mRequest.setToDate(toDate);
-            Gson gson = new Gson();
-            String bodyInStringFormat = gson.toJson(mRequest);
-            mGetVehicleViewModel.hitGetVehicleApi(bodyInStringFormat);
-        } else {
-            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
-        }
-    }*/
-
-
-
-  /*  private void setAdapterForVehicleList() {
-        if (vehicleModelList.size() > 0) {
-            mLrNumberAdapter = new LrNumberAdapter(mContext, vehicleModelList, new LrNumberAdapter.ListItemSelectListener() {
-                @Override
-                public void onItemClick(GetVehicleListResult mDataTicket) {
-                    Intent intent = new Intent(mContext,AddLrActivity.class);
-                    intent.putExtra(Constants.TRANSACTION_ID, mDataTicket.getTransactionID());
-                    intent.putExtra(Constants.FROM_SCREEN, Constants.LIST);
-                    startActivity(intent);
-                }
-            });
-            mRecylerViewLrNumber.setHasFixedSize(true);
-            mRecylerViewLrNumber.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
-            mRecylerViewLrNumber.setAdapter(mLrNumberAdapter);
-            mRecylerViewLrNumber.setVisibility(View.VISIBLE);
-            linearLayoutEmptyActivity.setVisibility(View.GONE);
-            imgEmptyImage.setBackground(getResources().getDrawable(R.drawable.ic_error_load));
-            tvEmptyLayTitle.setText(getString(R.string.scr_lbl_data_loading));
-        } else {
-            mRecylerViewLrNumber.setVisibility(View.GONE);
-            linearLayoutEmptyActivity.setVisibility(View.VISIBLE);
-            imgEmptyImage.setBackground(getResources().getDrawable(R.drawable.ic_error_load));
-            tvEmptyLayTitle.setText(R.string.scr_lbl_no_data_available);
-        }
-    }*/
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mContext = context;
     }
-
-
-  /*  //set date picker view
-    private void openDataPicker(AppCompatTextView datePickerField,int mFrom) {
-        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-                // TODO Auto-generated method stub
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                String myFormat="";
-                if(mFrom==0) {
-                    myFormat = "dd MMM yyyy"; //In which you need put here
-                }
-                else{
-                    myFormat = "dd/MM/yyyy"; //In which you need put here
-                }
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-                datePickerField.setText(sdf.format(myCalendar.getTime()));
-            }
-
-        };
-
-        new DatePickerDialog(this, date, myCalendar
-                .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-
-    }
-
-    //show truck details popup
-    public void showTruckDetailsDialog() {
-        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_truck_details);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-        RelativeLayout relRC = mDialog.findViewById(R.id.relRC);
-        RelativeLayout relPUC = mDialog.findViewById(R.id.relPUC);
-        RelativeLayout relIss = mDialog.findViewById(R.id.relIss);
-
-        relRC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        relPUC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        relIss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }
-
-    //show truck details popup
-    public void showFullImageDialog() {
-        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_doc_full_view);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }*/
-
-
-    /*//request camera and storage permission
-    private void requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (mContext.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-            ) {
-
-                requestPermissions(new String[]
-                                { Manifest.permission.CAMERA,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                },
-                        1000);
-
-            } else {
-                //createFolder();
-            }
-        } else {
-            //createFolder();
-        }
-    }
-*/
 
     /*
      * ACCESS_FINE_LOCATION permission result
@@ -812,23 +975,142 @@ public class ReminderFragment extends BaseFragment {
             }
         }
 
+    /*Api response */
+    private void consumeResponse(ApiResponse apiResponse, String tag) {
+        switch (apiResponse.status) {
 
-    /*@Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finishAffinity();
+            case LOADING:
+                ((BaseActivity) mContext).showSmallProgressBar(mProgressBarHolder);
+                break;
+
+            case SUCCESS:
+                ((BaseActivity)getActivity()).dismissSmallProgressBar(mProgressBarHolder);
+                if (!apiResponse.data.isJsonNull()) {
+                    LogUtil.printLog(tag, apiResponse.data.toString());
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_REMINDER)) {
+                            ReminderListResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ReminderListResponse.class);
+                            if (responseModel != null && responseModel.getStatus() == 1) {
+                                if(responseModel.getResult()!=null && responseModel.getResult().size()>0)
+                                {
+                                    for(int i=0;i<responseModel.getResult().size();i++) {
+                                        String[] rem = responseModel.getResult().get(i).getRemTime().split(":");
+                                        //String[] dateMain = responseModel.getResult().get(i).getRemDate().split("T");
+                                        String[] date = responseModel.getResult().get(i).getNewDateReminder().split("-");
+                                        String mtime12hrs = AppUtils.convert24to12(rem[0] +":"+ rem[1]);
+                                        //"2021-08-11T18:30:00.000Z"
+                                        int finalI = i;
+                                        AsyncTask.execute(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                int iExitsCheck = 0;
+                                                String AMPM= "";
+                                                int iExits = getCountViewModel.getAlarmsCount(responseModel.getResult().get(finalI).getRemDescription()
+                                                        , date[2] + "/" + date[1] + "/" + date[0], mtime12hrs);
+                                                String[] checkAMam = mtime12hrs.split(" ");
+                                                if(checkAMam.length>0){
+                                                    if(checkAMam[1].equals("AM")){
+                                                        AMPM = " am";
+                                                       }
+                                                    else if(checkAMam[1].equals("am")){
+                                                        AMPM = " AM";
+                                                    } else if(checkAMam[1].equals("pm")){
+                                                        AMPM = " PM";
+                                                    } else if(checkAMam[1].equals("PM")){
+                                                    AMPM = " pm";
+                                                    }
+                                                    iExitsCheck = getCountViewModel.getAlarmsCount(responseModel.getResult().get(finalI).getRemDescription()
+                                                            , date[2] + "/" + date[1] + "/" + date[0], checkAMam[0]+AMPM);
+
+                                                }
+                                                //LogUtil.printLog("sizeRem= ",iExits);
+                                                if (iExits == 0 && iExitsCheck==0) {
+                                                    //LogUtil.printLog("sizeRem= ", responseModel.getResult().get(0).getRecordId().toString());
+                                                    scheduleAlarm(rem[0], rem[1], responseModel.getResult().get(finalI).getRemDescription()
+                                                            , date[2] + "/" + date[1] + "/" + date[0], mtime12hrs,
+                                                            responseModel.getResult().get(finalI).getRecordId().toString(),
+                                                            responseModel.getResult().get(finalI).getRemStatus());
+                                                }
+                                                else {
+                                                    updateRecordIdViewModel.updateRecordId(responseModel.getResult().get(finalI).getRemDescription()
+                                                            , date[2] + "/" + date[1] + "/" + date[0], mtime12hrs,
+                                                            responseModel.getResult().get(finalI).getRecordId().toString(),
+                                                            responseModel.getResult().get(finalI).getRemStatus());
+                                                    //LogUtil.printLog("sizeRem= " ,iExits);
+                                                }
+                                            }
+                                        });
+
+                                    }
+
+                                }
+                                else{
+                                    //LogUtil.printToastMSG(mContext, "size= " + 0);
+                                }
+
+                            }
+                        }
+                    }catch (Exception e){
+                        //LogUtil.printLog( "sizeRem=" , e.getMessage());
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_ADD_REMINDER)) {
+                            AddReminderResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), AddReminderResponse.class);
+                            if (responseModel != null/* && responseModel.getStatus()==1*/) {
+                                scheduleAlarm(mTimeHour, mTimeMinute, AutoComTextViewDesr.getText().toString().trim()
+                                        , AutoComTextViewDate.getText().toString().trim(), AutoComTextViewTime.getText().toString().trim()
+                                        ,String.valueOf(responseModel.getAddRemResultList().get(0).getRecordId()),"CREATED");
+                               /* //TODO UPDATE
+                                updateOnlyRecordIdViewModel.updateOnlyRecordId(AutoComTextViewDesr.getText().toString().trim(),
+                                        AutoComTextViewDate.getText().toString().trim(), AutoComTextViewTime.getText().toString().trim()
+                                , String.valueOf(responseModel.getAddRemResultList().get(0).getRecordId()));*/
+                            }
+                            else{
+                                ((BaseActivity) mContext).errorMessage(responseModel.getMessage(), new ErrorCallbacks() {
+                                    @Override
+                                    public void onOkClick() {
+                                        //DO something;
+                                    }
+                                });
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_RM)) {
+                            GetRmResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetRmResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                RMDropdown.clear();
+                                RMDropdown = responseModel.getResult().getRmlist();
+                                ///setDropdownRM();
+                                addRmTagAdapter.updateRmList(RMDropdown);
+                            } else {
+                                LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
+                            }
+                        }
+                    }catch (Exception e){e.printStackTrace();}
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_UPDATE_REMINDER)) {
+                            UpdateReminderResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), UpdateReminderResponse.class);
+                            if (responseModel != null && responseModel.getStatus()==1) {
+                                LogUtil.printToastMSG(mContext, "updated");
+                            } else {
+                                LogUtil.printToastMSG(mContext, responseModel.getMessage());
+                            }
+                        }
+                    }catch (Exception e){
+                        LogUtil.printLog( "sizeRem=" , e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case ERROR:
+                ((BaseActivity)getActivity()).dismissSmallProgressBar(mProgressBarHolder);
+                LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+                break;
+        }
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(receiver, intentFilter);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(receiver);
-    }*/
 
 }

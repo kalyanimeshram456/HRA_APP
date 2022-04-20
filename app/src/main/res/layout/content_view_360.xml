@@ -48,10 +48,9 @@
                             android:layout_height="@dimen/_65dp"
                             android:layout_centerVertical="true"
                             android:layout_gravity="center_vertical"
-                            android:src="@drawable/ic_om_app_logo"
                             android:visibility="visible"
                             app:civ_border_color="@color/back_text_colour"
-                            app:civ_border_width="0dp" />
+                            app:civ_border_width="0.6dp" />
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
@@ -266,7 +265,7 @@
                         android:visibility="visible" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvDriverBhattaValue"
+                        android:id="@+id/tvRmName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_toRightOf="@+id/tvDriverBhattaColon"
@@ -303,7 +302,7 @@
                         android:layout_marginRight="@dimen/_5dp"
                         android:layout_toRightOf="@+id/tvCreditAmt"
                         android:fontFamily="@font/gilroy_bold"
-                        android:text="₹1000.00"
+                        android:text="₹0"
                         android:textColor="@color/Dark_Red"
                         android:textSize="@dimen/_14sp"
                         android:visibility="visible" />
@@ -314,7 +313,7 @@
                         android:layout_height="wrap_content"
                         android:layout_toRightOf="@+id/tvCreditAmtColon"
                         android:fontFamily="@font/gilroy_bold"
-                        android:text="(₹5666.00)"
+                        android:text="(₹0)"
                         android:textColor="@color/back_text_colour"
                         android:textSize="@dimen/_14sp" />
 
@@ -343,10 +342,10 @@
                         android:id="@+id/tvlayCredDaysColon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/_5dp"
                         android:layout_toRightOf="@+id/tvlayCredDays"
                         android:fontFamily="@font/gilroy_bold"
-                        android:text="21 Days"
-                        android:layout_marginRight="@dimen/_5dp"
+                        android:text="0 Days"
                         android:textColor="@color/back_text_colour"
                         android:textSize="@dimen/_14sp"
                         android:visibility="visible" />
@@ -357,7 +356,7 @@
                         android:layout_height="wrap_content"
                         android:layout_toRightOf="@+id/tvlayCredDaysColon"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="(50 days)"
+                        android:text=""
                         android:textColor="@color/back_text_colour"
                         android:textSize="@dimen/_14sp" />
 
@@ -368,6 +367,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:visibility="gone"
                     android:layout_below="@+id/layCredDays"
                     >
 
@@ -639,7 +639,8 @@
 
                     <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:visibility="gone">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/layInvoices"
@@ -736,12 +737,12 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentStart="true"
-                                android:layout_weight="1.1"
+                                android:layout_weight="1"
                                 android:fontFamily="@font/gilroy_bold"
                                 android:gravity="left"
                                 android:imeOptions="actionDone"
                                 android:inputType="textMultiLine"
-                                android:text="@string/scr_lbl_lr_date"
+                                android:text="Doc Type"
                                 android:textColor="@color/back_text_colour"
                                 android:textColorHint="@color/back_text_colour"
                                 android:textSize="@dimen/_12sp" />
@@ -756,7 +757,7 @@
                                 android:imeOptions="actionDone"
                                 android:inputType="textMultiLine"
                                 android:maxLines="2"
-                                android:text="@string/scr_lbl_invoice_no"
+                                android:text="Doc No"
                                 android:textColor="@color/back_text_colour"
                                 android:textColorHint="@color/back_text_colour"
                                 android:textSize="@dimen/_12sp" />
@@ -768,11 +769,11 @@
                                 android:layout_weight="1"
                                 android:fontFamily="@font/gilroy_bold"
                                 android:gravity="center"
-                                android:hint="@string/scr_lbl_dashboard"
+                                android:hint="@string/scr_lbl_unavailable"
                                 android:imeOptions="actionDone"
                                 android:inputType="textMultiLine"
                                 android:maxLines="2"
-                                android:text="@string/scr_lbl_quoted_no"
+                                android:text="Date"
                                 android:textColor="@color/back_text_colour"
                                 android:textColorHint="@color/back_text_colour"
                                 android:textSize="@dimen/_12sp" />
@@ -785,16 +786,33 @@
                                 android:layout_alignParentEnd="true"
                                 android:layout_weight="1"
                                 android:fontFamily="@font/gilroy_bold"
+                                android:gravity="center"
+                                android:imeOptions="actionDone"
+                                android:inputType="textMultiLine"
+                                android:text="@string/scr_lbl_amount"
+                                android:textColor="@color/back_text_colour"
+                                android:textColorHint="@color/back_text_colour"
+                                android:textSize="@dimen/_12sp" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvCol5"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/gilroy_bold"
                                 android:gravity="right"
                                 android:imeOptions="actionDone"
                                 android:inputType="textMultiLine"
-                                android:text="@string/scr_lbl_billed_amt"
+                                android:text="Doc Status"
                                 android:textColor="@color/back_text_colour"
                                 android:textColorHint="@color/back_text_colour"
                                 android:textSize="@dimen/_12sp" />
 
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        <include layout="@layout/content_empty_view360_layout" />
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvSalesList"
@@ -805,6 +823,7 @@
                             android:focusable="false"
                             android:focusableInTouchMode="false"
                             android:nestedScrollingEnabled="true"
+                            android:paddingBottom="@dimen/_1dp"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                             tools:listitem="@layout/row_sales_credit_invoice_table" />
 
@@ -825,7 +844,7 @@
                             android:layout_gravity="left"
                             android:layout_marginLeft="@dimen/_10dp"
                             android:fontFamily="@font/gilroy_semibold"
-                            android:text="Showing 01 to 12 of 50 \nEntries"
+                            android:text="Showing 0 to 0 of 0 \nEntries"
                             android:textColor="@color/gray"
                             android:textSize="@dimen/_12sp" />
 
@@ -840,75 +859,47 @@
                             android:paddingVertical="@dimen/_2dp">
 
                             <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/prePage"
                                 android:layout_width="@dimen/_12dp"
                                 android:layout_height="@dimen/_16dp"
                                 android:layout_alignParentEnd="true"
                                 android:layout_gravity="center"
-                                android:layout_weight="1"
+                                android:layout_weight="1.2"
                                 android:src="@drawable/ic_om_left"
                                 android:visibility="visible" />
 
 
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:layout_width="@dimen/_20dp"
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvEnquiryPager"
+                                android:layout_width="@dimen/_80dp"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:fontFamily="@font/gilroy_regular"
-                                android:gravity="center"
-                                android:hint="@string/scr_lbl_dashboard"
-                                android:imeOptions="actionDone"
-                                android:inputType="text"
-                                android:paddingVertical="@dimen/_5dp"
-                                android:text="01"
-                                android:textAlignment="center"
-                                android:textColor="@color/color_blue_icon"
-                                android:textColorHint="@color/back_text_colour"
-                                android:textSize="@dimen/_14sp" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:layout_width="@dimen/_20dp"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_weight="1"
-                                android:background="@drawable/bg_button_round_corner_2"
-                                android:fontFamily="@font/gilroy_regular"
-                                android:hint="@string/scr_lbl_dashboard"
-                                android:imeOptions="actionDone"
-                                android:inputType="text"
-                                android:paddingVertical="@dimen/_5dp"
-                                android:text="02"
-                                android:textAlignment="center"
-                                android:textColor="@color/white"
-                                android:textColorHint="@color/back_text_colour"
-                                android:textSize="@dimen/_14sp" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:layout_width="@dimen/_20dp"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_weight="1"
-                                android:fontFamily="@font/gilroy_regular"
-                                android:hint="@string/scr_lbl_dashboard"
-                                android:imeOptions="actionDone"
-                                android:inputType="text"
-                                android:paddingVertical="@dimen/_5dp"
-                                android:text="03"
-                                android:textAlignment="center"
-                                android:textColor="@color/color_blue_icon"
-                                android:textColorHint="@color/back_text_colour"
-                                android:textSize="@dimen/_14sp" />
+                                android:layout_gravity="top"
+                                android:layout_marginHorizontal="@dimen/_0dp"
+                                android:layout_marginTop="@dimen/_0dp"
+                                android:layout_toRightOf="@+id/tvOverdue"
+                                android:layout_weight="3.5"
+                                android:focusable="false"
+                                android:focusableInTouchMode="false"
+                                android:nestedScrollingEnabled="true"
+                                android:padding="@dimen/_1dp"
+                                android:visibility="visible"
+                                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                                app:spanCount="3"
+                                tools:listitem="@layout/row_pager_enquiry" />
 
                             <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/nextPage"
                                 android:layout_width="@dimen/_12dp"
                                 android:layout_height="@dimen/_16dp"
                                 android:layout_alignParentEnd="true"
                                 android:layout_gravity="center"
-                                android:layout_weight="1"
+                                android:layout_weight="1.2"
                                 android:src="@drawable/ic_om_right"
                                 android:visibility="visible" />
 
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
+
 
                     </RelativeLayout>
 

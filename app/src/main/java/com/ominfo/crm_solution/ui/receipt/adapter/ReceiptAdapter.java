@@ -14,12 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
+import com.ominfo.crm_solution.ui.receipt.model.ReceiptResult;
 
 import java.util.List;
 
 public class ReceiptAdapter extends RecyclerView.Adapter<ReceiptAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<DashModel> mListData;
+    private List<ReceiptResult> mListData;
     private Context mContext;
     private String mDate;
 
@@ -27,7 +28,7 @@ public class ReceiptAdapter extends RecyclerView.Adapter<ReceiptAdapter.ViewHold
         this.mContext = mContext;
     }
 
-    public ReceiptAdapter(Context context, List<DashModel> listData, ListItemSelectListener itemClickListener) {
+    public ReceiptAdapter(Context context, List<ReceiptResult> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -42,16 +43,18 @@ public class ReceiptAdapter extends RecyclerView.Adapter<ReceiptAdapter.ViewHold
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<DashModel> list){
+    public void updateList(List<ReceiptResult> list){
         mListData = list;
         notifyDataSetChanged();
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
         if(mListData.size()>0) {
             holder.setIsRecyclable(false);
+            holder.tvCompanyName.setText(mListData.get(position).getCompanyName());
+            holder.tvState.setText(mListData.get(position).getReceiptNumber());
+            holder.tvRs.setText("₹"+mListData.get(position).getAmount());
             if (position % 2 != 0) {
                 holder.layClick.setBackground(mContext.getResources().getDrawable(R.drawable.shape_round_white_left_right_border_dialog));
             } else {
@@ -65,23 +68,21 @@ public class ReceiptAdapter extends RecyclerView.Adapter<ReceiptAdapter.ViewHold
         holder.tvRs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listItemSelectListener.onItemClick(0);
+                listItemSelectListener.onItemClick(0,mListData.get(position));
             }
         });
         holder.tvState.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listItemSelectListener.onItemClick(0);
+                listItemSelectListener.onItemClick(0,mListData.get(position));
             }
         });
         holder.tvCompanyName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listItemSelectListener.onItemClick(1);
+                listItemSelectListener.onItemClick(1,mListData.get(position));
             }
         });
-
-
     }
 
 
@@ -109,6 +110,6 @@ public class ReceiptAdapter extends RecyclerView.Adapter<ReceiptAdapter.ViewHold
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(int mData);
+        void onItemClick(int mData,ReceiptResult receiptResult);
     }
 }

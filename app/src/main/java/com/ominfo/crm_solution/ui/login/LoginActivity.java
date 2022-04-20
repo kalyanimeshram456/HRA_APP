@@ -1,14 +1,24 @@
 package com.ominfo.crm_solution.ui.login;
 
+import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.ominfo.crm_solution.MainActivity;
 import com.ominfo.crm_solution.R;
@@ -35,7 +45,9 @@ import okhttp3.MediaType;
 import okhttp3.RequestBody;
 
 public class LoginActivity extends BaseActivity {
-
+    private static final String TAG = "PushNotification";
+    private static final String CHANNEL_ID = "101";
+    String recentToken = "";
     @BindView(R.id.input_password)
     TextInputLayout inputPassword;
 
@@ -72,7 +84,11 @@ public class LoginActivity extends BaseActivity {
         ButterKnife.bind(this);
         mContext = this;
         injectAPI();
+        //requestPermission();
         init();
+        //FirebaseApp.initializeApp();
+        createNotificationChannel();
+        getToken();
     }
 
     private void injectAPI() {
@@ -80,118 +96,92 @@ public class LoginActivity extends BaseActivity {
          mLoginViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, "Login"));
     }
 
+    /*
+     * ACCESS_FINE_LOCATION permission result
+     * */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 1000:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[1] == PackageManager.PERMISSION_GRANTED
+                        &&
+                        grantResults[2] == PackageManager.PERMISSION_GRANTED
+                ) {
+                    //BaseApplication.getInstance().mService.requestLocationUpdates();
+                } else {
+                    //Toast.makeText(mContext, getString(R.string.somthing_went_wrong), Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+        }
+
+    }
+
+
+    //request camera and storage permission
+    private void requestPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (mContext.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
+                    || mContext.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                    || mContext.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+                requestPermissions(new String[]
+                                {
+                                        Manifest.permission.CAMERA,
+                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                                },
+                        1000);
+
+            } else {
+                // reqPermissionCode();
+            }
+        } else {
+            //reqPermissionCode();
+        }
+    }
+
+    private void getToken() {
+        //FirebaseMessaging.getInstance().deleteToken();
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+            @Override
+            public void onComplete(@NonNull Task<String> task) {
+                //If task is failed then
+                if (!task.isSuccessful()) {
+                    LogUtil.printLog(TAG, "onComplete: Failed to get the Token");
+                }
+
+                //Token
+                String token = task.getResult();
+                recentToken = token;
+                LogUtil.printLog(TAG, "onComplete: " + token);
+            }
+        });
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "firebaseNotifChannel";
+            String description = "Receve Firebase notification";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+
     private void init(){
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         //editTextEmail.setText("hd001");
         //editTextPassword.setText("2437");
         setErrorMSG();
-        /*intentFilter = new IntentFilter();
-        intentFilter.addAction(CONNECTIVITY_ACTION);
-        receiver = new MyReceiver();*/
-        //get login status
-       /* Boolean iSLoggedIn = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.IS_LOGGED_IN, false);
-        if (!iSLoggedIn){
-            if(checkForInternet()){
-                try {
-                    //uploadVehicle(mContext);
-                }catch (Exception e){}
-            }else{
-                //LogUtil.printToastMSG(this,"yo Not Connected");
-            }
-        }*/
+
     }
-
-   /* public class MyReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            String actionOfIntent = intent.getAction();
-            boolean isConnected = NetworkCheck.isInternetAvailable(context);
-            if(actionOfIntent.equals(CONNECTIVITY_ACTION)){
-                //get login status
-                Boolean iSLoggedIn = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.IS_LOGGED_IN, false);
-                if (!iSLoggedIn){
-                    if(isConnected){
-                        try {
-                           // uploadVehicle(context);
-                        }catch (Exception e){}
-                    }else{
-                        //LogUtil.printToastMSG(context,"yo Not Connected");
-                    }
-                }
-            }
-        }
-    }
-
-    public void uploadVehicle(Context mContext){
-        List<VehicleDetailsResultTable> vehicleList = mDb.getDbDAO().getVehicleList();
-        if(vehicleList!=null && vehicleList.size()>0) {
-            for(int i=0;i<vehicleList.size();i++) {
-                try {
-
-                   *//* List<UploadVehicleImage> base64List = new ArrayList<>();
-                    for(int k=0;k<vehicleList.get(i).getLrImages().size();k++){
-                        String mBase64 = AppUtils.getBase64images(vehicleList.get(i).getLrImages().get(k).getImage());
-                        base64List.add(new UploadVehicleImage(vehicleList.get(i).getLrImages().get(k).getLr(),mBase64));
-                    }*//*
-                    UploadVehicleRecordRequest mLoginRequest = new UploadVehicleRecordRequest();
-                    mLoginRequest.setUserkey(vehicleList.get(i).getUserkey());
-                    mLoginRequest.setVehicleID(vehicleList.get(i).getVehicleID());
-                    mLoginRequest.setTransactionDate(vehicleList.get(i).getTransactionDate());
-                    mLoginRequest.setUserID(vehicleList.get(i).getUserID());
-                    mLoginRequest.setGeneratedId(vehicleList.get(i).getGeneratedId());
-                    mLoginRequest.setTransactionID(vehicleList.get(i).getTransactionID());
-                    mLoginRequest.setPhotoXml(vehicleList.get(i).getLrImages());
-                    mLoginRequest.setNoOfLR(vehicleList.get(i).getNoOfLR());
-                    mLoginRequest.setBranchID(vehicleList.get(i).getBranchID());
-                    mLoginRequest.setPlantID(vehicleList.get(i).getPlantID());///AutoComTextViewPlant.getEditableText().toString().trim());
-                    Gson gson = new Gson();
-                    String bodyInStringFormat = gson.toJson(mLoginRequest);
-                    RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), "saveVehWiseLRTransaction");
-                    RequestBody mRequestBodyTypeImage = RequestBody.create(MediaType.parse("text/plain"), bodyInStringFormat);
-                    LogUtil.printLog("request save", bodyInStringFormat);
-
-                    NetworkAPIServices mNetworkAPIServices = RetroNetworkModule.getInstance().getAPI();
-                    Call<UploadVehicleRecordRespoonse> call = mNetworkAPIServices.uploadVehicleRecord(DynamicAPIPath.makeDynamicEndpointAPIGateWay(NetworkURLs.BASE_URL,
-                            DynamicAPIPath.POST_UPLOAD_VEHICLE), mRequestBodyType, mRequestBodyTypeImage);
-
-                    int finalI = i;
-                    call.enqueue(new Callback<UploadVehicleRecordRespoonse>() {
-                        @Override
-                        public void onResponse(@NonNull Call<UploadVehicleRecordRespoonse> call, @NonNull retrofit2.Response<UploadVehicleRecordRespoonse> response) {
-                            try {
-                                //dismissLoader();
-                                if (response.body() != null) {
-                                    UploadVehicleRecordRespoonse userInfo = response.body();
-                                    if (userInfo.getStatus().equals("1")) {
-                                        //LogUtil.printToastMSG(mContext, "Pending Lr uploaded!");
-                                        mDb.getDbDAO().deleteVehicleDetailsbyID(userInfo.getResult().getGeneratedId());
-                                    } else {
-                                        //editText.setError(userInfo.getMessage());
-                                        //LogUtil.printToastMSG(mContext, userInfo.getMessage());
-                                    }
-                                }
-                            } catch (Exception e) {
-                                //editText.setError("LR no already " + "exists");
-                                //LogUtil.printToastMSG(mContext, "LR no already " + "exists");
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@NonNull Call<UploadVehicleRecordRespoonse> call, @NonNull Throwable t) {
-                            //dismissLoader();
-                            //Util.showToastMessage(LoginActivity.this, getString(R.string.msg_try_again_later));
-                        }
-                    });
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        }
-
-    }*/
 
     // set error if input field is blank
     private void setErrorMSG() {

@@ -62,7 +62,6 @@
             android:layout_centerVertical="true"
             android:textAlignment="textStart"
             android:fontFamily="@font/gilroy_regular"
-            android:gravity="center"
             android:text="@string/scr_lbl_enquiry_number"
             android:textColor="@color/back_text_colour"
             android:textSize="@dimen/_14sp" />
@@ -81,15 +80,15 @@
 
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvKyaKhracha"
+            android:id="@+id/tvEnquiryNo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-           android:layout_toRightOf="@+id/tvCompanyColon"
+            android:layout_toRightOf="@+id/tvCompanyColon"
             android:fontFamily="@font/gilroy_semibold"
             android:gravity="start"
-            android:inputType="textCapCharacters"
-            android:textColor="@color/back_text_colour"
+            android:inputType="textMultiLine"
             android:text="CRM/2021/HTH"
+            android:textColor="@color/back_text_colour"
             android:textSize="@dimen/_14sp" />
 
     </RelativeLayout>
@@ -125,15 +124,15 @@
                 android:textSize="@dimen/_14sp" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvAmountValue"
+                android:id="@+id/tvCustName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/tvAmountColon"
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
-                android:inputType="textCapCharacters"
-                android:textColor="@color/back_text_colour"
+                android:inputType="textMultiLine"
                 android:text="BOMBAY ENTERPRISE"
+                android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
         </RelativeLayout>
@@ -167,16 +166,17 @@
                 android:text="  :  "
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
+
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvRMValue"
+                android:id="@+id/tvMobile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/tvRMColon"
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
-                android:inputType="textCapCharacters"
-                android:textColor="@color/back_text_colour"
+                android:inputType="textMultiLine"
                 android:text="9156846834"
+                android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
         </RelativeLayout>
@@ -212,15 +212,15 @@
                 android:textSize="@dimen/_14sp" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvStateValue"
+                android:id="@+id/tvPOI"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/tvStateColon"
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
-                android:inputType="textCapCharacters"
-                android:textColor="@color/back_text_colour"
+                android:inputType="textMultiLine"
                 android:text="CRM"
+                android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
         </RelativeLayout>
@@ -262,9 +262,9 @@
                 android:layout_toRightOf="@+id/tvSourceColon"
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
-                android:inputType="textCapCharacters"
-                android:textColor="@color/back_text_colour"
+                android:inputType="textMultiLine"
                 android:text="Internet"
+                android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
         </RelativeLayout>
@@ -306,9 +306,9 @@
                 android:layout_toRightOf="@+id/tvDetailsColon"
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
-                android:inputType="textCapCharacters"
-                android:textColor="@color/back_text_colour"
+                android:inputType="textMultiLine"
                 android:text="Test"
+                android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
         </RelativeLayout>
@@ -344,15 +344,15 @@
                 android:textSize="@dimen/_14sp" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvRMDValue"
+                android:id="@+id/tvRMValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/tvRMDColon"
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
-                android:inputType="textCapCharacters"
-                android:textColor="@color/back_text_colour"
+                android:inputType="textMultiLine"
                 android:text="Harsh Wagh"
+                android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
         </RelativeLayout>

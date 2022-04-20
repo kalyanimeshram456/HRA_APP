@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layClick"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/_10dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="horizontal"
+    android:paddingVertical="@dimen/_12dp">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvCompanyName"
+        android:layout_width="@dimen/_110dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/gilroy_regular"
+        android:imeOptions="actionDone"
+        android:inputType="textMultiLine"
+        android:hint="@string/scr_lbl_unavailable"
+        android:text=""
+        android:layout_gravity="fill"
+        android:gravity="left"
+        android:layout_weight="0.7"
+        android:textColor="@color/back_text_colour"
+        android:textColorHint="@color/back_text_colour"
+        android:textSize="@dimen/_12sp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvLimit"
+        android:layout_width="@dimen/_90dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:layout_marginHorizontal="@dimen/_5dp"
+        android:fontFamily="@font/gilroy_regular"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:imeOptions="actionDone"
+        android:inputType="textMultiLine"
+        android:text=""
+        android:hint="@string/scr_lbl_unavailable"
+        android:textColor="@color/back_text_colour"
+        android:textColorHint="@color/back_text_colour"
+        android:textSize="@dimen/_12sp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvBal"
+        android:layout_width="@dimen/_90dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:fontFamily="@font/gilroy_regular"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:layout_alignParentTop="true"
+        android:imeOptions="actionDone"
+        android:inputType="textMultiLine"
+        android:text=""
+        android:hint="@string/scr_lbl_unavailable"
+        android:textColor="@color/Dark_Red"
+        android:textColorHint="@color/back_text_colour"
+        android:textSize="@dimen/_12sp" />
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvOverdue"
+        android:layout_width="@dimen/_90dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:fontFamily="@font/gilroy_regular"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:layout_alignParentTop="true"
+        android:imeOptions="actionDone"
+        android:inputType="textMultiLine"
+        android:layout_marginLeft="@dimen/_5dp"
+        android:text=""
+        android:hint="@string/scr_lbl_unavailable"
+        android:textColor="@color/Dark_Red"
+        android:textColorHint="@color/back_text_colour"
+        android:textSize="@dimen/_12sp" />
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

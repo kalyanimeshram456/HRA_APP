@@ -27,6 +27,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/_35dp"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -76,15 +77,16 @@
                                 android:textSize="@dimen/_16sp" />
 
                             <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvTotalCount"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="bottom"
                                 android:fontFamily="@font/gilroy_semibold"
                                 android:gravity="bottom|left"
-                                android:hint="@string/scr_lbl_dashboard"
+                                android:hint="₹0"
                                 android:imeOptions="actionDone"
                                 android:inputType="text"
-                                android:text="₹43454445"
+                                android:text=""
                                 android:textColor="@color/back_text_colour"
                                 android:textColorHint="@color/back_text_colour"
                                 android:textSize="@dimen/_14sp" />
@@ -141,12 +143,12 @@
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/layBorder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/layTop"
                     android:layout_marginHorizontal="@dimen/_16dp"
-                    android:layout_marginVertical="@dimen/_16dp"
-                    android:layout_marginTop="14dp"
+                    android:layout_marginTop="@dimen/_16dp"
                     android:background="@drawable/layout_round_shape_blue_border"
                     android:orientation="vertical"
 
@@ -179,7 +181,7 @@
                             android:layout_height="@dimen/_18dp"
                             android:layout_alignParentEnd="true"
                             android:layout_gravity="right"
-                            android:layout_marginRight="@dimen/_100dp"
+                            android:layout_marginRight="@dimen/_60dp"
                             android:visibility="visible" />
 
                         <androidx.appcompat.widget.AppCompatImageView
@@ -213,7 +215,7 @@
                         android:orientation="vertical"
                         android:visibility="visible">
 
-                        <RelativeLayout
+                        <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="@dimen/_10dp">
@@ -223,6 +225,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentStart="true"
                                 android:layout_marginTop="@dimen/_10dp"
+                                android:layout_weight="0.9"
                                 android:gravity="left">
 
                                 <androidx.appcompat.widget.AppCompatTextView
@@ -231,15 +234,17 @@
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentStart="true"
                                     android:fontFamily="@font/gilroy_bold"
-                                    android:gravity="left"
+                                    android:gravity="center"
                                     android:imeOptions="actionDone"
-                                    android:inputType="text"
-                                    android:text="Company Name"
+                                    android:inputType="textMultiLine"
+                                    android:text="@string/scr_lbl_company_name"
+                                    android:textAlignment="center"
                                     android:textColor="@color/back_text_colour"
                                     android:textColorHint="@color/back_text_colour"
                                     android:textSize="@dimen/_12sp" />
 
                                 <androidx.appcompat.widget.AppCompatImageView
+                                    android:id="@+id/imgCompanySort"
                                     android:layout_width="@dimen/_12dp"
                                     android:layout_height="@dimen/_12dp"
                                     android:layout_centerVertical="true"
@@ -251,13 +256,14 @@
                             <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="@dimen/_5dp"
                                 android:layout_marginTop="@dimen/_10dp"
+                                android:layout_weight="1"
                                 android:gravity="center"
-                                android:inputType="text"
-                                android:paddingLeft="@dimen/_24dp">
+                                android:inputType="text">
 
                                 <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/tvOverall"
+                                    android:id="@+id/tvLimit"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/gilroy_bold"
@@ -265,31 +271,65 @@
                                     android:imeOptions="actionDone"
                                     android:inputType="textMultiLine"
                                     android:maxLines="2"
-                                    android:text="@string/scr_lbl_overdue_by_days"
+                                    android:text="@string/src_lbl_limit"
                                     android:textColor="@color/back_text_colour"
                                     android:textColorHint="@color/back_text_colour"
                                     android:textSize="@dimen/_12sp" />
 
                                 <androidx.appcompat.widget.AppCompatImageView
+                                    android:id="@+id/imgLimit"
                                     android:layout_width="@dimen/_12dp"
                                     android:layout_height="@dimen/_12dp"
                                     android:layout_alignParentTop="true"
                                     android:layout_marginLeft="@dimen/_2dp"
                                     android:layout_marginTop="@dimen/_3dp"
-                                    android:layout_toRightOf="@+id/tvOverall"
+                                    android:layout_toRightOf="@+id/tvLimit"
                                     android:src="@drawable/ic_om_sort" />
                             </RelativeLayout>
-
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
                                 android:layout_marginTop="@dimen/_10dp"
+                                android:layout_weight="1"
                                 android:gravity="right">
 
                                 <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/tvAmount"
+                                    android:id="@+id/tvBalance"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:fontFamily="@font/gilroy_bold"
+                                    android:gravity="center|right"
+                                    android:imeOptions="actionDone"
+                                    android:inputType="text"
+                                    android:text="Balance"
+                                    android:textColor="@color/back_text_colour"
+                                    android:textColorHint="@color/back_text_colour"
+                                    android:textSize="@dimen/_12sp" />
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:id="@+id/imgBalance"
+                                    android:layout_width="@dimen/_12dp"
+                                    android:layout_height="@dimen/_12dp"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginLeft="@dimen/_2dp"
+                                    android:layout_toRightOf="@+id/tvBalance"
+                                    android:src="@drawable/ic_om_sort" />
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginLeft="@dimen/_5dp"
+                                android:layout_marginTop="@dimen/_10dp"
+                                android:layout_weight="1"
+                                android:gravity="right">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvOverdue"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentEnd="true"
@@ -297,22 +337,24 @@
                                     android:gravity="right"
                                     android:imeOptions="actionDone"
                                     android:inputType="text"
-                                    android:text="Amount"
+                                    android:text="Overdue"
                                     android:textColor="@color/back_text_colour"
                                     android:textColorHint="@color/back_text_colour"
                                     android:textSize="@dimen/_12sp" />
 
                                 <androidx.appcompat.widget.AppCompatImageView
+                                    android:id="@+id/imgOverdue"
                                     android:layout_width="@dimen/_12dp"
                                     android:layout_height="@dimen/_12dp"
                                     android:layout_centerVertical="true"
                                     android:layout_marginLeft="@dimen/_2dp"
-                                    android:layout_toRightOf="@+id/tvAmount"
+                                    android:layout_toRightOf="@+id/tvOverdue"
                                     android:src="@drawable/ic_om_sort" />
                             </RelativeLayout>
 
+                        </androidx.appcompat.widget.LinearLayoutCompat>
 
-                        </RelativeLayout>
+                        <include layout="@layout/content_empty_enquiry_layout" />
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvSalesList"
@@ -323,6 +365,7 @@
                             android:focusable="false"
                             android:focusableInTouchMode="false"
                             android:nestedScrollingEnabled="true"
+                            android:paddingBottom="@dimen/_1dp"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                             tools:listitem="@layout/row_sales_credit_table" />
 
@@ -333,7 +376,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_10dp"
-                        android:visibility="gone">
+                        android:visibility="visible">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvPage"
@@ -343,7 +386,7 @@
                             android:layout_gravity="left"
                             android:layout_marginLeft="@dimen/_10dp"
                             android:fontFamily="@font/gilroy_semibold"
-                            android:text="Showing 01 to 12 of 50 \nEntries"
+                            android:text="Showing 0 to 0 of 0 \nEntries"
                             android:textColor="@color/gray"
                             android:textSize="@dimen/_12sp" />
 
@@ -358,70 +401,41 @@
                             android:paddingVertical="@dimen/_2dp">
 
                             <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/prePage"
                                 android:layout_width="@dimen/_12dp"
                                 android:layout_height="@dimen/_16dp"
                                 android:layout_alignParentEnd="true"
                                 android:layout_gravity="center"
-                                android:layout_weight="1"
+                                android:layout_weight="1.2"
                                 android:src="@drawable/ic_om_left"
                                 android:visibility="visible" />
 
 
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:layout_width="@dimen/_20dp"
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvEnquiryPager"
+                                android:layout_width="@dimen/_80dp"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:fontFamily="@font/gilroy_regular"
-                                android:gravity="center"
-                                android:hint="@string/scr_lbl_dashboard"
-                                android:imeOptions="actionDone"
-                                android:inputType="text"
-                                android:paddingVertical="@dimen/_5dp"
-                                android:text="01"
-                                android:textAlignment="center"
-                                android:textColor="@color/color_blue_icon"
-                                android:textColorHint="@color/back_text_colour"
-                                android:textSize="@dimen/_14sp" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:layout_width="@dimen/_20dp"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_weight="1"
-                                android:background="@drawable/bg_button_round_corner_2"
-                                android:fontFamily="@font/gilroy_regular"
-                                android:hint="@string/scr_lbl_dashboard"
-                                android:imeOptions="actionDone"
-                                android:inputType="text"
-                                android:paddingVertical="@dimen/_5dp"
-                                android:text="02"
-                                android:textAlignment="center"
-                                android:textColor="@color/white"
-                                android:textColorHint="@color/back_text_colour"
-                                android:textSize="@dimen/_14sp" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:layout_width="@dimen/_20dp"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_weight="1"
-                                android:fontFamily="@font/gilroy_regular"
-                                android:hint="@string/scr_lbl_dashboard"
-                                android:imeOptions="actionDone"
-                                android:inputType="text"
-                                android:paddingVertical="@dimen/_5dp"
-                                android:text="03"
-                                android:textAlignment="center"
-                                android:textColor="@color/color_blue_icon"
-                                android:textColorHint="@color/back_text_colour"
-                                android:textSize="@dimen/_14sp" />
+                                android:layout_gravity="top"
+                                android:layout_marginHorizontal="@dimen/_0dp"
+                                android:layout_marginTop="@dimen/_0dp"
+                                android:layout_toRightOf="@+id/tvOverdue"
+                                android:layout_weight="3.5"
+                                android:focusable="false"
+                                android:focusableInTouchMode="false"
+                                android:nestedScrollingEnabled="true"
+                                android:padding="@dimen/_1dp"
+                                android:visibility="visible"
+                                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                                app:spanCount="3"
+                                tools:listitem="@layout/row_pager_enquiry" />
 
                             <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/nextPage"
                                 android:layout_width="@dimen/_12dp"
                                 android:layout_height="@dimen/_16dp"
                                 android:layout_alignParentEnd="true"
                                 android:layout_gravity="center"
-                                android:layout_weight="1"
+                                android:layout_weight="1.2"
                                 android:src="@drawable/ic_om_right"
                                 android:visibility="visible" />
 
@@ -445,6 +459,24 @@
                         android:visibility="gone" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/submitButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_40dp"
+                    android:layout_below="@+id/layBorder"
+                    android:layout_alignParentBottom="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_marginBottom="@dimen/_30dp"
+                    android:layout_marginTop="@dimen/_16dp"
+                    android:background="@drawable/bg_button_round_corner_5"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/_2dp"
+                    android:text="Submit"
+                    android:visibility="gone"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_16sp" />
 
             </RelativeLayout>
 

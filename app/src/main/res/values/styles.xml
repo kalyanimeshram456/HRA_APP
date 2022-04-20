@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -235,5 +235,22 @@
     <style name="ThemeDialogCustomFullScreen">
         <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
         <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="NavigationTheme" parent="AppTheme">
+        <item name="itemIconTint">@color/color_main</item>
+        <item name="itemTextColor">@color/color_main</item>
+        <item name="android:background">#00ffffff</item>
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+
+    </style>
+    <style name="AppThemeMyAccount" parent="Theme.AppCompat.Light">
+        <item name="android:windowActionBar" tools:ignore="NewApi">false</item>
+        <item name="windowActionBar">false</item>
+        <item name="colorPrimary">@android:color/transparent</item>
+        <item name="colorPrimaryDark">@android:color/transparent</item>
+        <item name="colorAccent">@android:color/transparent</item>
     </style>
 </resources>

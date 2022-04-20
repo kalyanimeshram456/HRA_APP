@@ -65,6 +65,9 @@ public class CrmAdapter extends RecyclerView.Adapter<CrmAdapter.ViewHolder> {
             holder.tvTitle.setText(mListData.get(position).getTitle());
             holder.tvRs.setText(mListData.get(position).getValue());
             holder.imgDash.setImageDrawable(mListData.get(position).getImg());
+            if(mListData.get(position).getTitle().equals("Products")) {
+                holder.tvRs.setHint("");
+            }
         }
 
         holder.layClick.setOnClickListener(new View.OnClickListener() {

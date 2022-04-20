@@ -36,12 +36,23 @@ public class LoginTable {
     @SerializedName("profile_picture")
     private String mProfilePicture;
 
+    @ColumnInfo(name = "employee_id")
+    @Expose
+    @SerializedName("employee_id")
+    private String employeeId;
+
+    @ColumnInfo(name = "company_id")
+    @Expose
+    @SerializedName("company_id")
+    private String companyId;
+
     @PrimaryKey(autoGenerate = true)
     @NonNull
     @ColumnInfo(name = "ID")
     @Expose
     @SerializedName("ID")
     private int id;
+
 
     public int getId() {
         return id;
@@ -67,13 +78,6 @@ public class LoginTable {
         mIsadmin = isadmin;
     }
 
-    public String getName() {
-        return mName;
-    }
-
-    public void setName(String name) {
-        mName = name;
-    }
 
     public String getProfilePicture() {
         return mProfilePicture;
@@ -83,4 +87,40 @@ public class LoginTable {
         mProfilePicture = profilePicture;
     }
 
+    public String getName() {
+        return mName;
+    }
+
+    public void setName(String mName) {
+        this.mName = mName;
+    }
+
+    public String getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public String getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
+    }
+
+    @Override
+    public String toString() {
+        return "LoginTable{" +
+                "mBaseUrl='" + mBaseUrl + '\'' +
+                ", mIsadmin='" + mIsadmin + '\'' +
+                ", mName='" + mName + '\'' +
+                ", mProfilePicture='" + mProfilePicture + '\'' +
+                ", employeeId='" + employeeId + '\'' +
+                ", companyId='" + companyId + '\'' +
+                ", id=" + id +
+                '}';
+    }
 }

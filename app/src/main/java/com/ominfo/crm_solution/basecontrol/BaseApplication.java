@@ -1,7 +1,10 @@
 package com.ominfo.crm_solution.basecontrol;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.util.Log;
 import android.widget.EditText;
 
@@ -39,7 +42,7 @@ public class BaseApplication extends MultiDexApplication {
      * A singleton instance of the application class for easy access in other places
      */
     private static BaseApplication sInstance;
-
+    public static final String CHANNEL_ID = "ALARM_SERVICE_CHANNEL";
 
     @Override
     public void onCreate() {
@@ -48,6 +51,20 @@ public class BaseApplication extends MultiDexApplication {
         sInstance = this;
         //change application mode
         mApplicationMode = ApplicationMode.PRODUCTION;
+        createNotificationChannnel();
+    }
+
+    private void createNotificationChannnel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Alarm Service Channel",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(serviceChannel);
+        }
+
     }
 
     public static synchronized BaseApplication getInstance(Context mCtx) {

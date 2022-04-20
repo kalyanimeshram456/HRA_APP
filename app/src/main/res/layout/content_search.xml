@@ -62,17 +62,21 @@
                     android:background="@drawable/layout_round_shape_blue_border"
                     android:orientation="vertical">
 
+                    <include layout="@layout/content_empty_activity_layout" />
+
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvSalesList"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_marginHorizontal="@dimen/_16dp"
                         android:layout_marginTop="@dimen/_2dp"
                         android:background="@color/white"
-                        android:layout_marginHorizontal="@dimen/_16dp"
                         android:focusable="false"
                         android:focusableInTouchMode="false"
                         android:nestedScrollingEnabled="false"
+                        android:paddingBottom="@dimen/_16dp"
+                        android:visibility="visible"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         tools:listitem="@layout/row_search" />
 

@@ -35,6 +35,8 @@ public class FilterActivity extends BaseActivity {
 
     List<DashModel> dashboardList = new ArrayList<>();
     final Calendar myCalendar = Calendar.getInstance();
+    @BindView(R.id.tvNotifyCount)
+    AppCompatTextView tvNotifyCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +92,7 @@ public class FilterActivity extends BaseActivity {
     private void setToolbar() {
         //set toolbar title
         //toolbarTitle.setText(R.string.scr_lbl_add_new_lr);
-        initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgReport, 0, R.id.imgCall);
+        initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgReport,tvNotifyCount, 0, R.id.imgCall);
     }
 
 

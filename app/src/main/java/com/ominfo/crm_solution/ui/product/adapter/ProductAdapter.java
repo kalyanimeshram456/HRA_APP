@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -13,13 +12,13 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.crm_solution.R;
-import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
+import com.ominfo.crm_solution.ui.product.model.ProductResult;
 
 import java.util.List;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<DashModel> mListData;
+    private List<ProductResult> mListData;
     private Context mContext;
     private String mDate;
 
@@ -27,7 +26,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         this.mContext = mContext;
     }
 
-    public ProductAdapter(Context context, List<DashModel> listData, ListItemSelectListener itemClickListener) {
+    public ProductAdapter(Context context, List<ProductResult> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -42,7 +41,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<DashModel> list){
+    public void updateList(List<ProductResult> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -53,8 +52,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         if(mListData.size()>0) {
             holder.setIsRecyclable(false);
 
-            holder.tvCompanyName.setText("CRM/2021/HH");
-                holder.tvState.setText("Pressure relief valve");
+            holder.tvCompanyName.setText(mListData.get(position).getProdCode());
+                holder.tvState.setText(mListData.get(position).getProdName());
                // holder.tvRs.setText("Quotation Converted");
                 //holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
 
@@ -80,21 +79,21 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(1);
+                listItemSelectListener.onItemClick(1,mListData.get(position));
             }
         });
         holder.tvCompanyName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(1);
+                listItemSelectListener.onItemClick(1,mListData.get(position));
             }
         });
         holder.layClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(1);
+                listItemSelectListener.onItemClick(1,mListData.get(position));
             }
         });
 
@@ -127,6 +126,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(int mData);
+        void onItemClick(int mData,ProductResult productResult);
     }
 }

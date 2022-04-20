@@ -171,7 +171,7 @@
                         android:layout_toRightOf="@+id/imgReport"
                         android:background="@drawable/layout_round_shape_corners_15_light_blue"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="6"
+                        android:text="0"
                         android:textAlignment="center"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_12sp"

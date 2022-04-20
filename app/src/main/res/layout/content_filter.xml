@@ -8,9 +8,11 @@
     android:focusable="true"
     android:id="@+id/layFilter"
     android:visibility="visible"
-    android:layout_marginHorizontal="@dimen/_1dp"
     android:focusableInTouchMode="true"
-    android:background="@color/white"
+    android:layout_marginHorizontal="@dimen/_10dp"
+    android:layout_marginTop="@dimen/_6dp"
+    android:background="@drawable/layout_round_shape_grey_border_small"
+
     android:orientation="vertical">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -42,7 +44,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvCompanyName"
-                        android:layout_width="@dimen/_80dp"
+                        android:layout_width="@dimen/_58dp"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_gravity="left|center"
@@ -50,7 +52,7 @@
                         android:fontFamily="@font/gilroy_semibold"
                         android:text="@string/scr_lbl_company_name_no_line"
                         android:textColor="@color/back_text_colour"
-                        android:textSize="@dimen/_14sp" />
+                        android:textSize="@dimen/_12sp" />
 
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/AutoComTextView"
@@ -98,6 +100,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10dp"
+                    android:visibility="gone"
                     >
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -114,12 +117,14 @@
 
 
                     <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/tvOverdueByDays"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/_40dp"
                         android:layout_toRightOf="@+id/tvOverdue"
                         android:background="@drawable/toggle_add_reminder_edt"
                         android:clickable="true"
                         android:focusable="true"
+
                         android:focusableInTouchMode="true"
                         android:fontFamily="@font/gilroy_semibold"
                         android:hint="@string/scr_lbl_overdue_by_days_no_line"
@@ -133,6 +138,7 @@
 
                 </RelativeLayout>
                 <RelativeLayout
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10dp"
@@ -209,39 +215,41 @@
                     >
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/appcomptextRm"
-                        android:layout_width="@dimen/_80dp"
+                        android:id="@+id/appcomptextState"
+                        android:layout_width="@dimen/_58dp"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:layout_gravity="center"
-                        android:layout_marginRight="@dimen/_10dp"                        android:fontFamily="@font/gilroy_semibold"
+                        android:layout_gravity="left"
+                        android:layout_marginTop="@dimen/_10dp"
+                        android:layout_marginRight="@dimen/_10dp"
+                        android:fontFamily="@font/gilroy_semibold"
                         android:text="@string/scr_lbl_rm"
                         android:textColor="@color/back_text_colour"
-                        android:textSize="@dimen/_14sp" />
-
-
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/input_textDate"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/_40dp"
-                        android:layout_toRightOf="@+id/appcomptextRm"
-                        android:background="@drawable/toggle_add_reminder_edt"
-                        android:clickable="false"
-                        android:drawableEnd="@drawable/ic_up_solid"
-                        android:fontFamily="@font/gilroy_semibold"
-                        android:hint="Select RM"
-                        android:imeOptions="actionDone"
-                        android:inputType="text"
-                        android:padding="@dimen/_10dp"
-                        android:text=""
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        android:textColor="@color/black_heading"
-                        android:textColorHint="@color/app_gray"
                         android:textSize="@dimen/_12sp" />
 
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvRm"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:layout_marginHorizontal="@dimen/_0dp"
+                        android:layout_marginTop="@dimen/_0dp"
+                        android:layout_toRightOf="@+id/appcomptextState"
+                        android:background="@drawable/shape_round_white_round_thick_dialog"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:nestedScrollingEnabled="true"
+                        android:paddingLeft="@dimen/_5dp"
+                        android:paddingRight="@dimen/_5dp"
+                        android:paddingBottom="@dimen/_5dp"
+                        android:visibility="visible"
+                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                        app:spanCount="3"
+                        tools:listitem="@layout/row_add_tag" />
+
+
                 </RelativeLayout>
-                <RelativeLayout
+                <!--<RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10dp"
@@ -279,14 +287,14 @@
                         android:textColorHint="@color/app_gray"
                         android:textSize="@dimen/_12sp" />
 
-                </RelativeLayout>
+                </RelativeLayout>-->
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/resetButton"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_40dp"
                     android:layout_gravity="bottom"
-                    android:layout_marginTop="@dimen/_80dp"
+                    android:layout_marginTop="@dimen/_150dp"
                     android:layout_marginBottom="@dimen/_0dp"
                     android:background="@drawable/layout_round_shape_corners_15_light_yellow"
                     android:fontFamily="@font/gilroy_semibold"

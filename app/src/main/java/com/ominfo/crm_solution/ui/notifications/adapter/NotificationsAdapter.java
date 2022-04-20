@@ -1,23 +1,28 @@
 package com.ominfo.crm_solution.ui.notifications.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.crm_solution.R;
-import com.ominfo.crm_solution.ui.driver_hisab.model.DriverHisabModel;
+import com.ominfo.crm_solution.ui.notifications.model.NotificationResult;
 
 import java.util.List;
+import java.util.Random;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<DriverHisabModel> mListData;
+    private List<NotificationResult> mListData;
     private Context mContext;
     private String mDate;
 
@@ -25,7 +30,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         this.mContext = mContext;
     }
 
-    public NotificationsAdapter(Context context, List<DriverHisabModel> listData, ListItemSelectListener itemClickListener) {
+    public NotificationsAdapter(Context context, List<NotificationResult> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -40,7 +45,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<DriverHisabModel> list){
+    public void updateList(List<NotificationResult> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -49,52 +54,48 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         if (mListData != null) {
-            if (mListData.get(position).getDriverHisabValue().equals("1")) {
-                holder.tvPrice.setText("₹ 1200");
-                holder.tvPrice.setTextColor(mContext.getResources().getColor(R.color.green));
-                holder.tvTitle.setText(R.string.scr_lbl_advance_assign);
-                holder.tvGadiNo.setText(R.string.scr_lbl_branch_nam);
-                holder.tvTrip.setText(R.string.scr_lbl_staff_nam);
-                holder.tvGadiNoValue.setText("Vashi");
-                holder.tvTripValue.setText("Deepak");
-                holder.layClick.setBackground(mContext.getResources().getDrawable(R.drawable.layout_round_shape_corners_8_grey));
-            }
-            /*if (mListData.get(position).getDriverHisabValue().equals("0")) {
-                holder.tvPrice.setText(R.string.scr_lbl_hisab_upload);
-                holder.tvPrice.setTextColor(mContext.getResources().getColor(R.color.deep_red));
-                holder.tvTitle.setText(R.string.scr_lbl_trip_kharcha_alert);
-                holder.tvGadiNo.setText(R.string.scr_lbl_gadi_no);
-                holder.tvTrip.setText(R.string.scr_lbl_trip);
-                holder.tvGadiNoValue.setText("MH 03 CV 5243");
-                holder.tvTripValue.setText("Vashi-Dadar-\nSilvasa-Surat");
-                holder.layClick.setBackground(mContext.getResources().getDrawable(R.drawable.layout_round_shape_corners_8_semi_blue));
-            }*/
+            int[] colors = new int[] {R.color.color_blue_10,R.color.blue_graph,R.color.deep_red};
+                //the choose from the integer array randomly
+                int randomColor = colors[new Random().nextInt(colors.length)];
+                //finally set the color of the ImageView as follows
+                holder.imgNotify.setImageDrawable(new ColorDrawable(randomColor));
+
+            holder.tvTitle.setText(mListData.get(position).getHeading());
+            holder.tvDescription.setText(mListData.get(position).getText());
         }
 
-        holder.layClick.setOnClickListener(new View.OnClickListener() {
+        holder.imgDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    listItemSelectListener.onItemClick(mListData.get(position));
-                }catch (Exception e){}
+                    NotificationResult temp = mListData.get(position);
+                    mListData.remove(position);
+                    notifyItemRemoved(position);
+                    listItemSelectListener.onItemClick(temp, mListData,true);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        holder.tvTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listItemSelectListener.onItemClick(null, mListData,false);
+            }
+        });
+        holder.tvDescription.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listItemSelectListener.onItemClick(null, mListData,false);
+            }
+        });
+        holder.imgNotify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listItemSelectListener.onItemClick(null, mListData,false);
             }
         });
 
-
-    }
-
-    public void removeItem(int position) {
-        mListData.remove(position);
-        notifyItemRemoved(position);
-    }
-
-    /*public void restoreItem(String item, int position) {
-        mListData.add(position, item);
-        notifyItemInserted(position);
-    }*/
-
-    public List<DriverHisabModel> getData() {
-        return mListData;
     }
 
 
@@ -104,26 +105,24 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        AppCompatTextView tvPrice,tvGadiNo,tvTrip,tvGadiNoValue,tvTripValue,tvTitle;
-        LinearLayoutCompat layClick;
-
-        //AppCompatEditText etHisab;
-
+        AppCompatTextView tvTitle,tvDescription;
+        LinearLayoutCompat layClick,layPopup,imgPopup;
+        AppCompatImageView imgDelete;
+        CircleImageView imgNotify;
 
         ViewHolder(View itemView) {
             super(itemView);
+            imgDelete = itemView.findViewById(R.id.imgDelete);
+            layPopup = itemView.findViewById(R.id.layPopup);
+            imgPopup = itemView.findViewById(R.id.imgPopup);
             tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvPrice = itemView.findViewById(R.id.tvPrice);
-            tvTrip = itemView.findViewById(R.id.tvTrip);
-            tvGadiNo = itemView.findViewById(R.id.tvGadiNo);
-            tvTripValue = itemView.findViewById(R.id.tvTripValue);
-            tvGadiNoValue = itemView.findViewById(R.id.tvGadiNoValue);
+            tvDescription = itemView.findViewById(R.id.tvDescription);
             layClick = itemView.findViewById(R.id.layClick);
-            //tvHisabDekhiye = itemView.findViewById(R.id.tvHisabDekhiye);
+            imgNotify = itemView.findViewById(R.id.imgNotify);
         }
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(DriverHisabModel mData);
+        void onItemClick(NotificationResult mData,List<NotificationResult> notificationResults,boolean status);
     }
 }

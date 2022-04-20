@@ -2,24 +2,29 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <!--fragment to display our maps-->
-    <fragment xmlns:tools="http://schemas.android.com/tools"
+
+    <!--search view to search our location-->
+    <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MapsActivity" />
 
-    <!--search view to search our location-->
     <androidx.appcompat.widget.SearchView
         android:id="@+id/idSearchView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:background="#BFBFBF"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="@dimen/_36dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/layout_round_shape_blue_border"
         android:elevation="5dp"
         app:iconifiedByDefault="false"
         app:queryHint="Search Here" />
@@ -28,32 +33,95 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="@dimen/_0dp"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnLoc"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgCurrentLoc"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_gravity="right"
-            android:src="@drawable/ic_person"
-            android:text="Tap for Current \nLocation"
-            android:textSize="12sp"
+            android:layout_gravity="right|bottom"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginBottom="@dimen/_10dp"
+            android:src="@drawable/ic_current_location"
             android:visibility="visible" />
 
-        <TextView
-            android:id="@+id/dragg_result"
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#8c000000"
-            android:gravity="center_horizontal"
-            android:padding="20dp"
-            android:text="NOTE : Please tap on map to mark your location."
-            android:textColor="#ffffff"
-            android:textSize="16sp" />
+            android:layout_marginHorizontal="@dimen/_0dp"
+            android:background="@drawable/layout_round_shape_blue_border"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/layLoc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="20dp">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="@dimen/_24dp"
+                    android:layout_height="@dimen/_24dp"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="@dimen/_16dp"
+                    android:src="@drawable/ic_location_blue" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginRight="@dimen/_10dp"
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/dragg_result_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/gilroy_bold"
+                        android:gravity="left"
+                        android:text="Title"
+                        android:textColor="@color/back_text_colour"
+                        android:textSize="16sp" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/dragg_result"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/dragg_result_title"
+                        android:fontFamily="@font/gilroy_semibold"
+                        android:gravity="left"
+                        android:text="NOTE : Please tap on map to mark your location."
+                        android:textColor="@color/back_text_colour"
+                        android:textSize="@dimen/_14sp" />
+
+                </RelativeLayout>
+
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/addLocationButton"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40dp"
+                android:layout_below="@+id/layLoc"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginHorizontal="@dimen/_20dp"
+                android:layout_marginTop="@dimen/_16dp"
+                android:layout_marginBottom="@dimen/_20dp"
+                android:background="@drawable/bg_button_round_corner_5"
+                android:fontFamily="@font/gilroy_semibold"
+                android:gravity="center"
+                android:paddingTop="@dimen/_2dp"
+                android:text="Add"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_16sp" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 </RelativeLayout>

@@ -21,8 +21,10 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -39,23 +41,40 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
 import com.ominfo.crm_solution.MainActivity;
 import com.ominfo.crm_solution.R;
+import com.ominfo.crm_solution.alarm.get_count.DeleteReminderViewModel;
+import com.ominfo.crm_solution.alarm.get_count.GetCountViewModel;
 import com.ominfo.crm_solution.common.CounterClass;
+import com.ominfo.crm_solution.database.AppDatabase;
 import com.ominfo.crm_solution.deps.DaggerDeps;
 import com.ominfo.crm_solution.deps.Deps;
 import com.ominfo.crm_solution.dialog.ViewDialog;
+import com.ominfo.crm_solution.interfaces.DialogCallbacks;
+import com.ominfo.crm_solution.interfaces.ErrorCallbacks;
 import com.ominfo.crm_solution.interfaces.ServiceCallBackInterface;
+import com.ominfo.crm_solution.interfaces.SharedPrefKey;
+import com.ominfo.crm_solution.network.ApiResponse;
+import com.ominfo.crm_solution.network.DynamicAPIPath;
+import com.ominfo.crm_solution.network.NetworkCheck;
 import com.ominfo.crm_solution.network.NetworkModule;
 import com.ominfo.crm_solution.network.ViewModelFactory;
 import com.ominfo.crm_solution.ui.dashboard.fragment.DashboardFragment;
+import com.ominfo.crm_solution.ui.login.model.LoginTable;
 import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
+import com.ominfo.crm_solution.ui.notifications.model.DeleteNotificationViewModel;
+import com.ominfo.crm_solution.ui.notifications.model.NotificationResponse;
+import com.ominfo.crm_solution.ui.notifications.model.NotificationViewModel;
 import com.ominfo.crm_solution.ui.sales_credit.fragment.SalesCreditFragment;
 import com.ominfo.crm_solution.util.CustomAnimationUtil;
+import com.ominfo.crm_solution.util.DialogUtils;
 import com.ominfo.crm_solution.util.LogUtil;
+import com.ominfo.crm_solution.util.SharedPref;
 
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -72,6 +91,9 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.security.cert.CertificateException;
+
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 /* base activity for all activity
 * please use this naming convention
@@ -97,15 +119,23 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
     private boolean mBound = false;
     @Inject
     ViewModelFactory mViewModelFactory;
+    private NotificationViewModel notificationViewModel;
     Location location;
     public static Context context;
+    AlphaAnimation inAnimation;
+    AlphaAnimation outAnimation;
+    boolean isNotify = false;
+    private AppDatabase mDb;
+    public static AppCompatTextView imgNotifyCount;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDeps = DaggerDeps.builder().networkModule(new NetworkModule(this)).build();
         mDeps.inject(this);
-        ///trustAllCertificates();
+        injectAPI();
+        mDb =BaseApplication.getInstance(this).getAppDatabase();
+
     }
 
 
@@ -117,7 +147,10 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
-
+    private void injectAPI() {
+        notificationViewModel = ViewModelProviders.of(BaseActivity.this, mViewModelFactory).get(NotificationViewModel.class);
+        notificationViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_NOTIFICATION));
+ }
     // Self explanatory method
     public boolean checkForInternet() {
         ConnectivityManager cm =
@@ -213,6 +246,15 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         }
     };
 
+    public void moveFragment(Context mContext,Fragment fragmentMove){
+        Fragment fragment = fragmentMove;
+        FragmentManager fragmentManager = ((MainActivity)mContext).getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.framecontainer, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
     public void isServiceActive(boolean is, IBinder service) {
     }
 
@@ -250,8 +292,8 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         });
     }
 
-    /*
-     * call this method to display full screen progress loader
+
+  /*   * call this method to display full screen progress loader
      * */
     public void showProgressLoader(String message) {
         try {
@@ -268,6 +310,20 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         }
     }
 
+    public void showSmallProgressBar(FrameLayout mProgressBarHolder) {
+        inAnimation = new AlphaAnimation(0f, 1f);
+        inAnimation.setDuration(200);
+        mProgressBarHolder.setAnimation(inAnimation);
+        mProgressBarHolder.setVisibility(View.VISIBLE);
+    }
+
+    public void dismissSmallProgressBar(FrameLayout mProgressBarHolder) {
+        outAnimation = new AlphaAnimation(1f, 0f);
+        outAnimation.setDuration(200);
+        mProgressBarHolder.setAnimation(outAnimation);
+        mProgressBarHolder.setVisibility(View.GONE);
+    }
+
     /*
      * call this method to dismiss progress loader
      * */
@@ -279,7 +335,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         } catch (Exception ignore) {
             ignore.printStackTrace();
         }
-        /*try {
+       /* try {
             if (!this.isFinishing() && mProgressDialog != null && mProgressDialog.isShowing()) {
                 mProgressDialog.dismiss();
             }
@@ -410,18 +466,23 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
     }
 
 
-    public void showSuccessDialog(String msg,boolean status) {
+    public void showSuccessDialog(String msg,boolean status,Activity activity) {
         Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
         mDialog.setContentView(R.layout.dialog_weight_submitted);
         mDialog.setCanceledOnTouchOutside(true);
         AppCompatTextView mTextViewTitle = mDialog.findViewById(R.id.tv_dialogTitle);
         AppCompatButton button = mDialog.findViewById(R.id.okayButton);
         mTextViewTitle.setText(msg);
-        if(status){
-            button.setVisibility(View.GONE);        }
-        else {
-            button.setVisibility(View.VISIBLE);
-        }
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mDialog.dismiss();
+                if(!status) {
+                    activity.finish();
+                }
+            }
+        }, 1100);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -483,11 +544,16 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         mDialog.show();
     }
 
-    public void initToolbar(int val,Context mContext,int backId,int complaintId,int NotifyId,int logoutId,int callId) {
+    public void initToolbar(int val,Context mContext,int backId,int complaintId,int NotifyId,AppCompatTextView NotifyCount,int logoutId,int callId) {
         AppCompatImageView imgBack = findViewById(backId);
         AppCompatImageView imgComplaint = findViewById(complaintId);
         AppCompatImageView imgNotify = findViewById(NotifyId);
-        if(logoutId!=0) {
+        AppCompatImageView imgCall = findViewById(callId);
+        imgNotifyCount = NotifyCount;
+        //imgNotifyCount.invalidate();// = null;
+        //LogUtil.printToastMSG(mContext,"counttt");
+        setNotifyCount();
+        /*if(logoutId!=0) {
             LinearLayoutCompat imgLogout = findViewById(logoutId);
             imgLogout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -501,8 +567,8 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                     fragmentTransaction.commit();
                 }
             });
-        }
-        AppCompatImageView imgCall = findViewById(callId);
+        }*/
+
         try {
             imgBack.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -514,6 +580,9 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                         fragmentTransaction.add(R.id.framecontainer, fragment);
                         fragmentTransaction.addToBackStack(null);
                         fragmentTransaction.commit();
+                    }
+                    else if(val==6){
+                        showVisitCloseAlertDialog(mContext);
                     }
                     else {
                     finish();}
@@ -528,6 +597,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                 }
             });
         }catch (Exception e){e.printStackTrace();}
+        try{
         imgComplaint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -539,7 +609,8 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                 }
             }
         });
-
+        }catch (Exception e){e.printStackTrace();}
+        try{
         imgNotify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -550,7 +621,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                     launchScreen(mContext, NotificationsActivity.class);
                 }
             }
-        });
+        });}catch (Exception e){e.printStackTrace();}
         try {
            /* imgLogout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -571,34 +642,134 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
             startActivity(intent);
         }
 
-    /*private void setAdapterForPuranaHisabList(RecyclerView recyclerView,Context mContext,Dialog mDialog ) {
-        List<DriverHisabModel> driverHisabModelList =new ArrayList<>();
-        driverHisabModelList.add(new DriverHisabModel(getString(R.string.scr_lbl_general_manager),"1"));
-        driverHisabModelList.add(new DriverHisabModel(getString(R.string.scr_lbl_dept_manager),"0"));
-        driverHisabModelList.add(new DriverHisabModel(getString(R.string.scr_lbl_asst_manager),"0"));
-
-        if (driverHisabModelList.size() > 0) {
-            mCallManagerAdapter = new CallManagerAdapter(mContext, driverHisabModelList, new CallManagerAdapter.ListItemSelectListener() {
-                @Override
-                public void onItemClick(String mDataTicket) {
-                    mDialog.dismiss();
-                    setCallDialor(mDataTicket);
-                }
-            });
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
-            recyclerView.setAdapter(mCallManagerAdapter);
-            recyclerView.setVisibility(View.VISIBLE);
-        } else {
-            recyclerView.setVisibility(View.GONE);
-        }
-    }
-*/
 
     @Override
     public void onPause() {
         super.onPause();
         //unregisterReceiver(receiver);
+    }
+
+    public void showVisitCloseAlertDialog(Context mContext) {
+        Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialog.setContentView(R.layout.dialog_logout);
+        mDialog.setCanceledOnTouchOutside(true);
+        AppCompatTextView tvTitle = mDialog.findViewById(R.id.tvStart);
+        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
+        AppCompatButton okayButton = mDialog.findViewById(R.id.uploadButton);
+        AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
+        tvTitle.setText("Do you really want to discard this visit ?");
+        okayButton.setText("Discard");
+        cancelButton.setText("Keep");
+        okayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+                String visit = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.VISIT_NO, "");
+                SharedPref.getInstance(mContext).write(SharedPrefKey.VISIT_NO,"");
+                finish();
+            }
+        });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+        mDialog.show();
+    }
+
+    public void setNotifyCount(){
+        imgNotifyCount.setVisibility(View.INVISIBLE);
+        isNotify=true;
+        callNotificationApi();
+    }
+    /* Call Api Notification */
+    private void callNotificationApi() {
+        if (NetworkCheck.isInternetAvailable(BaseActivity.this)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if (loginTable != null) {
+                RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_notification);
+                RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                notificationViewModel.hitNotificationApi(mRequestBodyType,mRequestBodyTypeCompId
+                        ,mRequestBodyTypeEmployee);
+            }
+        } else {
+            LogUtil.printToastMSG(BaseActivity.this, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+    /**
+     * show error message according to error type
+     */
+    public void errorMessage(String errorMSG, ErrorCallbacks errorCallbacks) {
+        try {
+            if (errorMSG != null && !errorMSG.isEmpty()) {
+                DialogUtils.showErrorDialog(this,
+                        "", errorMSG, false, new DialogCallbacks() {
+                            @Override
+                            public void onPositiveClick() {
+                                errorCallbacks.onOkClick();
+                            }
+
+                            @Override
+                            public void onNegativeClick() {
+
+                            }
+                        });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*Api response */
+    private void consumeResponse(ApiResponse apiResponse, String tag) {
+        switch (apiResponse.status) {
+
+            case LOADING:
+                if(!isNotify) {
+                    showProgressLoader(getString(R.string.scr_message_please_wait));
+                }
+                break;
+
+            case SUCCESS:
+                dismissLoader();
+                if (!apiResponse.data.isJsonNull()) {
+                    LogUtil.printLog(tag, apiResponse.data.toString());
+                    try{
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_NOTIFICATION)) {
+                            NotificationResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), NotificationResponse.class);
+                            if (responseModel != null/* && responseModel.getResult().getStatus().equals("success")*/) {
+                                try {
+                                    isNotify = false;
+                                    if(responseModel.getResult().getNotifdata().size()>0){
+                                        imgNotifyCount.setVisibility(View.VISIBLE);
+                                    }
+                                    else{
+                                        imgNotifyCount.setVisibility(View.INVISIBLE);
+                                    }
+                                    SharedPref.getInstance(this).write(SharedPrefKey.IS_NOTIFY_COUNT, String.valueOf(responseModel.getResult().getNotifdata().size()));
+                                    imgNotifyCount.setText(String.valueOf(responseModel.getResult().getNotifdata().size()));
+                                }catch (Exception e){
+                                    LogUtil.printToastMSG(this,e.getMessage());
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }catch (Exception e){e.printStackTrace();}
+                }
+                break;
+            case ERROR:
+                dismissLoader();
+                //LogUtil.printToastMSG(DashbooardActivity.this, getString(R.string.err_msg_connection_was_refused));
+                break;
+        }
     }
 
 }

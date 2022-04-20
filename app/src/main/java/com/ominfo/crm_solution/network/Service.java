@@ -1,5 +1,25 @@
 package com.ominfo.crm_solution.network;
 import com.google.gson.JsonElement;
+import com.ominfo.crm_solution.ui.dashboard.model.DashboardRequest;
+import com.ominfo.crm_solution.ui.dispatch_pending.model.DispatchRequest;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetEnquiryRequest;
+import com.ominfo.crm_solution.ui.enquiry_report.model.SaveEnquiryRequest;
+import com.ominfo.crm_solution.ui.lost_apportunity.model.GetLostApportunityRequest;
+import com.ominfo.crm_solution.ui.my_account.model.ProfileRequest;
+import com.ominfo.crm_solution.ui.product.model.ProductRequest;
+import com.ominfo.crm_solution.ui.quotation_amount.model.QuotationRequest;
+import com.ominfo.crm_solution.ui.receipt.model.ReceiptRequest;
+import com.ominfo.crm_solution.ui.reminders.model.AddReminderRequest;
+import com.ominfo.crm_solution.ui.reminders.model.EmployeeListRequest;
+import com.ominfo.crm_solution.ui.reminders.model.ReminderListRequest;
+import com.ominfo.crm_solution.ui.reminders.model.UpdateReminderRequest;
+import com.ominfo.crm_solution.ui.sale.model.SalesRequest;
+import com.ominfo.crm_solution.ui.sales_credit.model.GetView360Request;
+import com.ominfo.crm_solution.ui.sales_credit.model.SalesCreditRequest;
+import com.ominfo.crm_solution.ui.visit_report.model.AddVisitRequest;
+import com.ominfo.crm_solution.ui.visit_report.model.EditVisitRequest;
+import com.ominfo.crm_solution.ui.visit_report.model.GetVisitRequest;
+import com.ominfo.crm_solution.ui.visit_report.model.PhpEditVisitRequest;
 
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
@@ -13,44 +33,272 @@ public class Service {
     }
 
     public Observable<JsonElement> executeLoginAPI(RequestBody mRequestBodyType,RequestBody mRequestBodyType1,RequestBody mRequestBodyType2) {
-        return networkAPIServices.login(DynamicAPIPath.makeDynamicEndpointAPIGateWay(NetworkURLs.BASE_URL, DynamicAPIPath.POST_LOGIN),mRequestBodyType,mRequestBodyType1,mRequestBodyType2);
+        return networkAPIServices.login(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_LOGIN),mRequestBodyType,mRequestBodyType1,mRequestBodyType2);
     }
 
-    public Observable<JsonElement> executeVehicleNoAPI(String request) {
-        return networkAPIServices.vehicleNo(DynamicAPIPath.makeDynamicEndpointAPIGateWay(NetworkURLs.BASE_URL, DynamicAPIPath.POST_VEHICLE_NO),request);
+    public Observable<JsonElement> executeProfileAPI(ProfileRequest profileRequest) {
+        return networkAPIServices.profile(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_PROFILE),profileRequest);
     }
 
+    public Observable<JsonElement> executeSalesAPI(SalesRequest salesRequest) {
+        return networkAPIServices.sales(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_SALES),salesRequest);
+    }
+
+    public Observable<JsonElement> executeQuotationAPI(QuotationRequest request) {
+        return networkAPIServices.quotation(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_QUOTATION),request);
+    }
+
+ /*   public Observable<JsonElement> executeLostApportunityAPI(GetLostApportunityRequest request) {
+        return networkAPIServices.lostApportunity(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_LOST_APPORTUNITY),request);
+    }*/
+
+    public Observable<JsonElement> executeDispatchAPI(DispatchRequest request) {
+        return networkAPIServices.dispatch(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_DISPATCH),request);
+    }
+
+    public Observable<JsonElement> executeProductAPI(ProductRequest request) {
+        return networkAPIServices.product(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_PRODUCT),request);
+    }
+
+    public Observable<JsonElement> executeReminderListAPI(ReminderListRequest request) {
+        return networkAPIServices.reminderList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_REMINDER),request);
+    }
+
+    public Observable<JsonElement> executeEmployeeListAPI(EmployeeListRequest request) {
+        return networkAPIServices.empList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_EMP_LIST),request);
+    }
+
+    public Observable<JsonElement> executeAddReminderAPI(AddReminderRequest request) {
+        return networkAPIServices.addReminder(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_ADD_REMINDER),request);
+    }
+
+    public Observable<JsonElement> executeUpdateReminderAPI(UpdateReminderRequest request) {
+        return networkAPIServices.updateReminder(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_UPDATE_REMINDER),request);
+    }
+
+    public Observable<JsonElement> executeReceiptAPI(ReceiptRequest request) {
+        return networkAPIServices.receipt(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_RECEIPT),request);
+    }
+
+    public Observable<JsonElement> executeAddVisitAPI(AddVisitRequest request) {
+        return networkAPIServices.addVisit(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_ADD_VISIT),request);
+    }
+
+    public Observable<JsonElement> executeEditVisitAPI(PhpEditVisitRequest request) {
+        return networkAPIServices.editVisit(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_EDIT_VISIT),
+                request.getAction(),request.getCompanyID(),
+                request.getEmployee(),request.getVisitNo(),
+                request.getVisitTimeEnd(), request.getRmId(),
+                request.getPlace(), request.getCustName(),
+                request.getCustMobile(),request.getVisitingCard(),
+                request.getTopic(),request.getResult(),
+                request.getDescription(),request.getVisitDuration(),
+                request.getVisitLocationName(),request.getVisitLocationAddress(),
+                request.getVisitLocationLatitude(),request.getVisitLocationLongitute()
+                ,request.getStopLocationName(),request.getStopLocationAddress(),
+                request.getStopLocationLatitude(),request.getStopLocationLongitute()
+                ,request.getTourId());
+
+    }
+
+    public Observable<JsonElement> executeGetRMAPI(RequestBody mRequestBodyType,RequestBody mRequestBodyType1,RequestBody mRequestBodyType2) {
+        return networkAPIServices.getRM(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_RM),mRequestBodyType,mRequestBodyType1,mRequestBodyType2);
+    }
+
+    public Observable<JsonElement> executesaveEnquiryAPI(SaveEnquiryRequest saveEnquiryRequest) {
+        return networkAPIServices.saveEnquiry(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_SAVE_ENQUIRY),
+                saveEnquiryRequest.getRequestBodyTypeAction(),saveEnquiryRequest.getRequestBodyTypeEnquiry(),
+                saveEnquiryRequest.getRequestBodyTypeCustID(),saveEnquiryRequest.getRequestBodyTypeCustName(),
+                saveEnquiryRequest.getRequestBodyTypeCustMobile(), saveEnquiryRequest.getRequestBodyTypeProduct(),
+                saveEnquiryRequest.getRequestBodyTypeRm(), saveEnquiryRequest.getRequestBodyTypeDescription(),
+                saveEnquiryRequest.getRequestBodyTypeSource(),saveEnquiryRequest.getRequestBodyTypeCompID(),
+                saveEnquiryRequest.getRequestBodyTypeEmpID());
+    }
+
+    public Observable<JsonElement> executeDashboardAPI(DashboardRequest dashboardRequest) {
+        return networkAPIServices.getDashboard(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_GET_DASHBOARD),
+                dashboardRequest.getAction(),
+                dashboardRequest.getEmployee(),
+                dashboardRequest.getCompanyId(),
+                dashboardRequest.getStartDate(),
+                dashboardRequest.getEndDate()
+               );
+    }
+
+    public Observable<JsonElement> executeGetProfileImageAPI(RequestBody action,
+                                                             RequestBody comId, RequestBody empId) {
+        return networkAPIServices.getProfileImage(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_GET_PROFILE),
+                action,
+                comId,
+                empId
+        );
+    }
+
+    public Observable<JsonElement> executeNotificationAPI(RequestBody action,
+                                                             RequestBody comId, RequestBody empId) {
+        return networkAPIServices.getNotification(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_NOTIFICATION),
+                action,
+                comId,
+                empId
+        );
+    }
+
+    public Observable<JsonElement> executeDeleteNotificationAPI(RequestBody action,
+                                                          RequestBody comId,
+                                                          RequestBody empId,
+                                                          RequestBody notif_id) {
+        return networkAPIServices.deleteNotification(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_NOTIFICATION),
+                action,
+                comId,
+                empId,
+                notif_id
+        );
+    }
+
+    public Observable<JsonElement> executeChangeProfileImageAPI(RequestBody action,
+                                                                RequestBody comId, RequestBody empId,
+                                                                RequestBody image) {
+        return networkAPIServices.changeProfileImage(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_GET_PROFILE),
+                action,
+                comId,
+                empId,image
+        );
+    }
+
+    public Observable<JsonElement> executeChangePasswordAPI(RequestBody action,
+                                                                RequestBody comId, RequestBody empId,
+                                                                RequestBody pass,RequestBody oldPass) {
+        return networkAPIServices.changePassword(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_GET_PROFILE),
+                action,
+                comId,
+                empId,
+                pass,
+                oldPass
+        );
+    }
+
+    public Observable<JsonElement> executeSearchCrmAPI(RequestBody action,
+                                                            RequestBody comId, RequestBody empId,
+                                                            RequestBody search) {
+        return networkAPIServices.searchCrm(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_SEARCH_CRM),
+                action,
+                comId,
+                empId,
+                search
+        );
+    }
+
+    public Observable<JsonElement> executeGetEnquiryAPI(GetEnquiryRequest getEnquiryRequest) {
+        return networkAPIServices.getEnquiry(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_ENQUIRY),
+                getEnquiryRequest.getAction(),getEnquiryRequest.getEnquiry(),
+                getEnquiryRequest.getCompanyId(),getEnquiryRequest.getEmployee(),
+                getEnquiryRequest.getFromDate(), getEnquiryRequest.getToDate(),
+                getEnquiryRequest.getPageNumber(), getEnquiryRequest.getPageSize(),
+                getEnquiryRequest.getFilterEnquiryNo(), getEnquiryRequest.getFilterCustomerName(),
+                getEnquiryRequest.getFilterEnquiryStatus(), getEnquiryRequest.getFilterCloseReason(),
+                getEnquiryRequest.getFilterRm());
+    }
+
+
+    public Observable<JsonElement> executeGetView360API(GetView360Request getView360Request) {
+        return networkAPIServices.getView360(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_VIEW360),
+                getView360Request.getAction(),
+                getView360Request.getCompanyId(),
+                getView360Request.getEmployee(), getView360Request.getCustId(),
+                getView360Request.getPageSize(),getView360Request.getPageNumber()
+        );
+    }
+
+    public Observable<JsonElement> executeGetLostApportunityAPI(GetLostApportunityRequest getLostApportunityRequest) {
+        return networkAPIServices.getLostApportunity(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_LOST_APPORTUNITY),
+                getLostApportunityRequest.getAction(),
+                getLostApportunityRequest.getCompanyId(),
+                getLostApportunityRequest.getFromDate(), getLostApportunityRequest.getToDate(),
+                getLostApportunityRequest.getPageNumber(), getLostApportunityRequest.getPageSize(),
+                getLostApportunityRequest.getFilterCustomerName(),
+                getLostApportunityRequest.getFilterReason(),
+                getLostApportunityRequest.getFilterRm());
+    }
+
+
+    public Observable<JsonElement> executeGetSalesCreditAPI(SalesCreditRequest salesCreditRequest) {
+        return networkAPIServices.getSalesCredit(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_SALES_CREDIT),
+                salesCreditRequest.getAction(),salesCreditRequest.getIsAdmin(),
+                salesCreditRequest.getCompanyId(),salesCreditRequest.getEmployeeId(),
+                salesCreditRequest.getPageNumber(), salesCreditRequest.getPageSize(),
+                salesCreditRequest.getFilterCustomerName(),
+                salesCreditRequest.getFilterRm());
+    }
+
+
+    public Observable<JsonElement> executeGetVisitAPI(GetVisitRequest getVisitRequest) {
+        return networkAPIServices.getVisit(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_VISIT),
+                getVisitRequest.getAction(),getVisitRequest.getVisit(),
+                getVisitRequest.getCompanyId(),getVisitRequest.getEmployee(),
+                getVisitRequest.getFromDate(), getVisitRequest.getToDate(),
+                getVisitRequest.getPageNumber(), getVisitRequest.getPageSize(),
+                getVisitRequest.getFilterVisitNo(), getVisitRequest.getFilterCustomerName(),
+                getVisitRequest.getFilterTopic(), getVisitRequest.getFilterVisitResult(),
+                getVisitRequest.getFilterRm(),getVisitRequest.getFilterTour());
+    }
+
+    public Observable<JsonElement> executeSearchCustAPI(RequestBody mRequestBodyType,RequestBody mRequestBodyType1,RequestBody mRequestBodyType2,RequestBody mRequestBodyType3) {
+        return networkAPIServices.searchCust(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_SEARCH_CUST),mRequestBodyType,mRequestBodyType1,mRequestBodyType2,mRequestBodyType3);
+    }
+
+    public Observable<JsonElement> executeEnquiryStatusAPI(RequestBody mRequestBodyType,RequestBody mRequestBodyTypeStatus) {
+        return networkAPIServices.enquiryStatus(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_ENQUIRY_STATUS),mRequestBodyType,mRequestBodyTypeStatus);
+    }
+
+    public Observable<JsonElement> executeGetTourAPI(RequestBody mRequestBodyType,RequestBody mRequestBodyTypeStatus) {
+        return networkAPIServices.getTour(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_TOUR),mRequestBodyType,mRequestBodyTypeStatus);
+    }
+
+    public Observable<JsonElement> executeGetVisitNoAPI(RequestBody mRequestBodyType,RequestBody mRequestBodyTypeStatus) {
+        return networkAPIServices.enquiryStatus(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_ENQUIRY_STATUS),mRequestBodyType,mRequestBodyTypeStatus);
+    }
+
+    public Observable<JsonElement> executeVehicleNoAPI() {
+        return networkAPIServices.getVisitNo(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_VISIT_NO));
+    }
     public Observable<JsonElement> executePlantAPI(String request) {
-        return networkAPIServices.plant(DynamicAPIPath.makeDynamicEndpointAPIGateWay(NetworkURLs.BASE_URL, DynamicAPIPath.POST_PLANT),request);
+        return networkAPIServices.plant(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_PLANT),request);
     }
 
     public Observable<JsonElement> executeSearchAPI(String request) {
-        return networkAPIServices.search(DynamicAPIPath.makeDynamicEndpointAPIGateWay(NetworkURLs.BASE_URL, DynamicAPIPath.POST_SEARCH),request);
+        return networkAPIServices.search(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_SEARCH_CRM),request);
     }
 
     public Observable<JsonElement> executeGetVehicleAPI(String request) {
-        return networkAPIServices.getVehicleList(DynamicAPIPath.makeDynamicEndpointAPIGateWay(NetworkURLs.BASE_URL, DynamicAPIPath.POST_GET_VEHICLE),request);
+        return networkAPIServices.getVehicleList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_VEHICLE),request);
     }
 
     public Observable<JsonElement> executeVehicleDetailsAPI(String request) {
-        return networkAPIServices.VehicleDetails(DynamicAPIPath.makeDynamicEndpointAPIGateWay(NetworkURLs.BASE_URL, DynamicAPIPath.POST_VEHICLE_DETAILS),request);
+        return networkAPIServices.VehicleDetails(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_VEHICLE_DETAILS),request);
     }
 
    /* public Observable<JsonElement> executeCEWBDetailsAPI(String request) {
-        return networkAPIServices.cewbDetails(DynamicAPIPath.makeDynamicEndpointAPIGateWay(NetworkURLs.BASE_URL, DynamicAPIPath.POST_CEWB_DETAILS),request);
+        return networkAPIServices.cewbDetails(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_CEWB_DETAILS),request);
     }*/
 
     /*public Observable<JsonElement> executeUploadVehicleAPI( RequestBody mRequestBodyType, RequestBody mRequestBodyTypeImage) {
-        return networkAPIServices.uploadVehicleRecord(DynamicAPIPath.makeDynamicEndpointAPIGateWay(NetworkURLs.BASE_URL, DynamicAPIPath.POST_UPLOAD_VEHICLE),mRequestBodyType,mRequestBodyTypeImage);
+        return networkAPIServices.uploadVehicleRecord(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_UPLOAD_VEHICLE),mRequestBodyType,mRequestBodyTypeImage);
     }*/
 
     //
     public Observable<JsonElement> executeFetchKataChitthiAPI(String request) {
-        return networkAPIServices.fetchKataChitthi(DynamicAPIPath.makeDynamicEndpointAPIGateWay(NetworkURLs.BASE_URL, DynamicAPIPath.POST_FETCH_KATA_CHITTI),request);
+        return networkAPIServices.fetchKataChitthi(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_FETCH_KATA_CHITTI),request);
     }
 
     public Observable<JsonElement> executeUserListApi(String mLimit) {
-        return networkAPIServices.getBookWithTopic(DynamicAPIPath.makeDynamicEndpointAPIGateWay(NetworkURLs.BASE_URL, DynamicAPIPath.GET_USER_LIST+mLimit));
+        return networkAPIServices.getBookWithTopic(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.GET_USER_LIST+mLimit));
     }
 
 }

@@ -6,7 +6,6 @@
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
-
    >
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -90,7 +89,7 @@
             app:placeholderTextAppearance="@style/Editext.Theme">
 
             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                android:id="@+id/AutoComTextView"
+                android:id="@+id/AutoComTextViewDesr"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/toggle_add_reminder_edt"
@@ -144,8 +143,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/toggle_add_reminder_edt"
-                android:inputType="date"
+                android:inputType="none"
                 android:text=""
+                android:cursorVisible="false"
                 android:hint="DD/MM/YYYY"
                 android:imeOptions="actionDone"
                 android:textColor="@color/black_heading"
@@ -192,12 +192,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/toggle_add_reminder_edt"
-                android:clickable="true"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:inputType="text"
+                android:inputType="none"
                 android:text=""
-                android:hint="Time"
+                android:cursorVisible="false"
+                android:hint="- : -"
                 android:imeOptions="actionDone"
                 android:textColor="@color/black_heading"
                 android:textColorHint="@color/app_gray"
@@ -216,6 +214,7 @@
             android:layout_marginHorizontal="@dimen/_10dp"
             android:fontFamily="@font/gilroy_semibold"
             android:text="Status"
+            android:visibility="gone"
             android:textColor="@color/back_text_colour"
             android:textSize="@dimen/_14sp" />
 
@@ -226,6 +225,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:hintEnabled="false"
+            android:visibility="gone"
             android:layout_marginHorizontal="@dimen/_10dp"
             android:layout_marginTop="@dimen/_6dp"
             app:boxCornerRadiusTopEnd="@dimen/_10dp"

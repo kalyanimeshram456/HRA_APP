@@ -20,5 +20,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />-->
     <include layout="@layout/content_sales_credit"/>
+    <include layout="@layout/layout_loader"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

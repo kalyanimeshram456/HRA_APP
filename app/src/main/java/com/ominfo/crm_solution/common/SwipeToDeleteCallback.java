@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.crm_solution.R;
-import com.ominfo.crm_solution.ui.notifications.adapter.NotificationsAdapter;
+import com.ominfo.crm_solution.ui.notifications.adapter.NotificationsAdapterBkup;
 
 abstract public class SwipeToDeleteCallback extends ItemTouchHelper.Callback {
 
@@ -26,10 +26,10 @@ abstract public class SwipeToDeleteCallback extends ItemTouchHelper.Callback {
     private Drawable deleteDrawable;
     private int intrinsicWidth;
     private int intrinsicHeight;
-    NotificationsAdapter mNotificationsAdapter;
+    NotificationsAdapterBkup mNotificationsAdapter;
 
 
-    protected SwipeToDeleteCallback(Context context, NotificationsAdapter mNotificationsAdapter) {
+    protected SwipeToDeleteCallback(Context context, NotificationsAdapterBkup mNotificationsAdapter) {
         mContext = context;
         mBackground = new ColorDrawable();
         backgroundColor = Color.parseColor("#FF7F7F");

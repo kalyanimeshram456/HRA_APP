@@ -9,16 +9,19 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
+import com.ominfo.crm_solution.ui.search.model.Searchresult;
+import com.ominfo.crm_solution.util.LogUtil;
 
 import java.util.List;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<DashModel> mListData;
+    private List<Searchresult> mListData;
     private Context mContext;
     private String mDate;
 
@@ -26,7 +29,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         this.mContext = mContext;
     }
 
-    public SearchAdapter(Context context, List<DashModel> listData, ListItemSelectListener itemClickListener) {
+    public SearchAdapter(Context context, List<Searchresult> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -41,7 +44,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<DashModel> list){
+    public void updateList(List<Searchresult> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -52,19 +55,53 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         if(mListData.size()>0) {
             //holder.layStatus.setVisibility(View.GONE);
             holder.setIsRecyclable(false);
-            holder.tvName.setText(mListData.get(position).getTitle());
-            holder.tvCity.setText(mListData.get(position).getValue());
+            holder.tvName.setText(mListData.get(position).getDocNo()+" ("+mListData.get(position).getType()+")");
+            holder.tvCity.setText(mListData.get(position).getCityName());
         }
         else {
             holder.setIsRecyclable(true);
         }
 
-       /* holder.imgExit.setOnClickListener(new View.OnClickListener() {
+        holder.tvCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               holder.layStatus.setVisibility(View.VISIBLE);
+                if(mListData.get(position).getType().equals("Customer")) {
+                    //LogUtil.printToastMSG(mContext,mListData.get(position).getType());
+                    listItemSelectListener.onItemClick(0,mListData.get(position));
+                }
+                else{
+                    if(mListData.get(position).getUrl()!=null &&
+                            !mListData.get(position).getUrl().equals("")) {
+                        //LogUtil.printToastMSG(mContext, mListData.get(position).getType());
+                        listItemSelectListener.onItemClick(1, mListData.get(position));
+                    }
+                    else{
+                        LogUtil.printToastMSG(mContext,"Url not available!");
+                    }
+                }
             }
         });
+        holder.tvName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mListData.get(position).getType().equals("Customer")) {
+                    //LogUtil.printToastMSG(mContext,mListData.get(position).getType());
+                    listItemSelectListener.onItemClick(0,mListData.get(position));
+                }
+                else{
+                    if(mListData.get(position).getUrl()!=null &&
+                            !mListData.get(position).getUrl().equals("")) {
+                        //LogUtil.printToastMSG(mContext, mListData.get(position).getType());
+                        listItemSelectListener.onItemClick(1, mListData.get(position));
+                    }
+                    else{
+                        LogUtil.printToastMSG(mContext,"Url not available!");
+                    }
+                }
+            }
+        });
+
+       /*
         holder.imgClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,7 +119,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         AppCompatTextView tvName,tvCity;
-        FrameLayout layClick;
+        LinearLayoutCompat layClick;
         AppCompatImageView imgExit,imgClose;
         FrameLayout layStatus;
 
@@ -90,19 +127,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
             super(itemView);
             tvName = itemView.findViewById(R.id.tvName);
             tvCity = itemView.findViewById(R.id.tvCity);
-           /* layClick = itemView.findViewById(R.id.layClick);
-            imgExit = itemView.findViewById(R.id.imgExit);
-            tvStatus = itemView.findViewById(R.id.tvStatus);
-            layStatus = itemView.findViewById(R.id.layStatus);
-            imgClose = itemView.findViewById(R.id.imgClose);*/
-          /*  tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvRs = itemView.findViewById(R.id.tvRs);
             layClick = itemView.findViewById(R.id.layClick);
-            imgDash = itemView.findViewById(R.id.imgDash);
-       */ }
+          }
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(int mData);
+        void onItemClick(int mData,Searchresult searchresult);
     }
 }

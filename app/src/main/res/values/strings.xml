@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">OmInfo CRM</string>
+    <string name="app_name">TuranthBiz</string>
     <string name="scr_lbl_please_enter_your_username_and_password">Please enter your Username and password to login successfully.</string>
     <string name="scr_lbl_username">Username</string>
     <string name="scr_lbl_password">Password</string>
@@ -42,10 +42,19 @@
     <string name="scr_lbl_issue_recording">Issue Recording</string>
     <string name="scr_lbl_cancel">CANCEL</string>
     <string name="scr_lbl_eway_bill">इ-वे बिल</string>
-    <string name="scr_lbl_details">Details</string>
 
     <string name="val_msg_please_enter_email">Please enter username.</string>
+    <string name="val_msg_please_enter_mobile">Please enter mobile.</string>
+
     <string name="val_msg_please_enter_password">Please Enter Password.</string>
+    <string name="val_msg_please_enter_name">Please Enter Name.</string>
+    <string name="val_msg_please_enter_poi">Please Enter Product Of Interest.</string>
+    <string name="val_msg_please_enter_tour">Please Enter Tour.</string>
+
+    <string name="val_msg_please_enter_soi">Please Enter Source Of Enquiry.</string>
+
+    <string name="val_msg_please_enter_description">Please enter description.</string>
+    <string name="val_msg_please_enter_valid_description">Reminder already exists, Please enter valid description.</string>
     <string name="val_msg_minimum_password">Required password is between 6 to 12 characters</string>
     <string name="scr_lbl_general_manager">General Manager</string>
     <string name="scr_lbl_call_manager">कॉल मॅनेजर</string>
@@ -139,7 +148,6 @@
     <string name="scr_lbl_enquiry_number">Enquiry Number</string>
     <string name="scr_lbl_enquiry_status">Enquiry\nStatus</string>
     <string name="scr_lbl_enquiry_details">Enquiry Details</string>
-    <string name="scr_lbl_customer_name">Customer Name</string>
     <string name="scr_lbl_visit_report">Visit Report</string>
     <string name="scr_lbl_report">Report</string>
     <string name="scr_lbl_enquiry_report">Enquiry Report</string>
@@ -176,5 +184,49 @@
     <string name="scr_lbl_my_account">My Account</string>
     <string name="scr_lbl_search">Search</string>
     <string name="scr_lbl_add_location">Add Location</string>
+    <string name="scr_lbl_no_reminder">No Reminder !</string>
+    <string name="scr_lbl_add_enquiry">Add Enquiry</string>
+    <string name="scr_lbl_customer_search">Customer Search</string>
+    <string name="scr_lbl_customer">Customer</string>
+    <string name="scr_lbl_product_of_interest">Product of Interest</string>
+    <string name="scr_lbl_source_of_enquiry">Source of Enquiry</string>
+    <string name="scr_lbl_details">Details</string>
+    <string name="scr_lbl_select_tour">Select Tour</string>
+    <string name="scr_lbl_tour">Tour</string>
+    <string name="scr_lbl_mobile_number">Mobile Number</string>
+    <string name="scr_lbl_topic_of_discussion">Topic of discussion</string>
+    <string name="scr_lbl_remarks">Remarks</string>
+    <string name="scr_lbl_result">Result</string>
+    <string name="scr_lbl_lost_opportunity">Lost Opportunity</string>
+    <string name="scr_lbl_doc_number">Doc Number</string>
+    <string name="scr_lbl_customer_name">Customer Name</string>
+    <string name="scr_lbl_reason">Reason</string>
+    <string name="scr_lbl_select_status">Select Status</string>
+    <string name="scr_lbl_unavailable">Unavailable</string>
+    <string name="scr_lbl_rs">₹</string>
+    <string name="scr_lbl_old_password">Old Password</string>
+    <string name="scr_lbl_new_password">New Password</string>
+    <string name="scr_lbl_confirm_password">Confirm Password</string>
+    <string name="err_msg_old_pass">Please Enter Old Password.</string>
+    <string name="err_msg_new_password">Please Enter New Password.</string>
+    <string name="err_msg_confirm_password">Please Enter Confirm Password.</string>
+    <string name="err_msg_wrong_confirm_pass">New Password and Confirm Password are not same.</string>
+    <string name="scr_lbl_pls_select_rm">Please select RM</string>
+    <string name="src_lbl_limit">Limit</string>
+    <string name="scr_lbl_leaves">LEAVES</string>
+    <string name="scr_lbl_apply_leave">Apply Leave</string>
+    <string name="scr_lbl_leave_applications">Leave Applications</string>
+    <string name="scr_lbl_leave_form">Leave Form</string>
+    <string name="scr_lbl_duration">Duration</string>
+    <string name="scr_lbl_leave_date">Leave Date</string>
+    <string name="scr_lbl_comment">Comment</string>
+    <string name="scr_lbl_apply">Apply</string>
+    <string name="scr_lbl_leave_type">Leave Type</string>
+    <string name="scr_lbl_type_of_leave">Type of Leave</string>
+    <string name="scr_lbl_select_type">Select Type</string>
+    <string name="scr_lbl_leave_status">Leave Status</string>
+    <string name="scr_lbl_leave_details">Leave Details</string>
+    <string name="scr_lbl_reject">Reject</string>
+    <string name="scr_lbl_accept">Accept</string>
 
 </resources>

@@ -13,12 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
+import com.ominfo.crm_solution.ui.dispatch_pending.model.DispatchResult;
 
 import java.util.List;
 
 public class DispatchPendingAdapter extends RecyclerView.Adapter<DispatchPendingAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<DashModel> mListData;
+    private List<DispatchResult> mListData;
     private Context mContext;
     private String mDate;
 
@@ -26,7 +27,7 @@ public class DispatchPendingAdapter extends RecyclerView.Adapter<DispatchPending
         this.mContext = mContext;
     }
 
-    public DispatchPendingAdapter(Context context, List<DashModel> listData, ListItemSelectListener itemClickListener) {
+    public DispatchPendingAdapter(Context context, List<DispatchResult> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -41,7 +42,7 @@ public class DispatchPendingAdapter extends RecyclerView.Adapter<DispatchPending
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<DashModel> list){
+    public void updateList(List<DispatchResult> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -51,39 +52,10 @@ public class DispatchPendingAdapter extends RecyclerView.Adapter<DispatchPending
 
         if(mListData.size()>0) {
             holder.setIsRecyclable(false);
-            if(mListData.get(position).getValue().equals("quote"))
-            {
-                holder.tvState.setText("CRM/2021/ARC");
-                holder.tvRs.setText("Accepted");
+            holder.tvCompanyName.setText(mListData.get(position).getCompanyName());
+              holder.tvState.setText(mListData.get(position).getPoNumber());
+                holder.tvRs.setText("");
                 holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
-            }
-            if(mListData.get(position).getValue().equals("dispatch"))
-            {
-                holder.tvState.setText("PO3048");
-                holder.tvRs.setText("Steel");
-                holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
-            }
-            if(mListData.get(position).getValue().equals("report"))
-            {
-                holder.tvCompanyName.setText("CRM/2021/HH");
-                holder.tvState.setText("Steel private Lmt.");
-                holder.tvRs.setText("Quotation Converted");
-                holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
-            }
-            if(mListData.get(position).getValue().equals("sale"))
-            {
-                holder.tvCompanyName.setText("Steel private Lmt.");
-                holder.tvState.setText("CRM/2021/HH");
-                holder.tvRs.setText("22/10/2021");
-                holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
-            }
-            if(mListData.get(position).getValue().equals("visit"))
-            {
-                holder.tvCompanyName.setText("Steel private Lmt.");
-                holder.tvState.setText("Mumbai");
-                holder.tvRs.setText("Interested");
-                holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
-            }
 
             if (position % 2 != 0) {
                 holder.layClick.setBackground(mContext.getResources().getDrawable(R.drawable.shape_round_white_left_right_border_dialog));

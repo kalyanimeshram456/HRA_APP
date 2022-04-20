@@ -13,20 +13,15 @@
         android:orientation="vertical"
         >
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/tv_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/_140dp"
+            android:layout_height="match_parent"
             android:layout_centerInParent="true"
             android:layout_gravity="center"
-            android:layout_weight="15"
-            android:gravity="center"
-            android:fontFamily="@font/gilroy_bold"
-            android:text="@string/app_name"
-            android:textSize="@dimen/_34sp"
-            android:textColor="@color/color_main"
+            android:layout_weight="1"
+            android:src="@drawable/ic_turanthbiz"
             android:layout_marginHorizontal="@dimen/_16dp"
-            android:src="@drawable/ic_turanth_landsc_logo"
             />
 
 
@@ -45,12 +40,12 @@
                 android:fontFamily="@font/gilroy_semibold"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_15sp"/>
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="@dimen/_180dp"
-            android:layout_height="27dp"
-            android:layout_gravity="bottom|center"
-            android:layout_marginBottom="@dimen/_40dp"
-            android:src="@drawable/ic_turanth_bottom_logo" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="@dimen/_180dp"
+                android:layout_height="27dp"
+                android:layout_gravity="bottom|center"
+                android:layout_marginBottom="@dimen/_40dp"
+                android:src="@drawable/ic_turanth_bottom_logo" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

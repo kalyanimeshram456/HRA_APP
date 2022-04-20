@@ -3,42 +3,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.ominfo.crm_solution">
 
-   <!-- <uses-sdk
-        android:minSdkVersion="17"
-        android:targetSdkVersion="24" />
-   <protected-broadcast android:name="com.motorola.motocare.INTENT_TRIGGER" />-->
-   <!-- <uses-feature android:glEsVersion="0x00020000" android:required="true" />-->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission
+        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        android:minSdkVersion="30" />
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" android:required="false"/>
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" android:required="false"/>
     <uses-permission android:name="android.permission.READ_CONTACTS" android:required="false" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.location.gps" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:required="false"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:required="false"/>
     <uses-permission android:name="android.permission.CR" android:required="false"/>
     <uses-permission android:name="android.permission.CALL_PHONE" android:required="false"/>
     <uses-permission android:name="android.permission.GET_ACCOUNTS" android:required="false"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" android:required="false"/>
-    <uses-permission android:name="android.permission.BLUETOOTH" android:required="false"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:required="false"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" /> <!-- Permission for recording audio and storage of audio in users device -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" android:required="false"/>
     <uses-permission android:name="android.permission.STORAGE" />
-
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+
     <uses-feature
         android:name="android.hardware.camera.front"
         android:required="false" />
@@ -54,20 +48,27 @@
     </queries>
 
     <application
-        android:icon="@drawable/ic_logo_main"
+        android:icon="@drawable/ic_turanthbiz"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
         android:requestRawExternalStorageAccess="true"
-        android:roundIcon="@drawable/ic_logo_main"
+        android:roundIcon="@drawable/ic_turanthbiz"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:replace="android:allowBackup"
         android:allowBackup="false"
         android:networkSecurityConfig="@xml/network_security_config"
         android:usesCleartextTraffic="true"
         >
         <!--android:networkSecurityConfig="@xml/network_security_config"
         android:usesCleartextTraffic="true"-->
+
+        <activity android:name=".alarm.activity.RingActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.White"
+            android:windowSoftInputMode="adjustPan"/>
+
         <activity
             android:name=".ui.sales_credit.activity.GraphActivity"
             android:exported="true"
@@ -75,17 +76,30 @@
             android:theme="@style/AppTheme.FullScreen"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="."
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.FullScreen"
-            android:windowSoftInputMode="adjustPan"/>
-        <activity
             android:name=".ui.visit_report.activity.UploadVisitActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.White"
             android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".ui.attendance.StartAttendanceActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.White"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".ui.sales_credit.activity.PdfPrintActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.White"
+            android:windowSoftInputMode="adjustPan"
+            android:label="@string/app_name">
+            <intent-filter tools:ignore="AppLinkUrlError">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/pdf" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.visit_report.activity.StartEndVisitActivity"
             android:exported="true"
@@ -97,25 +111,14 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustPan" >
+        </activity>
         <activity
             android:name="com.ominfo.crm_solution.ui.notifications.NotificationsActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen"
             android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:name=".ui.sales_credit.SalesCreditActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.FullScreen"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:name="com.ominfo.crm_solution.ui.dashboard.DashbooardActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.FullScreen"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ui.sales_credit.activity.View360Activity"
             android:exported="true"
@@ -145,6 +148,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.ominfo.crm_solution.ui.visit_report.activity.AddLocationActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.FullScreen">
+        </activity>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -158,15 +170,42 @@
                 tools:replace="android:resource" />
         </provider>
 
-       <!-- <receiver
-            android:name=".basecontrol.BaseActivity$MyReceiver"
-            android:enabled="true"
-            android:exported="true">
+        <service
+            android:name=".common.BackgroundLocationUpdateService"
+            android:foregroundServiceType="location" />
+        <service
+            android:name=".common.BackgroundAttentionService"
+            android:foregroundServiceType="location" />
+
+        <receiver android:name=".alarm.broadcastreceiver.AlarmBroadcastReceiver"
+            android:exported="true"
+            android:enabled="true">
             <intent-filter>
-                &lt;!&ndash; Intent filters for broadcast receiver &ndash;&gt;
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+                <action android:name="android.intent.action.PACKAGE_CHANGED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
-        </receiver>-->
+        </receiver>
+
+        <service android:name=".alarm.service.AlarmService"
+            android:enabled="true"
+            />
+        <service android:name=".alarm.service.RescheduleAlarmsService"
+            android:enabled="true"
+            />
+        <meta-data
+            android:name="com.ominfo.crm_solution.network.UnsafeOkHttpClient"
+            android:value="MyGlideModule" />
+
+        <!--Firebase Messaging Service-->
+        <service
+            android:name=".notification.MyFirebaseServices"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

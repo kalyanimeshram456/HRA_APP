@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/transparent"
@@ -15,7 +15,8 @@
         android:layout_marginRight="@dimen/_16dp"
         >
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <LinearLayout
+            android:id="@+id/layReminder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="right"
@@ -34,7 +35,7 @@
                 />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/appcomptext"
+                android:id="@+id/tvTaskComple"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
@@ -46,6 +47,26 @@
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
+                <View
+                android:layout_width="match_parent"
+                android:layout_height="0.8dp"
+                android:layout_marginVertical="@dimen/_10dp"
+                android:layout_marginLeft="@dimen/_10dp"
+                android:layout_marginRight="@dimen/_30dp"
+                android:background="@color/light_grey_30"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvRemLater"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginLeft="@dimen/_10dp"
+                android:layout_marginRight="@dimen/_30dp"
+                android:fontFamily="@font/gilroy_semibold"
+                android:text="Remind Me Later"
+                android:layout_marginBottom="@dimen/_0dp"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.8dp"
@@ -55,17 +76,19 @@
                 android:background="@color/light_grey_30"/>
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvCancelled"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
                 android:layout_marginLeft="@dimen/_10dp"
                 android:layout_marginRight="@dimen/_30dp"
                 android:fontFamily="@font/gilroy_semibold"
-                android:text="Remind Me Later"
+                android:text="Cancel Reminder"
                 android:layout_marginBottom="@dimen/_10dp"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </LinearLayout>
 
     </FrameLayout>
-</LinearLayout>
+</RelativeLayout>

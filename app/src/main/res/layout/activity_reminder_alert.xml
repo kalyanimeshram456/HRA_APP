@@ -51,27 +51,29 @@
                     android:layout_weight="15"
                     android:fontFamily="@font/gilroy_bold"
                     android:gravity="center"
-                    android:text="02:00 PM"
+                    android:text="00:00 PM"
                     android:textColor="@color/color_main"
                     android:textSize="@dimen/_34sp" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_below="@+id/tvTime"
+                    android:id="@+id/tvTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/tvTime"
                     android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_marginTop="@dimen/_10dp"
                     android:layout_weight="15"
                     android:fontFamily="@font/gilroy_regular"
                     android:gravity="center"
-                    android:layout_marginTop="@dimen/_10dp"
                     android:text="Schedule Demo"
                     android:textColor="@color/color_main"
                     android:textSize="@dimen/_16sp" />
             </RelativeLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -95,6 +97,7 @@
             android:layout_alignParentBottom="true"
             >
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvDone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Swipe left to mark completed"
@@ -105,14 +108,18 @@
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_12sp"/>
 
-        <androidx.appcompat.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatSeekBar
+            android:id="@+id/imgRing"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_80dp"
-            android:layout_weight="1"
-            android:layout_marginHorizontal="@dimen/_4dp"
-            android:src="@drawable/ic_om_alarm_slider" />
+            android:layout_weight="0.7"
+            android:progress="50"
+            android:progressDrawable="@android:color/transparent"
+            android:thumb="@drawable/alarm_swipe_customized"
+             />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvSnooze"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Swipe right to mark continue task"
@@ -125,4 +132,5 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.appcompat.widget.LinearLayoutCompat>>
+<include layout="@layout/layout_loader"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

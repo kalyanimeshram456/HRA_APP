@@ -13,12 +13,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
+import com.ominfo.crm_solution.ui.quotation_amount.model.Quotation;
 
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class QuotationAdapter extends RecyclerView.Adapter<QuotationAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<DashModel> mListData;
+    private List<Quotation> mListData;
     private Context mContext;
     private String mDate;
 
@@ -26,7 +29,7 @@ public class QuotationAdapter extends RecyclerView.Adapter<QuotationAdapter.View
         this.mContext = mContext;
     }
 
-    public QuotationAdapter(Context context, List<DashModel> listData, ListItemSelectListener itemClickListener) {
+    public QuotationAdapter(Context context, List<Quotation> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -41,7 +44,7 @@ public class QuotationAdapter extends RecyclerView.Adapter<QuotationAdapter.View
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<DashModel> list){
+    public void updateList(List<Quotation> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -51,33 +54,34 @@ public class QuotationAdapter extends RecyclerView.Adapter<QuotationAdapter.View
 
         if(mListData.size()>0) {
             holder.setIsRecyclable(false);
-            if(mListData.get(position).getValue().equals("quote"))
-            {
-                holder.tvState.setText("CRM/2021/ARC");
-                holder.tvRs.setText("Accepted");
+             holder.tvCompanyName.setText(mListData.get(position).getOrderNo());
+                holder.tvState.setText(mListData.get(position).getCompanyName());
+                holder.tvRs.setText(mContext.getResources().getString(R.string.scr_lbl_rs)+mListData.get(position).getTotalCharge().toString());
                 holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
-            }
-            if(mListData.get(position).getValue().equals("dispatch"))
-            {
-                holder.tvState.setText("PO3048");
-                holder.tvRs.setText("Steel");
-                holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
-            }
-            if(mListData.get(position).getValue().equals("report"))
-            {
-                holder.tvCompanyName.setText("CRM/2021/HH");
-                holder.tvState.setText("Steel private Lmt.");
-                holder.tvRs.setText("Quotation Converted");
-                holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
-            }
-            if(mListData.get(position).getValue().equals("sale"))
-            {
-                holder.tvCompanyName.setText("Steel private Lmt.");
-                holder.tvState.setText("CRM/2021/HH");
-                holder.tvRs.setText("22/10/2021");
-                holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
-            }
-
+                try{
+                    String mStatus = mListData.get(position).getOrderStatus();
+                    if(mStatus.equals("INCVOICE DELIVERED")||mStatus.equals("FINALIZATION")
+                            ||mStatus.equals("CLOSED")) {
+                        holder.imgIndicator.setColorFilter(mContext.getResources().getColor(R.color.Light_Green_quo));
+                    }
+                    if(mStatus.equals("INCVOICE DELIVERED") || mStatus.equals("TENDER")|| mStatus.equals("BUDEGTING")
+                            || mStatus.equals("NEGOTIATION")|| mStatus.equals("QUOTATION SENT") || mStatus.equals("PI SENT")
+                            || mStatus.equals("PENDING FOR BILLING")|| mStatus.equals("SO CREATED")
+                            || mStatus.equals("INVOICE CREATED")|| mStatus.equals("SO ON HOLD")
+                            || mStatus.equals("APPROVAL PENDING")|| mStatus.equals("PART INVOICE CREATED")
+                            || mStatus.equals("INVOICE DISPATCHED")) {
+                        holder.imgIndicator.setColorFilter(mContext.getResources().getColor(R.color.Light_Yellow));
+                    }
+                    if(mStatus.equals("QUOTATION REJECTED")||mStatus.equals("SO REJECTED BY ADMIN")
+                            ||mStatus.equals("SO REJECTED AT FACTORY") || mStatus.equals("ORDER LOST")
+                            || mStatus.equals("SO REJECTED BY FACTORY")
+                    ) {
+                    holder.imgIndicator.setColorFilter(mContext.getResources().getColor(R.color.Light_Red));
+                    }
+                    if(mStatus.equals("QUOTATION CANCELLED")|| mStatus.equals("SO CANCELLED")) {
+                        holder.imgIndicator.setColorFilter(mContext.getResources().getColor(R.color.pro_grey));
+                    }
+                }catch (Exception e){e.printStackTrace();}
             if (position % 2 != 0) {
                 holder.layClick.setBackground(mContext.getResources().getDrawable(R.drawable.shape_round_white_left_right_border_dialog));
             } else {
@@ -100,7 +104,7 @@ public class QuotationAdapter extends RecyclerView.Adapter<QuotationAdapter.View
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(1);
+                listItemSelectListener.onItemClick(0);
             }
         });
         holder.tvRs.setOnClickListener(new View.OnClickListener() {
@@ -114,7 +118,7 @@ public class QuotationAdapter extends RecyclerView.Adapter<QuotationAdapter.View
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(0);
+                listItemSelectListener.onItemClick(1);
             }
         });
 
@@ -131,6 +135,7 @@ public class QuotationAdapter extends RecyclerView.Adapter<QuotationAdapter.View
         AppCompatTextView tvCompanyName , tvState , tvRs;
         LinearLayoutCompat layClick;
         AppCompatImageView imgDash;
+        CircleImageView imgIndicator;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -138,7 +143,7 @@ public class QuotationAdapter extends RecyclerView.Adapter<QuotationAdapter.View
             tvCompanyName = itemView.findViewById(R.id.tvCompanyName);
             tvState = itemView.findViewById(R.id.tvState);
             tvRs = itemView.findViewById(R.id.tvRS);
-
+            imgIndicator = itemView.findViewById(R.id.imgIndicator);
           /*  tvTitle = itemView.findViewById(R.id.tvTitle);
             tvRs = itemView.findViewById(R.id.tvRs);
             layClick = itemView.findViewById(R.id.layClick);

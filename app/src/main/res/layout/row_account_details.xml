@@ -7,6 +7,7 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
+    android:layout_marginVertical="@dimen/_8dp"
     android:paddingVertical="@dimen/_6dp"
     android:orientation="horizontal"
    >
@@ -56,24 +57,24 @@
             android:textColorHint="@color/back_text_colour"
             android:textSize="@dimen/_14sp" />
 
-        <androidx.appcompat.widget.AppCompatEditText
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/edtAcc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_marginRight="@dimen/_10dp"
             android:layout_toRightOf="@+id/tvNameColon"
             android:backgroundTint="@android:color/transparent"
-            android:textAlignment="gravity"
             android:fontFamily="@font/gilroy_semibold"
-            android:hint="@string/scr_lbl_company_eng"
+            android:gravity="left|center_vertical"
+            android:hint="Unavailable"
             android:imeOptions="actionDone"
-            android:inputType="text"
+            android:inputType="textMultiLine"
             android:text=""
-            android:gravity="left"
+            android:textAlignment="gravity"
             android:textColor="@color/black_heading"
             android:textColorHint="@color/app_gray"
-            android:textSize="@dimen/_14sp"
-             />
+            android:textSize="@dimen/_14sp" />
 
     </RelativeLayout>
     <androidx.appcompat.widget.AppCompatImageView
@@ -82,6 +83,7 @@
         android:layout_height="@dimen/_18dp"
         android:layout_alignParentEnd="true"
         android:layout_gravity="center"
+        android:visibility="gone"
        android:src="@drawable/ic_edit_black"
         />
 

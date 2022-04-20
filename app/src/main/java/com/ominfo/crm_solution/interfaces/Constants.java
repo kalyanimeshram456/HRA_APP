@@ -12,7 +12,7 @@ public interface Constants {
     String OTP = "otp";
     String RESEND_OTP = "resend_otp";
     String UPDATE_PROFILE_INFO = "update_profile_info";
-    String FILE_NAME = "OmTuranth";
+    String FILE_NAME = "OM_CRM";
     int SPLAHS_TIME_OUT = 1000;
     String ANDROID = "Android";
     String DEVICE_OS_VALUE = Build.VERSION.RELEASE;
@@ -27,14 +27,14 @@ public interface Constants {
     String LIST = "LIST";
     String ADD = "ADD";
     String TRANSACTION_ID = "TRANSACTION_ID";
-    String EDIT = "EDIT";
+    String URL = "URL";
     String SEARCH = "SEARCH";
     String ACCEPTED = "ACCEPTED";
     String TITLE = "title";
     String MESSAGE = "MESSAGE";
 
-    String CHANGE_PASSWORD = "CHANGE_PASSWORD";
-    String CHANGE_PIN = "CHANGE_PIN";
+    String PAG_SIZE = "7";
+    String MIN_PAG_SIZE = "4";
     String KEY_OBJECT = "KEY_Object";
 
     /*SCREEEN NAME */
@@ -55,7 +55,7 @@ public interface Constants {
     String REGISTRATION_MY_PROFILE = "register_myProfile";
     String TOPIC = "topic";
     String USER_ID = "USER_ID";
-    String URL = "url";
+    //String URL = "url";
     String FETCH_PROFILE_INFO = "fetch_profile_info";
     String FETCH_HISTORY_INFO = "fetch_history_info";
     String FETCH_HISTORY_INFO_More = "fetch_history_info_More";
@@ -67,13 +67,14 @@ public interface Constants {
     String HISTORY_ITEM = "history_item";
     String CALL = "call";
     String SEND_TEXT = "send_text";
-    int  IS_FRONT_IMAGE = 0;
+    int afterAlarm = 1; //min
     int  IS_BACK_IMAGE = 1;
     String FORGOT_PASSWORD = "forgot_password";
     String CONFIRM_PIN = "confirm_pin";
     String SEND_MONEY = "send_money";
     long INTERVAL = 5 * 1000;
     long FASTEST_INTERVAL = 2 * 1000;
-
+    long INTERVAL_ATTENDENCE = 5 * 1000;
+    long FASTEST_INTERVAL_ATTENDENCE = 2 * 1000;
 
 }

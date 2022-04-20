@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layClick"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/_40dp"
     android:layout_marginTop="@dimen/_5dp"
     android:layout_marginRight="@dimen/_5dp"
     android:background="@drawable/layout_round_shape_corners_list_blue"
@@ -12,7 +12,7 @@
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/_40dp"
         android:layout_centerInParent="true"
         android:layout_marginLeft="@dimen/_6dp"
         android:layout_marginBottom="@dimen/_0dp"

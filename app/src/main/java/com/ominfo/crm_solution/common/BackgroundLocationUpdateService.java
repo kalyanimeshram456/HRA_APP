@@ -13,7 +13,6 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationRequest;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -36,15 +35,19 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.ominfo.crm_solution.MainActivity;
 import com.ominfo.crm_solution.R;
-import com.ominfo.crm_solution.ui.SplashActivity;
+import com.ominfo.crm_solution.interfaces.Constants;
 
 import java.util.concurrent.TimeUnit;
 
@@ -130,13 +133,21 @@ public class BackgroundLocationUpdateService extends Service implements GoogleAp
     }
 
     private void StartForeground() {
-        Intent intent = new Intent(context, SplashActivity.class);
+        Intent intent = new Intent(context, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pendingIntent;// = PendingIntent.getActivity(this, 0 /* Request code */, intent, PendingIntent.FLAG_ONE_SHOT);
 
         String CHANNEL_ID = "channel_location";
         String CHANNEL_NAME = "channel_location";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            pendingIntent = PendingIntent.getActivity(this,
+                    0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
+        }else {
+            pendingIntent = PendingIntent.getActivity(this,
+                    0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        }
         NotificationCompat.Builder builder = null;
         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -150,13 +161,13 @@ public class BackgroundLocationUpdateService extends Service implements GoogleAp
             builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
         }
 
-        builder.setContentTitle("Location Service");
+        builder.setContentTitle("Visit Started");
         builder.setContentText("Service is working in the background.");
         Uri notificationSound = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_NOTIFICATION);
         //builder.setSound(notificationSound);
         builder.setNotificationSilent();
         builder.setAutoCancel(true);
-        builder.setSmallIcon(R.drawable.ic_account_icon);
+        builder.setSmallIcon(R.drawable.ic_om_visit_report);
         builder.setContentIntent(pendingIntent);
         Notification notification = builder.build();
         startForeground(101, notification);
@@ -196,59 +207,54 @@ public class BackgroundLocationUpdateService extends Service implements GoogleAp
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(Constants.INTERVAL);
+        mLocationRequest.setFastestInterval(Constants.FASTEST_INTERVAL);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(mLocationRequest);
+        builder.setAlwaysShow(true);
+        mLocationSettingsRequest = builder.build();
+
+        mSettingsClient
+                .checkLocationSettings(mLocationSettingsRequest)
+                .addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
+                    @Override
+                    public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                        Log.e(TAG_LOCATION, "GPS Success");
+                        requestLocationUpdate();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                int statusCode = ((ApiException) e).getStatusCode();
+                switch (statusCode) {
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        try {
+                            int REQUEST_CHECK_SETTINGS = 214;
+                            ResolvableApiException rae = (ResolvableApiException) e;
+                            try {
+                                rae.startResolutionForResult((Activity) context, REQUEST_CHECK_SETTINGS);
+                            } catch (ClassCastException m) {
+                                m.printStackTrace();
+                            }
+                        } catch (IntentSender.SendIntentException sie) {
+                            Log.e(TAG_LOCATION, "Unable to execute request.");
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        Log.e(TAG_LOCATION, "Location settings are inadequate, and cannot be fixed here. Fix in Settings.");
+                }
+            }
+        }).addOnCanceledListener(new OnCanceledListener() {
+            @Override
+            public void onCanceled() {
+                Log.e(TAG_LOCATION, "checkLocationSettings -> onCanceled");
+            }
+        });
     }
 
-    /*@Override
-        public void onConnected(@Nullable Bundle bundle) {
-            mLocationRequest = new LocationRequest();
-            mLocationRequest.setInterval(3000);
-            mLocationRequest.setFastestInterval(6000);
-            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
-            builder.addLocationRequest(mLocationRequest);
-            builder.setAlwaysShow(true);
-            mLocationSettingsRequest = builder.build();
-
-            mSettingsClient
-                    .checkLocationSettings(mLocationSettingsRequest)
-                    .addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
-                        @Override
-                        public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                            Log.e(TAG_LOCATION, "GPS Success");
-                            requestLocationUpdate();
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    int statusCode = ((ApiException) e).getStatusCode();
-                    switch (statusCode) {
-                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                            try {
-                                int REQUEST_CHECK_SETTINGS = 214;
-                                ResolvableApiException rae = (ResolvableApiException) e;
-                                try {
-                                    rae.startResolutionForResult((Activity) context, REQUEST_CHECK_SETTINGS);
-                                } catch (ClassCastException m) {
-                                    m.printStackTrace();
-                                }
-                            } catch (IntentSender.SendIntentException sie) {
-                                Log.e(TAG_LOCATION, "Unable to execute request.");
-                            }
-                            break;
-                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                            Log.e(TAG_LOCATION, "Location settings are inadequate, and cannot be fixed here. Fix in Settings.");
-                    }
-                }
-            }).addOnCanceledListener(new OnCanceledListener() {
-                @Override
-                public void onCanceled() {
-                    Log.e(TAG_LOCATION, "checkLocationSettings -> onCanceled");
-                }
-            });
-        }
-    */
     @Override
     public void onConnectionSuspended(int i) {
         connectGoogleClient();
@@ -301,7 +307,7 @@ public class BackgroundLocationUpdateService extends Service implements GoogleAp
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        //mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
     }
 }
 

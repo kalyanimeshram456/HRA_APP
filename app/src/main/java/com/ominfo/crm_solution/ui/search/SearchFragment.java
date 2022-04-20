@@ -1,8 +1,10 @@
 package com.ominfo.crm_solution.ui.search;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,33 +21,55 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.DatePicker;
+import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.model.GradientColor;
+import com.google.gson.Gson;
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.basecontrol.BaseActivity;
+import com.ominfo.crm_solution.basecontrol.BaseApplication;
 import com.ominfo.crm_solution.basecontrol.BaseFragment;
+import com.ominfo.crm_solution.database.AppDatabase;
 import com.ominfo.crm_solution.interfaces.Constants;
+import com.ominfo.crm_solution.network.ApiResponse;
+import com.ominfo.crm_solution.network.DynamicAPIPath;
+import com.ominfo.crm_solution.network.NetworkCheck;
+import com.ominfo.crm_solution.network.ViewModelFactory;
+import com.ominfo.crm_solution.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
-import com.ominfo.crm_solution.ui.my_account.adapter.AccountAdapter;
+import com.ominfo.crm_solution.ui.login.model.LoginTable;
+import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.reminders.adapter.AddTagAdapter;
+import com.ominfo.crm_solution.ui.sales_credit.activity.PdfPrintActivity;
+import com.ominfo.crm_solution.ui.sales_credit.activity.View360Activity;
 import com.ominfo.crm_solution.ui.sales_credit.model.GraphModel;
 import com.ominfo.crm_solution.ui.search.adapter.SearchAdapter;
+import com.ominfo.crm_solution.ui.search.model.SearchCrmResponse;
+import com.ominfo.crm_solution.ui.search.model.SearchCrmViewModel;
+import com.ominfo.crm_solution.ui.search.model.Searchresult;
+import com.ominfo.crm_solution.util.AppUtils;
+import com.ominfo.crm_solution.util.LogUtil;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -54,8 +79,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 //https://github.com/PhilJay/MPAndroidChart/wiki/Modifying-the-Viewport
 
 /**
@@ -70,13 +99,15 @@ public class SearchFragment extends BaseFragment {
     AddTagAdapter addTagAdapter;
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
-
-   /* @BindView(R.id.imgAddReminder)
-    AppCompatImageView imgAddReminder;*/
-
+    @BindView(R.id.imgBack)
+    AppCompatImageView imgBack;
+    @BindView(R.id.imgNotify)
+    AppCompatImageView imgNotify;
     @BindView(R.id.tvSearchView)
     AppCompatTextView tvToolbarTitle;
-
+    @BindView(R.id.tv_emptyLayTitle)
+    AppCompatTextView tv_emptyLayTitle;
+    private AppDatabase mDb;
     BarData barData;
     List<GradientColor> list = new ArrayList<>();
     // variable for our bar data set.
@@ -92,14 +123,25 @@ public class SearchFragment extends BaseFragment {
            "10"*//*, "45","90", "95","50", "55","60", "65"*//*};*/
     int startPos = 0 , endPos = 0;
 
-    List<DashModel> dashboardList = new ArrayList<>();
+    List<Searchresult> searchresultList = new ArrayList<>();
     List<DashModel> tagList = new ArrayList<>();
     List<GraphModel> graphModelsList = new ArrayList<>();
     @BindView(R.id.searchView)
     SearchView searchView;
     @BindView(R.id.tvSearch)
     AppCompatTextView textViewSearch;
+    @BindView(R.id.progressBarHolder)
+    FrameLayout mProgressBarHolder;
+    @BindView(R.id.empty_layoutActivity)
+    LinearLayoutCompat emptyLayout;
+    @BindView(R.id.iv_emptyLayimage)
+    AppCompatImageView iv_emptyLayimage;
+    @BindView(R.id.tvNotifyCount)
+    AppCompatTextView tvNotifyCount;
     final Calendar myCalendar = Calendar.getInstance();
+    @Inject
+    ViewModelFactory mViewModelFactory;
+    private SearchCrmViewModel searchCrmViewModel;
     public SearchFragment() {
         // Required empty public constructor
     }
@@ -131,38 +173,23 @@ public class SearchFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ((BaseActivity)mContext).getDeps().inject(this);
+        mDb = BaseApplication.getInstance(mContext).getAppDatabase();
+        injectAPI();
         init();
         //fromDate.setPaintFlags(fromDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
         //toDate.setPaintFlags(toDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Window window = getActivity().getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));
-
-    }
-
     private void init(){
         setToolbar();
-        /*dashboardList.add(new DashModel("Sales Credit","0",mContext.getDrawable(R.drawable.ic_om_sales_credit)));
-        dashboardList.add(new DashModel("Receipt","0",mContext.getDrawable(R.drawable.ic_om_receipt)));
-        //dashboardList.add(new DashModel("Top Customer","1",mContext.getDrawable(R.drawable.ic_om_rating)));
-        //dashboardList.add(new DashModel("Total Quotation Amount","1",mContext.getDrawable(R.drawable.ic_om_total_quotation)));
-        dashboardList.add(new DashModel("visit Pending","1",mContext.getDrawable(R.drawable.ic_om_enquiry_report)));
-        dashboardList.add(new DashModel("Enquiry visit","1",mContext.getDrawable(R.drawable.ic_om_total_quotation)));
-        dashboardList.add(new DashModel("Visit visit","2",mContext.getDrawable(R.drawable.ic_om_total_quotation)));
-        dashboardList.add(new DashModel("Products","2",mContext.getDrawable(R.drawable.ic_om_product)));
-        dashboardList.add(new DashModel("Sales Credit","2",mContext.getDrawable(R.drawable.ic_om_sales_credit)));
-        *///dashboardList.add(new DashModel("Receipt","visit",mContext.getDrawable(R.drawable.ic_om_receipt)));
-        //dashboardList.add(new DashModel("Top Customer","visit",mContext.getDrawable(R.drawable.ic_om_rating)));
-
-        setAdapterForDashboardList();
-
-        graphModelsList.removeAll(dashboardList);
+        Glide.with(this)
+                .load(R.drawable.img_bg_search)
+                .into(iv_emptyLayimage);
+        tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
+        setAdapterForSearchList();
+        tv_emptyLayTitle.setText("Search something...");
+        graphModelsList.removeAll(graphModelsList);
         graphModelsList.add(new GraphModel("State C1", "Company Test 1", "5"));
         graphModelsList.add(new GraphModel("State C2", "Company Test 2", "60"));
         graphModelsList.add(new GraphModel("State C3", "Company Test 3", "15"));
@@ -178,6 +205,30 @@ public class SearchFragment extends BaseFragment {
         setGraphData(3);
     }
 
+    private void injectAPI() {
+        searchCrmViewModel = ViewModelProviders.of(this, mViewModelFactory).get(SearchCrmViewModel.class);
+        searchCrmViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_SEARCH_CRM));
+   }
+    /* Call Api For change password */
+    private void callSearchCrmApi(String mSearchText) {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_search);
+                RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                RequestBody mRequestBodySearch = RequestBody.create(MediaType.parse("text/plain"), mSearchText);
+
+                searchCrmViewModel.executeSearchCrmAPI(mRequestBodyType,mRequestBodyTypeCompId,
+                        mRequestBodyTypeEmployee,mRequestBodySearch);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
     private void setGraphData(int initStatus) {
         if(initStatus!=3) {
             DAYS = new String[6];
@@ -236,19 +287,56 @@ public class SearchFragment extends BaseFragment {
                 searchView.setIconified(false);
             }
         });
-        //searchView.setIconified(false); // Expand it
-        //searchView.setQuery("Info", false); // true if you want to submit, otherwise false
-        //searchView.clearFocus();
-
-        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void onFocusChange(View view, boolean b) {
-                if(!b) {
-                    textViewSearch.setVisibility(View.VISIBLE);
-                }
-                else {
+            public boolean onQueryTextSubmit(String query) {
+                Toast.makeText(getContext(), query, Toast.LENGTH_SHORT).show();
+                AppUtils.hideKeyboard(getActivity());
+                callSearchCrmApi(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+               // Toast.makeText(getContext(), "query", Toast.LENGTH_SHORT).show();
+               // adapter.getFilter().filter(newText);
+            return false;
+        }
+    });
+        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View view, boolean b) {
+                        if (!b) {
+                            textViewSearch.setVisibility(View.VISIBLE);
+                        } else {
+                            textViewSearch.setVisibility(View.GONE);
+                        }
+                    }
+                });
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        Window window = getActivity().getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));
+
+        if(getView() == null){
+            return;
+        }
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+                    // handle back button's click listener
                     textViewSearch.setVisibility(View.GONE);
+                    return true;
                 }
+                return false;
             }
         });
     }
@@ -347,30 +435,36 @@ public class SearchFragment extends BaseFragment {
         return data;
     }
 
-    private void setAdapterForDashboardList() {
-        dashboardList.add(new DashModel("InfoTech pvt. lmt. (Company)","Mumbai",null));
-        dashboardList.add(new DashModel("CRM/20-21/FER123 (Quotation)","Pune",null));
-        dashboardList.add(new DashModel("CRM/20-21/FER123 (Invoice)","Pune",null));
-        dashboardList.add(new DashModel("Information pvt. lmt. (Company)","Pune",null));
-        if (dashboardList.size() > 0) {
+    private void setAdapterForSearchList() {
+        if (searchresultList!=null && searchresultList.size() > 0) {
             rvSalesList.setVisibility(View.VISIBLE);
-        } else {
+            emptyLayout.setVisibility(View.GONE);
+            } else {
             rvSalesList.setVisibility(View.GONE);
+            emptyLayout.setVisibility(View.VISIBLE);
+            Glide.with(this)
+                    .load(R.drawable.img_bg_search)
+                    .into(iv_emptyLayimage);
+            tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
         }
-        searchAdapter = new SearchAdapter(mContext, dashboardList, new SearchAdapter.ListItemSelectListener() {
+        searchAdapter = new SearchAdapter(mContext, searchresultList, new SearchAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket) {
-
-                //For not killing pre fragment
-                /*if(mDataTicket==0) {
+            public void onItemClick(int mDataTicket,Searchresult searchresult) {
+                if(mDataTicket==0) {
                     Intent i = new Intent(getActivity(), View360Activity.class);
                     i.putExtra(Constants.TRANSACTION_ID, "1");
                     startActivity(i);
                     ((Activity) getActivity()).overridePendingTransition(0, 0);
                 }
                 if(mDataTicket==1){
-                    showVisitDetailsDialog();
-                }*/
+                    //showQuotationDialog();
+                    //mDialog.dismiss();
+                    Intent i = new Intent(getActivity(), PdfPrintActivity.class);
+                    i.putExtra(Constants.TRANSACTION_ID, "2");
+                    i.putExtra(Constants.URL, searchresult.getUrl());
+                    startActivity(i);
+                    ((Activity) getActivity()).overridePendingTransition(0, 0);
+                }
             }
         });
         //RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecorator(mContext.getDrawable(R.drawable.separator_row_item));
@@ -493,7 +587,20 @@ public class SearchFragment extends BaseFragment {
     private void setToolbar() {
         //set toolbar title
         tvToolbarTitle.setText(R.string.scr_lbl_search);
-        ((BaseActivity)mContext).initToolbar(5, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify, R.id.layBack, R.id.imgCall);
+        ((BaseActivity)mContext).initToolbar(5, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.layBack, R.id.imgCall);
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Fragment fragment = new DashboardFragment();
+                ((BaseActivity)mContext).moveFragment(mContext,fragment);
+            }
+        });
+        imgNotify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((BaseActivity)mContext).launchScreen(mContext, NotificationsActivity.class);;
+            }
+        });
     }
 
 
@@ -823,23 +930,37 @@ public class SearchFragment extends BaseFragment {
             }
         }
 
+    /*Api response */
+    private void consumeResponse(ApiResponse apiResponse, String tag) {
+        switch (apiResponse.status) {
 
-    /*@Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finishAffinity();
+            case LOADING:
+                    ((BaseActivity) mContext).showSmallProgressBar(mProgressBarHolder);
+                break;
+
+            case SUCCESS:
+                ((BaseActivity) mContext).dismissSmallProgressBar(mProgressBarHolder);
+                if (!apiResponse.data.isJsonNull()) {
+                    LogUtil.printLog(tag, apiResponse.data.toString());
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_SEARCH_CRM)) {
+                            SearchCrmResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SearchCrmResponse.class);
+                            if (responseModel != null/* && responseModel.getStatus()==1*/) {
+                                searchresultList = responseModel.getResult().getSearchresult();
+                                setAdapterForSearchList();
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case ERROR:
+                ((BaseActivity) mContext).dismissSmallProgressBar(mProgressBarHolder);
+                LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+                break;
+        }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(receiver, intentFilter);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(receiver);
-    }*/
 
 }

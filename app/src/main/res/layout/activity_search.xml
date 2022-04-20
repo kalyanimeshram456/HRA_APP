@@ -6,5 +6,5 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <include layout="@layout/content_search" />
-
+<include layout="@layout/layout_loader"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

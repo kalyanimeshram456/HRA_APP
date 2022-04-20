@@ -115,6 +115,7 @@
                     android:layout_weight="1"
                     android:gravity="right">
 
+
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/imgCall"
                         android:layout_width="@dimen/_20dp"
@@ -123,7 +124,7 @@
                         android:clickable="true"
                         android:onClick="onClick"
                         android:src="@drawable/ic_phone"
-                        android:visibility="invisible" />
+                        android:visibility="gone" />
 
 
                     <androidx.appcompat.widget.AppCompatImageView
@@ -168,14 +169,14 @@
                         android:layout_width="@dimen/_15dp"
                         android:layout_height="@dimen/_15dp"
                         android:layout_marginLeft="@dimen/_12dp"
-                        android:layout_toRightOf="@+id/imgReport"
                         android:background="@drawable/layout_round_shape_corners_15_light_blue"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="6"
+                        android:text="0"
                         android:textAlignment="center"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_12sp"
                         android:visibility="visible" />
+
 
                     <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                         android:id="@+id/imgLogout"

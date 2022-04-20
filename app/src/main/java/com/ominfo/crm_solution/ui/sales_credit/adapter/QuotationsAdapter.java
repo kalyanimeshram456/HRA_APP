@@ -14,12 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
+import com.ominfo.crm_solution.ui.sales_credit.model.CustomerAllRecord;
 
 import java.util.List;
 
 public class QuotationsAdapter extends RecyclerView.Adapter<QuotationsAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<DashModel> mListData;
+    private List<CustomerAllRecord> mListData;
     private Context mContext;
     private String mDate;
 
@@ -27,7 +28,7 @@ public class QuotationsAdapter extends RecyclerView.Adapter<QuotationsAdapter.Vi
         this.mContext = mContext;
     }
 
-    public QuotationsAdapter(Context context, List<DashModel> listData, ListItemSelectListener itemClickListener) {
+    public QuotationsAdapter(Context context, List<CustomerAllRecord> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -42,7 +43,7 @@ public class QuotationsAdapter extends RecyclerView.Adapter<QuotationsAdapter.Vi
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<DashModel> list){
+    public void updateList(List<CustomerAllRecord> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -51,7 +52,13 @@ public class QuotationsAdapter extends RecyclerView.Adapter<QuotationsAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         if(mListData.size()>0) {
-            holder.tvEnd.setText(mListData.get(position).getTitle());
+            if(mListData.get(position).getDoctype().equals("QUOTATION")){
+                holder.tvDate.setText(mListData.get(position).getDocdate());
+                holder.tvInvoiceNum.setText(mListData.get(position).getDocnumber());
+                holder.tvQuotedNo.setText(mContext.getString(R.string.scr_lbl_rs)+""+mListData.get(position).getAmount());
+                holder.tvBilledAmt.setText(mListData.get(position).getDocstatus());
+            }
+
             if (position % 2 != 0) {
                 holder.layClick.setBackground(mContext.getResources().getDrawable(R.drawable.shape_round_white_left_right_border_dialog));
             } else {
@@ -75,22 +82,21 @@ public class QuotationsAdapter extends RecyclerView.Adapter<QuotationsAdapter.Vi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        AppCompatTextView tvEnd , tvRs;
+        AppCompatTextView tvDate , tvInvoiceNum,tvQuotedNo,tvBilledAmt;
         LinearLayoutCompat layClick;
         AppCompatImageView imgDash;
 
         ViewHolder(View itemView) {
             super(itemView);
             layClick = itemView.findViewById(R.id.layClick);
-            tvEnd = itemView.findViewById(R.id.tvEnd);
-          /*  tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvRs = itemView.findViewById(R.id.tvRs);
-            layClick = itemView.findViewById(R.id.layClick);
-            imgDash = itemView.findViewById(R.id.imgDash);
-       */ }
+            tvInvoiceNum = itemView.findViewById(R.id.tvInvoiceNum);
+            tvDate = itemView.findViewById(R.id.tvDate);
+            tvQuotedNo = itemView.findViewById(R.id.tvQuotedNo);
+            tvBilledAmt = itemView.findViewById(R.id.tvBilledAmt);
+        }
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(DashModel mData);
+        void onItemClick(CustomerAllRecord mData);
     }
 }

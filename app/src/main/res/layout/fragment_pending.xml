@@ -63,7 +63,7 @@
         android:layout_marginTop="@dimen/_6dp"
         android:background="@color/light_grey"/>
 
-    <include layout="@layout/content_empty_activity_layout"/>
+    <include layout="@layout/content_empty_enquiry_layout"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvLrNumber"

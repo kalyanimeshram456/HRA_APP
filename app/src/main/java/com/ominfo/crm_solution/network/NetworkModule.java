@@ -70,7 +70,7 @@ public class NetworkModule {
     private static final String accept = "application/json";
     private String mUserAuthToken = null;
     private String mHostName = "";
-    private static OkHttpClient.Builder httpClientBuilder = null;
+    public static OkHttpClient.Builder httpClientBuilder = null;
     Context context;
 
     public NetworkModule(Activity baseActivity) {

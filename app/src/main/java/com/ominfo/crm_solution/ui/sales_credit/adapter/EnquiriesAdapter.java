@@ -10,16 +10,18 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
+import com.ominfo.crm_solution.ui.sales_credit.model.CustomerAllRecord;
 
 import java.util.List;
 
 public class EnquiriesAdapter extends RecyclerView.Adapter<EnquiriesAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<DashModel> mListData;
+    private List<CustomerAllRecord> mListData;
     private Context mContext;
     private String mDate;
 
@@ -27,7 +29,7 @@ public class EnquiriesAdapter extends RecyclerView.Adapter<EnquiriesAdapter.View
         this.mContext = mContext;
     }
 
-    public EnquiriesAdapter(Context context, List<DashModel> listData, ListItemSelectListener itemClickListener) {
+    public EnquiriesAdapter(Context context, List<CustomerAllRecord> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -42,7 +44,7 @@ public class EnquiriesAdapter extends RecyclerView.Adapter<EnquiriesAdapter.View
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<DashModel> list){
+    public void updateList(List<CustomerAllRecord> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -51,12 +53,11 @@ public class EnquiriesAdapter extends RecyclerView.Adapter<EnquiriesAdapter.View
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         if(mListData.size()>0) {
-            holder.tvRs.setText("12/10/2021");
-            holder.tvState.setText("CRM/20-21/EQ/6773");
-            holder.tvRsValue.setText("Negotiation");
-            holder.tvRsValue.setGravity(Gravity.RIGHT);
-            holder.tvRsValue.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
-            holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
+            if(mListData.get(position).getDoctype().equals("ENQUIRY")) {
+                holder.tvCompanyName.setText(mListData.get(position).getDocdate());
+                holder.tvState.setText(mListData.get(position).getDocnumber());
+                holder.tvRS.setText(mListData.get(position).getDocstatus());
+                }
             if (position % 2 != 0) {
                 holder.layClick.setBackground(mContext.getResources().getDrawable(R.drawable.shape_round_white_left_right_border_dialog));
             } else {
@@ -80,24 +81,20 @@ public class EnquiriesAdapter extends RecyclerView.Adapter<EnquiriesAdapter.View
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        AppCompatTextView tvState , tvRs,tvRsValue;
-        RelativeLayout layClick;
+        AppCompatTextView tvCompanyName , tvState,tvRS;
+        LinearLayoutCompat layClick;
         AppCompatImageView imgDash;
 
         ViewHolder(View itemView) {
             super(itemView);
-            layClick = itemView.findViewById(R.id.layClick);
-            tvRs = itemView.findViewById(R.id.tvCompanyName);
+            layClick = itemView.findViewById(R.id.layClickNew);
+            tvRS = itemView.findViewById(R.id.tvRS);
             tvState = itemView.findViewById(R.id.tvState);
-            tvRsValue = itemView.findViewById(R.id.tvRS);
-          /*  tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvRs = itemView.findViewById(R.id.tvRs);
-            layClick = itemView.findViewById(R.id.layClick);
-            imgDash = itemView.findViewById(R.id.imgDash);
-       */ }
+            tvCompanyName = itemView.findViewById(R.id.tvCompanyName);
+          }
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(DashModel mData);
+        void onItemClick(CustomerAllRecord mData);
     }
 }

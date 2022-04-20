@@ -7,5 +7,5 @@
     >
 
     <include layout="@layout/content_dashboard"/>
-
+   <include layout="@layout/layout_loader"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -35,24 +35,29 @@
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/emptyBox"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="@dimen/_0dp"
-                    android:orientation="vertical">
+                    android:layout_marginHorizontal="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:layout_marginBottom="@dimen/_10dp"
+                    android:orientation="vertical"
+                    android:paddingVertical="@dimen/_6dp">
+
+                    <include layout="@layout/content_empty_activity_layout" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvPuranaHisab"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_16dp"
+                        android:layout_marginTop="@dimen/_6dp"
                         android:layout_marginBottom="@dimen/_16dp"
                         android:focusable="false"
-                        android:visibility="gone"
                         android:focusableInTouchMode="false"
                         android:nestedScrollingEnabled="true"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:listitem="@layout/row_complaints" />
+                        tools:listitem="@layout/row_notifications" />
 
 
                 </androidx.appcompat.widget.LinearLayoutCompat>

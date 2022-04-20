@@ -80,15 +80,16 @@
 
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvKyaKhracha"
+            android:id="@+id/tvCompanyName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-           android:layout_toRightOf="@+id/tvCompanyColon"
+            android:layout_toRightOf="@+id/tvCompanyColon"
             android:fontFamily="@font/gilroy_semibold"
             android:gravity="start"
+            android:hint="@string/scr_lbl_unavailable"
             android:inputType="textCapCharacters"
+            android:text=""
             android:textColor="@color/back_text_colour"
-            android:text="Afsa Limited"
             android:textSize="@dimen/_14sp" />
 
     </RelativeLayout>
@@ -131,8 +132,8 @@
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
                 android:inputType="textCapCharacters"
+                android:text="₹ 0"
                 android:textColor="@color/back_text_colour"
-                android:text="₹ 4533"
                 android:textSize="@dimen/_14sp" />
 
         </RelativeLayout>
@@ -166,6 +167,7 @@
                 android:text="  :  "
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvRMValue"
                 android:layout_width="wrap_content"
@@ -174,8 +176,9 @@
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
                 android:inputType="textCapCharacters"
+                android:text=""
+                android:hint="@string/scr_lbl_unavailable"
                 android:textColor="@color/back_text_colour"
-                android:text="Adiya Goradia"
                 android:textSize="@dimen/_14sp" />
 
         </RelativeLayout>
@@ -218,7 +221,8 @@
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
                 android:inputType="textCapCharacters"
-                android:text="Maharashtra"
+                android:text=""
+                android:hint="@string/scr_lbl_unavailable"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 

@@ -8,9 +8,10 @@
     android:focusable="true"
     android:id="@+id/layFilter"
     android:visibility="visible"
-    android:layout_marginHorizontal="@dimen/_1dp"
+    android:layout_marginHorizontal="@dimen/_10dp"
+    android:layout_marginTop="@dimen/_6dp"
+    android:background="@drawable/layout_round_shape_grey_border_small"
     android:focusableInTouchMode="true"
-    android:background="@color/white"
     android:orientation="vertical">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -29,9 +30,9 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10dp"
+                android:layout_marginTop="@dimen/_4dp"
                 android:layout_marginBottom="@dimen/_6dp"
-                android:layout_marginHorizontal="@dimen/_16dp"
+                android:layout_marginHorizontal="@dimen/_10dp"
                 android:orientation="vertical">
 
                 <RelativeLayout
@@ -42,7 +43,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvCompanyName"
-                        android:layout_width="@dimen/_80dp"
+                        android:layout_width="@dimen/_58dp"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_gravity="left|center"
@@ -50,12 +51,12 @@
                         android:fontFamily="@font/gilroy_semibold"
                         android:text="@string/scr_lbl_invoice_number_no_line"
                         android:textColor="@color/back_text_colour"
-                        android:textSize="@dimen/_14sp" />
+                        android:textSize="@dimen/_12sp" />
 
                     <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/AutoComTextView"
+                        android:id="@+id/tvInvoices"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/_40dp"
+                        android:layout_height="@dimen/_45dp"
                         android:layout_toRightOf="@+id/tvCompanyName"
                         android:background="@drawable/toggle_add_reminder_edt"
                         android:clickable="true"
@@ -81,7 +82,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvOverdue"
-                        android:layout_width="@dimen/_80dp"
+                        android:layout_width="@dimen/_58dp"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_gravity="left"
@@ -89,12 +90,12 @@
                         android:fontFamily="@font/gilroy_semibold"
                         android:text="@string/scr_lbl_company_name_no_line"
                         android:textColor="@color/back_text_colour"
-                        android:textSize="@dimen/_14sp" />
+                        android:textSize="@dimen/_12sp" />
 
 
                     <androidx.appcompat.widget.AppCompatEditText
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/_40dp"
+                        android:layout_height="@dimen/_45dp"
                         android:layout_toRightOf="@+id/tvOverdue"
                         android:background="@drawable/toggle_add_reminder_edt"
                         android:clickable="true"
@@ -140,7 +141,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvAmount"
-                        android:layout_width="@dimen/_80dp"
+                        android:layout_width="@dimen/_58dp"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_gravity="left"
@@ -148,58 +149,68 @@
                         android:fontFamily="@font/gilroy_semibold"
                         android:text="@string/scr_lbl_invoice_amount"
                         android:textColor="@color/back_text_colour"
-                        android:textSize="@dimen/_14sp" />
-
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/input_textAmount"
-                        android:layout_width="@dimen/_90dp"
-                        android:layout_height="@dimen/_40dp"
-                        android:layout_toRightOf="@+id/tvAmount"
-                        android:background="@drawable/toggle_add_reminder_edt"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
-                        android:fontFamily="@font/gilroy_semibold"
-                        android:gravity="left"
-                        android:hint="Min Amt"
-                        android:imeOptions="actionDone"
-                        android:inputType="numberDecimal"
-                        android:paddingLeft="@dimen/_10dp"
-                        android:paddingTop="@dimen/_12dp"
-                        android:text=""
-                        android:textColor="@color/black_heading"
-                        android:textColorHint="@color/app_gray"
                         android:textSize="@dimen/_12sp" />
 
-                    <View
-                        android:id="@+id/view"
-                        android:layout_width="@dimen/_12dp"
-                        android:layout_height="@dimen/_3dp"
-                        android:layout_centerInParent="true"
-                        android:layout_marginHorizontal="@dimen/_8dp"
-                        android:layout_toRightOf="@+id/input_textAmount"
-                        android:background="@color/back_text_colour" />
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="68dp"
+                        android:gravity="center_vertical">
 
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/input_textMaxAmount"
-                        android:layout_width="@dimen/_90dp"
-                        android:layout_height="@dimen/_40dp"
-                        android:layout_toRightOf="@+id/view"
-                        android:background="@drawable/toggle_add_reminder_edt"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
-                        android:fontFamily="@font/gilroy_semibold"
-                        android:hint="Max Amt"
-                        android:imeOptions="actionDone"
-                        android:inputType="numberDecimal"
-                        android:paddingLeft="@dimen/_10dp"
-                        android:paddingTop="@dimen/_2dp"
-                        android:text=""
-                        android:textColor="@color/black_heading"
-                        android:textColorHint="@color/app_gray"
-                        android:textSize="@dimen/_12sp" />
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/tvMinAmount"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_45dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_toRightOf="@+id/tvAmount"
+                            android:layout_weight="1"
+                            android:background="@drawable/toggle_add_reminder_edt"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:gravity="center_vertical"
+                            android:hint="Min Amt"
+                            android:imeOptions="actionDone"
+                            android:inputType="numberDecimal"
+                            android:paddingLeft="@dimen/_10dp"
+                            android:paddingTop="@dimen/_2dp"
+                            android:text=""
+                            android:textColor="@color/black_heading"
+                            android:textColorHint="@color/app_gray"
+                            android:textSize="@dimen/_12sp" />
 
+                        <View
+                            android:id="@+id/view"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_3dp"
+                            android:layout_centerInParent="true"
+                            android:layout_marginHorizontal="@dimen/_6dp"
+                            android:layout_toRightOf="@+id/tvMinAmount"
+                            android:layout_weight="1.6"
+                            android:background="@color/back_text_colour" />
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/tvMaxAmount"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_45dp"
+                            android:layout_toRightOf="@+id/view"
+                            android:layout_weight="1"
+                            android:background="@drawable/toggle_add_reminder_edt"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:hint="Max Amt"
+                            android:imeOptions="actionDone"
+                            android:inputType="numberDecimal"
+                            android:paddingLeft="@dimen/_10dp"
+                            android:paddingTop="@dimen/_2dp"
+                            android:text=""
+                            android:textColor="@color/black_heading"
+                            android:textColorHint="@color/app_gray"
+                            android:textSize="@dimen/_12sp" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
                 </RelativeLayout>
                 <RelativeLayout
@@ -209,36 +220,38 @@
                     >
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/appcomptextRm"
-                        android:layout_width="@dimen/_80dp"
+                        android:id="@+id/appcomptextState"
+                        android:layout_width="@dimen/_58dp"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:layout_gravity="center"
-                        android:layout_marginRight="@dimen/_10dp"                        android:fontFamily="@font/gilroy_semibold"
+                        android:layout_gravity="left"
+                        android:layout_marginTop="@dimen/_10dp"
+                        android:layout_marginRight="@dimen/_10dp"
+                        android:fontFamily="@font/gilroy_semibold"
                         android:text="@string/scr_lbl_rm"
                         android:textColor="@color/back_text_colour"
-                        android:textSize="@dimen/_14sp" />
+                        android:textSize="@dimen/_12sp" />
 
-
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/input_textDate"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvRm"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/_40dp"
-                        android:layout_toRightOf="@+id/appcomptextRm"
-                        android:background="@drawable/toggle_add_reminder_edt"
-                        android:clickable="false"
-                        android:drawableEnd="@drawable/ic_up_solid"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:layout_marginHorizontal="@dimen/_0dp"
+                        android:layout_marginTop="@dimen/_0dp"
+                        android:layout_toRightOf="@+id/appcomptextState"
+                        android:background="@drawable/shape_round_white_round_thick_dialog"
                         android:focusable="false"
                         android:focusableInTouchMode="false"
-                        android:fontFamily="@font/gilroy_semibold"
-                        android:hint="Select RM"
-                        android:imeOptions="actionDone"
-                        android:inputType="text"
-                        android:padding="@dimen/_10dp"
-                        android:text=""
-                        android:textColor="@color/black_heading"
-                        android:textColorHint="@color/app_gray"
-                        android:textSize="@dimen/_12sp" />
+                        android:nestedScrollingEnabled="true"
+                        android:paddingLeft="@dimen/_5dp"
+                        android:paddingRight="@dimen/_5dp"
+                        android:paddingBottom="@dimen/_5dp"
+                        android:visibility="visible"
+                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                        app:spanCount="3"
+                        tools:listitem="@layout/row_add_tag" />
+
 
                 </RelativeLayout>
 

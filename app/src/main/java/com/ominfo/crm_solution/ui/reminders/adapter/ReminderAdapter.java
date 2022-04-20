@@ -3,6 +3,7 @@ package com.ominfo.crm_solution.ui.reminders.adapter;
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 import android.content.Context;
+import android.os.Build;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -25,6 +26,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
+import com.ominfo.crm_solution.ui.reminders.model.ReminderModel;
+import com.ominfo.crm_solution.util.AppUtils;
 import com.ominfo.crm_solution.util.LogUtil;
 
 import java.lang.reflect.Field;
@@ -32,7 +35,7 @@ import java.util.List;
 
 public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<DashModel> mListData;
+    private List<ReminderModel> mListData;
     private Context mContext;
     private String mDate;
 
@@ -40,7 +43,7 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
         this.mContext = mContext;
     }
 
-    public ReminderAdapter(Context context, List<DashModel> listData, ListItemSelectListener itemClickListener) {
+    public ReminderAdapter(Context context, List<ReminderModel> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -55,7 +58,7 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<DashModel> list){
+    public void updateList(List<ReminderModel> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -64,26 +67,33 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         if(mListData.size()>0) {
-            //holder.layStatus.setVisibility(View.GONE);
+           /* //holder.layStatus.setVisibility(View.GONE);
             holder.setIsRecyclable(false);
-            if(mListData.get(position).getValue().equals("0")) {
+            holder.tvTitle.setText(mListData.get(position).getTitle());
+            String mTime = AppUtils.dateFormate(mListData.get(position).getDate());
+            holder.tvTime.setText(mTime+" - "+mListData.get(position).getTime());
+            if(mListData.get(position).getStatus().equals("COMPLETED")) {
+                holder.tvStatus.setText("Completed");
+                holder.imgExit.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.ic_om_checked));
+            }
+            else if(mListData.get(position).getStatus().equals("CANCELLED")) {
+                holder.tvStatus.setText("Cancelled");
+                holder.imgExit.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.ic_om_x_mark));
+            }
+            else if(mListData.get(position).getStatus().equals("CREATED")) {
                 holder.tvStatus.setText("Update");
                 holder.imgExit.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.ic_om_arrow));
             }
-            if(mListData.get(position).getValue().equals("1")) {
-                holder.tvStatus.setText("Done");
-                holder.imgExit.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.ic_om_checked));
-            }
-            if(mListData.get(position).getValue().equals("2")) {
-                holder.tvStatus.setText("Cancelled");
-                holder.imgExit.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.ic_om_x_mark));
+            else if(mListData.get(position).getStatus().equals("SNOOZED")) {
+                holder.tvStatus.setText("Snoozed");
+                holder.imgExit.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.ic_om_arrow));
             }
 
             if (position % 2 != 0) {
                 holder.layClick.setBackground(mContext.getResources().getDrawable(R.drawable.shape_round_white_left_right_border_dialog));
             } else {
                 holder.layClick.setBackground(mContext.getResources().getDrawable(R.drawable.shape_round_grey_left_right_border_dialog));
-            }
+            }*/
         }
         else {
             holder.setIsRecyclable(true);
@@ -92,23 +102,33 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
         holder.imgExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                 listItemSelectListener.onItemClick(0,v);
-                PopupMenuCustomLayout popupMenu = new PopupMenuCustomLayout(
-                        mContext, R.layout.rem_popup,
-                        new PopupMenuCustomLayout.PopupMenuCustomOnClickListener() {
-                            @Override
-                            public void onClick(int itemId) {
-                                // log statement: "Clicked on: " + itemId
-                                switch (itemId) {
-                                    case R.id.imgClose:
-                                        LogUtil.printToastMSG(mContext,"Whats delete");
-                                        break;
+                if (mListData.get(position).getValue().equals("0")) {
+                    listItemSelectListener.onItemClick(0, v);
+                    //popupMenu.setOnMenuItemClickListener(Sample1.this);
+                    PopupMenuCustomLayout popupMenu = new PopupMenuCustomLayout(
+                            v.getContext(), R.layout.rem_popup,
+                            new PopupMenuCustomLayout.PopupMenuCustomOnClickListener() {
+                                @Override
+                                public void onClick(int itemId) {
+                                    switch (itemId) {
+                                        case R.id.imgClose:
+                                            //LogUtil.printToastMSG(v.getContext(), "Whats delete");
+                                            break;
+                                        case R.id.tvTaskComple:
+                                            //LogUtil.printToastMSG(mContext,"clicked 1");
+                                            mListData.get(position).setValue("1");
+                                            notifyItemChanged(position);
+                                            notifyDataSetChanged();
+                                            break;
+                                        case R.id.tvRemLater:
+                                            LogUtil.printToastMSG(mContext,"Will remind you after 10 minutes");
+                                            break;
+                                    }
                                 }
-                            }
-                        });
-// Method 1: popupMenu.show();
-// Method 2: via an anchor view:
-                popupMenu.show( v, Gravity.CENTER, 0, 0);
+                            });
+                          // Method 1: popupMenu.show();
+                          // Method 2: via an anchor view:
+                    popupMenu.show(v, Gravity.CENTER, 0, 0);
               /*  PopupMenu popup = new PopupMenu(holder.imgExit.getContext(), holder.itemView);
 
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -140,6 +160,7 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
 
                 }
                 popup.show();*/
+                }
             }
         });
        /* holder.imgClose.setOnClickListener(new View.OnClickListener() {
@@ -178,10 +199,13 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
             popupWindow = new PopupWindow(popupView, width, height, focusable);
             popupWindow.setElevation(10);
 
-            LinearLayout linearLayout = (LinearLayout) popupView;
+            LinearLayout linearLayout = (LinearLayout) popupView.findViewById(R.id.layReminder);
             for (int i = 0; i < linearLayout.getChildCount(); i++) {
                 View v = linearLayout.getChildAt(i);
-                v.setOnClickListener( v1 -> { onClickListener.onClick( v1.getId()); popupWindow.dismiss(); });
+                v.setOnClickListener( v1 -> {
+                    onClickListener.onClick(v1.getId());
+                    popupWindow.dismiss();
+                });
             }
         }
         public void setAnimationStyle( int animationStyle) {
@@ -196,12 +220,12 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
         }
 
         public interface PopupMenuCustomOnClickListener {
-            public void onClick(int menuItemId);
+             void onClick(int menuItemId);
         }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        AppCompatTextView tvStatus;
+        AppCompatTextView tvStatus,tvTitle,tvTime;
         FrameLayout layClick;
         AppCompatImageView imgExit;//,imgClose;
         //FrameLayout layStatus;
@@ -212,8 +236,8 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
             layClick = itemView.findViewById(R.id.layClick);
             imgExit = itemView.findViewById(R.id.imgExit);
             tvStatus = itemView.findViewById(R.id.tvStatus);
-            //layStatus = itemView.findViewById(R.id.layStatus);
-            //imgClose = itemView.findViewById(R.id.imgClose);
+            tvTitle = itemView.findViewById(R.id.tvTitle);
+            tvTime = itemView.findViewById(R.id.tvTime);
           /*  tvTitle = itemView.findViewById(R.id.tvTitle);
             tvRs = itemView.findViewById(R.id.tvRs);
             layClick = itemView.findViewById(R.id.layClick);

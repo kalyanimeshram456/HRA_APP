@@ -9,9 +9,11 @@
     <color name="color_blue_30">#4D4D37B3</color>
     <color name="color_blue_10">#1A4D37B3</color>
     <color name="semi_white">#F0F0F0</color>
+    <color name="light_dialog">#ECECEC</color>
+    <color name="light_att_grad">#338FF4</color>
 
     <color name="green">#71C951</color>
-
+    <color name="rippelColor">#0099CC</color>
     <color name="blue_graph">#ff33b5e5</color>
     <color name="status_bar_color">#E0E7FB</color>
 
@@ -33,6 +35,8 @@
     <color name="Light_Green">#1ECA44</color>
     <color name="Dark_Green">#28A745</color>
     <color name="Light_Green_quo">#32D256</color>
+    <color name="dark_att_blue">#00BEFA</color>
+    <color name="light_att_blue">#0168EC</color>
     <color name="Dark_Green_quo">#28A945</color>
     <color name="Light_Blue">#1FC5BC</color>
     <color name="Dark_Blue">#17A4B8</color>
@@ -78,6 +82,6 @@
     <color name="_E5E5E5">#E5E5E5</color>
 
     <color name="login_blue">#0062CC</color>
-
+    <color name="login_blue_app">#0359B6</color>
 
 </resources>

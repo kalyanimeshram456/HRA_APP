@@ -6,18 +6,24 @@ import android.os.Handler;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
 
+import com.bumptech.glide.Glide;
 import com.ominfo.crm_solution.MainActivity;
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.interfaces.Constants;
 import com.ominfo.crm_solution.interfaces.SharedPrefKey;
-import com.ominfo.crm_solution.ui.dashboard.DashbooardActivity;
 import com.ominfo.crm_solution.ui.login.LoginActivity;
 import com.ominfo.crm_solution.util.SharedPref;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 
 public class SplashActivity extends AppCompatActivity {
     private static final String TAG = "SplashActivity";
+    @BindView(R.id.tv_header)
+    AppCompatImageView imgheader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +33,11 @@ public class SplashActivity extends AppCompatActivity {
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        ButterKnife.bind(this);
         setTimeStamp();
+        Glide.with(this)
+                .load(R.drawable.ic_turanthbiz)
+                .into(imgheader);
     }
 
     /*wait for few second than launch new screen*/

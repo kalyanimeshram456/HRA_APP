@@ -48,6 +48,8 @@
     <dimen name="_85dp">85dp</dimen>
     <dimen name="_90dp">90dp</dimen>
     <dimen name="_62dp">62dp</dimen>
+    <dimen name="rippleStrokeWidth">2dp</dimen>
+    <dimen name="rippleRadius">64dp</dimen>
     <dimen name="_72dp">72dp</dimen>
     <dimen name="_94dp">94dp</dimen>
     <dimen name="_96dp">96dp</dimen>

@@ -27,6 +27,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/_35dp"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -75,12 +76,13 @@
                                 android:textSize="@dimen/_16sp" />
 
                             <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvTotalCount"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="bottom"
                                 android:fontFamily="@font/gilroy_semibold"
                                 android:gravity="bottom|left"
-                                android:hint="@string/scr_lbl_dashboard"
+                                android:hint="@string/scr_lbl_company_name_new"
                                 android:imeOptions="actionDone"
                                 android:inputType="text"
                                 android:text="Bosch Lmt."
@@ -132,12 +134,12 @@
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/layBorder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/layTop"
                     android:layout_marginHorizontal="@dimen/_16dp"
-                    android:layout_marginVertical="@dimen/_16dp"
-                    android:layout_marginTop="14dp"
+                    android:layout_marginTop="@dimen/_16dp"
                     android:background="@drawable/layout_round_shape_blue_border"
                     android:orientation="vertical"
 
@@ -169,7 +171,7 @@
                             android:layout_height="@dimen/_18dp"
                             android:layout_alignParentEnd="true"
                             android:layout_gravity="right"
-                            android:layout_marginRight="95dp"
+                            android:layout_marginRight="@dimen/_60dp"
                             android:visibility="visible" />
 
                         <androidx.appcompat.widget.AppCompatImageView
@@ -179,7 +181,7 @@
                             android:layout_alignParentEnd="true"
                             android:layout_gravity="right"
                             android:layout_marginRight="55dp"
-                            android:visibility="visible" />
+                            android:visibility="gone" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:id="@+id/imgTable"
@@ -303,7 +305,7 @@
 
 
                         </RelativeLayout>
-
+                        <include layout="@layout/content_empty_enquiry_layout" />
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvSalesList"
                             android:layout_width="match_parent"
@@ -311,6 +313,7 @@
                             android:layout_gravity="center"
                             android:layout_marginTop="@dimen/_6dp"
                             android:focusable="false"
+                            android:paddingBottom="@dimen/_1dp"
                             android:focusableInTouchMode="false"
                             android:nestedScrollingEnabled="true"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -323,7 +326,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_10dp"
-                        android:visibility="gone">
+                        android:visibility="visible">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvPage"
@@ -333,7 +336,7 @@
                             android:layout_gravity="left"
                             android:layout_marginLeft="@dimen/_10dp"
                             android:fontFamily="@font/gilroy_semibold"
-                            android:text="Showing 01 to 12 of 50 \nEntries"
+                            android:text="Showing 0 to 0 of 0 \nEntries"
                             android:textColor="@color/gray"
                             android:textSize="@dimen/_12sp" />
 
@@ -348,70 +351,41 @@
                             android:paddingVertical="@dimen/_2dp">
 
                             <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/prePage"
                                 android:layout_width="@dimen/_12dp"
                                 android:layout_height="@dimen/_16dp"
                                 android:layout_alignParentEnd="true"
                                 android:layout_gravity="center"
-                                android:layout_weight="1"
+                                android:layout_weight="1.2"
                                 android:src="@drawable/ic_om_left"
                                 android:visibility="visible" />
 
 
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:layout_width="@dimen/_20dp"
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvEnquiryPager"
+                                android:layout_width="@dimen/_80dp"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:fontFamily="@font/gilroy_regular"
-                                android:gravity="center"
-                                android:hint="@string/scr_lbl_dashboard"
-                                android:imeOptions="actionDone"
-                                android:inputType="text"
-                                android:paddingVertical="@dimen/_5dp"
-                                android:text="01"
-                                android:textAlignment="center"
-                                android:textColor="@color/color_blue_icon"
-                                android:textColorHint="@color/back_text_colour"
-                                android:textSize="@dimen/_14sp" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:layout_width="@dimen/_20dp"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_weight="1"
-                                android:background="@drawable/bg_button_round_corner_2"
-                                android:fontFamily="@font/gilroy_regular"
-                                android:hint="@string/scr_lbl_dashboard"
-                                android:imeOptions="actionDone"
-                                android:inputType="text"
-                                android:paddingVertical="@dimen/_5dp"
-                                android:text="02"
-                                android:textAlignment="center"
-                                android:textColor="@color/white"
-                                android:textColorHint="@color/back_text_colour"
-                                android:textSize="@dimen/_14sp" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:layout_width="@dimen/_20dp"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_weight="1"
-                                android:fontFamily="@font/gilroy_regular"
-                                android:hint="@string/scr_lbl_dashboard"
-                                android:imeOptions="actionDone"
-                                android:inputType="text"
-                                android:paddingVertical="@dimen/_5dp"
-                                android:text="03"
-                                android:textAlignment="center"
-                                android:textColor="@color/color_blue_icon"
-                                android:textColorHint="@color/back_text_colour"
-                                android:textSize="@dimen/_14sp" />
+                                android:layout_gravity="top"
+                                android:layout_marginHorizontal="@dimen/_0dp"
+                                android:layout_marginTop="@dimen/_0dp"
+                                android:layout_toRightOf="@+id/tvOverdue"
+                                android:layout_weight="3.5"
+                                android:focusable="false"
+                                android:focusableInTouchMode="false"
+                                android:nestedScrollingEnabled="true"
+                                android:padding="@dimen/_1dp"
+                                android:visibility="visible"
+                                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                                app:spanCount="3"
+                                tools:listitem="@layout/row_pager_enquiry" />
 
                             <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/nextPage"
                                 android:layout_width="@dimen/_12dp"
                                 android:layout_height="@dimen/_16dp"
                                 android:layout_alignParentEnd="true"
                                 android:layout_gravity="center"
-                                android:layout_weight="1"
+                                android:layout_weight="1.2"
                                 android:src="@drawable/ic_om_right"
                                 android:visibility="visible" />
 
@@ -435,7 +409,24 @@
                         android:visibility="gone" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
-
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/submitButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_40dp"
+                    android:layout_below="@+id/layBorder"
+                    android:layout_alignParentBottom="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_marginBottom="@dimen/_30dp"
+                    android:layout_marginTop="@dimen/_16dp"
+                    android:background="@drawable/bg_button_round_corner_5"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/_2dp"
+                    android:text="Submit"
+                    android:visibility="gone"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_16sp" />
             </RelativeLayout>
 
         </androidx.core.widget.NestedScrollView>

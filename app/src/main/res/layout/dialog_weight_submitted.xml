@@ -11,10 +11,10 @@
     android:orientation="vertical">
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="55dp"
-        android:layout_height="55dp"
+        android:layout_width="@dimen/_50dp"
+        android:layout_height="@dimen/_50dp"
         android:layout_marginBottom="@dimen/_7dp"
-        android:src="@drawable/ic_check"
+        android:src="@drawable/ic_done"
         />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -25,7 +25,7 @@
         android:gravity="center"
         android:text=""
         android:textColor="@color/back_text_colour"
-        android:textSize="@dimen/_18sp" />
+        android:textSize="@dimen/_16sp" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/okayButton"
@@ -35,7 +35,7 @@
         android:layout_marginTop="@dimen/_18dp"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom|center"
-        android:visibility="visible"
+        android:visibility="gone"
         android:background="@drawable/bg_button_round_corner_5"
         android:fontFamily="@font/poppins_semibold"
         android:gravity="center"

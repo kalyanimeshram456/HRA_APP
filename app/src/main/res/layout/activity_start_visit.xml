@@ -37,6 +37,7 @@
                 android:layout_marginHorizontal="@dimen/_16dp"
                 />
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/visitNo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -44,7 +45,7 @@
                 android:gravity="center"
                 android:layout_marginTop="@dimen/_6dp"
                 android:fontFamily="@font/gilroy_semibold"
-                android:text="Visit Number : V11234"
+                android:text="Visit Number : 0"
                 android:textSize="@dimen/_14sp"
                 android:textColor="@color/back_text_colour"
                 android:layout_marginHorizontal="@dimen/_16dp"
@@ -53,6 +54,7 @@
                 android:layout_marginTop="@dimen/_14dp"
                 android:layout_width="@dimen/_250dp"
                 android:layout_height="@dimen/_250dp"
+                android:gravity="center_vertical"
                 android:background="@drawable/ic_om_bg_clock"
                 >
 
@@ -116,5 +118,6 @@
 
            </androidx.appcompat.widget.LinearLayoutCompat>-->
 
-    </androidx.appcompat.widget.LinearLayoutCompat>>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+    <include layout="@layout/layout_loader"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

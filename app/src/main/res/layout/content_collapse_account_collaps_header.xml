@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/layHeaderToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_90dp"
+        android:fitsSystemWindows="true"
+        app:elevation="0dp"
+        android:layout_marginHorizontal="@dimen/_0dp"
+        android:background="@android:color/transparent"
+        android:theme="@style/AppTheme.White"
+        android:orientation="horizontal"
+        android:gravity="bottom"
+        android:layout_gravity="top"
+        android:paddingLeft="@dimen/_6dp"
+        android:layout_marginBottom="@dimen/_30dp"
+        android:weightSum="2">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:onClick="onClick"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgBack"
+                android:layout_width="@dimen/_20dp"
+                android:layout_height="@dimen/_18dp"
+                android:layout_gravity="left|center"
+                android:gravity="left"
+                android:layout_marginRight="@dimen/_14dp"
+                android:src="@drawable/ic_om_arrow_back"
+                android:visibility="visible" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvSearchView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/gilroy_bold"
+                android:gravity="left"
+                android:hint="My Account"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:textColor="@color/back_text_colour"
+                android:textColorHint="@color/back_text_colour"
+                android:textSize="@dimen/_18sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/toolbarTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/gilroy_bold"
+                android:gravity="left"
+                android:hint="@string/scr_lbl_dashboard"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:visibility="gone"
+                android:textColor="@color/back_text_colour"
+                android:textColorHint="@color/back_text_colour"
+                android:textSize="@dimen/_18sp" />
+
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/_16dp"
+            android:layout_weight="1"
+            android:gravity="right">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgCall"
+                android:layout_width="@dimen/_20dp"
+                android:layout_height="@dimen/_20dp"
+                android:layout_marginHorizontal="@dimen/_20dp"
+                android:clickable="true"
+                android:onClick="onClick"
+                android:src="@drawable/ic_phone"
+                android:visibility="invisible" />
+
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgReport"
+                android:layout_width="@dimen/_25dp"
+                android:layout_height="@dimen/_25dp"
+                android:layout_marginHorizontal="@dimen/_20dp"
+                android:layout_toRightOf="@+id/imgCall"
+                android:clickable="true"
+                android:onClick="onClick"
+                android:src="@drawable/ic_om_reminder"
+                android:visibility="gone" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvComplaintCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="61dp"
+                android:layout_toRightOf="@+id/imgCall"
+                android:background="@drawable/layout_round_shape_corners_15_light_yellow"
+                android:fontFamily="@font/gilroy_semibold"
+                android:text="6"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_12sp"
+                android:visibility="gone" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgNotify"
+                android:layout_width="@dimen/_25dp"
+                android:layout_height="@dimen/_25dp"
+                android:layout_marginRight="@dimen/_0dp"
+                android:layout_toRightOf="@+id/imgReport"
+                android:clickable="true"
+                android:onClick="onClick"
+                android:src="@drawable/ic_om_notify"
+                android:visibility="visible" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvNotifyCount"
+                android:layout_width="@dimen/_15dp"
+                android:layout_height="@dimen/_15dp"
+                android:layout_marginLeft="@dimen/_12dp"
+                android:layout_toRightOf="@+id/imgReport"
+                android:background="@drawable/layout_round_shape_corners_15_light_blue"
+                android:fontFamily="@font/gilroy_semibold"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_12sp"
+                android:visibility="visible" />
+
+            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/imgLogout"
+                android:layout_width="@dimen/_25dp"
+                android:layout_height="@dimen/_25dp"
+                android:layout_toRightOf="@+id/imgNotify"
+                android:clickable="true"
+                android:onClick="onClick"
+                android:src="@drawable/ic_om_businessman"
+                android:visibility="gone"
+                app:civ_border_color="@color/back_text_colour"
+                app:civ_border_width="1dp" />
+
+
+        </RelativeLayout>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>

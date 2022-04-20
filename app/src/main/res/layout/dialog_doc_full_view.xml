@@ -33,6 +33,7 @@
             android:id="@+id/imgShare"
             android:layout_width="@dimen/_20dp"
             android:layout_height="@dimen/_20dp"
+            android:visibility="gone"
             android:layout_alignParentEnd="true"
             android:layout_centerInParent="true"
             android:layout_marginRight="@dimen/_45dp"
@@ -50,8 +51,8 @@
     </RelativeLayout>
 
     <androidx.cardview.widget.CardView
-        android:layout_width="@dimen/_320dp"
-        android:layout_height="@dimen/_600dp"
+        android:layout_width="330dp"
+        android:layout_height="540dp"
         android:layout_marginTop="@dimen/_10dp"
         app:cardBackgroundColor="@color/black"
         android:background="@drawable/round_corner_shape_images"
@@ -60,8 +61,8 @@
 
         <com.ominfo.crm_solution.common.TouchImageView
             android:id="@+id/imgShowPhoto"
-            android:layout_width="@dimen/_320dp"
-            android:layout_height="@dimen/_600dp"
+            android:layout_width="330dp"
+            android:layout_height="540dp"
             android:scaleType="fitXY"
             android:src="@drawable/ic_fake_id_cards"
             android:visibility="visible"

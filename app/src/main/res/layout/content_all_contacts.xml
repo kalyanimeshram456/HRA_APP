@@ -67,17 +67,16 @@
                         android:layout_height="match_parent"
                         android:layout_marginHorizontal="@dimen/_16dp"
                         android:layout_marginTop="@dimen/_10dp"
-                        android:focusable="false"
+                        android:layout_marginBottom="@dimen/_20dp"
+                        android:childDivider="@android:color/transparent"
                         android:divider="@android:color/transparent"
                         android:dividerHeight="@dimen/_4dp"
-                        android:scrollbars="none"
-                        android:childDivider="@android:color/transparent"
-                        android:layout_marginBottom="@dimen/_20dp"
+                        android:focusable="false"
                         android:focusableInTouchMode="false"
-                        android:nestedScrollingEnabled="true"
-                        android:layoutDirection="rtl"
                         android:groupIndicator="@drawable/toggle_exlaps_up_down"
-                       />
+                        android:layoutDirection="rtl"
+                        android:nestedScrollingEnabled="true"
+                        android:scrollbars="none" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 

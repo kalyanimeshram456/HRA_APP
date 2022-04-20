@@ -1,6 +1,5 @@
 package com.ominfo.crm_solution.ui.sales_credit.activity;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -11,21 +10,44 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.basecontrol.BaseActivity;
+import com.ominfo.crm_solution.basecontrol.BaseApplication;
+import com.ominfo.crm_solution.database.AppDatabase;
 import com.ominfo.crm_solution.interfaces.Constants;
+import com.ominfo.crm_solution.network.ApiResponse;
+import com.ominfo.crm_solution.network.DynamicAPIPath;
+import com.ominfo.crm_solution.network.NetworkCheck;
+import com.ominfo.crm_solution.network.ViewModelFactory;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
+import com.ominfo.crm_solution.ui.enquiry_report.adapter.EnquiryPageAdapter;
+import com.ominfo.crm_solution.ui.enquiry_report.adapter.RmTagAdapter;
+import com.ominfo.crm_solution.ui.enquiry_report.model.EnquiryPagermodel;
+import com.ominfo.crm_solution.ui.login.model.LoginTable;
+import com.ominfo.crm_solution.ui.sale.adapter.CompanyTagAdapter;
 import com.ominfo.crm_solution.ui.sales_credit.adapter.EnquiriesAdapter;
 import com.ominfo.crm_solution.ui.sales_credit.adapter.InvoiceAdapter;
 import com.ominfo.crm_solution.ui.sales_credit.adapter.QuotationsAdapter;
+import com.ominfo.crm_solution.ui.sales_credit.model.CustomerAllRecord;
+import com.ominfo.crm_solution.ui.sales_credit.model.CustomerData;
+import com.ominfo.crm_solution.ui.sales_credit.model.GetView360Request;
+import com.ominfo.crm_solution.ui.sales_credit.model.GetView360Response;
+import com.ominfo.crm_solution.ui.sales_credit.model.View30ViewModel;
+import com.ominfo.crm_solution.util.AppUtils;
+import com.ominfo.crm_solution.util.LogUtil;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -34,9 +56,14 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 public class View360Activity extends BaseActivity {
 
@@ -62,23 +89,47 @@ public class View360Activity extends BaseActivity {
 
     @BindView(R.id.tvCol4)
     AppCompatTextView textViewCol4;
-
+    @BindView(R.id.tvCreditAmtColon)
+    AppCompatTextView tvCreditAmtColon;
+    @BindView(R.id.tvlayCredDaysColon)
+    AppCompatTextView tvlayCredDaysColon;
+    @BindView(R.id.imgNew)
+    AppCompatButton imgNew;
+    @BindView(R.id.tvCreditAmtValue)
+    AppCompatTextView tvCreditAmtValue;
     @BindView(R.id.tvCompanyName)
     AppCompatTextView tvCompanyName;
-
-
-    //showReceiptDetailsDialog
-
+    @BindView(R.id.tvNotifyCount)
+    AppCompatTextView tvNotifyCount;
+    @BindView(R.id.tvRmName)
+    AppCompatTextView tvRmName;
+    @BindView(R.id.progressBarHolder)
+    FrameLayout mProgressBarHolder;
+    @BindView(R.id.tvPage)
+    AppCompatTextView tvPage;
     InvoiceAdapter invoiceAdapter;
     QuotationsAdapter quotationsAdapter;
     EnquiriesAdapter enquiriesAdapter;
-
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
+    @BindView(R.id.imgSales)
+    CircleImageView imgSales;
     private String frmSCR = "1";
-    List<DashModel> dashboardList = new ArrayList<>();
+    List<CustomerAllRecord> customerAllRecordList = new ArrayList<>();
     final Calendar myCalendar = Calendar.getInstance();
-
+    @Inject
+    ViewModelFactory mViewModelFactory;
+    private View30ViewModel view30ViewModel;
+    private AppDatabase mDb;
+    @BindView(R.id.rvEnquiryPager)
+    RecyclerView rvEnquiryPager;
+    List<EnquiryPagermodel> enquiryPageList = new ArrayList<>();
+    EnquiryPageAdapter enquiryPageAdapter;
+    private String pagerClicked = "No";
+    @BindView(R.id.tv_emptyLayTitle)
+    AppCompatTextView tv_emptyLayTitle;
+    @BindView(R.id.empty_layoutActivity)
+    LinearLayoutCompat emptyLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,16 +141,19 @@ public class View360Activity extends BaseActivity {
         mContext = this;
         getDeps().inject(this);
         ButterKnife.bind(this);
+        injectAPI();
         init();
 
     }
 
     private void init(){
-        //mDb =BaseApplication.getInstance(mContext).getAppDatabase();
+        mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         //requestPermission();
         //tvPage.setText("Showing 01 to 05 of\n12 Entries");
         setToolbar();
         receiveData();
+        setEnquiryPagerList(1);
+        callGetView360Api("0");
         layInvoices.setTextColor(getResources().getColor(R.color.white));
         layInvoices.setBackground(getResources().getDrawable(R.drawable.layout_round_shape_corners_8_blue));
         layQuotations.setTextColor(getResources().getColor(R.color.back_text_colour));
@@ -111,12 +165,93 @@ public class View360Activity extends BaseActivity {
         textViewCol2.setText(getString(R.string.scr_lbl_invoice_no));
         textViewCol3.setText(getString(R.string.scr_lbl_quoted_no));
         textViewCol4.setText(getString(R.string.scr_lbl_billed_amt));
-
-        dashboardList.add(new DashModel("Negotiation","23/10/2021",getDrawable(R.drawable.ic_om_sales_credit)));
-        dashboardList.add(new DashModel("Tender","23/10/2021",getDrawable(R.drawable.ic_om_receipt)));
-        dashboardList.add(new DashModel("PI","23/10/2021",getDrawable(R.drawable.ic_om_rating)));
-
         setAdapterForInvoiceList();
+    }
+    private void injectAPI() {
+        view30ViewModel = ViewModelProviders.of(this, mViewModelFactory).get(View30ViewModel.class);
+        view30ViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_VIEW360));
+    }
+    /* Call Api For View 360 */
+    private void callGetView360Api(String pageNo) {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_view360);
+                RequestBody mRequestBodyTypeCustId = RequestBody.create(MediaType.parse("text/plain"), "1583"/*loginTable.getIsadmin()*/);//loginTable.getEmployeeId());//loginTable.getEmployeeId());
+                RequestBody mRequestBodyTypeComId = RequestBody.create(MediaType.parse("text/plain"), /*loginTable.getCompanyId()*/"96");//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"), /*loginTable.getEmployeeId()*/"135");
+                RequestBody mRequestBodyTypePageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);//selectedRM.getEmpId());
+                RequestBody mRequestBodyTypePageSize = RequestBody.create(MediaType.parse("text/plain"), Constants.MIN_PAG_SIZE);
+                GetView360Request getView360Request = new GetView360Request();
+                getView360Request.setAction(mRequestBodyAction);
+                getView360Request.setEmployee(mRequestBodyTypeEmpId);
+                getView360Request.setCompanyId(mRequestBodyTypeComId);
+                getView360Request.setCustId(mRequestBodyTypeCustId);
+                getView360Request.setPageNumber(mRequestBodyTypePageNo);
+                getView360Request.setPageSize(mRequestBodyTypePageSize);
+
+                view30ViewModel.hitView30Api(getView360Request);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    private void setPagerEnquiryList(long pageNo){
+        for(int i=0;i<pageNo;i++) {
+            if (pagerClicked.equals("No")) {
+                if (i == 0) {
+                    rvEnquiryPager.scrollToPosition(i+1);
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 1));
+                } else {
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 0));
+                }
+            } else {
+                if (i == Integer.parseInt(pagerClicked)) {
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 1));
+                } else {
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 0));
+                }
+            }
+        }
+    }
+
+    private void setEnquiryPagerList(long pageNo) {
+        enquiryPageList.clear();
+        if(pageNo==0) {
+            pageNo = 1;
+        }
+        setPagerEnquiryList(pageNo);
+        if (enquiryPageList.size() > 0) {
+            rvEnquiryPager.setVisibility(View.VISIBLE);
+        } else {
+            rvEnquiryPager.setVisibility(View.GONE);
+        }
+        enquiryPageAdapter = new EnquiryPageAdapter(mContext, enquiryPageList, new EnquiryPageAdapter.ListItemSelectListener() {
+            @Override
+            public void onItemClick(EnquiryPagermodel mData,List<EnquiryPagermodel> mDataList) {
+                enquiryPageList = mDataList;
+                try {
+                    pagerClicked = String.valueOf(Integer.parseInt(mData.getPageNo())-1);
+                    enquiryPageAdapter.updateList(mDataList);
+                }catch (Exception e){e.printStackTrace();}
+                try {
+                    callGetView360Api(String.valueOf(Integer.parseInt(mData.getPageNo()) - 1));
+                }catch (Exception e){e.printStackTrace();}
+            }
+        });
+        rvEnquiryPager.setHasFixedSize(true);
+        //rvEnquiryPager.setLayoutManager(new GridLayoutManager(mContext, 3));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext, RecyclerView.HORIZONTAL, false);
+        rvEnquiryPager.setLayoutManager(layoutManager);
+        rvEnquiryPager.setItemAnimator(new DefaultItemAnimator());
+        rvEnquiryPager.setAdapter(enquiryPageAdapter);
+        try{
+            rvEnquiryPager.scrollToPosition(Integer.parseInt(pagerClicked));}catch (Exception e){e.printStackTrace();}
+
     }
 
     private void deleteDir(){
@@ -144,7 +279,7 @@ public class View360Activity extends BaseActivity {
     private void setToolbar() {
         //set toolbar title
         //toolbarTitle.setText(R.string.scr_lbl_add_new_lr);
-        initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgReport, 0, R.id.imgCall);
+        initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgReport,tvNotifyCount, 0, R.id.imgCall);
     }
 
     //show company info 360 view popup
@@ -233,14 +368,25 @@ public class View360Activity extends BaseActivity {
 
     //set invoice list
     private void setAdapterForInvoiceList() {
-        if (dashboardList.size() > 0) {
+       /* List<CustomerAllRecord> tempList = new ArrayList<>();
+        for(int i=0;i<customerAllRecordList.size();i++){
+            if(customerAllRecordList.get(i).getDoctype().equals("SALES ORDER")){
+                tempList.add(customerAllRecordList.get(i));
+            }
+        }*/
+        if (customerAllRecordList.size() > 0) {
             rvSalesList.setVisibility(View.VISIBLE);
+            emptyLayout.setVisibility(View.GONE);
+            for(int i=0;i<customerAllRecordList.size();i++){
+
+            }
         } else {
             rvSalesList.setVisibility(View.GONE);
+            emptyLayout.setVisibility(View.VISIBLE);
         }
-        invoiceAdapter = new InvoiceAdapter(mContext, dashboardList, new InvoiceAdapter.ListItemSelectListener() {
+        invoiceAdapter = new InvoiceAdapter(mContext, customerAllRecordList, new InvoiceAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(DashModel mDataTicket) {
+            public void onItemClick(CustomerAllRecord mDataTicket) {
                 //showReceiptDetailsDialog();
             }
         });
@@ -284,14 +430,16 @@ public class View360Activity extends BaseActivity {
 
     //set Quotations list
     private void setAdapterForQuotationsList() {
-        if (dashboardList.size() > 0) {
+        if (customerAllRecordList.size() > 0) {
             rvSalesList.setVisibility(View.VISIBLE);
+            emptyLayout.setVisibility(View.GONE);
         } else {
             rvSalesList.setVisibility(View.GONE);
+            emptyLayout.setVisibility(View.VISIBLE);
         }
-        quotationsAdapter = new QuotationsAdapter(mContext, dashboardList, new QuotationsAdapter.ListItemSelectListener() {
+        quotationsAdapter = new QuotationsAdapter(mContext, customerAllRecordList, new QuotationsAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(DashModel mDataTicket) {
+            public void onItemClick(CustomerAllRecord mDataTicket) {
             //showReceiptDetailsDialog();
             }
         });
@@ -340,14 +488,16 @@ public class View360Activity extends BaseActivity {
         dashboardList.add(new DashModel("CRM/20-21/EQ/6773","23/10/2021",getDrawable(R.drawable.ic_om_receipt)));
         dashboardList.add(new DashModel("CRM/20-21/EQ/6773","23/10/2021",getDrawable(R.drawable.ic_om_rating)));
 */
-        if (dashboardList.size() > 0) {
+        if (customerAllRecordList.size() > 0) {
             rvSalesList.setVisibility(View.VISIBLE);
+            emptyLayout.setVisibility(View.GONE);
         } else {
             rvSalesList.setVisibility(View.GONE);
+            emptyLayout.setVisibility(View.VISIBLE);
         }
-        enquiriesAdapter = new EnquiriesAdapter(mContext, dashboardList, new EnquiriesAdapter.ListItemSelectListener() {
+        enquiriesAdapter = new EnquiriesAdapter(mContext, customerAllRecordList, new EnquiriesAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(DashModel mDataTicket) {
+            public void onItemClick(CustomerAllRecord mDataTicket) {
                // showReceiptDetailsDialog();
             }
         });
@@ -418,6 +568,85 @@ public class View360Activity extends BaseActivity {
 
     }
 
+    /*Api response */
+    private void consumeResponse(ApiResponse apiResponse, String tag) {
+        switch (apiResponse.status) {
+
+            case LOADING:
+                ((BaseActivity) mContext).showSmallProgressBar(mProgressBarHolder);
+                break;
+
+            case SUCCESS:
+                dismissSmallProgressBar(mProgressBarHolder);
+                if (!apiResponse.data.isJsonNull()) {
+                    LogUtil.printLog(tag, apiResponse.data.toString());
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_VIEW360)) {
+                            GetView360Response responseModel = new Gson().fromJson(apiResponse.data.toString(), GetView360Response.class);
+                            if (responseModel != null/* && responseModel.getResult().getStatus().equals("success")*/) {
+                                CustomerData customerData = responseModel.getResult().getCustomerData();
+                                tvCompanyName.setText(customerData.getCustomerDetails().getCompanyName());
+                                tvRmName.setText(customerData.getCustomerDetails().getEmpName());
+                                tvCreditAmtColon.setText(customerData.getCustomerCreditBalance());
+                                tvlayCredDaysColon.setText(customerData.getCustomerDetails().getCreditLimitDays()+" Days");
+                                tvCreditAmtValue.setText("("+getString(R.string.scr_lbl_rs)+customerData.getCustomerDetails().getCreditLimitMoney()+")");
+                                if(customerData.getCustomerDetails().getIsnew().equals("YES")) {
+                                    imgNew.setVisibility(View.VISIBLE);
+                                }else{ imgNew.setVisibility(View.INVISIBLE);}
+                                String[] str = customerData.getCustomerCreditBalance().split("₹");
+                                try{
+                                    double amount = Double.parseDouble(str[1]);
+                                    if(amount>0){
+                                        tvCreditAmtColon.setTextColor(getResources().getColor(R.color.Dark_Red));
+                                    }
+                                    else{
+                                        tvCreditAmtColon.setTextColor(getResources().getColor(R.color.green));
+                                    }
+                                }catch (Exception e){}
+                                //LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                                long totalPage = 0;
+                                AppUtils.loadImageURL(mContext,"https://ominfo.in/crm/"+customerData.getCustomerDetails().getEmpProfilePic(),imgSales, null);
+
+                                //tvTotalCount.setText(getString(R.string.scr_lbl_rs)+String.valueOf(responseModel.getResult().getTotalenquiries()));
+                                try {
+                                    if (customerData.getAllRecords() != null && customerData.getAllRecords().size()>0) {
+                                        customerAllRecordList.clear();
+                                        customerAllRecordList = customerData.getAllRecords();
+                                        totalPage=responseModel.getResult().getTotalpages();
+
+                                        if(responseModel.getResult().getNextpage()==1) {
+                                            tvPage.setText("Showing " + String.valueOf(responseModel.getResult().getNextpage()) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1) + customerAllRecordList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalenquiries()) + "\nEntries"));
+                                        }
+                                        else {
+                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getResult().getNextpage()-1)*4)+1) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1)*4)+ customerAllRecordList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalenquiries()) + "\nEntries");
+                                        }
+                                    }
+                                    else{
+                                        totalPage=0;
+                                        customerAllRecordList.clear();
+                                    }
+
+                                }catch(Exception e){
+                                    e.printStackTrace();
+                                    totalPage=0;
+                                    customerAllRecordList.clear();
+                                }
+                                setEnquiryPagerList(totalPage);
+                                setAdapterForInvoiceList();
+                            }
+                        }
+                    }catch (Exception e){e.printStackTrace();}
+
+                }
+                break;
+            case ERROR:
+                dismissSmallProgressBar(mProgressBarHolder);
+                LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+                break;
+        }
+    }
 
 
 }

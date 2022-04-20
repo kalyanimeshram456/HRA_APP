@@ -62,9 +62,9 @@
                 android:id="@+id/tvStart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:fontFamily="@font/font_regular"
                 android:text="From : "
-                android:layout_centerVertical="true"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 

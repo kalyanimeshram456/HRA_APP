@@ -91,7 +91,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
         AppCompatTextView tvName;
         LinearLayoutCompat layClick;
         AppCompatImageView imgAcc,imgEdit;
-        AppCompatEditText edtAcc;
+        AppCompatTextView edtAcc;
 
         ViewHolder(View itemView) {
             super(itemView);

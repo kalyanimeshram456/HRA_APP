@@ -10,21 +10,27 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,30 +46,60 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.model.GradientColor;
+import com.google.gson.Gson;
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.basecontrol.BaseActivity;
+import com.ominfo.crm_solution.basecontrol.BaseApplication;
 import com.ominfo.crm_solution.basecontrol.BaseFragment;
+import com.ominfo.crm_solution.database.AppDatabase;
 import com.ominfo.crm_solution.interfaces.Constants;
+import com.ominfo.crm_solution.network.ApiResponse;
+import com.ominfo.crm_solution.network.DynamicAPIPath;
+import com.ominfo.crm_solution.network.NetworkCheck;
+import com.ominfo.crm_solution.network.ViewModelFactory;
+import com.ominfo.crm_solution.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
+import com.ominfo.crm_solution.ui.enquiry_report.adapter.EnquiryPageAdapter;
+import com.ominfo.crm_solution.ui.enquiry_report.adapter.RmTagAdapter;
+import com.ominfo.crm_solution.ui.enquiry_report.model.EnquiryPagermodel;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmResponse;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmViewModel;
+import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmlist;
+import com.ominfo.crm_solution.ui.login.model.LoginTable;
+import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.quotation_amount.adapter.QuotationAdapter;
+import com.ominfo.crm_solution.ui.quotation_amount.model.Quotation;
+import com.ominfo.crm_solution.ui.quotation_amount.model.QuotationRequest;
+import com.ominfo.crm_solution.ui.quotation_amount.model.QuotationResponse;
+import com.ominfo.crm_solution.ui.quotation_amount.model.QuotationViewModel;
 import com.ominfo.crm_solution.ui.sale.adapter.CompanyTagAdapter;
+import com.ominfo.crm_solution.ui.sale.model.ResultInvoice;
+import com.ominfo.crm_solution.ui.sale.model.RmListModel;
+import com.ominfo.crm_solution.ui.sales_credit.activity.PdfPrintActivity;
 import com.ominfo.crm_solution.ui.sales_credit.activity.View360Activity;
-import com.ominfo.crm_solution.ui.sales_credit.adapter.SalesCreditAdapter;
 import com.ominfo.crm_solution.ui.sales_credit.model.GraphModel;
+import com.ominfo.crm_solution.util.AppUtils;
+import com.ominfo.crm_solution.util.LogUtil;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 //https://github.com/PhilJay/MPAndroidChart/wiki/Modifying-the-Viewport
 
 /**
@@ -74,7 +110,7 @@ import butterknife.OnClick;
 public class QuotationFragment extends BaseFragment {
 
     Context mContext;
-    QuotationAdapter salesCreditAdapter;
+    QuotationAdapter quotationAdapter;
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
     @BindView(R.id.fromDate)
@@ -83,6 +119,12 @@ public class QuotationFragment extends BaseFragment {
     AppCompatTextView toDate;
     @BindView(R.id.tvPage)
     AppCompatTextView tvPage;
+    @BindView(R.id.tvCompanyName)
+    AppCompatTextView tvCompanyName;
+    @BindView(R.id.tvAmount)
+    AppCompatTextView tvAmount;
+    @BindView(R.id.tvQuoName)
+    AppCompatTextView tvQuoName;
     @BindView(R.id.layList)
     LinearLayoutCompat layList;
     @BindView(R.id.layPagination)
@@ -95,16 +137,58 @@ public class QuotationFragment extends BaseFragment {
     AppCompatImageView imgGraph;
     @BindView(R.id.imgFilter)
     AppCompatImageView imgFilter;
+    @BindView(R.id. imgCompanySort)
+    AppCompatImageView imgCompanySort;
+    @BindView(R.id.imgQuoSort)
+    AppCompatImageView imgQuoSort;
+    @BindView(R.id.imgAmount)
+    AppCompatImageView imgAmount;
     @BindView(R.id.layFilter)
     LinearLayoutCompat layFilter;
     @BindView(R.id.rvImages)
     RecyclerView rvImages;
+    @BindView(R.id.imgBack)
+    AppCompatImageView imgBack;
+    @BindView(R.id.submitButton)
+    AppCompatButton submitButton;
+    @BindView(R.id.imgNotify)
+    AppCompatImageView imgNotify;
+    @BindView(R.id.AutoComTextViewQuoStatus)
+    AppCompatAutoCompleteTextView AutoComTextViewQuoStatus;
+    @BindView(R.id.layIndicators)
+    LinearLayoutCompat layIndicators;
+    private AppDatabase mDb;
     List<DashModel> tagList = new ArrayList<>();
     CompanyTagAdapter addTagAdapter;
-/*
-    @BindView(R.id.add_fab)
-    FloatingActionButton add_fab;*/
-
+    List<String> mCompnyList = new ArrayList<>();
+    //test
+    List<String> mTRMList = new ArrayList<>();
+    @BindView(R.id.rvEnquiryPager)
+    RecyclerView rvEnquiryPager;
+    private String pagerClicked = "No";
+    @BindView(R.id.tvTotalCount)
+    AppCompatTextView tvTotalCount;
+    List<EnquiryPagermodel> enquiryPageList = new ArrayList<>();
+    EnquiryPageAdapter enquiryPageAdapter;
+    List<RmListModel> tagRmList = new ArrayList<>();
+    @BindView(R.id.rvRm)
+    RecyclerView rvRm;
+    RmTagAdapter addRmTagAdapter;
+    @BindView(R.id.nextPage)
+    AppCompatImageView nextPage;
+    @BindView(R.id.prePage)
+    AppCompatImageView prePage;
+    private Calendar calendar;
+    private SimpleDateFormat dateFormat;
+    @BindView(R.id.tvQutationNo)
+    AppCompatEditText tvQutationNo;
+    @BindView(R.id.tvMinAmount)
+    AppCompatEditText tvMinAmount;
+    @BindView(R.id.tvMaxAmount)
+    AppCompatEditText tvMaxAmount;
+    @BindView(R.id.empty_layoutActivity)
+    LinearLayoutCompat emptyLayout;
+    List<GetRmlist> RMDropdown = new ArrayList<>();
     BarData barData;
     List<GradientColor> list = new ArrayList<>();
     // variable for our bar data set.
@@ -120,10 +204,17 @@ public class QuotationFragment extends BaseFragment {
            "10"*//*, "45","90", "95","50", "55","60", "65"*//*};*/
     int startPos = 0 , endPos = 0;
 
-    List<DashModel> dashboardList = new ArrayList<>();
+    List<Quotation> quotationList = new ArrayList<>();
     List<GraphModel> graphModelsList = new ArrayList<>();
-
+    @Inject
+    ViewModelFactory mViewModelFactory;
+    private QuotationViewModel quotationViewModel;
+    private GetRmViewModel getRmViewModel;
     final Calendar myCalendar = Calendar.getInstance();
+    @BindView(R.id.progressBarHolder)
+    FrameLayout mProgressBarHolder;
+    @BindView(R.id.tvNotifyCount)
+    AppCompatTextView tvNotifyCount;
     public QuotationFragment() {
         // Required empty public constructor
     }
@@ -155,6 +246,9 @@ public class QuotationFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ((BaseActivity)mContext).getDeps().inject(this);
+        mDb = BaseApplication.getInstance(mContext).getAppDatabase();
+        injectAPI();
         init();
         fromDate.setPaintFlags(fromDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
         toDate.setPaintFlags(toDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
@@ -166,28 +260,25 @@ public class QuotationFragment extends BaseFragment {
         //requestPermission();
         layList.setVisibility(View.VISIBLE);
         layPagination.setVisibility(View.VISIBLE);
-        //add_fab.setVisibility(View.VISIBLE);
+        imgGraph.setVisibility(View.GONE);
         imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
         imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
         imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
         layFilter.setVisibility(View.GONE);
-
+       //TODO REMOVE LATER
+        //tvQutationNo.setText("QUO-HD/21-22/00023");
+        //tvMaxAmount.setText("0");
+        //tvMinAmount.setText("0");
+        //fromDate.setText("06/01/2022");
+        //toDate.setText("17/01/2022");
         setToolbar();
-        dashboardList.add(new DashModel("Sales Credit","quote",mContext.getDrawable(R.drawable.ic_om_sales_credit)));
-        dashboardList.add(new DashModel("Receipt","quote",mContext.getDrawable(R.drawable.ic_om_receipt)));
-        dashboardList.add(new DashModel("Top Customer","quote",mContext.getDrawable(R.drawable.ic_om_rating)));
-        dashboardList.add(new DashModel("Total Quotation Amount","quote",mContext.getDrawable(R.drawable.ic_om_total_quotation)));
-        dashboardList.add(new DashModel("Dispatch Pending","quote",mContext.getDrawable(R.drawable.ic_om_dispatch_pending)));
-        dashboardList.add(new DashModel("Enquiry Report","quote",mContext.getDrawable(R.drawable.ic_om_enquiry_report)));
-        dashboardList.add(new DashModel("Visit Report","quote",mContext.getDrawable(R.drawable.ic_om_visit_report)));
-        dashboardList.add(new DashModel("Products","quote",mContext.getDrawable(R.drawable.ic_om_product)));
-        dashboardList.add(new DashModel("Sales Credit","quote",mContext.getDrawable(R.drawable.ic_om_sales_credit)));
-        //dashboardList.add(new DashModel("Receipt","₹13245647",mContext.getDrawable(R.drawable.ic_om_receipt)));
-        //dashboardList.add(new DashModel("Top Customer","₹13245647",mContext.getDrawable(R.drawable.ic_om_rating)));
-
-        setAdapterForDashboardList();
-
-        graphModelsList.removeAll(dashboardList);
+        setDate();
+        setEnquiryPagerList(1);
+        setAdapterForQuotationList();
+        callQuotationdApi("0");
+        setAddTagList();
+        setAddRmTagList();
+        graphModelsList.removeAll(quotationList);
         graphModelsList.add(new GraphModel("State C1", "Company Test 1", "5"));
         graphModelsList.add(new GraphModel("State C2", "Company Test 2", "60"));
         graphModelsList.add(new GraphModel("State C3", "Company Test 3", "15"));
@@ -211,7 +302,236 @@ public class QuotationFragment extends BaseFragment {
                 return false;
             }
         });
+        setDropdownQuotation(AutoComTextViewQuoStatus);
     }
+
+    private void injectAPI() {
+        quotationViewModel = ViewModelProviders.of(this, mViewModelFactory).get(QuotationViewModel.class);
+        quotationViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_QUOTATION));
+
+        getRmViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetRmViewModel.class);
+        getRmViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_RM));
+    }
+
+    private void setDate(){
+        calendar = Calendar.getInstance();
+        dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String date = dateFormat.format(calendar.getTime());
+        toDate.setText(date);fromDate.setText(date);
+    }
+
+    private void setPagerEnquiryList(long pageNo){
+        for(int i=0;i<pageNo;i++) {
+            if (pagerClicked.equals("No")) {
+                if (i == 0) {
+                    rvEnquiryPager.scrollToPosition(i+1);
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 1));
+                } else {
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 0));
+                }
+            } else {
+                if (i == Integer.parseInt(pagerClicked)) {
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 1));
+                } else {
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 0));
+                }
+            }
+        }
+    }
+
+    private void setEnquiryPagerList(long pageNo) {
+        enquiryPageList.clear();
+        if(pageNo==0) {
+            pageNo = 1;
+        }
+        setPagerEnquiryList(pageNo);
+        if (enquiryPageList.size() > 0) {
+            rvEnquiryPager.setVisibility(View.VISIBLE);
+        } else {
+            rvEnquiryPager.setVisibility(View.GONE);
+        }
+        enquiryPageAdapter = new EnquiryPageAdapter(mContext, enquiryPageList, new EnquiryPageAdapter.ListItemSelectListener() {
+            @Override
+            public void onItemClick(EnquiryPagermodel mData, List<EnquiryPagermodel> mDataList) {
+                enquiryPageList = mDataList;
+                try {
+                    pagerClicked = String.valueOf(Integer.parseInt(mData.getPageNo())-1);
+                    enquiryPageAdapter.updateList(mDataList);
+                }catch (Exception e){e.printStackTrace();}
+                try {
+                    callQuotationdApi(String.valueOf(Integer.parseInt(mData.getPageNo()) - 1));
+                }catch (Exception e){e.printStackTrace();}
+            }
+        });
+        rvEnquiryPager.setHasFixedSize(true);
+        //rvEnquiryPager.setLayoutManager(new GridLayoutManager(mContext, 3));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false);
+        rvEnquiryPager.setLayoutManager(layoutManager);
+        rvEnquiryPager.setItemAnimator(new DefaultItemAnimator());
+        rvEnquiryPager.setAdapter(enquiryPageAdapter);
+        try{
+            rvEnquiryPager.scrollToPosition(Integer.parseInt(pagerClicked));}catch (Exception e){e.printStackTrace();}
+        final boolean[] check = {false};
+        prePage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //try{
+                /*LogUtil.printToastMSG(mContext,"prev");
+                int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+                rvEnquiryPager.scrollToPosition(firstVisiblePosition-1);
+                //int firstVisiblePositionNew = layoutManager.findFirstVisibleItemPosition();
+                enquiryPageAdapter.updatePageList(firstVisiblePosition-1);
+                }catch (Exception e){e.printStackTrace();*/
+                //}catch (Exception e){e.printStackTrace();}
+            }
+        });
+        nextPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    /*LogUtil.printToastMSG(mContext,"next");
+                    int firstVisiblePositionLast = layoutManager.findLastVisibleItemPosition();
+                    int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+                    rvEnquiryPager.scrollToPosition(firstVisiblePositionLast-1);
+                    //int firstVisiblePositionNew = layoutManager.findFirstVisibleItemPosition();
+                    enquiryPageAdapter.updatePageList(firstVisiblePosition + 1);*/
+                }catch (Exception e){e.printStackTrace();}
+            }
+        });
+
+    }
+
+    private void setAddRmTagList() {
+        tagRmList.removeAll(tagRmList);
+        tagRmList.add(new RmListModel("","1",""));
+        if (tagRmList.size() > 0) {
+            rvRm.setVisibility(View.VISIBLE);
+        } else {
+            rvRm.setVisibility(View.GONE);
+        }
+        addRmTagAdapter = new RmTagAdapter(mContext, tagRmList, new RmTagAdapter.ListItemSelectListener() {
+            @Override
+            public void onItemClick(List<RmListModel> mDataTicket) {
+                mTRMList.clear();
+                tagRmList =  mDataTicket;
+                addRmTagAdapter.updateList(tagRmList,0);
+                if(tagList.size()>0){
+                    int marginInDp40 = (int) TypedValue.applyDimension(
+                            TypedValue.COMPLEX_UNIT_DIP, 90, getResources()
+                                    .getDisplayMetrics());
+                    rvRm.setMinimumHeight(marginInDp40);
+                    //setMargins(rvImages, 0, marginInDp40, 0, 0);
+                }
+            }
+        });
+        rvRm.setHasFixedSize(true);
+        rvRm.setLayoutManager(new GridLayoutManager(mContext, 1));
+        rvRm.setItemAnimator(new DefaultItemAnimator());
+        rvRm.setAdapter(addRmTagAdapter);
+
+    }
+
+    /* Call Api For Quotations */
+    private void callQuotationdApi(String pageNo) {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                for(int i=0;i<tagList.size();i++){
+                    if(tagList.get(i).getTitle()!=null && !tagList.get(i).getTitle().equals("")) {
+                        mCompnyList.add(tagList.get(i).getTitle());
+                    }
+                }
+                for(int i=0;i<tagRmList.size();i++){
+                    if(tagRmList.get(i).getTitle()!=null && !tagRmList.get(i).getTitle().equals("")) {
+                        mTRMList.add(tagRmList.get(i).getId());
+                    }
+                }
+                String mStringFrmDate = AppUtils.splitsEnquiryDate(fromDate.getText().toString().trim()),
+                mStringToDate = AppUtils.splitsEnquiryDate(toDate.getText().toString().trim());
+                QuotationRequest request = new QuotationRequest();
+                request.setQuotationNumber(tvQutationNo.getEditableText().toString());
+                request.setCompanyId(mCompnyList);
+                request.setEndDate(mStringToDate);
+                request.setQuotationMaxAmount(tvMaxAmount.getEditableText().toString());
+                request.setPageno(pageNo);
+                request.setPagesize("6");
+                request.setQuotationStatus(AutoComTextViewQuoStatus.getText().toString());
+                request.setRm(mTRMList);
+                request.setStartdate(mStringFrmDate);
+                request.setQuotationMinAmount(tvMinAmount.getEditableText().toString());
+                quotationViewModel.hitQuotationApi(request);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    //set value to Quotation status dropdown
+    private void setDropdownQuotation(AppCompatAutoCompleteTextView AutoComTextViewReminder) {
+        List<String> RMDropdown = new ArrayList<>();
+        RMDropdown.add("TENDER");
+        RMDropdown.add("BUDEGTING");
+        RMDropdown.add("NEGOTIATION");
+        RMDropdown.add("FINALIZATION");
+        RMDropdown.add("QUOTATION CANCELLED");
+        RMDropdown.add("QUOTATION REJECTED");
+        RMDropdown.add("QUOTATION SENT");
+        RMDropdown.add("PI SENT");
+        RMDropdown.add("SO CREATED");
+        RMDropdown.add("SO REJECTED BY ADMIN");
+        RMDropdown.add("PENDING FOR BILLING");
+        RMDropdown.add("SO REJECTED AT FACTORY");
+        RMDropdown.add("INVOICE CREATED");
+
+        RMDropdown.add("SO ON HOLD");
+        RMDropdown.add("ORDER LOST");
+        RMDropdown.add("SO CANCELLED");
+        RMDropdown.add("CLOSED");
+
+        RMDropdown.add("APPROVAL PENDING");
+        RMDropdown.add("PENDING FOR BILLING");
+        RMDropdown.add("SO REJECTED BY FACTORY");
+        RMDropdown.add("PART INVOICE REJECTED");
+        RMDropdown.add("INVOICE DISPATCHED");
+        RMDropdown.add("INCVOICE DELIVERED");
+
+        try {
+            int pos = 0;
+            if (RMDropdown != null && RMDropdown.size() > 0) {
+                String[] mDropdownList = new String[RMDropdown.size()];
+                for (int i = 0; i < RMDropdown.size(); i++) {
+                    mDropdownList[i] = String.valueOf(RMDropdown.get(i));
+                   /* if (!VehiIdDropdown.equals("")) {
+                        if (RMDropdown.get(i).getId().equals(VehiIdDropdown)) {
+                            pos = i;
+                        }
+                    }*/
+                }
+                //AutoComTextViewVehNo.setText(mDropdownList[pos]);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        mContext,
+                        R.layout.row_dropdown_item,
+                        mDropdownList);
+                //AutoComTextViewVehNo.setThreshold(1);
+                AutoComTextViewReminder.setAdapter(adapter);
+                //mSelectedColor = mDropdownList[pos];
+                AutoComTextViewReminder.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        //mSelectedColor = mDropdownList[position];
+                        AppUtils.hideKeyBoard(getActivity());
+                    }
+                });
+            } else {
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void setAddTagList() {
         tagList.removeAll(tagList);
@@ -224,6 +544,7 @@ public class QuotationFragment extends BaseFragment {
         addTagAdapter = new CompanyTagAdapter(mContext, tagList, new CompanyTagAdapter.ListItemSelectListener() {
             @Override
             public void onItemClick(List<DashModel> mDataTicket) {
+                mCompnyList.clear();
                 tagList =  mDataTicket;
                 addTagAdapter.updateList(tagList,0);
                 if(tagList.size()>2){
@@ -308,6 +629,11 @@ public class QuotationFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 mDialog.dismiss();
+                Intent i = new Intent(getActivity(), PdfPrintActivity.class);
+                i.putExtra(Constants.TRANSACTION_ID, "1");
+                i.putExtra(Constants.URL, "");
+                startActivity(i);
+                ((Activity) getActivity()).overridePendingTransition(0, 0);
             }
         });
 
@@ -319,118 +645,7 @@ public class QuotationFragment extends BaseFragment {
         });
         mDialog.show();
     }
-
-/*
-    private void getGraph() {
-        // initializing variable for bar chart.
-
-        barChart.getDescription().setEnabled(false);
-        barChart.getDescription().setTextAlign(Paint.Align.LEFT);
-        barChart.setDrawValueAboveBar(true);
-        barChart.animateY(1000);
-        barChart.getLegend().setEnabled(false);
-
-        // calling method to get bar entries.
-        BarData data = getBarEntries();
-
-        // creating a new bar data set.
-        barDataSet = new BarDataSet(barEntriesArrayList, "");
-        // creating a new bar data and
-        // passing our bar data set.
-        barData = new BarData(barDataSet);
-
-        // below line is to set data
-        // to our bar chart.
-
-        barChart.setData(data);
-
-        data.setBarWidth(0.5f);
-
-        // adding color to our bar data set.
-        barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-
-        // setting text color.
-        barDataSet.setValueTextColor(Color.BLACK);
-
-        // setting text size
-        barDataSet.setValueTextSize(16f);
-        XAxis xAxis = barChart.getXAxis();
-        //set labels des to bottom
-        xAxis.setLabelCount(DAYSY.length, false);
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-
-        xAxis.setDrawGridLines(false);
-        //set x axis label values
-        xAxis.setLabelRotationAngle(-70);
-        try {
-            xAxis.setValueFormatter(new ValueFormatter() {
-                @Override
-                public String getFormattedValue(float value) {
-                    try {
-                        return DAYS[(int) Math.floor(value)];
-                    }catch (Exception e){
-                        return "";
-                    }
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        YAxis axisLeft = barChart.getAxisLeft();
-        //axisLeft.setGranularity(0.6f);
-        axisLeft.setAxisMinimum((int) Math.floor(0));
-        axisLeft.setAxisMaximum((int) Math.floor(100));
-        ArrayList<String> yAxisVals = new ArrayList<>();
-        for(int i=0;i<graphModelsList.size();i++){
-            yAxisVals.add(graphModelsList.get(i).getyValue());
-        }
-        axisLeft.setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getFormattedValue(float value) {
-                return "₹"+(int)value;
-            }
-        });
-       */
-/* barChart.getAxisLeft().setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getFormattedValue(float value) {
-                return "₹"+(int)value;
-            }
-    });*//*
-
-        //barChart.getAxisLeft().setValueFormatter(new IndexAxisValueFormatter(graphModelsList));
-        // left y-axis
-        barChart.getAxisLeft().setTextColor(ContextCompat.getColor(mContext, R.color.deep_red));
-        //customize - y axis rows numbers
-        axisLeft.setLabelCount(5, true);
-        axisLeft.setDrawGridLines(true);
-        //set right side
-        YAxis axisRight = barChart.getAxisRight();
-        //axisRight.setGranularity(0.6f);
-        axisRight.setAxisMinimum(0);
-        axisRight.setAxisMaximum(0);
-        axisRight.setLabelCount(0, false);
-        axisRight.setDrawGridLines(false);
-        axisRight.setAxisMaximum(0);
-        barChart.setDrawValueAboveBar(true);
-        barChart.getXAxis().setGranularity(1);
-        barChart.getXAxis().setGranularityEnabled(true);
-        barChart.getDescription().setEnabled(false);
-        //barChart.fitScreen();
-        barChart.zoomOut();
-        //barChart.zoomIn();
-        //barChart.fitScreen();
-        //barChart.setFitBars(true);
-
-        barChart.setVisibleXRangeMaximum(6);
-        barChart.moveViewToX(0);
-        barChart.setVisibleXRangeMaximum(12);
-        barChart.invalidate();
-    }
-*/
-
-
+    
     private BarData getBarEntries() {
 
         barEntriesArrayList = new ArrayList<>();
@@ -489,68 +704,39 @@ public class QuotationFragment extends BaseFragment {
         return data;
     }
 
-    private void setAdapterForDashboardList() {
-        if (dashboardList.size() > 0) {
+    private void setAdapterForQuotationList() {
+        if (quotationList!=null && quotationList.size() > 0) {
+            quotationAdapter = new QuotationAdapter(mContext, quotationList, new QuotationAdapter.ListItemSelectListener() {
+                @Override
+                public void onItemClick(int mDataTicket) {
+                    //For not killing pre fragment
+                    if(mDataTicket==0) {
+                        Intent i = new Intent(getActivity(), View360Activity.class);
+                        i.putExtra(Constants.TRANSACTION_ID, "1");
+                        startActivity(i);
+                        ((Activity) getActivity()).overridePendingTransition(0, 0);
+                    }
+                    if(mDataTicket==1){
+                        //showQuotationDialog();
+                        //mDialog.dismiss();
+                        Intent i = new Intent(getActivity(), PdfPrintActivity.class);
+                        i.putExtra(Constants.TRANSACTION_ID, "1");
+                        startActivity(i);
+                        ((Activity) getActivity()).overridePendingTransition(0, 0);
+                    }
+                }
+            });
+
             rvSalesList.setVisibility(View.VISIBLE);
+            emptyLayout.setVisibility(View.GONE);
         } else {
             rvSalesList.setVisibility(View.GONE);
+            emptyLayout.setVisibility(View.VISIBLE);
         }
-        salesCreditAdapter = new QuotationAdapter(mContext, dashboardList, new QuotationAdapter.ListItemSelectListener() {
-            @Override
-            public void onItemClick(int mDataTicket) {
-                //For not killing pre fragment
-                if(mDataTicket==0) {
-                    Intent i = new Intent(getActivity(), View360Activity.class);
-                    i.putExtra(Constants.TRANSACTION_ID, "1");
-                    startActivity(i);
-                    ((Activity) getActivity()).overridePendingTransition(0, 0);
-                }
-                if(mDataTicket==1){
-                    showQuotationDialog();
-                }
-            }
-        });
 
         rvSalesList.setHasFixedSize(true);
         rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
-        rvSalesList.setAdapter(salesCreditAdapter);
-        final boolean[] check = {false};
-       /* rvSalesList.addOnItemTouchListener(
-                new RecyclerView.OnItemTouchListener() {
-
-                    @Override
-                    public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                        if(!check[0]) {
-                            //View item = rv.findChildViewUnder(e.getX(),e.getY()); //finding the view that clicked , using coordinates X and Y
-                            //int position = rv.getChildLayoutPosition(item); //getting the position of the item inside the list
-                            //rv.getChildAdapterPosition(rv.findViewById(R.id.tvCompanyName));
-                            Intent i = new Intent(getActivity(), View360Activity.class);
-                            i.putExtra(Constants.TRANSACTION_ID, "1");
-                            startActivity(i);
-                            ((Activity) getActivity()).overridePendingTransition(0, 0);
-                            check[0] = true;
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    check[0] = false;
-                                }
-                            }, 150);
-                        } return false;
-
-                    }
-
-                    @Override
-                    public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                       // Toast.makeText(mContext, "View where A: " + rv.getAdapter().getItemCount() + " is Clicked", Toast.LENGTH_SHORT).show();
-
-                    }
-
-                    @Override
-                    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-                    }
-                }
-        );*/
+        rvSalesList.setAdapter(quotationAdapter);
 
     }
 
@@ -598,7 +784,20 @@ public class QuotationFragment extends BaseFragment {
     private void setToolbar() {
         //set toolbar title
         //toolbarTitle.setText(R.string.scr_lbl_add_new_lr);
-        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify, R.id.layBack, R.id.imgCall);
+        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.layBack, R.id.imgCall);
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Fragment fragment = new DashboardFragment();
+                ((BaseActivity)mContext).moveFragment(mContext,fragment);
+            }
+        });
+        imgNotify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((BaseActivity)mContext).launchScreen(mContext, NotificationsActivity.class);;
+            }
+        });
     }
 
 
@@ -659,36 +858,107 @@ public class QuotationFragment extends BaseFragment {
         pieChart.invalidate();
     }
 
+    /* Call Api For RM */
+    private void callRMApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_rm);
+                RequestBody mRequestBodyTypeImage = RequestBody.create(MediaType.parse("text/plain"), "0");//loginTable.getEmployeeId());
+                RequestBody mRequestBodyTypeImage1 = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
+                getRmViewModel.hitGetRmApi(mRequestBodyType, mRequestBodyTypeImage, mRequestBodyTypeImage1);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+
 
     //perform click actions
-    @OnClick({R.id.imgGraph,R.id.imgTable,/*,R.id.add_fab,*/R.id.imgFilter,R.id.resetButton
-    ,R.id.toDate,R.id.fromDate})
+    @OnClick({R.id.imgGraph,R.id.imgTable,R.id.resetButton,R.id.imgFilter,R.id.submitButton
+    ,R.id.toDate,R.id.fromDate,R.id.imgCompanySort, R.id.tvCompanyName,
+            R.id.tvQuoName, R.id.imgQuoSort,R.id.tvAmount,R.id.imgAmount})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
+            case R.id.tvAmount:
+                setSortIconComQuoAmo(2);
+                sortforAmount();
+                break;
+            case R.id.imgAmount:
+                setSortIconComQuoAmo(2);
+                sortforAmount();
+                break;
+            case R.id.tvQuoName:
+                setSortIconComQuoAmo(1);
+                sortforQuoNum();
+                break;
+            case R.id.imgQuoSort:
+                setSortIconComQuoAmo(1);
+                sortforQuoNum();
+                break;
+            case R.id.imgCompanySort:
+                setSortIconComQuoAmo(0);
+                sortforCompany();
+                break;
+            case R.id.tvCompanyName:
+                setSortIconComQuoAmo(0);
+                sortforCompany();
+                break;
             case R.id.toDate:
                 openDataPicker(1,toDate);
                 break;
             case R.id.fromDate:
                 openDataPicker(0,fromDate);
                 break;
+            case R.id.submitButton:
+                mCompnyList.clear();
+                mTRMList.clear();
+                quotationList.clear();
+                setEnquiryPagerList(0);
+                setAdapterForQuotationList();
+                tvPage.setText("Showing " + String.valueOf(0) + " to " +
+                        String.valueOf(0) + " of " + String.valueOf(0) + "\nEntries");
+                try {
+                    callQuotationdApi("0");
+                }catch (Exception e){e.printStackTrace();}
+                pieChart.setVisibility(View.GONE);
+                layList.setVisibility(View.VISIBLE);
+                layIndicators.setVisibility(View.VISIBLE);
+                layPagination.setVisibility(View.VISIBLE);
+                layFilter.setVisibility(View.GONE);
+                emptyLayout.setVisibility(View.GONE);
+                submitButton.setVisibility(View.GONE);
+                imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
+                imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
+                imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
+                break;
             case R.id.imgFilter:
                 //add_fab.setVisibility(View.GONE);
                 pieChart.setVisibility(View.GONE);
                 layList.setVisibility(View.GONE);
+                layIndicators.setVisibility(View.GONE);
                 layPagination.setVisibility(View.GONE);
                 layFilter.setVisibility(View.VISIBLE);
+                submitButton.setVisibility(View.VISIBLE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_table_blue));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_blue));
+                callRMApi();
                 break;
 
             case R.id.imgGraph:
                 //add_fab.setVisibility(View.GONE);
                 pieChart.setVisibility(View.VISIBLE);
                 layList.setVisibility(View.GONE);
+                layIndicators.setVisibility(View.GONE);
                 layPagination.setVisibility(View.GONE);
                 layFilter.setVisibility(View.GONE);
+                submitButton.setVisibility(View.GONE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_blue));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_table_blue));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
@@ -698,24 +968,89 @@ public class QuotationFragment extends BaseFragment {
                 //add_fab.setVisibility(View.VISIBLE);
                 pieChart.setVisibility(View.GONE);
                 layList.setVisibility(View.VISIBLE);
+                layIndicators.setVisibility(View.VISIBLE);
                 layPagination.setVisibility(View.VISIBLE);
                 layFilter.setVisibility(View.GONE);
+                submitButton.setVisibility(View.GONE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
                 break;
 
             case R.id.resetButton:
-                //add_fab.setVisibility(View.VISIBLE);
-                pieChart.setVisibility(View.GONE);
-                layList.setVisibility(View.VISIBLE);
-                layPagination.setVisibility(View.VISIBLE);
-                layFilter.setVisibility(View.GONE);
-                imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
-                imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
-                imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
+                tvMaxAmount.setText("");
+                tvQutationNo.setText(""); tvMinAmount.setText("");
+                AutoComTextViewQuoStatus.setText("");
+                setAddTagList();
+                setAddRmTagList();
+                callRMApi();
                 break;
         }
+    }
+    private void setSortIconComQuoAmo(int res){
+        if(res==0){
+            imgAmount.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            imgCompanySort.setImageDrawable(getResources().getDrawable(R.drawable.ic_sort_blue));
+            imgQuoSort.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            tvCompanyName.setTextColor(getResources().getColor(R.color.color_main));
+            tvQuoName.setTextColor(getResources().getColor(R.color.back_text_colour));
+            tvAmount.setTextColor(getResources().getColor(R.color.back_text_colour));
+        }
+        else if(res==1){
+            imgAmount.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            imgCompanySort.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            imgQuoSort.setImageDrawable(getResources().getDrawable(R.drawable.ic_sort_blue));
+            tvCompanyName.setTextColor(getResources().getColor(R.color.back_text_colour));
+            tvQuoName.setTextColor(getResources().getColor(R.color.color_main));
+            tvAmount.setTextColor(getResources().getColor(R.color.back_text_colour));
+        }
+        else{
+            imgAmount.setImageDrawable(getResources().getDrawable(R.drawable.ic_sort_blue));
+            imgCompanySort.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            imgQuoSort.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            tvCompanyName.setTextColor(getResources().getColor(R.color.back_text_colour));
+            tvQuoName.setTextColor(getResources().getColor(R.color.back_text_colour));
+            tvAmount.setTextColor(getResources().getColor(R.color.color_main));
+        }
+    }
+    private void sortforCompany(){
+        Collections.sort(quotationList, new Comparator<Quotation>() {
+            @Override
+            public int compare(Quotation item, Quotation t1) {
+                String s1 = item.getCompanyName();
+                String s2 = t1.getCompanyName();
+                return s1.compareToIgnoreCase(s2);
+            }
+        });
+        quotationAdapter.notifyDataSetChanged();
+    }
+    private void sortforQuoNum(){
+
+        Collections.sort(quotationList, new Comparator<Quotation>() {
+            @Override
+            public int compare(Quotation item, Quotation t1) {
+                int returnVal = 0;
+                try {
+                    String[] s1 = item.getOrderNo().split("/");
+                    String[] s2 = t1.getOrderNo().split("/");
+                    returnVal = s1[2].compareToIgnoreCase(s2[2]);
+                }catch (Exception e){
+                    returnVal = 0;
+                }
+             return returnVal;
+            }
+        });
+        quotationAdapter.notifyDataSetChanged();
+    }
+    private void sortforAmount(){
+        Collections.sort(quotationList, new Comparator<Quotation>() {
+            @Override
+            public int compare(Quotation item, Quotation t1) {
+                    return Long.compare(item.getTotalCharge(), t1.getTotalCharge());
+                   //return s1.compareToIgnoreCase(s2);
+            }
+        });
+        quotationAdapter.notifyDataSetChanged();
     }
 
     //set date picker view
@@ -737,6 +1072,7 @@ public class QuotationFragment extends BaseFragment {
                 else {
                     datePickerField.setText(sdf.format(myCalendar.getTime()));
                 }
+                callQuotationdApi("0");
             }
 
         };
@@ -767,59 +1103,7 @@ public class QuotationFragment extends BaseFragment {
             else // greater or equal than 100 red
                 return list.get(0);
         }
-
-
     }
-
-
-
-    /*private void injectAPI() {
-        mGetVehicleViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetVehicleViewModel.class);
-        mGetVehicleViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_GET_VEHICLE));
-    }*/
-
-  /*  *//* Call Api For Vehicle List *//*
-    private void callVehicleListApi(String fromDate,String toDate) {
-        if (NetworkCheck.isInternetAvailable(mContext)) {
-            GetVehicleListRequest mRequest = new GetVehicleListRequest();
-            mRequest.setUserkey(mUserKey);//mUserKey); //6b07b768-926c-49b6-ac1c-89a9d03d4c3b
-            mRequest.setFromDate(fromDate);
-            mRequest.setToDate(toDate);
-            Gson gson = new Gson();
-            String bodyInStringFormat = gson.toJson(mRequest);
-            mGetVehicleViewModel.hitGetVehicleApi(bodyInStringFormat);
-        } else {
-            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
-        }
-    }*/
-
-
-
-  /*  private void setAdapterForVehicleList() {
-        if (vehicleModelList.size() > 0) {
-            mLrNumberAdapter = new LrNumberAdapter(mContext, vehicleModelList, new LrNumberAdapter.ListItemSelectListener() {
-                @Override
-                public void onItemClick(GetVehicleListResult mDataTicket) {
-                    Intent intent = new Intent(mContext,AddLrActivity.class);
-                    intent.putExtra(Constants.TRANSACTION_ID, mDataTicket.getTransactionID());
-                    intent.putExtra(Constants.FROM_SCREEN, Constants.LIST);
-                    startActivity(intent);
-                }
-            });
-            mRecylerViewLrNumber.setHasFixedSize(true);
-            mRecylerViewLrNumber.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
-            mRecylerViewLrNumber.setAdapter(mLrNumberAdapter);
-            mRecylerViewLrNumber.setVisibility(View.VISIBLE);
-            linearLayoutEmptyActivity.setVisibility(View.GONE);
-            imgEmptyImage.setBackground(getResources().getDrawable(R.drawable.ic_error_load));
-            tvEmptyLayTitle.setText(getString(R.string.scr_lbl_data_loading));
-        } else {
-            mRecylerViewLrNumber.setVisibility(View.GONE);
-            linearLayoutEmptyActivity.setVisibility(View.VISIBLE);
-            imgEmptyImage.setBackground(getResources().getDrawable(R.drawable.ic_error_load));
-            tvEmptyLayTitle.setText(R.string.scr_lbl_no_data_available);
-        }
-    }*/
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -827,132 +1111,88 @@ public class QuotationFragment extends BaseFragment {
         mContext = context;
     }
 
+    /*Api response */
+    private void consumeResponse(ApiResponse apiResponse, String tag) {
+        switch (apiResponse.status) {
 
-  /*  //set date picker view
-    private void openDataPicker(AppCompatTextView datePickerField,int mFrom) {
-        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            case LOADING:
+                ((BaseActivity) mContext).showSmallProgressBar(mProgressBarHolder);
+                break;
 
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-                // TODO Auto-generated method stub
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                String myFormat="";
-                if(mFrom==0) {
-                    myFormat = "dd MMM yyyy"; //In which you need put here
+            case SUCCESS:
+                ((BaseActivity) mContext).dismissSmallProgressBar(mProgressBarHolder);
+                if (!apiResponse.data.isJsonNull()) {
+                    LogUtil.printLog(tag, apiResponse.data.toString());
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_QUOTATION)) {
+                            QuotationResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), QuotationResponse.class);
+                            long totalPage = 0;
+                            if (responseModel != null && responseModel.getStatus()==1) {
+                                quotationList.clear();
+                                if (responseModel.getTotalamount() != null && responseModel.getTotalamount().size()>0) {
+                                    tvTotalCount.setText(getString(R.string.scr_lbl_rs)+String.valueOf(responseModel.getTotalamount().get(0).getAmount()));
+                                }else{
+                                    tvTotalCount.setText(getString(R.string.scr_lbl_rs)+"0");
+                                }
+                                try {
+                                    if (responseModel.getQuotations() != null && responseModel.getQuotations().size()>0) {
+                                        quotationList = responseModel.getQuotations();
+                                        totalPage = responseModel.getTotalpages();
+                                        if(responseModel.getNextpage()==1) {
+                                            tvPage.setText("Showing " + String.valueOf(responseModel.getNextpage()) + " to " +
+                                                    String.valueOf(((responseModel.getNextpage()-1) + quotationList.size()) + " of " + String.valueOf(responseModel.getTotalQuotations()) + "\nEntries"));
+                                        }
+                                        else {
+                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getNextpage()-1)*6)+1) + " to " +
+                                                    String.valueOf(((responseModel.getNextpage()-1)*6)+quotationList.size()) + " of " + String.valueOf(responseModel.getTotalQuotations()) + "\nEntries");
+                                        }
+                                    }
+                                    else{
+                                        totalPage =0;
+                                        quotationList.clear();
+                                    }
+
+                                }catch(Exception e){
+                                    totalPage = 0;
+                                    quotationList.clear();
+                                    LogUtil.printLog("quo_frag",e.getMessage());//e.printStackTrace();
+
+                                }
+                                setEnquiryPagerList(totalPage);
+                                setAdapterForQuotationList();
+                            }
+                            else{
+                                totalPage = 0;
+                                quotationList.clear();
+                                setEnquiryPagerList(totalPage);
+                                setAdapterForQuotationList();
+                            }
+
+                        }
+                        try {
+                            if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_RM)) {
+                                GetRmResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetRmResponse.class);
+                                if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                    RMDropdown.removeAll(RMDropdown);
+                                    RMDropdown = responseModel.getResult().getRmlist();
+                                    ///setDropdownRM();
+                                    addRmTagAdapter.updateRmList(RMDropdown);
+                                } else {
+                                    LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
+                                }
+                            }
+                        }catch (Exception e){e.printStackTrace();}
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
-                else{
-                    myFormat = "dd/MM/yyyy"; //In which you need put here
-                }
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-                datePickerField.setText(sdf.format(myCalendar.getTime()));
-            }
-
-        };
-
-        new DatePickerDialog(this, date, myCalendar
-                .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-
-    }
-
-    //show truck details popup
-    public void showTruckDetailsDialog() {
-        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_truck_details);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-        RelativeLayout relRC = mDialog.findViewById(R.id.relRC);
-        RelativeLayout relPUC = mDialog.findViewById(R.id.relPUC);
-        RelativeLayout relIss = mDialog.findViewById(R.id.relIss);
-
-        relRC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        relPUC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        relIss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }
-
-    //show truck details popup
-    public void showFullImageDialog() {
-        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_doc_full_view);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }*/
-
-
-    /*//request camera and storage permission
-    private void requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (mContext.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-            ) {
-
-                requestPermissions(new String[]
-                                { Manifest.permission.CAMERA,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                },
-                        1000);
-
-            } else {
-                //createFolder();
-            }
-        } else {
-            //createFolder();
+                break;
+            case ERROR:
+                ((BaseActivity) mContext).dismissSmallProgressBar(mProgressBarHolder);
+                LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+                break;
         }
     }
-*/
 
     /*
      * ACCESS_FINE_LOCATION permission result
@@ -976,23 +1216,6 @@ public class QuotationFragment extends BaseFragment {
 
         }
     }
-
-    /*@Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finishAffinity();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(receiver, intentFilter);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(receiver);
-    }*/
+    
 
 }
