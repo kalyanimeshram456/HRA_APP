@@ -1,12 +1,12 @@
 
-package com.ominfo.crm_solution.ui.login.model;
+package com.ominfo.crm_solution.ui.notifications.model;
 
 import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class Result {
+public class DeleteNotiResult {
 
     @SerializedName("message")
     private String mMessage;

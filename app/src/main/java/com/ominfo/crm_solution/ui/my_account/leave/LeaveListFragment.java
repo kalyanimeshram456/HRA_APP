@@ -1,22 +1,22 @@
 package com.ominfo.crm_solution.ui.my_account.leave;
 
-import android.app.Activity;
+import static com.ominfo.crm_solution.util.AppUtils.getChangeDateForHisab;
+
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -25,14 +25,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -61,22 +59,19 @@ import com.ominfo.crm_solution.network.ViewModelFactory;
 import com.ominfo.crm_solution.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
 import com.ominfo.crm_solution.ui.enquiry_report.adapter.EnquiryPageAdapter;
-import com.ominfo.crm_solution.ui.enquiry_report.adapter.RmTagAdapter;
 import com.ominfo.crm_solution.ui.enquiry_report.model.EnquiryPagermodel;
-import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmResponse;
 import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmViewModel;
 import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmlist;
 import com.ominfo.crm_solution.ui.login.model.LoginTable;
 import com.ominfo.crm_solution.ui.my_account.leave.adapter.LeaveListAdapter;
+import com.ominfo.crm_solution.ui.my_account.model.ApplicationLeave;
+import com.ominfo.crm_solution.ui.my_account.model.LeaveApplicationRequest;
+import com.ominfo.crm_solution.ui.my_account.model.LeaveApplicationResponse;
+import com.ominfo.crm_solution.ui.my_account.model.LeaveApplicationViewModel;
 import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.sale.adapter.CompanyTagAdapter;
-import com.ominfo.crm_solution.ui.sale.adapter.SalesAdapter;
 import com.ominfo.crm_solution.ui.sale.model.ResultInvoice;
 import com.ominfo.crm_solution.ui.sale.model.RmListModel;
-import com.ominfo.crm_solution.ui.sale.model.SalesRequest;
-import com.ominfo.crm_solution.ui.sale.model.SalesResponse;
-import com.ominfo.crm_solution.ui.sale.model.SalesViewModel;
-import com.ominfo.crm_solution.ui.sales_credit.activity.View360Activity;
 import com.ominfo.crm_solution.ui.sales_credit.model.GraphModel;
 import com.ominfo.crm_solution.util.AppUtils;
 import com.ominfo.crm_solution.util.LogUtil;
@@ -147,7 +142,7 @@ public class LeaveListFragment extends BaseFragment {
     FrameLayout mProgressBarHolder;
     @Inject
     ViewModelFactory mViewModelFactory;
-    private SalesViewModel salesViewModel;
+    private LeaveApplicationViewModel leaveApplicationViewModel;
     private GetRmViewModel getRmViewModel;
     BarData barData;
     List<GradientColor> list = new ArrayList<>();
@@ -165,7 +160,7 @@ public class LeaveListFragment extends BaseFragment {
     int startPos = 0 , endPos = 0;
     @BindView(R.id.tvNotifyCount)
     AppCompatTextView tvNotifyCount;
-    List<ResultInvoice> salesList = new ArrayList<>();
+    List<ApplicationLeave> leaveArrayList = new ArrayList<>();
     List<GraphModel> graphModelsList = new ArrayList<>();
     private AppDatabase mDb;
     final Calendar myCalendar = Calendar.getInstance();
@@ -203,6 +198,11 @@ public class LeaveListFragment extends BaseFragment {
     AppCompatTextView appcomptextLeaveTime;
     View viewToDate;
     RelativeLayout layToDate;
+    @BindView(R.id.tvAutoTypeLeave)
+    AppCompatAutoCompleteTextView tvAutoTypeLeave;
+    @BindView(R.id.tvAutoLeaveStatus)
+    AppCompatAutoCompleteTextView tvAutoLeaveStatus;
+
     public LeaveListFragment() {
         // Required empty public constructor
     }
@@ -254,10 +254,12 @@ public class LeaveListFragment extends BaseFragment {
         imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
         layFilter.setVisibility(View.GONE);
         setToolbar();
+        setDropdownType(tvAutoTypeLeave);
+        setDropdownStatus(tvAutoLeaveStatus);
         setDate();
         setEnquiryPagerList(1);
         setAdapterForSalesList();
-        callSalesApi("0");
+        callLeaveListApi("0");
 
         graphModelsList.removeAll(graphModelsList);
         graphModelsList.add(new GraphModel("State C1", "Company Test 1", "5"));
@@ -284,8 +286,8 @@ public class LeaveListFragment extends BaseFragment {
     }
 
     private void injectAPI() {
-        salesViewModel = ViewModelProviders.of(this, mViewModelFactory).get(SalesViewModel.class);
-        salesViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_SALES));
+        leaveApplicationViewModel = ViewModelProviders.of(this, mViewModelFactory).get(LeaveApplicationViewModel.class);
+        leaveApplicationViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_LEAVE_APP));
 
         getRmViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetRmViewModel.class);
         getRmViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_RM));
@@ -297,37 +299,103 @@ public class LeaveListFragment extends BaseFragment {
         String date = dateFormat.format(calendar.getTime());
         toDate.setText(date);fromDate.setText(date);
     }
+    //set value to leave type
+    private void setDropdownType(AppCompatAutoCompleteTextView mListDropdownView) {
+        List<String> leaveModelList = new ArrayList<>();
+        leaveModelList.add("Casual Leave");
+        leaveModelList.add("Sick Leave");
+        //leaveModelList.add("Multiple Days");
+        try {
+            int pos = 0;
+            if (leaveModelList != null && leaveModelList.size() > 0) {
+                String[] mDropdownList = new String[leaveModelList.size()];
+                for (int i = 0; i < leaveModelList.size(); i++) {
+                    mDropdownList[i] = String.valueOf(leaveModelList.get(i));
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        mContext,
+                        R.layout.row_dropdown_item,
+                        mDropdownList);
+                //tvHighlight.setThreshold(1);
+                mListDropdownView.setAdapter(adapter);
+                //mListDropdownView.setHint(mDropdownList[pos]);
+                mListDropdownView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    }
+                });
+
+            } else {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    //set value to leave status
+    private void setDropdownStatus(AppCompatAutoCompleteTextView mListDropdownView) {
+        List<String> leaveModelList = new ArrayList<>();
+        leaveModelList.add("Approved");
+        leaveModelList.add("Rejected");
+        leaveModelList.add("Applied");
+        //leaveModelList.add("Multiple Days");
+        try {
+            int pos = 0;
+            if (leaveModelList != null && leaveModelList.size() > 0) {
+                String[] mDropdownList = new String[leaveModelList.size()];
+                for (int i = 0; i < leaveModelList.size(); i++) {
+                    mDropdownList[i] = String.valueOf(leaveModelList.get(i));
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        mContext,
+                        R.layout.row_dropdown_item,
+                        mDropdownList);
+                //tvHighlight.setThreshold(1);
+                mListDropdownView.setAdapter(adapter);
+                //mListDropdownView.setHint(mDropdownList[pos]);
+                mListDropdownView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    }
+                });
+
+            } else {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
-    /* Call Api For Sales */
-    private void callSalesApi(String pageNo) {
+    /* Call Api For Leave Applications */
+    private void callLeaveListApi(String pageNo) {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
-                for(int i=0;i<tagList.size();i++){
-                    if(tagList.get(i).getTitle()!=null && !tagList.get(i).getTitle().equals("")) {
-                        mCompnyList.add(tagList.get(i).getTitle());
-                    }
-                }
-                for(int i=0;i<tagRmList.size();i++){
-                    if(tagRmList.get(i).getTitle()!=null && !tagRmList.get(i).getTitle().equals("")) {
-                        mTRMList.add(tagRmList.get(i).getId());
-                    }
-                }
-                String mStringFrmDate = AppUtils.splitsEnquiryDate(fromDate.getText().toString().trim()),
-                        mStringToDate = AppUtils.splitsEnquiryDate(toDate.getText().toString().trim());
-                SalesRequest salesRequest = new SalesRequest();
-                salesRequest.setInvoiceNumber("");
-                salesRequest.setCompanyId(mCompnyList);
-                salesRequest.setEndDate(mStringToDate);
-                salesRequest.setInvoiceMaxAmount("");
-                salesRequest.setPageno(pageNo);
-                salesRequest.setPagesize(Constants.PAG_SIZE);
-                salesRequest.setPaymentStatus("");
-                salesRequest.setRm(mTRMList);
-                salesRequest.setStartdate(mStringFrmDate);
-                salesRequest.setInvoiceMinAmount("");
-                salesViewModel.hitSalesApi(salesRequest);
+                String startLeaveDate = AppUtils.dateReminder(fromDate.getText().toString()) ,
+                        endLeaveDate =  AppUtils.dateReminder(toDate.getText().toString());
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_leave_app);
+                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
+                RequestBody mRequestBodyPageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);
+                RequestBody mRequestBodyPageSize = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
+                RequestBody mRequestBodyleaveType = RequestBody.create(MediaType.parse("text/plain"),tvAutoTypeLeave.getText().toString() );
+                RequestBody mRequestBodyTypestatus = RequestBody.create(MediaType.parse("text/plain"),tvAutoLeaveStatus.getText().toString());
+                RequestBody mRequestBodyfrom_date = RequestBody.create(MediaType.parse("text/plain"), startLeaveDate);
+                RequestBody mRequestBodyend_date = RequestBody.create(MediaType.parse("text/plain"), endLeaveDate);
+
+                LeaveApplicationRequest applicationRequest = new LeaveApplicationRequest();
+                applicationRequest.setAction(mRequestBodyAction);
+                applicationRequest.setEmpId(mRequestBodyTypeEmpId);
+                applicationRequest.setPageno(mRequestBodyPageNo);
+                applicationRequest.setPagesize(mRequestBodyPageSize);
+                applicationRequest.setLeaveType(mRequestBodyleaveType);
+                applicationRequest.setStatus(mRequestBodyTypestatus);
+                applicationRequest.setFromDate(mRequestBodyfrom_date);
+                applicationRequest.setEndDate(mRequestBodyend_date);
+                leaveApplicationViewModel.hitLeaveApplicationApi(applicationRequest);
             }
             else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
@@ -474,7 +542,7 @@ public class LeaveListFragment extends BaseFragment {
     }
 
     private void setAdapterForSalesList() {
-        if (salesList!=null && salesList.size() > 0) {
+        if (leaveArrayList !=null && leaveArrayList.size() > 0) {
 
             rvSalesList.setVisibility(View.VISIBLE);
             emptyLayout.setVisibility(View.GONE);
@@ -482,14 +550,14 @@ public class LeaveListFragment extends BaseFragment {
             rvSalesList.setVisibility(View.GONE);
             emptyLayout.setVisibility(View.VISIBLE);
         }
-        leaveListAdapter = new LeaveListAdapter(mContext, salesList, new LeaveListAdapter.ListItemSelectListener() {
+        leaveListAdapter = new LeaveListAdapter(mContext, leaveArrayList, new LeaveListAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket) {
+            public void onItemClick(int mDataTicket,ApplicationLeave applicationLeave) {
                 //For not killing pre fragment
-                showLeaveFormDialog();
+                showLeaveFormDialog(applicationLeave);
             }
         });
-         rvSalesList.setHasFixedSize(true);
+        rvSalesList.setHasFixedSize(true);
         rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
         rvSalesList.setAdapter(leaveListAdapter);
 
@@ -621,19 +689,19 @@ public class LeaveListFragment extends BaseFragment {
         switch (id) {
             case R.id.tvInvoiceNum:
                 setSortIconComQuoAmo(1);
-                sortforInvoiceNum();
+                //sortforInvoiceNum();
                 break;
             case R.id.imgInvoiceNum:
                 setSortIconComQuoAmo(1);
-                sortforInvoiceNum();
+                //sortforInvoiceNum();
                 break;
             case R.id.imgCompanySort:
                 setSortIconComQuoAmo(0);
-                sortforCompany();
+                //sortforCompany();
                 break;
             case R.id.tvCompanyName:
                 setSortIconComQuoAmo(0);
-                sortforCompany();
+                //sortforCompany();
                 break;
             case R.id.toDate:
                 openDataPicker(1,toDate);
@@ -644,13 +712,13 @@ public class LeaveListFragment extends BaseFragment {
             case R.id.submitButton:
                 mCompnyList.clear();
                 mTRMList.clear();
-                salesList.clear();
+                leaveArrayList.clear();
                 setEnquiryPagerList(0);
                 setAdapterForSalesList();
                 tvPage.setText("Showing " + String.valueOf(0) + " to " +
                         String.valueOf(0) + " of " + String.valueOf(0) + "\nEntries");
                 try {
-                    callSalesApi("0");
+                    callLeaveListApi("0");
                 }catch (Exception e){e.printStackTrace();}
                 pieChart.setVisibility(View.GONE);
                 layList.setVisibility(View.VISIBLE);
@@ -704,22 +772,20 @@ public class LeaveListFragment extends BaseFragment {
                 break;
 
             case R.id.resetButton:
-               /* tvInvoices.setText(""); tvMinAmount.setText("");
-                setAddTagList();
-                setAddRmTagList();
-                callRMApi();*/
+                tvAutoLeaveStatus.setText(""); tvAutoTypeLeave.setText("");
                 break;
         }
     }
 
     //show leave form popup
-    public void showLeaveFormDialog() {
+    public void showLeaveFormDialog(ApplicationLeave data) {
         mDialogChangePass = new Dialog(mContext, R.style.ThemeDialogCustom);
-        mDialogChangePass.setContentView(R.layout.dialog_add_leave_form);
+        mDialogChangePass.setContentView(R.layout.dialog_status_leave_form);
         mDialogChangePass.setCanceledOnTouchOutside(true);
         AppCompatAutoCompleteTextView AutoComTextViewDuration = mDialogChangePass.findViewById(R.id.AutoComTextViewDuration);
         AppCompatImageView mClose = mDialogChangePass.findViewById(R.id.imgCancel);
         AppCompatButton addReceiptButton = mDialogChangePass.findViewById(R.id.addReceiptButton);
+        AppCompatButton addRejectButton = mDialogChangePass.findViewById(R.id.addRejectButton);
         viewToDate = mDialogChangePass.findViewById(R.id.view);
         layToDate = mDialogChangePass.findViewById(R.id.layToDate);
         layoutLeaveTime = mDialogChangePass.findViewById(R.id.layoutLeaveTime);
@@ -727,21 +793,59 @@ public class LeaveListFragment extends BaseFragment {
         AppCompatTextView tvDateValueFrom = mDialogChangePass.findViewById(R.id.tvDateValueFrom);
         AppCompatImageView imgFromDate = mDialogChangePass.findViewById(R.id.imgFromDate);
         AppCompatTextView tvDateValue = mDialogChangePass.findViewById(R.id.tvDateValue);
+        AppCompatTextView appcomptextNoOfDays = mDialogChangePass.findViewById(R.id.appcomptextNoOfDays);
         AppCompatImageView imgToDate = mDialogChangePass.findViewById(R.id.imgToDate);
         AppCompatTextView tvTimeValueFrom = mDialogChangePass.findViewById(R.id.tvTimeValueFrom);
         AppCompatImageView imgToTime = mDialogChangePass.findViewById(R.id.imgToTime);
         AppCompatTextView tvTimeValue = mDialogChangePass.findViewById(R.id.tvTimeValue);
-         AppCompatTextView tvTitleName = mDialogChangePass.findViewById(R.id.tvTitleName);
+        AppCompatTextView tvTitleName = mDialogChangePass.findViewById(R.id.tvTitleName);
         AppCompatImageView imgTime = mDialogChangePass.findViewById(R.id.imgTime);
         AppCompatAutoCompleteTextView AutoComTextViewLeaveType = mDialogChangePass.findViewById(R.id.AutoComTextViewLeaveType);
-        AppCompatAutoCompleteTextView AutoComTextViewPOI = mDialogChangePass.findViewById(R.id.AutoComTextViewPOI);
-        TextInputLayout input_textDuration = mDialogChangePass.findViewById(R.id.input_textDuration);
-        TextInputLayout input_textSOE = mDialogChangePass.findViewById(R.id.input_textSOE);
-        input_textDuration.setEndIconDrawable(null);input_textSOE.setEndIconDrawable(null);
-        layoutLeaveTime.setVisibility(View.GONE);
-        appcomptextLeaveTime.setVisibility(View.GONE);
+        AppCompatAutoCompleteTextView AutoComTextViewPOI = mDialogChangePass.findViewById(R.id.AutoComTextViewComment);
+
+        String start = "NA" ,end = "NA";
+        try{
+            start = AppUtils.convertyyyytodd(data.getStartTime());
+            end = AppUtils.convertyyyytodd(data.getEndTime());
+        }catch (Exception e){
+        }
+        tvDateValueFrom.setText(start);
+        tvDateValue.setText(end);
+        int diff = 0;
+        if(data.getDuration().equals("single day"))
+        {
+            diff = 1;
+            viewToDate.setVisibility(View.GONE);
+            layToDate.setVisibility(View.GONE);
+            layoutLeaveTime.setVisibility(View.GONE);
+            appcomptextLeaveTime.setVisibility(View.GONE);
+        }else if(data.getDuration().equals("Half Day")){
+            diff = 0;
+            viewToDate.setVisibility(View.GONE);
+            layToDate.setVisibility(View.GONE);
+            layoutLeaveTime.setVisibility(View.VISIBLE);
+            appcomptextLeaveTime.setVisibility(View.VISIBLE);
+            String startT = "NA" ,endT = "NA";
+            try{
+                String[] mST = data.getStartTime().split(" ");
+                startT = AppUtils.convert24to12Attendance(mST[1]);
+                String[] mET = data.getEndTime().split(" ");
+                endT = AppUtils.convert24to12Attendance(mET[1]);
+            }catch (Exception e){
+            }
+            tvTimeValueFrom.setText(startT);
+            tvTimeValue.setText(endT);
+        }
+        else {
+            viewToDate.setVisibility(View.VISIBLE);
+            layToDate.setVisibility(View.VISIBLE);
+            layoutLeaveTime.setVisibility(View.GONE);
+            appcomptextLeaveTime.setVisibility(View.GONE);
+             diff = getChangeDateForHisab(tvDateValueFrom.getText().toString(), tvDateValue.getText().toString());
+        }
+        appcomptextNoOfDays.setText("Number of days : " + diff + " Days");
         //disable boxes
-        AutoComTextViewDuration.setEnabled(false);AutoComTextViewDuration.setText("Multiple Days");
+        AutoComTextViewDuration.setEnabled(false);AutoComTextViewDuration.setText(data.getDuration());
         tvDateValueFrom.setEnabled(false);
         imgFromDate.setVisibility(View.GONE);
         tvDateValue.setEnabled(false);
@@ -750,10 +854,18 @@ public class LeaveListFragment extends BaseFragment {
         imgToTime.setVisibility(View.GONE);
         tvTimeValue.setEnabled(false);
         imgTime.setVisibility(View.GONE);
-        AutoComTextViewLeaveType.setEnabled(false);AutoComTextViewLeaveType.setText("Sick Leave");
-        AutoComTextViewPOI.setEnabled(false);AutoComTextViewPOI.setText("Test");
+        AutoComTextViewLeaveType.setEnabled(false);AutoComTextViewLeaveType.setText(data.getLeaveType());
+        AutoComTextViewPOI.setEnabled(false);AutoComTextViewPOI.setText(data.getComment());
         addReceiptButton.setText(R.string.scr_lbl_close);tvTitleName.setText(R.string.scr_lbl_leave_details);
+        addRejectButton.setVisibility(View.GONE);
+
         mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogChangePass.dismiss();
+            }
+        });
+        addRejectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDialogChangePass.dismiss();
@@ -771,6 +883,7 @@ public class LeaveListFragment extends BaseFragment {
         });
         mDialogChangePass.show();
     }
+
     private void setSortIconComQuoAmo(int res){
         if(res==0){
             imgInvoiceNum.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
@@ -785,9 +898,9 @@ public class LeaveListFragment extends BaseFragment {
             tvInvoiceNum.setTextColor(getResources().getColor(R.color.color_main));
         }
     }
-    private void sortforInvoiceNum(){
+    /*private void sortforInvoiceNum(){
 
-        Collections.sort(salesList, new Comparator<ResultInvoice>() {
+        Collections.sort(leaveArrayList, new Comparator<ResultInvoice>() {
             @Override
             public int compare(ResultInvoice item, ResultInvoice t1) {
                 int returnVal = 0;
@@ -805,7 +918,7 @@ public class LeaveListFragment extends BaseFragment {
         leaveListAdapter.notifyDataSetChanged();
     }
     private void sortforCompany(){
-        Collections.sort(salesList, new Comparator<ResultInvoice>() {
+        Collections.sort(leaveArrayList, new Comparator<ResultInvoice>() {
             @Override
             public int compare(ResultInvoice item, ResultInvoice t1) {
                 String s1 = item.getCompanyName();
@@ -814,7 +927,7 @@ public class LeaveListFragment extends BaseFragment {
             }
         });
         leaveListAdapter.notifyDataSetChanged();
-    }
+    }*/
     @Override
     public void onResume() {
         super.onResume();
@@ -843,7 +956,7 @@ public class LeaveListFragment extends BaseFragment {
                 else {
                     datePickerField.setText(sdf.format(myCalendar.getTime()));
                 }
-                callSalesApi("0");
+                callLeaveListApi("0");
             }
 
         };
@@ -948,7 +1061,7 @@ public class LeaveListFragment extends BaseFragment {
                     enquiryPageAdapter.updateList(mDataList);
                 }catch (Exception e){e.printStackTrace();}
                 try {
-                    callSalesApi(String.valueOf(Integer.parseInt(mData.getPageNo()) - 1));
+                    callLeaveListApi(String.valueOf(Integer.parseInt(mData.getPageNo()) - 1));
                 }catch (Exception e){e.printStackTrace();}
             }
         });
@@ -1003,31 +1116,31 @@ public class LeaveListFragment extends BaseFragment {
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
                     try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_SALES)) {
-                            SalesResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SalesResponse.class);
-                            if (responseModel != null && responseModel.getStatus()==1) {
-                                salesList.clear();
-                                tvTotalCount.setText(String.valueOf(responseModel.getTotalInvoices()));
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_LEAVE_APP)) {
+                            LeaveApplicationResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LeaveApplicationResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                leaveArrayList.clear();
+                                tvTotalCount.setText(String.valueOf(responseModel.getResult().getTotalrows()));
                                 try {
-                                    if (responseModel.getInvoices() != null && responseModel.getInvoices().size()>0) {
-                                        salesList = responseModel.getInvoices();
-                                        totalPage = responseModel.getTotalpages();
-                                        if(responseModel.getNextpage()==1) {
-                                            tvPage.setText("Showing " + String.valueOf(responseModel.getNextpage()) + " to " +
-                                                    String.valueOf(((responseModel.getNextpage()-1) + salesList.size()) + " of " + String.valueOf(responseModel.getTotalInvoices()) + "\nEntries"));
+                                    if (responseModel.getResult().getLeave() != null && responseModel.getResult().getLeave().size()>0) {
+                                        leaveArrayList = responseModel.getResult().getLeave();
+                                        totalPage = responseModel.getResult().getTotalpages();
+                                        if(responseModel.getResult().getNextpage()==1) {
+                                            tvPage.setText("Showing " + String.valueOf(responseModel.getResult().getNextpage()) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1) + leaveArrayList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries"));
                                         }
                                         else {
-                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getNextpage()-1)*7)+1) + " to " +
-                                                    String.valueOf(((responseModel.getNextpage()-1)*7)+salesList.size()) + " of " + String.valueOf(responseModel.getTotalInvoices()) + "\nEntries");
+                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getResult().getNextpage()-1)*7)+1) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1)*7)+ leaveArrayList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries");
                                         }
                                     }
                                     else{
                                         totalPage = 0;
-                                        salesList.clear();
+                                        leaveArrayList.clear();
                                     }
                                 }catch(Exception e){
                                     totalPage = 0;
-                                    salesList.clear();
+                                    leaveArrayList.clear();
                                     e.printStackTrace();
 
                                 }
@@ -1047,7 +1160,7 @@ public class LeaveListFragment extends BaseFragment {
                 LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
                 if(tag.equalsIgnoreCase(DynamicAPIPath.POST_SALES)){
                     totalPage = 0;
-                    salesList.clear();
+                    leaveArrayList.clear();
                     setEnquiryPagerList(totalPage);
                     setAdapterForSalesList();
                 }

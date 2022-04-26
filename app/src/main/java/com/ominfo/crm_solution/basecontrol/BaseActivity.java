@@ -1,12 +1,18 @@
 package com.ominfo.crm_solution.basecontrol;
 
+import static com.ominfo.crm_solution.ui.attendance.StartAttendanceActivity.tvCurrLocation;
+
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -42,6 +48,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.textfield.TextInputLayout;
@@ -50,6 +57,7 @@ import com.ominfo.crm_solution.MainActivity;
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.alarm.get_count.DeleteReminderViewModel;
 import com.ominfo.crm_solution.alarm.get_count.GetCountViewModel;
+import com.ominfo.crm_solution.common.BackgroundAttentionService;
 import com.ominfo.crm_solution.common.CounterClass;
 import com.ominfo.crm_solution.database.AppDatabase;
 import com.ominfo.crm_solution.deps.DaggerDeps;
@@ -64,24 +72,34 @@ import com.ominfo.crm_solution.network.DynamicAPIPath;
 import com.ominfo.crm_solution.network.NetworkCheck;
 import com.ominfo.crm_solution.network.NetworkModule;
 import com.ominfo.crm_solution.network.ViewModelFactory;
+import com.ominfo.crm_solution.ui.attendance.StartAttendanceActivity;
+import com.ominfo.crm_solution.ui.attendance.model.LocationPerHourRequest;
+import com.ominfo.crm_solution.ui.attendance.model.LocationPerHourResponse;
+import com.ominfo.crm_solution.ui.attendance.model.LocationPerHourTable;
+import com.ominfo.crm_solution.ui.attendance.model.LocationPerHourViewModel;
 import com.ominfo.crm_solution.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.crm_solution.ui.login.model.LoginTable;
+import com.ominfo.crm_solution.ui.my_account.model.ApplyLeaveRequest;
 import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.notifications.model.DeleteNotificationViewModel;
 import com.ominfo.crm_solution.ui.notifications.model.NotificationResponse;
 import com.ominfo.crm_solution.ui.notifications.model.NotificationViewModel;
 import com.ominfo.crm_solution.ui.sales_credit.fragment.SalesCreditFragment;
+import com.ominfo.crm_solution.util.AppUtils;
 import com.ominfo.crm_solution.util.CustomAnimationUtil;
 import com.ominfo.crm_solution.util.DialogUtils;
 import com.ominfo.crm_solution.util.LogUtil;
 import com.ominfo.crm_solution.util.SharedPref;
 
+import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Random;
 
 import javax.inject.Inject;
 import javax.net.ssl.HostnameVerifier;
@@ -120,21 +138,25 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
     @Inject
     ViewModelFactory mViewModelFactory;
     private NotificationViewModel notificationViewModel;
+    private LocationPerHourViewModel locationPerHourViewModel;
     Location location;
-    public static Context context;
+    public Context context;
     AlphaAnimation inAnimation;
     AlphaAnimation outAnimation;
     boolean isNotify = false;
     private AppDatabase mDb;
     public static AppCompatTextView imgNotifyCount;
+    private MyReceiver myReceiver;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDeps = DaggerDeps.builder().networkModule(new NetworkModule(this)).build();
         mDeps.inject(this);
+        context = this;
         injectAPI();
         mDb =BaseApplication.getInstance(this).getAppDatabase();
+        myReceiver = new MyReceiver();
 
     }
 
@@ -150,7 +172,86 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
     private void injectAPI() {
         notificationViewModel = ViewModelProviders.of(BaseActivity.this, mViewModelFactory).get(NotificationViewModel.class);
         notificationViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_NOTIFICATION));
- }
+
+        locationPerHourViewModel = ViewModelProviders.of(BaseActivity.this, mViewModelFactory).get(LocationPerHourViewModel.class);
+        locationPerHourViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_LOCATION_PER_HOUR));
+    }
+
+    /**
+     * Receiver for broadcasts sent by {@link }.
+     */
+    private class MyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Location location = intent.getParcelableExtra(BackgroundAttentionService.EXTRA_LOCATION);
+            tvCurrLocation.setText("Current Location : Fetching.....");
+            if (location != null) {
+                Geocoder geocoder;
+                List<Address> addresses;
+                geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
+
+                try {
+                    addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                    String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                    String city = addresses.get(0).getLocality();
+                    String state = addresses.get(0).getAdminArea();
+                    String country = addresses.get(0).getCountryName();
+                    String postalCode = addresses.get(0).getPostalCode();
+                    String knownName = addresses.get(0).getFeatureName();
+                    tvCurrLocation.setText("Current Location : " + address);
+                    SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_LAT, String.valueOf(location.getLatitude()));
+                    SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_LONG, String.valueOf(location.getLongitude()));
+                    SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_TITLE, address);
+                    Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_OUT_ENABLED, false);
+                    if(iSTimer) {
+                        LoginTable loginTable = mDb.getDbDAO().getLoginData();
+                        if (loginTable != null) {
+                            RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_location_per_hour);
+                            RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                            RequestBody mRequestBodyDate = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentDateInyyyymmdd());
+                            RequestBody mRequestBodyLat = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(location.getLatitude()));
+                            RequestBody mRequestBodyLong = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(location.getLongitude()));
+                            RequestBody mRequestBodyStartTime = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentTimeIn24hr());
+                            Random rnd = new Random();
+                            int number = rnd.nextInt(99999);
+                            // this will convert any number sequence into 6 character.
+                            String geneatedId = String.format("%05d", number);
+                            RequestBody mReqToken = RequestBody.create(MediaType.parse("text/plain"), geneatedId);
+                            LocationPerHourTable locationPerHourTable = new LocationPerHourTable();
+                            locationPerHourTable.setAction(DynamicAPIPath.action_location_per_hour);
+                            locationPerHourTable.setEmpId(loginTable.getEmployeeId());
+                            locationPerHourTable.setDate(AppUtils.getCurrentDateInyyyymmdd());
+                            locationPerHourTable.setLatitude(String.valueOf(location.getLatitude()));
+                            locationPerHourTable.setLongitude(String.valueOf(location.getLongitude()));
+                            locationPerHourTable.setStartTime(AppUtils.getCurrentTimeIn24hr());
+                            locationPerHourTable.setRequestedToken(geneatedId);
+                            mDb.getDbDAO().insertLocationPerHour(locationPerHourTable);
+                            //int count = mDb.getDbDAO().getCountLocation();
+                            //LogUtil.printToastMSG(context, String.valueOf(count));
+                            if (NetworkCheck.isInternetAvailable(context)) {
+                                LocationPerHourRequest locationPerHourRequest = new LocationPerHourRequest();
+                                locationPerHourRequest.setAction(mRequestBodyAction);
+                                locationPerHourRequest.setEmpId(mRequestBodyTypeEmpId);
+                                locationPerHourRequest.setDate(mRequestBodyDate);
+                                locationPerHourRequest.setLatitude(mRequestBodyLat);
+                                locationPerHourRequest.setLongitude(mRequestBodyLong);
+                                locationPerHourRequest.setStartTime(mRequestBodyStartTime);
+                                locationPerHourRequest.setRequestedToken(mReqToken);
+                                locationPerHourViewModel.hitLocationPerHourApi(locationPerHourRequest);
+                            } else {
+                                LogUtil.printToastMSG(context, "Something is wrong.");
+                            }
+                        } else {
+                            LogUtil.printToastMSG(context, getString(R.string.err_msg_connection_was_refused));
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+    }
     // Self explanatory method
     public boolean checkForInternet() {
         ConnectivityManager cm =
@@ -160,7 +261,12 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         return activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
     }
-
+    //starting foreground service and registering broadcast for lat long
+    public void startLocationService() {
+        startService(new Intent(this, BackgroundAttentionService.class));
+        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,
+                new IntentFilter(BackgroundAttentionService.ACTION_BROADCAST));
+    }
     void loadData(){
         // do sth
     }
@@ -197,7 +303,10 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         return view;
     }
 
+    /* Call Api For Location per hour */
+    private void callApplyLeaveApi() {
 
+    }
     /*  openContactSupportEmail(this, getString(R.string.app_name),
                        "sendbits@gmail.com", "");*/
     /*send email*/
@@ -734,12 +843,12 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
 
             case LOADING:
                 if(!isNotify) {
-                    showProgressLoader(getString(R.string.scr_message_please_wait));
+                    //showProgressLoader(getString(R.string.scr_message_please_wait));
                 }
                 break;
 
             case SUCCESS:
-                dismissLoader();
+                //dismissLoader();
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
                     try{
@@ -763,10 +872,29 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                             }
                         }
                     }catch (Exception e){e.printStackTrace();}
+                    try{
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_LOCATION_PER_HOUR)) {
+                            LocationPerHourResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LocationPerHourResponse.class);
+                            if (responseModel != null/* && responseModel.getResult().getStatus().equals("success")*/) {
+                               // try {
+                                    LogUtil.printToastMSG(this,responseModel.getResult().getMessage());
+                                    mDb.getDbDAO().deleteLocationById(responseModel.getResult().getRequestedToken());
+                                    //int count = mDb.getDbDAO().getCountLocation();
+                                    //LogUtil.printToastMSG(context,"after "+String.valueOf(count));
+                               /* }catch (Exception e){
+                                    LogUtil.printToastMSG(this,responseModel.getResult().getMessage());
+                                    e.printStackTrace();
+                                }*/
+                            }
+                       }
+                    }catch (Exception e){
+                        LogUtil.printToastMSG(this,"issue");
+                       // e.printStackTrace();
+                    }
                 }
                 break;
             case ERROR:
-                dismissLoader();
+                //dismissLoader();
                 //LogUtil.printToastMSG(DashbooardActivity.this, getString(R.string.err_msg_connection_was_refused));
                 break;
         }

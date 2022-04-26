@@ -210,8 +210,8 @@
                         android:layout_centerVertical="true"
                         android:layout_gravity="center"
                         android:layout_marginLeft="55dp"
-                        android:layout_toEndOf="@id/imgWeChat"
                         android:layout_marginTop="@dimen/_10dp"
+                        android:layout_toEndOf="@id/imgWeChat"
                         android:src="@drawable/ic_om_whatsapp"
                         android:visibility="visible"
                         app:civ_border_color="@color/back_text_colour"
@@ -225,8 +225,8 @@
                         android:layout_centerVertical="true"
                         android:layout_gravity="center"
                         android:layout_marginLeft="@dimen/_110dp"
-                        android:layout_toEndOf="@id/imgWhatsApp"
                         android:layout_marginTop="@dimen/_10dp"
+                        android:layout_toEndOf="@id/imgWhatsApp"
                         android:src="@drawable/ic_om_email"
                         android:visibility="visible"
                         app:civ_border_color="@color/back_text_colour"
@@ -494,6 +494,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/cardZero"
                     android:layout_marginTop="@dimen/_12dp"
+                    android:visibility="gone"
                     android:background="@drawable/layout_round_shape_blue_border"
                     android:orientation="horizontal"
                     android:paddingHorizontal="@dimen/_8dp">
@@ -720,7 +721,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/_10dp"
-                        android:layout_marginTop="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_12dp"
                         android:background="@drawable/layout_round_shape_grey_border_small"
                         android:orientation="vertical"
                         android:visibility="visible">
@@ -753,7 +754,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="0.9"
                                 android:fontFamily="@font/gilroy_bold"
-                                android:gravity="center"
+                                android:gravity="center|left"
                                 android:imeOptions="actionDone"
                                 android:inputType="textMultiLine"
                                 android:maxLines="2"
@@ -768,7 +769,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:fontFamily="@font/gilroy_bold"
-                                android:gravity="center"
+                                android:gravity="center|left"
                                 android:hint="@string/scr_lbl_unavailable"
                                 android:imeOptions="actionDone"
                                 android:inputType="textMultiLine"
@@ -807,7 +808,8 @@
                                 android:text="Doc Status"
                                 android:textColor="@color/back_text_colour"
                                 android:textColorHint="@color/back_text_colour"
-                                android:textSize="@dimen/_12sp" />
+                                android:textSize="@dimen/_12sp"
+                                android:visibility="gone" />
 
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -826,6 +828,102 @@
                             android:paddingBottom="@dimen/_1dp"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                             tools:listitem="@layout/row_sales_credit_invoice_table" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/layIndicators"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_10dp"
+                        android:layout_marginRight="@dimen/_10dp"
+                        android:orientation="horizontal"
+                        android:visibility="visible">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="@dimen/_10dp"
+                            android:layout_weight="1.2"
+                            android:drawableStart="@drawable/square_indicators"
+                            android:drawablePadding="@dimen/_1dp"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:paddingLeft="@dimen/_0dp"
+                            android:singleLine="true"
+                            android:text="Accepted"
+                            android:textColor="@color/gray"
+                            android:textSize="@dimen/_12sp"
+                            android:visibility="invisible" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvAcc"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="@dimen/_10dp"
+                            android:layout_weight="1"
+                            android:drawableStart="@drawable/square_indicators_green"
+                            android:drawablePadding="@dimen/_1dp"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:gravity="center"
+                            android:paddingLeft="@dimen/_0dp"
+                            android:text="Accepted"
+                            android:textColor="@color/gray"
+                            android:textSize="@dimen/_10sp" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvInProc"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="@dimen/_10dp"
+                            android:layout_weight="1"
+                            android:drawableStart="@drawable/square_indicators_yellow"
+                            android:drawablePadding="@dimen/_1dp"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:gravity="center"
+                            android:paddingLeft="@dimen/_0dp"
+                            android:text="In Process"
+                            android:textColor="@color/gray"
+                            android:textSize="@dimen/_10sp" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvRejected"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="@dimen/_10dp"
+                            android:layout_weight="1"
+                            android:drawableStart="@drawable/square_indicators_red"
+                            android:drawablePadding="@dimen/_1dp"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:gravity="center"
+                            android:paddingLeft="@dimen/_0dp"
+                            android:text="Rejected"
+                            android:textColor="@color/gray"
+                            android:textSize="@dimen/_10sp" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvCancelled"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="@dimen/_10dp"
+                            android:layout_weight="1"
+                            android:drawableStart="@drawable/square_indicators"
+                            android:drawablePadding="@dimen/_1dp"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:gravity="center"
+                            android:paddingLeft="@dimen/_0dp"
+                            android:text="Cancelled"
+                            android:textColor="@color/gray"
+                            android:textSize="@dimen/_10sp" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 

@@ -12,7 +12,9 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.crm_solution.R;
+import com.ominfo.crm_solution.ui.my_account.model.ApplicationLeave;
 import com.ominfo.crm_solution.ui.sale.model.ResultInvoice;
+import com.ominfo.crm_solution.util.AppUtils;
 
 import java.util.List;
 
@@ -20,7 +22,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class LeaveListAdapter extends RecyclerView.Adapter<LeaveListAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<ResultInvoice> mListData;
+    private List<ApplicationLeave> mListData;
     private Context mContext;
     private String mDate;
 
@@ -28,7 +30,7 @@ public class LeaveListAdapter extends RecyclerView.Adapter<LeaveListAdapter.View
         this.mContext = mContext;
     }
 
-    public LeaveListAdapter(Context context, List<ResultInvoice> listData, ListItemSelectListener itemClickListener) {
+    public LeaveListAdapter(Context context, List<ApplicationLeave> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -43,7 +45,7 @@ public class LeaveListAdapter extends RecyclerView.Adapter<LeaveListAdapter.View
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<ResultInvoice> list){
+    public void updateList(List<ApplicationLeave> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -53,12 +55,18 @@ public class LeaveListAdapter extends RecyclerView.Adapter<LeaveListAdapter.View
 
         if(mListData.size()>0) {
                 holder.setIsRecyclable(false);
-                holder.tvCompanyName.setText("22/03/2022-22/04/2022");
-                holder.tvState.setText("Half Day Leave");
-                holder.tvRs.setText("Accepted");
+                String start = "00:00:00" ,end = "00:00:00";
+                try{
+                    start = AppUtils.convertyyyytodd(mListData.get(position).getStartTime());
+                    end = AppUtils.convertyyyytodd(mListData.get(position).getEndTime());
+                }catch (Exception e){
+                }
+                holder.tvCompanyName.setText(start+"-"+end);
+                holder.tvState.setText(mListData.get(position).getLeaveType());
+                holder.tvRs.setText(mListData.get(position).getStatus());
                 holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
                 holder.imgIndicator.setVisibility(View.GONE);
-                if(mListData.get(position).getPaymentStatus().equals("PAID"))
+               /* if(mListData.get(position).getPaymentStatus().equals("PAID"))
                 {
                     holder.imgIndicator.setColorFilter(mContext.getResources().getColor(R.color.Light_Green_quo));
                 }
@@ -68,7 +76,7 @@ public class LeaveListAdapter extends RecyclerView.Adapter<LeaveListAdapter.View
                 }
                 else {
                     holder.imgIndicator.setColorFilter(mContext.getResources().getColor(R.color.Light_Red));
-                }
+                }*/
 
                 if (position % 2 != 0) {
                 holder.layClick.setBackground(mContext.getResources().getDrawable(R.drawable.shape_round_white_left_right_border_dialog));
@@ -92,21 +100,21 @@ public class LeaveListAdapter extends RecyclerView.Adapter<LeaveListAdapter.View
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(1);
+                listItemSelectListener.onItemClick(1,mListData.get(position));
             }
         });
         holder.tvRs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(1);
+                listItemSelectListener.onItemClick(1,mListData.get(position));
             }
         });
         holder.tvCompanyName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(0);
+                listItemSelectListener.onItemClick(0,mListData.get(position));
             }
         });
 
@@ -140,6 +148,6 @@ public class LeaveListAdapter extends RecyclerView.Adapter<LeaveListAdapter.View
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(int mData);
+        void onItemClick(int mData,ApplicationLeave applicationLeave);
     }
 }

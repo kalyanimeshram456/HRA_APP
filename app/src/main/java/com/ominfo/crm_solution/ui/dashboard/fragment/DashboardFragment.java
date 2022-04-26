@@ -7,18 +7,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Chronometer;
@@ -35,6 +34,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
@@ -42,6 +42,7 @@ import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.basecontrol.BaseActivity;
 import com.ominfo.crm_solution.basecontrol.BaseApplication;
 import com.ominfo.crm_solution.basecontrol.BaseFragment;
+import com.ominfo.crm_solution.common.BackgroundAttentionService;
 import com.ominfo.crm_solution.database.AppDatabase;
 import com.ominfo.crm_solution.interfaces.Constants;
 import com.ominfo.crm_solution.interfaces.SharedPrefKey;
@@ -50,6 +51,7 @@ import com.ominfo.crm_solution.network.DynamicAPIPath;
 import com.ominfo.crm_solution.network.NetworkCheck;
 import com.ominfo.crm_solution.network.ViewModelFactory;
 import com.ominfo.crm_solution.ui.attendance.StartAttendanceActivity;
+import com.ominfo.crm_solution.ui.attendance.model.AttendanceList;
 import com.ominfo.crm_solution.ui.attendance.ripple_effect.RippleBackground;
 import com.ominfo.crm_solution.ui.dashboard.adapter.CrmAdapter;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
@@ -59,14 +61,12 @@ import com.ominfo.crm_solution.ui.dashboard.model.GetDashboardResponse;
 import com.ominfo.crm_solution.ui.dashboard.model.GetDashboardViewModel;
 import com.ominfo.crm_solution.ui.dashboard.model.HighlightModel;
 import com.ominfo.crm_solution.ui.enquiry_report.EnquiryReportFragment;
+import com.ominfo.crm_solution.ui.login.model.AttendanceDaysTable;
+import com.ominfo.crm_solution.ui.login.model.LoginDays;
 import com.ominfo.crm_solution.ui.login.model.LoginTable;
 import com.ominfo.crm_solution.ui.lost_apportunity.LostApportunityFragment;
-import com.ominfo.crm_solution.ui.my_account.MyAccountFragment;
-import com.ominfo.crm_solution.ui.my_account.model.ChangePasswordViewModel;
-import com.ominfo.crm_solution.ui.my_account.model.ChangeProfileImageViewModel;
 import com.ominfo.crm_solution.ui.my_account.model.GetProfileImageViewModel;
 import com.ominfo.crm_solution.ui.my_account.model.ProfileImageResponse;
-import com.ominfo.crm_solution.ui.my_account.model.ProfileViewModel;
 import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.quotation_amount.QuotationFragment;
 import com.ominfo.crm_solution.ui.sale.SaleFragment;
@@ -82,11 +82,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -105,9 +108,8 @@ import okhttp3.RequestBody;
 public class DashboardFragment extends BaseFragment {
 
     private Context mContext;
-
-     @BindView(R.id.layVisitTimer)
-     LinearLayoutCompat layVisitTimer;
+    @BindView(R.id.layVisitTimer)
+    LinearLayoutCompat layVisitTimer;
     @BindView(R.id.imgSearchLr)
     AppCompatImageView imgSearchLr;
     @BindView(R.id.tvVisitNoValue)
@@ -158,13 +160,15 @@ public class DashboardFragment extends BaseFragment {
     int type = 0;
     private boolean loading = true;
     private String mUserKey = "";
-
+    private boolean swipeStatus = false;
     @BindView(R.id.progressBarHolder)
     FrameLayout mProgressBarHolder;
     @BindView(R.id.rippleEffect)
     RippleBackground rippleEffect;
     @BindView(R.id.add_attendance)
     FloatingActionButton add_attendance;
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -197,33 +201,50 @@ public class DashboardFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ((BaseActivity)mContext).getDeps().inject(this);
+        ((BaseActivity) mContext).getDeps().inject(this);
         injectAPI();
         init();
+        /*int count = mDb.getDbDAO().getCountLocation();
+        LogUtil.printToastMSG(mContext,"after "+String.valueOf(count));*/
         intentFilter = new IntentFilter();
         intentFilter.addAction(CONNECTIVITY_ACTION);
         setTimer();
+        Boolean iSTimer = SharedPref.getInstance(mContext).read(SharedPrefKey.IS_NOTIFY, false);
+        if (iSTimer) {
+             /*SharedPref.getInstance(mContext).write(SharedPrefKey.IS_NOTIFY, false);
+             launchScreen(mContext, NotificationsActivity.class);*/
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        ((BaseActivity)mContext).initToolbar(0,mContext,R.id.imgBack,R.id.imgReport,R.id.imgNotify,tvNotifyCount,0,R.id.imgCall);
+        setToolbar();
         setTimer();
         Window window = getActivity().getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));
-
+        try {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if (loginTable != null) {
+                tvName.setText(loginTable.getName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        callDashboardApi(AppUtils.getDashCurrentDateTime_(), AppUtils.getDashCurrentDateTime_());
+        tvHighlight.setText("Today's Hightlights");
+        setDropdownHighlight();
     }
 
     private void injectAPI() {
         getDashboardViewModel = ViewModelProviders.of(getActivity(), mViewModelFactory).get(GetDashboardViewModel.class);
-        getDashboardViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_DASHBOARD));
+        getDashboardViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_GET_DASHBOARD));
 
-         getProfileImageViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetProfileImageViewModel.class);
-        getProfileImageViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_PROFILE));
-  }
+        getProfileImageViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetProfileImageViewModel.class);
+        getProfileImageViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_GET_PROFILE));
+    }
 
     //set value to Search dropdown
     private void setDropdownHighlight() {
@@ -237,11 +258,11 @@ public class DashboardFragment extends BaseFragment {
         highlightModelList.add(new HighlightModel("Today's Hightlights",
                 AppUtils.getDashCurrentDateTime_(), AppUtils.getDashCurrentDateTime_()));
         highlightModelList.add(new HighlightModel("Yesterday's Hightlights",
-                AppUtils.getDashYesterdaysDate(),AppUtils.getDashYesterdaysDate()));
+                AppUtils.getDashYesterdaysDate(), AppUtils.getDashYesterdaysDate()));
         highlightModelList.add(new HighlightModel("This Week's Hightlights",
-                AppUtils.getStartWeek(),AppUtils.getEndWeek()));
+                AppUtils.getStartWeek(), AppUtils.getEndWeek()));
         highlightModelList.add(new HighlightModel("Last Week's Hightlights"
-                ,AppUtils.getStartLastWeek(), AppUtils.getEndLastWeek()));
+                , AppUtils.getStartLastWeek(), AppUtils.getEndLastWeek()));
         highlightModelList.add(new HighlightModel("This Month's Hightlights",
                 AppUtils.startMonth(), AppUtils.endMonth()));
         highlightModelList.add(new HighlightModel("Last Month's Hightlights",
@@ -265,14 +286,14 @@ public class DashboardFragment extends BaseFragment {
                 tvHighlight.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                          for(int i=0;i<highlightModelList.size();i++){
-                              if(highlightModelList.get(i).getHighlight().equals(mDropdownList[position])){
+                        for (int i = 0; i < highlightModelList.size(); i++) {
+                            if (highlightModelList.get(i).getHighlight().equals(mDropdownList[position])) {
                                  /* LogUtil.printToastMSG(mContext,highlightModelList.get(i).getDateFrom()
                                   +"  "+highlightModelList.get(i).getDateTo());*/
-                                  callDashboardApi(highlightModelList.get(i).getDateFrom()
-                                          ,highlightModelList.get(i).getDateTo());
-                              }
-                          }
+                                callDashboardApi(highlightModelList.get(i).getDateFrom()
+                                        , highlightModelList.get(i).getDateTo());
+                            }
+                        }
                     }
                 });
 
@@ -284,28 +305,27 @@ public class DashboardFragment extends BaseFragment {
         }
     }
 
-
-    private void setTimer(){
+    private void setTimer() {
         Boolean iSTimer = SharedPref.getInstance(mContext).read(SharedPrefKey.TIMER_STATUS, false);
-        if (iSTimer){
+        if (iSTimer) {
             layVisitTimer.setVisibility(View.VISIBLE);
             String visit = SharedPref.getInstance(mContext).read(SharedPrefKey.VISIT_NO, "");
             tvVisitNoValue.setText(visit);
             setTimerCounter(0);
         } else {
             layVisitTimer.setVisibility(View.GONE);
-            setTimerMillis(mContext,0);
+            setTimerMillis(mContext, 0);
             tvCounter.setBase(SystemClock.elapsedRealtime());
             tvCounter.stop();
         }
 
     }
 
-    public static void setTimerMillis(Context context, long millis)
-    {
+    public static void setTimerMillis(Context context, long millis) {
         SharedPreferences sp = context.getSharedPreferences(Constants.BANK_LIST, Context.MODE_PRIVATE);
         SharedPreferences.Editor spe = sp.edit();
-        spe.putLong(Constants.BANK_LIST, millis); spe.apply();
+        spe.putLong(Constants.BANK_LIST, millis);
+        spe.apply();
     }
 
     public static long getTimerMillis(Context context) {
@@ -326,7 +346,7 @@ public class DashboardFragment extends BaseFragment {
                         Integer.parseInt(array[0]) * 60 * 60 * 1000 + Integer.parseInt(array[1]) * 60 * 1000
                                 + Integer.parseInt(array[2]) * 1000;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return 0;
         }
@@ -335,12 +355,11 @@ public class DashboardFragment extends BaseFragment {
 
     private void startChronometer(int val) {
         long stoppedMilliseconds = getTimerMillis(mContext);
-        if(val==0){
+        if (val == 0) {
             long preV = getTimerMillis(mContext);
             tvCounter.setBase(SystemClock.elapsedRealtime() - preV);
             tvCounter.stop();
-        }
-        else {
+        } else {
             if (SystemClock.elapsedRealtime() > stoppedMilliseconds) {
                 tvCounter.setBase(SystemClock.elapsedRealtime() - stoppedMilliseconds);
             } else {
@@ -350,7 +369,7 @@ public class DashboardFragment extends BaseFragment {
         tvCounter.start();
     }
 
-    public void setTimerCounter(int val){
+    public void setTimerCounter(int val) {
         startChronometer(val);
         tvCounter.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             public void onChronometerTick(Chronometer cArg) {
@@ -360,12 +379,12 @@ public class DashboardFragment extends BaseFragment {
                 calendar.set(Calendar.SECOND, 0);*/
                 //calendar.set(Calendar.MILLISECOND, getCurrentMiliSecondsOfChronometer(val));
                 long milliseconds = getCurrentMiliSecondsOfChronometer(val);//getTimerMillis(mContext);
-                int seconds = (int) (milliseconds / 1000) % 60 ;
-                int minutes = (int) ((milliseconds / (1000*60)) % 60);
-                int hours   = (int) ((milliseconds / (1000*60*60)) % 24);
+                int seconds = (int) (milliseconds / 1000) % 60;
+                int minutes = (int) ((milliseconds / (1000 * 60)) % 60);
+                int hours = (int) ((milliseconds / (1000 * 60 * 60)) % 24);
 
                 setTimerMillis(mContext, milliseconds);
-                tvCounter.setText(String.format("%02d",hours)+":"+String.format("%02d",minutes)+":"+String.format("%02d",seconds));
+                tvCounter.setText(String.format("%02d", hours) + ":" + String.format("%02d", minutes) + ":" + String.format("%02d", seconds));
             }
         });
 
@@ -378,8 +397,8 @@ public class DashboardFragment extends BaseFragment {
     }
 
     //perform click actions
-    @OnClick({R.id.cardSale,R.id.cardQuotation,R.id.cardEnquiry,R.id.layVisitTimer,R.id.cardLostOpportunity
-    ,R.id.add_attendance,R.id.imgProfileDash})
+    @OnClick({R.id.cardSale, R.id.cardQuotation, R.id.cardEnquiry, R.id.layVisitTimer, R.id.cardLostOpportunity
+            , R.id.add_attendance, R.id.imgProfileDash})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
@@ -390,7 +409,7 @@ public class DashboardFragment extends BaseFragment {
                 break;
             case R.id.cardSale:
                 Fragment fragment = new SaleFragment();
-                moveFromFragment(fragment,mContext);
+                moveFromFragment(fragment, mContext);
                 break;
             case R.id.imgProfileDash:
                /* Fragment fragmentAcc = new MyAccountFragment();
@@ -398,15 +417,15 @@ public class DashboardFragment extends BaseFragment {
                 break;
             case R.id.cardLostOpportunity:
                 Fragment fragmentLost = new LostApportunityFragment();
-                moveFromFragment(fragmentLost,mContext);
+                moveFromFragment(fragmentLost, mContext);
                 break;
             case R.id.cardQuotation:
                 Fragment fragmentQuo = new QuotationFragment();
-                moveFromFragment(fragmentQuo,mContext);
+                moveFromFragment(fragmentQuo, mContext);
                 break;
             case R.id.cardEnquiry:
                 Fragment fragmentEnq = new EnquiryReportFragment();
-                moveFromFragment(fragmentEnq,mContext);
+                moveFromFragment(fragmentEnq, mContext);
                 break;
             case R.id.layVisitTimer:
                 Intent i = new Intent(mContext, StartEndVisitActivity.class);
@@ -416,106 +435,278 @@ public class DashboardFragment extends BaseFragment {
         }
     }
 
-    private void init(){
-        mDb =BaseApplication.getInstance(mContext).getAppDatabase();
+    private void init() {
+        mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         //requestPermission();
         setToolbar();
         //set ripple effect
         //rippleEffect.setBackgroundColor(mContext.getResources().getColor(R.color.deep_yellow));
-        rippleEffect.startRippleAnimation(2,mContext);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            add_attendance.setForeground(mContext.getDrawable(R.drawable.attention_gradient_blue));
-        }
-        final Handler handler=new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                rippleEffect.stopRippleAnimation();
-                rippleEffect.startRippleAnimation(1,mContext);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    add_attendance.setForeground(mContext.getDrawable(R.drawable.attention_gradient_yellow));
-                }
-            }
-        },10000);
-        final Handler handlerRed=new Handler();
-        handlerRed.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                rippleEffect.stopRippleAnimation();
-                rippleEffect.startRippleAnimation(3,mContext);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    add_attendance.setForeground(mContext.getDrawable(R.drawable.attention_gradient_red));
-                }
-            }
-        },16000);
         setDropdownHighlight();
         dashboardList.removeAll(dashboardList);
-        dashboardList.add(new DashModel("Sales Credit","₹0",mContext.getDrawable(R.drawable.ic_om_sales_credit)));
-        dashboardList.add(new DashModel("Receipt","₹0",mContext.getDrawable(R.drawable.ic_om_receipt)));
-        dashboardList.add(new DashModel("Top Customer","Top Customer",mContext.getDrawable(R.drawable.ic_om_rating)));
-        dashboardList.add(new DashModel("Total Quotation Amount","₹0",mContext.getDrawable(R.drawable.ic_om_total_quotation)));
-        dashboardList.add(new DashModel("Dispatch Pending","0",mContext.getDrawable(R.drawable.ic_om_dispatch_pending)));
-        dashboardList.add(new DashModel("Enquiry Report","0",mContext.getDrawable(R.drawable.ic_om_enquiry_report)));
-        dashboardList.add(new DashModel("Visit Report","0",mContext.getDrawable(R.drawable.ic_om_visit_report)));
-        dashboardList.add(new DashModel("Products","",mContext.getDrawable(R.drawable.ic_om_product)));
+        dashboardList.add(new DashModel("Sales Credit", "₹0", mContext.getDrawable(R.drawable.ic_om_sales_credit)));
+        dashboardList.add(new DashModel("Receipt", "₹0", mContext.getDrawable(R.drawable.ic_om_receipt)));
+        dashboardList.add(new DashModel("Top Customer", "Top Customer", mContext.getDrawable(R.drawable.ic_om_rating)));
+        dashboardList.add(new DashModel("Total Quotation Amount", "₹0", mContext.getDrawable(R.drawable.ic_om_total_quotation)));
+        dashboardList.add(new DashModel("Dispatch Pending", "0", mContext.getDrawable(R.drawable.ic_om_dispatch_pending)));
+        dashboardList.add(new DashModel("Enquiry Report", "0", mContext.getDrawable(R.drawable.ic_om_enquiry_report)));
+        dashboardList.add(new DashModel("Visit Report", "0", mContext.getDrawable(R.drawable.ic_om_visit_report)));
+        dashboardList.add(new DashModel("Products", "", mContext.getDrawable(R.drawable.ic_om_product)));
         setAdapterForDashboardList();
         callProfileImageApi();
-        callDashboardApi(AppUtils.getDashCurrentDateTime_(), AppUtils.getDashCurrentDateTime_());
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (NetworkCheck.isInternetAvailable(mContext)) {
+                    swipeStatus = true;
+                    setToolbar();
+                    callDashboardApi(AppUtils.getDashCurrentDateTime_(), AppUtils.getDashCurrentDateTime_());
+                    tvHighlight.setText("Today's Hightlights");
+                    setDropdownHighlight();
+                } else {
+                    swipeStatus = false;
+                    LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
+            }
+        });
+
         try {
-            LoginTable loginTable = mDb.getDbDAO().getLoginData();
-            if (loginTable != null) {
-                tvName.setText(loginTable.getName());
-            }
-            else{
-                LogUtil.printToastMSG(mContext,"Something went wrong ,Please re-login.");
-            }
-        }catch (Exception e){
+            mSwipeRefreshLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        mSwipeRefreshLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    } else {
+                        mSwipeRefreshLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    }
+
+                    Rect rect = new Rect();
+                    mSwipeRefreshLayout.getDrawingRect(rect);
+                    mSwipeRefreshLayout.setProgressViewOffset(false, 0, rect.centerY() - (mSwipeRefreshLayout.getProgressCircleDiameter()));
+                }
+            });
+        } catch (Exception e) {
             e.printStackTrace();
+        }
+
+    }
+
+    private void setAttendanceFloatingButtons(LoginDays loginDays) {
+        rippleEffect.stopRippleAnimation();
+        add_attendance.setVisibility(View.GONE);
+        rippleEffect.setVisibility(View.GONE);
+        Boolean iSTimer = SharedPref.getInstance(mContext).read(SharedPrefKey.CHECK_IN_BUTTON, false);
+        //if(!iSTimer){
+        List<AttendanceList> attendanceListList = new ArrayList<>();
+        attendanceListList.add(new AttendanceList(loginDays.getMonDay(), loginDays.getMonWorking()==null?"no":loginDays.getMonWorking(), loginDays.getMonStartTime(), loginDays.getMonEndTime()));
+        attendanceListList.add(new AttendanceList(loginDays.getTueDay(), loginDays.getTueWorking()==null?"no":loginDays.getTueWorking(), loginDays.getTueStartTime(), loginDays.getTueEndTime()));
+        attendanceListList.add(new AttendanceList(loginDays.getWedDay(), loginDays.getWedWorking()==null?"no":loginDays.getWedWorking(), loginDays.getWedStartTime(), loginDays.getWedEndTime()));
+        attendanceListList.add(new AttendanceList(loginDays.getThrusDay(), loginDays.getThrusWorking()==null?"no":loginDays.getThrusWorking(), loginDays.getThrusStartTime(), loginDays.getThrusEndTime()));
+        attendanceListList.add(new AttendanceList(loginDays.getFriDay(), loginDays.getFriWorking()==null?"no":loginDays.getFriWorking(), loginDays.getFriStartTime(), loginDays.getFriEndTime()));
+        attendanceListList.add(new AttendanceList(loginDays.getSatDay(), loginDays.getSatWorking()==null?"no":loginDays.getSatWorking(), loginDays.getSatStartTime(), loginDays.getSatStartTime()));
+        attendanceListList.add(new AttendanceList(loginDays.getSunDay(), loginDays.getSunWorking()==null?"no":loginDays.getSunWorking(), loginDays.getSunStartTime(), loginDays.getSunEndTime()));
+        String weekDay;
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
+
+        Calendar calendar = Calendar.getInstance();
+        weekDay = dayFormat.format(calendar.getTime());
+        SharedPref.getInstance(mContext).write(SharedPrefKey.ATTENDANCE_START_TIME, "00:00:00");
+        //LogUtil.printToastMSG(mContext,"att_before_Test-"+weekDay);
+        for (int i = 0; i < attendanceListList.size(); i++) {
+            if (weekDay.equals(attendanceListList.get(i).getMonDay()) && attendanceListList.get(i).getMonWorking().equals("yes")) {
+                //LogUtil.printToastMSG(mContext,"att_Test"+weekDay);
+                SharedPref.getInstance(mContext).write(SharedPrefKey.ATTENDANCE_START_TIME, attendanceListList.get(i).getMonStartTime());
+                String startDate = AppUtils.getCurrentTimeIn24hr(),
+                        endDate = attendanceListList.get(i).getMonStartTime() == null ||
+                                attendanceListList.get(i).getMonStartTime().equals("00:00:00") ? "10:00:00" : attendanceListList.get(i).getMonStartTime(),
+                        attEndDate = attendanceListList.get(i).getMonEndTime() == null ||
+                                attendanceListList.get(i).getMonEndTime().equals("00:00:00") ? "19:00:00" : attendanceListList.get(i).getMonEndTime();
+                String Min30LaterTime = "", Min60LaterTime = "";
+                try {
+                    SimpleDateFormat sdf30 = new SimpleDateFormat("HH:mm:ss");
+                    String currentDateandTime = sdf30.format(new Date());
+                    Date date = sdf30.parse(endDate);
+                    Calendar calendar30 = Calendar.getInstance();
+                    calendar30.setTime(date);
+                    calendar30.add(Calendar.MINUTE, 30);
+                    Min30LaterTime = sdf30.format(calendar30.getTime());
+                    //LogUtil.printToastMSG(mContext,Min30LaterTime);
+                    SimpleDateFormat sdf60 = new SimpleDateFormat("HH:mm:ss");
+                    //String currentDateandTime = sdf30.format(new Date());
+                    Date date60 = sdf60.parse(endDate);
+                    Calendar calendar60 = Calendar.getInstance();
+                    calendar60.setTime(date60);
+                    calendar60.add(Calendar.HOUR, 1);
+                    Min60LaterTime = sdf60.format(calendar60.getTime());
+                    //LogUtil.printToastMSG(mContext,Min60LaterTime);
+                } catch (Exception e) {
+                }
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                add_attendance.setVisibility(View.VISIBLE);
+                rippleEffect.setVisibility(View.VISIBLE);
+                try {
+                    Date date1 = sdf.parse(startDate);
+                    LogUtil.printLog("att_start ", startDate);
+                    Date date2 = sdf.parse(endDate);
+                    LogUtil.printLog("att_end ", endDate);
+                    Date date3 = sdf.parse(Min30LaterTime);
+                    LogUtil.printLog("att_30 ", Min30LaterTime);
+                    Date date4 = sdf.parse(Min60LaterTime);
+                    LogUtil.printLog("att_60 ", Min60LaterTime);
+                    Date date5 = sdf.parse(attEndDate);
+                    LogUtil.printLog("att_realend ", attEndDate);
+                    Boolean iSActiveChill = SharedPref.getInstance(mContext).read(SharedPrefKey.CHECK_OUT_ENABLED, false);
+                    String iSCheckInDoneChill = SharedPref.getInstance(mContext).read(SharedPrefKey.CHECK_OUT_TIME, "00:00:00");
+
+                    if (iSActiveChill) {
+                       // LogUtil.printToastMSG(mContext,iSActiveChill+"-"+iSCheckInDoneChill);
+                        if (date1.compareTo(date2) == -1) {
+                            // Outputs -1 as date1 is before date2
+                            rippleEffect.stopRippleAnimation();
+                            add_attendance.setVisibility(View.GONE);
+                            rippleEffect.setVisibility(View.GONE);
+                        } else {
+                           // LogUtil.printToastMSG(mContext,iSActiveChill+"-"+iSCheckInDoneChill);
+                            rippleEffect.startRippleAnimation(2, mContext);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                add_attendance.setForeground(mContext.getDrawable(R.drawable.attention_gradient_blue));
+                            }
+                        }
+                    }
+                    if (!iSActiveChill) {
+                        if (date1.compareTo(date2) == -1) {
+                            // Outputs -1 as date1 is before date2
+                            rippleEffect.stopRippleAnimation();
+                            add_attendance.setVisibility(View.GONE);
+                            rippleEffect.setVisibility(View.GONE);
+                        } else if (date1.compareTo(date2) == 1 && date1.compareTo(date3) == -1) {
+                            // Outputs -1 as date3 is before date2
+                            // Outputs 0 as the dates are now equal
+                            rippleEffect.startRippleAnimation(2, mContext);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                add_attendance.setForeground(mContext.getDrawable(R.drawable.attention_gradient_blue));
+                            }
+                        } else if (date1.compareTo(date3) == 1 && date1.compareTo(date4) == -1) {
+                            // Outputs 1 as date3 is after date1
+                            rippleEffect.stopRippleAnimation();
+                            rippleEffect.startRippleAnimation(1, mContext);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                add_attendance.setForeground(mContext.getDrawable(R.drawable.attention_gradient_yellow));
+                            }
+                        } else if (date1.compareTo(date4) == 1 && date1.compareTo(date5) == -1) {
+                            // Outputs 1 as date4 is after date3
+                            rippleEffect.stopRippleAnimation();
+                            rippleEffect.startRippleAnimation(3, mContext);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                add_attendance.setForeground(mContext.getDrawable(R.drawable.attention_gradient_red));
+                            }
+                        } else if (date1.compareTo(date5) == 1) {
+                            // Outputs 1 as date4 is after date3
+                            rippleEffect.stopRippleAnimation();
+                            add_attendance.setVisibility(View.GONE);
+                            rippleEffect.setVisibility(View.GONE);
+                            try {
+                                ((BaseActivity) mContext).stopService(new Intent(mContext, BackgroundAttentionService.class));
+                            } catch (Exception e) {
+                            }
+                        }
+                    }
+
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    // Exception handling goes here
+                    LogUtil.printLog("att_iiss", e.getMessage());
+                }
+                   /* boolean b = false;
+
+                    try {
+                        if (dfDate.parse(startDate).before(dfDate.parse(endDate))) {
+                            b = true;  // If start date is before end date.
+                        } else if (dfDate.parse(startDate).equals(dfDate.parse(endDate))) {
+                            b = true;  // If two dates are equal.
+
+                        } else {
+                            b = false; // If start date is after the end date.
+                            rippleEffect.stopRippleAnimation();
+                            rippleEffect.startRippleAnimation(1,mContext);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                add_attendance.setForeground(mContext.getDrawable(R.drawable.attention_gradient_yellow));
+                            }
+                        }
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }*/
+
+                //return b;
+                // }
+            }
         }
     }
 
-    private void setToolbar(){
-        ((BaseActivity)mContext).initToolbar(0,mContext,R.id.imgBack,R.id.imgReport,R.id.imgNotify,tvNotifyCount,0,R.id.imgCall);
+    /* final Handler handlerRed=new Handler();
+                                handlerRed.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        rippleEffect.stopRippleAnimation();
+                                        rippleEffect.startRippleAnimation(3,mContext);
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                            add_attendance.setForeground(mContext.getDrawable(R.drawable.attention_gradient_red));
+                                        }
+                                    }
+                                },16000);*/
+    private void setToolbar() {
+        ((BaseActivity) mContext).initToolbar(0, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify, tvNotifyCount, 0, R.id.imgCall);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Fragment fragment = new DashboardFragment();
-                ((BaseActivity)mContext).moveFragment(mContext,fragment);
+                ((BaseActivity) mContext).moveFragment(mContext, fragment);
             }
         });
         imgNotify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((BaseActivity)mContext).launchScreen(mContext, NotificationsActivity.class);;
+                ((BaseActivity) mContext).launchScreen(mContext, NotificationsActivity.class);
+                ;
             }
         });
     }
 
     /* Call Api For RM */
-    private void callDashboardApi(String startDate,String endDate) {
+    private void callDashboardApi(String startDate, String endDate) {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
-            if(loginTable!=null) {
+            if (loginTable != null) {
                 DashboardRequest dashboardRequest = new DashboardRequest();
                 RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_dashboard);
-                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"),String.valueOf(loginTable.getEmployeeId()));
+                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(loginTable.getEmployeeId()));
                 RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(loginTable.getCompanyId()));
-                RequestBody mRequestBodyTypeStart = RequestBody.create(MediaType.parse("text/plain"), startDate);
-                RequestBody mRequestBodyTypeEnd = RequestBody.create(MediaType.parse("text/plain"), endDate);
-                LogUtil.printLog("httpdashboard_data",String.valueOf(loginTable.getEmployeeId())+" "+ String.valueOf(loginTable.getCompanyId())
-                +" "+startDate+" "+endDate);
+                RequestBody mRequestBodyTypeStart = RequestBody.create(MediaType.parse("text/plain"), "2021-02-08"/*startDate*/);
+                RequestBody mRequestBodyTypeEnd = RequestBody.create(MediaType.parse("text/plain"), "2021-02-08"/*endDate*/);
+                LogUtil.printLog("httpdashboard_data", String.valueOf(loginTable.getEmployeeId()) + " " + String.valueOf(loginTable.getCompanyId())
+                        + " " + startDate + " " + endDate);
                 dashboardRequest.setAction(mRequestBodyType);
                 dashboardRequest.setEmployee(mRequestBodyTypeEmployee);
                 dashboardRequest.setCompanyId(mRequestBodyTypeCompId);
                 dashboardRequest.setStartDate(mRequestBodyTypeStart);
                 dashboardRequest.setEndDate(mRequestBodyTypeEnd);
                 getDashboardViewModel.hitGetDashboardApi(dashboardRequest);
-            }
-            else {
+            } else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
             }
         } else {
             LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+            try {
+                AttendanceDaysTable loginAttendance = mDb.getDbDAO().getTestAttendanceData();
+                if (loginAttendance != null) {
+                    setAttendanceFloatingButtons(loginAttendance.getLoginDays());
+                } else {
+                    LogUtil.printToastMSG(mContext, "Something went wrong ,Please re-login.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -542,15 +733,14 @@ public class DashboardFragment extends BaseFragment {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             progressBar.setVisibility(View.VISIBLE);
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
-            if(loginTable!=null) {
+            if (loginTable != null) {
                 RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_profile_img);
-                RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
                 RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
 
-                getProfileImageViewModel.executeGetProfileImageAPI(mRequestBodyType,mRequestBodyTypeCompId,
+                getProfileImageViewModel.executeGetProfileImageAPI(mRequestBodyType, mRequestBodyTypeCompId,
                         mRequestBodyTypeEmployee);
-            }
-            else {
+            } else {
                 progressBar.setVisibility(View.GONE);
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
             }
@@ -559,6 +749,7 @@ public class DashboardFragment extends BaseFragment {
             LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
         }
     }
+
     /*
      * ACCESS_FINE_LOCATION permission result
      * */
@@ -582,89 +773,121 @@ public class DashboardFragment extends BaseFragment {
         }
 
     }
-    private void checkIFNull(String checkString,AppCompatTextView textView) {
+
+    private void checkIFNull(String checkString, AppCompatTextView textView) {
         if (checkString != null && !checkString.equals("") && !checkString.equals("null")) {
             textView.setText(checkString);
         } else {
             textView.setText("0");
         }
     }
-    private String iSNull(String checkString,int status){
+
+    private String iSNull(String checkString, int status) {
         String returnVal = "";
         try {
             if (status == 1) {
-                returnVal = "0";
+                //returnVal = "0";
             }
             if (checkString != null && !checkString.equals("") && !checkString.equals("null")) {
                 return checkString;
+            } else {
+                returnVal = "0";
             }
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
         return returnVal;
     }
 
-        /*Api response */
-        private void consumeResponse(ApiResponse apiResponse, String tag) {
-            switch (apiResponse.status) {
+    /*Api response */
+    private void consumeResponse(ApiResponse apiResponse, String tag) {
+        switch (apiResponse.status) {
 
-                case LOADING:
-                    ((BaseActivity)getActivity()).showSmallProgressBar(mProgressBarHolder);
-                    //((BaseActivity)getActivity()).showProgressLoader(getString(R.string.scr_message_please_wait));
-                    break;
+            case LOADING:
+                ((BaseActivity) getActivity()).showSmallProgressBar(mProgressBarHolder);
+                //((BaseActivity)getActivity()).showProgressLoader(getString(R.string.scr_message_please_wait));
+                break;
 
-                case SUCCESS:
-                    ((BaseActivity)getActivity()).dismissSmallProgressBar(mProgressBarHolder);
-                    //((BaseActivity)getActivity()).dismissLoader();
-                    if (!apiResponse.data.isJsonNull()) {
-                        LogUtil.printLog(tag, apiResponse.data.toString());
+            case SUCCESS:
+                ((BaseActivity) getActivity()).dismissSmallProgressBar(mProgressBarHolder);
+                swipeStatus = false;
+                mSwipeRefreshLayout.setRefreshing(false);
+                if (!apiResponse.data.isJsonNull()) {
+                    LogUtil.printLog(tag, apiResponse.data.toString());
+                    try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_DASHBOARD)) {
                             GetDashboardResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetDashboardResponse.class);
                             if (responseModel != null /*&& responseModel.getResult().getStatus().equals("success")*/) {
                                 dashboardList.removeAll(dashboardList);
-                                checkIFNull(String.valueOf(responseModel.getDashboard().getTotalSales()), tvSale) ;
-                                checkIFNull(String.valueOf(responseModel.getDashboard().getQuotationAmount()), tvQuotationCount) ;
-                                checkIFNull(String.valueOf(responseModel.getDashboard().getLostOpportunityCount()), tvLostApp) ;
-                                checkIFNull(String.valueOf(responseModel.getDashboard().getEnquiryCount()), tvEnquiryCount) ;
-                                checkIFNull(String.valueOf(responseModel.getDashboard().getNotificationCount()), tvNotifyCount) ;
+                                checkIFNull(String.valueOf(responseModel.getDashboard().getTotalSales()), tvSale);
+                                checkIFNull(String.valueOf(responseModel.getDashboard().getQuotationAmount()), tvQuotationCount);
+                                checkIFNull(String.valueOf(responseModel.getDashboard().getLostOpportunityCount()), tvLostApp);
+                                checkIFNull(String.valueOf(responseModel.getDashboard().getEnquiryCount()), tvEnquiryCount);
+                                checkIFNull(String.valueOf(responseModel.getDashboard().getNotificationCount()), tvNotifyCount);
                                 Dashboard dashboard = responseModel.getDashboard();
-                                dashboardList.add(new DashModel("Sales Credit","₹"+iSNull(String.valueOf(dashboard.getSalesCredit()),1),mContext.getDrawable(R.drawable.ic_om_sales_credit)));
-                                dashboardList.add(new DashModel("Receipt","₹"+iSNull(dashboard.getReceiptAmount(),1),mContext.getDrawable(R.drawable.ic_om_receipt)));
-                                dashboardList.add(new DashModel("Top Customer","Top Customer",mContext.getDrawable(R.drawable.ic_om_rating)));
-                                dashboardList.add(new DashModel("Total Quotation Amount","₹"+iSNull(dashboard.getQuotationAmount(),1),mContext.getDrawable(R.drawable.ic_om_total_quotation)));
-                                dashboardList.add(new DashModel("Dispatch Pending",""+iSNull(dashboard.getPendingDispatchCount(),1),mContext.getDrawable(R.drawable.ic_om_dispatch_pending)));
-                                dashboardList.add(new DashModel("Enquiry Report",""+iSNull(dashboard.getEnquiryCount(),1),mContext.getDrawable(R.drawable.ic_om_enquiry_report)));
-                                dashboardList.add(new DashModel("Visit Report",""+iSNull(dashboard.getVisitReport(),1),mContext.getDrawable(R.drawable.ic_om_visit_report)));
-                                dashboardList.add(new DashModel("Products","",mContext.getDrawable(R.drawable.ic_om_product)));
+                                dashboardList.add(new DashModel("Sales Credit", "₹" + iSNull(String.valueOf(dashboard.getSalesCredit()), 1), mContext.getDrawable(R.drawable.ic_om_sales_credit)));
+                                dashboardList.add(new DashModel("Receipt", "₹" + iSNull(dashboard.getReceiptAmount(), 1), mContext.getDrawable(R.drawable.ic_om_receipt)));
+                                dashboardList.add(new DashModel("Top Customer", "Top Customer", mContext.getDrawable(R.drawable.ic_om_rating)));
+                                dashboardList.add(new DashModel("Total Quotation Amount", "₹" + iSNull(dashboard.getQuotationAmount(), 1), mContext.getDrawable(R.drawable.ic_om_total_quotation)));
+                                dashboardList.add(new DashModel("Dispatch Pending", "" + iSNull(dashboard.getPendingDispatchCount(), 1), mContext.getDrawable(R.drawable.ic_om_dispatch_pending)));
+                                dashboardList.add(new DashModel("Enquiry Report", "" + iSNull(dashboard.getEnquiryCount(), 1), mContext.getDrawable(R.drawable.ic_om_enquiry_report)));
+                                dashboardList.add(new DashModel("Visit Report", "" + iSNull(dashboard.getVisitReport(), 1), mContext.getDrawable(R.drawable.ic_om_visit_report)));
+                                dashboardList.add(new DashModel("Products", "", mContext.getDrawable(R.drawable.ic_om_product)));
                                 setAdapterForDashboardList();
+                                updateAttendanceData(responseModel);
                             } else {
                                 LogUtil.printToastMSG(getActivity(), responseModel.getResult().getMessage());
                             }
                         }
-                        try {
-                            if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_PROFILE)) {
-                                ProfileImageResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ProfileImageResponse.class);
-                                if (responseModel != null/* && responseModel.getStatus()==1*/) {
-                                    //isUpload = false;
-                                    AppUtils.loadImageURL(mContext,responseModel.getResult().getProfileurl(),imgProfileDash, progressBar);
-                                    //LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
-                                }
-                                else{
-                                    progressBar.setVisibility(View.GONE);
-                                }
-                            }
-                        }catch (Exception e){
-                            progressBar.setVisibility(View.GONE);
-                            e.printStackTrace();
-                        }
+                    } catch (Exception e) {
+                        progressBar.setVisibility(View.GONE);
+                        e.printStackTrace();
                     }
-                    break;
-                case ERROR:
-                    ((BaseActivity)getActivity()).dismissSmallProgressBar(mProgressBarHolder);
-                    //((BaseActivity)getActivity()).dismissLoader();
-                    LogUtil.printToastMSG(getActivity(), getString(R.string.err_msg_connection_was_refused));
-                    break;
-            }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_PROFILE)) {
+                            ProfileImageResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ProfileImageResponse.class);
+                            if (responseModel != null/* && responseModel.getStatus()==1*/) {
+                                //isUpload = false;
+                                AppUtils.loadImageURL(mContext, responseModel.getResult().getProfileurl(), imgProfileDash, progressBar);
+                                //LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                            } else {
+                                progressBar.setVisibility(View.GONE);
+                            }
+                        }
+                    } catch (Exception e) {
+                        progressBar.setVisibility(View.GONE);
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case ERROR:
+                ((BaseActivity) getActivity()).dismissSmallProgressBar(mProgressBarHolder);
+                swipeStatus = false;
+                mSwipeRefreshLayout.setRefreshing(false);
+                //((BaseActivity)getActivity()).dismissLoader();
+                LogUtil.printToastMSG(getActivity(), getString(R.string.err_msg_connection_was_refused));
+                break;
         }
+    }
 
+    private void updateAttendanceData(GetDashboardResponse responseModel) {
+        try {
+            mDb.getDbDAO().deleteAttendanceData();
+
+            AttendanceDaysTable daysTable = new AttendanceDaysTable();
+            daysTable.setLoginDays(responseModel.getDashboard().getLoginDays());
+            mDb.getDbDAO().insertAttendanceData(daysTable);
+
+            AttendanceDaysTable loginAttendance = mDb.getDbDAO().getTestAttendanceData();
+            if (loginAttendance != null) {
+                setAttendanceFloatingButtons(loginAttendance.getLoginDays());
+                //LogUtil.printToastMSG(mContext, loginAttendance.getLoginDays().getTueDay().toString());
+            } else {
+                LogUtil.printToastMSG(mContext, "Something went wrong ,Please re-login.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private void downloadImageFromUrl(String url, String lr, File file, int pos) {
         @SuppressLint("StaticFieldLeak")
@@ -683,7 +906,7 @@ public class DashboardFragment extends BaseFragment {
             @Override
             protected String doInBackground(String... params) {
                 try {
-                   // Array6 repeatativeList = new Array6();
+                    // Array6 repeatativeList = new Array6();
                     if (!url.equals("")) {
                         int count;
                         try {
@@ -740,7 +963,7 @@ public class DashboardFragment extends BaseFragment {
 
             @Override
             protected void onPostExecute(String list) {
-                LogUtil.printLog("image_new",list);
+                LogUtil.printLog("image_new", list);
                 //Bitmap myBitmap = BitmapFactory.decodeFile(new File(list).getAbsolutePath());
                 //imgProfileDash.setImageBitmap(myBitmap);
                 AppUtils.loadImageURL(mContext, list
@@ -766,7 +989,7 @@ public class DashboardFragment extends BaseFragment {
                         1000);
 
             } else {
-               // reqPermissionCode();
+                // reqPermissionCode();
             }
         } else {
             //reqPermissionCode();

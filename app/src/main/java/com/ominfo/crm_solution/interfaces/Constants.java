@@ -74,7 +74,7 @@ public interface Constants {
     String SEND_MONEY = "send_money";
     long INTERVAL = 5 * 1000;
     long FASTEST_INTERVAL = 2 * 1000;
-    long INTERVAL_ATTENDENCE = 5 * 1000;
-    long FASTEST_INTERVAL_ATTENDENCE = 2 * 1000;
+    long INTERVAL_ATTENDENCE = 60 * 5 * 1000;
+    long FASTEST_INTERVAL_ATTENDENCE = 60 * 4 * 1000;
 
 }

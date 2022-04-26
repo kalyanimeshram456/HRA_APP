@@ -66,7 +66,7 @@
               android:layout_weight="1">
 
               <de.hdodenhof.circleimageview.CircleImageView
-                  android:id="@+id/imgSales"
+                  android:id="@+id/imgPopCust"
                   android:layout_width="@dimen/_65dp"
                   android:layout_height="@dimen/_65dp"
                   android:layout_centerVertical="true"
@@ -74,20 +74,20 @@
                   android:src="@drawable/ic_om_app_logo"
                   android:visibility="visible"
                   app:civ_border_color="@color/back_text_colour"
-                  app:civ_border_width="0dp" />
+                  app:civ_border_width="0.6dp" />
 
               <androidx.appcompat.widget.LinearLayoutCompat
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:layout_centerInParent="true"
                   android:layout_marginStart="14dp"
-                  android:layout_toEndOf="@+id/imgSales"
+                  android:layout_toEndOf="@+id/imgPopCust"
                   android:gravity="center"
                   android:orientation="vertical"
                   android:paddingEnd="@dimen/_16dp">
 
                   <androidx.appcompat.widget.AppCompatTextView
-                      android:id="@+id/tvSearchView"
+                      android:id="@+id/tvCustName"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:layout_gravity="top"
@@ -96,7 +96,7 @@
                       android:imeOptions="actionDone"
                       android:inputType="textMultiLine"
                       android:maxLines="2"
-                      android:text="Powertek Equipment Org private Limited"
+                      android:text=""
                       android:textColor="@color/back_text_colour"
                       android:textColorHint="@color/back_text_colour"
                       android:textSize="@dimen/_16sp" />
@@ -104,8 +104,8 @@
 
                   <RelativeLayout
                       android:layout_width="match_parent"
-                      android:layout_marginTop="@dimen/_3dp"
-                      android:layout_height="wrap_content">
+                      android:layout_height="wrap_content"
+                      android:layout_marginTop="@dimen/_3dp">
 
                       <androidx.appcompat.widget.AppCompatImageView
                           android:id="@+id/imgInfoBtn"
@@ -235,8 +235,8 @@
               android:layout_centerVertical="true"
               android:layout_gravity="center"
               android:layout_marginLeft="55dp"
-              android:layout_toEndOf="@id/imgWeChat"
               android:layout_marginTop="@dimen/_10dp"
+              android:layout_toEndOf="@id/imgWeChat"
               android:src="@drawable/ic_om_whatsapp"
               android:visibility="visible"
               app:civ_border_color="@color/back_text_colour"
@@ -290,13 +290,13 @@
               android:visibility="visible" />
 
           <androidx.appcompat.widget.AppCompatTextView
-              android:id="@+id/tvDriverBhattaValue"
+              android:id="@+id/tvRmValue"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:layout_marginLeft="0dp"
               android:layout_toRightOf="@+id/tvDriverBhattaColon"
               android:fontFamily="@font/gilroy_bold"
-              android:text="Aditya Goradia"
+              android:text=""
               android:textColor="@color/back_text_colour"
               android:textSize="@dimen/_14sp" />
 
@@ -339,8 +339,7 @@
               android:layout_marginLeft="0dp"
               android:layout_toRightOf="@+id/tvAddressColon"
               android:fontFamily="@font/gilroy_regular"
-              android:text="Plot No 57, Gandhi road, Hingna main road,
-VATVA - AHM PH - 98789487576 ,Mumbai 400080."
+              android:text=""
               android:textColor="@color/back_text_colour"
               android:textSize="@dimen/_14sp" />
 
@@ -383,7 +382,7 @@ VATVA - AHM PH - 98789487576 ,Mumbai 400080."
               android:layout_marginLeft="0dp"
               android:layout_toRightOf="@+id/tvGSTColon"
               android:fontFamily="@font/gilroy_regular"
-              android:text="27J8977TS89"
+              android:text=""
               android:textColor="@color/back_text_colour"
               android:textSize="@dimen/_14sp" />
 
@@ -415,7 +414,7 @@ VATVA - AHM PH - 98789487576 ,Mumbai 400080."
               android:layout_marginRight="@dimen/_5dp"
               android:layout_toRightOf="@+id/tvCreditAmt"
               android:fontFamily="@font/gilroy_bold"
-              android:text="₹1000.00"
+              android:text=""
               android:textColor="@color/Dark_Red"
               android:textSize="@dimen/_14sp"
               android:visibility="visible" />
@@ -426,7 +425,7 @@ VATVA - AHM PH - 98789487576 ,Mumbai 400080."
               android:layout_height="wrap_content"
               android:layout_toRightOf="@+id/tvCreditAmtColon"
               android:fontFamily="@font/gilroy_bold"
-              android:text="(₹5666.00)"
+              android:text=""
               android:textColor="@color/back_text_colour"
               android:textSize="@dimen/_14sp" />
 
@@ -455,10 +454,10 @@ VATVA - AHM PH - 98789487576 ,Mumbai 400080."
               android:id="@+id/tvlayCredDaysColon"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
+              android:layout_marginRight="@dimen/_5dp"
               android:layout_toRightOf="@+id/tvlayCredDays"
               android:fontFamily="@font/gilroy_bold"
-              android:text="21 Days"
-              android:layout_marginRight="@dimen/_5dp"
+              android:text=""
               android:textColor="@color/back_text_colour"
               android:textSize="@dimen/_14sp"
               android:visibility="visible" />
@@ -470,6 +469,7 @@ VATVA - AHM PH - 98789487576 ,Mumbai 400080."
               android:layout_toRightOf="@+id/tvlayCredDaysColon"
               android:fontFamily="@font/gilroy_semibold"
               android:text="(50 days)"
+              android:visibility="gone"
               android:textColor="@color/back_text_colour"
               android:textSize="@dimen/_14sp" />
 
@@ -480,6 +480,7 @@ VATVA - AHM PH - 98789487576 ,Mumbai 400080."
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:orientation="horizontal"
+          android:visibility="gone"
           android:layout_below="@+id/layCredDays"
           >
 
@@ -605,7 +606,7 @@ VATVA - AHM PH - 98789487576 ,Mumbai 400080."
           android:layout_below="@+id/cardZero"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="@dimen/_10dp"
+          android:layout_marginTop="@dimen/_6dp"
           >
 
           <androidx.appcompat.widget.AppCompatTextView
@@ -623,10 +624,11 @@ VATVA - AHM PH - 98789487576 ,Mumbai 400080."
               android:id="@+id/tvEmployeeColon"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
+              android:layout_marginRight="@dimen/_5dp"
               android:layout_toRightOf="@+id/tvEmployee"
               android:fontFamily="@font/gilroy_bold"
-              android:text="Harshal (SALES)"
-              android:layout_marginRight="@dimen/_5dp"
+              android:text=""
+              android:hint="@string/scr_lbl_unavailable"
               android:textColor="@color/back_text_colour"
               android:textSize="@dimen/_14sp"
               android:visibility="visible" />
@@ -668,7 +670,8 @@ VATVA - AHM PH - 98789487576 ,Mumbai 400080."
               android:layout_marginRight="@dimen/_5dp"
               android:layout_toRightOf="@+id/tvEmployee2"
               android:fontFamily="@font/gilroy_bold"
-              android:text="Harshal (SALES)"
+              android:text=""
+              android:hint="@string/scr_lbl_unavailable"
               android:textColor="@color/back_text_colour"
               android:textSize="@dimen/_14sp"
               android:visibility="visible" />

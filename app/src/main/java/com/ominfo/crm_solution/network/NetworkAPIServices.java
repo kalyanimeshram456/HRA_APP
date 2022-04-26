@@ -35,10 +35,60 @@ public interface NetworkAPIServices {
      Observable<JsonElement> login(@Url String url,@Query("jsonreq")  String request);*/
     @Multipart
     @POST()
+    Observable<JsonElement> applyLeave(@Url String url,
+                                  @Part("action") RequestBody uploadType,
+                                  @Part("emp_id") RequestBody emp_id,
+                                  @Part("duration") RequestBody duration,
+                                  @Part("start_time") RequestBody start_time,
+                                  @Part("end_time") RequestBody end_time,
+                                  @Part("leave_type") RequestBody leave_type,
+                                  @Part("comment") RequestBody comment/*,
+                                  @Part("leave_status") RequestBody leave_status,
+                                  @Part("updated_by") RequestBody updated_by*/);
+    @Multipart
+    @POST()
+    Observable<JsonElement> markAttendance(@Url String url,
+                                       @Part("action") RequestBody uploadType,
+                                       @Part("emp_id") RequestBody emp_id,
+                                       @Part("date") RequestBody duration,
+                                       @Part("start_time") RequestBody start_time,
+                                       @Part("start_longitude") RequestBody end_time,
+                                       @Part("start_latitude") RequestBody leave_type);
+    @Multipart
+    @POST()
+    Observable<JsonElement> updateAttendance(@Url String url,
+                                           @Part("action") RequestBody uploadType,
+                                           @Part("start_time") RequestBody start_time,
+                                           @Part("end_time") RequestBody end_time,
+                                           @Part("id") RequestBody id,
+                                           @Part("end_longitude") RequestBody end_longitude,
+                                           @Part("end_latitude") RequestBody end_latitude);
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> locationPerHour(@Url String url,
+                                             @Part("action") RequestBody uploadType,
+                                             @Part("emp_id") RequestBody emp_id,
+                                             @Part("date") RequestBody date,
+                                             @Part("latitude") RequestBody latitude,
+                                             @Part("longitude") RequestBody longitude,
+                                             @Part("start_time") RequestBody start_time,
+                                             @Part("requested_token") RequestBody requested_token);
+
+    @Multipart
+    @POST()
     Observable<JsonElement> login(@Url String url,
                                   @Part("action") RequestBody uploadType,
                                   @Part("username") RequestBody uploadTypeImage,
-                                  @Part("password") RequestBody uploadTypeImage1);
+                                  @Part("password") RequestBody uploadTypeImage1,
+                                  @Part("mobiletoken") RequestBody mobiletoken);
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> logout(@Url String url,
+                                  @Part("action") RequestBody uploadType,
+                                  @Part("emp_id") RequestBody emp_id);
+
 
     @POST()
     Observable<JsonElement> profile(@Url String url,@Body ProfileRequest request);
@@ -280,7 +330,31 @@ public interface NetworkAPIServices {
                                        @Part("filter_customer_name") RequestBody filter_customer_name,
                                        @Part("filter_rm") RequestBody filter_rm);
 
+    @Multipart
+    @POST()
+    Observable<JsonElement> getLeaveApplication(@Url String url,
+                                           @Part("action") RequestBody action,
+                                           @Part("emp_id") RequestBody emp_id,
+                                           @Part("pageno") RequestBody pageno,
+                                           @Part("pagesize") RequestBody pagesize,
+                                                @Part("leave_type") RequestBody leave_type,
+                                                @Part("status") RequestBody status,
+                                                @Part("from_date") RequestBody from_date,
+                                                @Part("end_date") RequestBody end_date);
 
+    @Multipart
+    @POST()
+    Observable<JsonElement> getLeaveSingle(@Url String url,
+                                                @Part("action") RequestBody action,
+                                                @Part("record_id") RequestBody record_id);
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> getLeaveStatusUpdate(@Url String url,
+                                           @Part("action") RequestBody action,
+                                           @Part("id") RequestBody id,
+                                                 @Part("leave_status") RequestBody leave_status,
+                                                 @Part("updated_by") RequestBody updated_by);
 
     @POST()
     Observable<JsonElement> vehicleNo(@Url String url, @Query("jsonreq") String request);

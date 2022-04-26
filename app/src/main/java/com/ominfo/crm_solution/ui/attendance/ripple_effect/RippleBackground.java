@@ -78,7 +78,7 @@ public class RippleBackground extends RelativeLayout {
             rippleType=typedArray.getInt(R.styleable.RippleBackground_rb_type,DEFAULT_FILL_TYPE);
         }
         if(status==1) {
-            rippleColor = typedArray.getColor(R.styleable.RippleBackground_rb_color, getResources().getColor(R.color.deep_yellow));
+            rippleColor = typedArray.getColor(R.styleable.RippleBackground_rb_color, getResources().getColor(R.color.pastel_orange));
         }
         if(status==2) {
             rippleColor = typedArray.getColor(R.styleable.RippleBackground_rb_color, getResources().getColor(R.color.light_att_grad));

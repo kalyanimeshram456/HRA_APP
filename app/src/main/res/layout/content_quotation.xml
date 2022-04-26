@@ -247,8 +247,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentStart="true"
                                 android:layout_marginTop="@dimen/_10dp"
-                                android:inputType="text"
-                                android:gravity="left">
+                                android:gravity="left"
+                                android:inputType="text">
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:id="@+id/tvQuoName"
@@ -278,10 +278,10 @@
                                 android:id="@+id/layComSort"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
                                 android:layout_marginTop="@dimen/_10dp"
                                 android:gravity="center"
                                 android:inputType="text"
-                                android:layout_centerInParent="true"
                                 android:paddingLeft="@dimen/_24dp">
 
                                 <androidx.appcompat.widget.AppCompatTextView

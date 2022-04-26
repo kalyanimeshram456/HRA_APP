@@ -18,6 +18,8 @@ import com.ominfo.crm_solution.ui.sales_credit.model.CustomerAllRecord;
 
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class InvoiceAdapter extends RecyclerView.Adapter<InvoiceAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
     private List<CustomerAllRecord> mListData;
@@ -38,7 +40,7 @@ public class InvoiceAdapter extends RecyclerView.Adapter<InvoiceAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View listItem = layoutInflater.inflate(R.layout.row_sales_credit_invoice_table, parent, false);
+        View listItem = layoutInflater.inflate(R.layout.row_customer_360, parent, false);
 
         return new ViewHolder(listItem);
     }
@@ -64,16 +66,40 @@ public class InvoiceAdapter extends RecyclerView.Adapter<InvoiceAdapter.ViewHold
                     }
                 }
                 holder.tvDocType.setText(str);
-                holder.tvDate.setText(mListData.get(position).getDocdate());
-                holder.tvInvoiceNum.setText(mListData.get(position).getDocnumber());
+                holder.tvInvoiceNum.setText(mListData.get(position).getDocdate());
+                holder.tvDate.setText(mListData.get(position).getDocnumber());
                 holder.tvQuotedNo.setText(""+mListData.get(position).getAmount());
-                holder.tvBilledAmt.setText(mListData.get(position).getDocstatus());
+               // holder.tvBilledAmt.setText(mListData.get(position).getDocstatus());
            // }
             if (position % 2 != 0) {
                 holder.layClick.setBackground(mContext.getResources().getDrawable(R.drawable.shape_round_white_left_right_border_dialog));
             } else {
                 holder.layClick.setBackground(mContext.getResources().getDrawable(R.drawable.shape_round_grey_left_right_border_dialog));
             }
+            try{
+                String mStatus = mListData.get(position).getDocstatus();
+                if(mStatus.equals("INCVOICE DELIVERED")||mStatus.equals("FINALIZATION")
+                        ||mStatus.equals("CLOSED")) {
+                    holder.imgIndicator.setColorFilter(mContext.getResources().getColor(R.color.Light_Green_quo));
+                }
+                if(mStatus.equals("INCVOICE DELIVERED") || mStatus.equals("TENDER")|| mStatus.equals("BUDEGTING")
+                        || mStatus.equals("NEGOTIATION")|| mStatus.equals("QUOTATION SENT") || mStatus.equals("PI SENT")
+                        || mStatus.equals("PENDING FOR BILLING")|| mStatus.equals("SO CREATED")
+                        || mStatus.equals("INVOICE CREATED")|| mStatus.equals("SO ON HOLD")
+                        || mStatus.equals("APPROVAL PENDING")|| mStatus.equals("PART INVOICE CREATED")
+                        || mStatus.equals("INVOICE DISPATCHED")) {
+                    holder.imgIndicator.setColorFilter(mContext.getResources().getColor(R.color.Light_Yellow));
+                }
+                if(mStatus.equals("QUOTATION REJECTED")||mStatus.equals("SO REJECTED BY ADMIN")
+                        ||mStatus.equals("SO REJECTED AT FACTORY") || mStatus.equals("ORDER LOST")
+                        || mStatus.equals("SO REJECTED BY FACTORY")
+                ) {
+                    holder.imgIndicator.setColorFilter(mContext.getResources().getColor(R.color.Light_Red));
+                }
+                if(mStatus.equals("QUOTATION CANCELLED")|| mStatus.equals("SO CANCELLED")) {
+                    holder.imgIndicator.setColorFilter(mContext.getResources().getColor(R.color.pro_grey));
+                }
+            }catch (Exception e){e.printStackTrace();}
         }
         holder.layClick.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,9 +118,10 @@ public class InvoiceAdapter extends RecyclerView.Adapter<InvoiceAdapter.ViewHold
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        AppCompatTextView tvDocType ,tvDate, tvInvoiceNum,tvQuotedNo,tvBilledAmt;
+        AppCompatTextView tvDocType ,tvDate, tvInvoiceNum,tvQuotedNo;
         LinearLayoutCompat layClick;
         AppCompatImageView imgDash;
+        CircleImageView imgIndicator;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -103,7 +130,7 @@ public class InvoiceAdapter extends RecyclerView.Adapter<InvoiceAdapter.ViewHold
             tvInvoiceNum = itemView.findViewById(R.id.tvInvoiceNum);
             tvDocType = itemView.findViewById(R.id.tvDocType);
             tvQuotedNo = itemView.findViewById(R.id.tvQuotedNo);
-            tvBilledAmt = itemView.findViewById(R.id.tvBilledAmt);
+            imgIndicator = itemView.findViewById(R.id.imgIndicator);
         }
     }
 

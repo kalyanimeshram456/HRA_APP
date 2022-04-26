@@ -9,13 +9,13 @@ import com.google.gson.annotations.SerializedName;
 public class DeleteNotificationResponse {
 
     @SerializedName("result")
-    private Result mResult;
+    private DeleteNotiResult mResult;
 
-    public Result getResult() {
+    public DeleteNotiResult getResult() {
         return mResult;
     }
 
-    public void setResult(Result result) {
+    public void setResult(DeleteNotiResult result) {
         mResult = result;
     }
 

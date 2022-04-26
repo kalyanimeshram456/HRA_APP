@@ -103,7 +103,7 @@ public class BackgroundAttentionService extends Service implements GoogleApiClie
                     e.printStackTrace();
                 } finally {
                     if (!stopService) {
-                        handler.postDelayed(this, TimeUnit.SECONDS.toMillis(300)); //5 min //300
+                        handler.postDelayed(this, Constants.INTERVAL_ATTENDENCE); //5 min //300
                     }
                 }
             }

@@ -62,6 +62,14 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
 
             holder.tvTitle.setText(mListData.get(position).getHeading());
             holder.tvDescription.setText(mListData.get(position).getText());
+            if(mListData.get(position).getType().equals("INFO")){
+                holder.viewColour.setBackground(mContext.getResources().getDrawable(R.drawable.layout_round_shape_corners_8_grey_view));
+                holder.layCross.setVisibility(View.VISIBLE);
+            }else{
+                holder.viewColour.setBackground(mContext.getResources().getDrawable(R.drawable.layout_round_shape_corners_8_green_view));
+                holder.layCross.setVisibility(View.GONE);
+
+            }
         }
 
         holder.imgDelete.setOnClickListener(new View.OnClickListener() {
@@ -80,19 +88,25 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         holder.tvTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listItemSelectListener.onItemClick(null, mListData,false);
+                if(!mListData.get(position).getType().equals("INFO")) {
+                    listItemSelectListener.onItemClick(mListData.get(position), mListData, false);
+                }
             }
         });
         holder.tvDescription.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listItemSelectListener.onItemClick(null, mListData,false);
+                if(!mListData.get(position).getType().equals("INFO")) {
+                    listItemSelectListener.onItemClick(mListData.get(position), mListData, false);
+                }
             }
         });
         holder.imgNotify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listItemSelectListener.onItemClick(null, mListData,false);
+                if(!mListData.get(position).getType().equals("INFO")) {
+                    listItemSelectListener.onItemClick(mListData.get(position), mListData, false);
+                }
             }
         });
 
@@ -106,12 +120,15 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         AppCompatTextView tvTitle,tvDescription;
-        LinearLayoutCompat layClick,layPopup,imgPopup;
+        LinearLayoutCompat layClick,layPopup,imgPopup,layCross;
         AppCompatImageView imgDelete;
         CircleImageView imgNotify;
+        View viewColour;
 
         ViewHolder(View itemView) {
             super(itemView);
+            layCross = itemView.findViewById(R.id.layCross);
+            viewColour = itemView.findViewById(R.id.viewColour);
             imgDelete = itemView.findViewById(R.id.imgDelete);
             layPopup = itemView.findViewById(R.id.layPopup);
             imgPopup = itemView.findViewById(R.id.imgPopup);

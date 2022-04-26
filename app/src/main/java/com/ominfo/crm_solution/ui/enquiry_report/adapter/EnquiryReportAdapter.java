@@ -107,7 +107,7 @@ public class EnquiryReportAdapter extends RecyclerView.Adapter<EnquiryReportAdap
 
         ViewHolder(View itemView) {
             super(itemView);
-            layClick = itemView.findViewById(R.id.layClick);
+            layClick = itemView.findViewById(R.id.layClickNew);
             tvEnquiryNo = itemView.findViewById(R.id.tvCompanyName);
             tvCompanyName = itemView.findViewById(R.id.tvState);
             tvEnquiryStatus = itemView.findViewById(R.id.tvRS);

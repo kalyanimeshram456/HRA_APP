@@ -84,6 +84,7 @@ import com.ominfo.crm_solution.network.ApiResponse;
 import com.ominfo.crm_solution.network.DynamicAPIPath;
 import com.ominfo.crm_solution.network.NetworkCheck;
 import com.ominfo.crm_solution.network.ViewModelFactory;
+import com.ominfo.crm_solution.ui.attendance.model.MarkAttendanceViewModel;
 import com.ominfo.crm_solution.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
 import com.ominfo.crm_solution.ui.enquiry_report.model.CustomerList;
@@ -101,6 +102,7 @@ import com.ominfo.crm_solution.ui.login.model.LoginResponse;
 import com.ominfo.crm_solution.ui.login.model.LoginTable;
 import com.ominfo.crm_solution.ui.login.model.LoginViewModel;
 import com.ominfo.crm_solution.ui.my_account.MyAccountFragment;
+import com.ominfo.crm_solution.ui.my_account.model.ApplyLeaveRequest;
 import com.ominfo.crm_solution.ui.reminders.ReminderFragment;
 import com.ominfo.crm_solution.ui.reminders.adapter.AddTagAdapter;
 import com.ominfo.crm_solution.ui.reminders.model.ReminderModel;
@@ -161,6 +163,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
     private GetRmViewModel getRmViewModel;
     private SearchCustViewModel searchCustViewModel;
     private SaveEnquiryViewModel saveEnquiryViewModel;
+
     GetRmlist selectedRM = new GetRmlist();
     Dialog mDialog;
     List<GetRmlist> RMDropdown = new ArrayList<>();
@@ -248,7 +251,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
 
         saveEnquiryViewModel = ViewModelProviders.of(MainActivity.this, mViewModelFactory).get(SaveEnquiryViewModel.class);
         saveEnquiryViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_SAVE_ENQUIRY));
-    }
+ }
 
     @Override
     protected void onResume() {
@@ -332,12 +335,12 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
         }
     }
 
-    //starting foreground service and registering broadcast for lat long
+    /*//starting foreground service and registering broadcast for lat long
     private void startLocationService() {
         startService(new Intent(this, BackgroundLocationUpdateService.class));
         LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,
                 new IntentFilter(BackgroundLocationUpdateService.ACTION_BROADCAST));
-    }
+    }*/
 
     //set date picker view
     private void openDataPicker(AppCompatAutoCompleteTextView datePickerField) {
@@ -388,6 +391,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
         mTimePicker.setTitle("Select Time");
         mTimePicker.show();
     }
+
 
 
     private void setAddTagList(RecyclerView rvImages) {

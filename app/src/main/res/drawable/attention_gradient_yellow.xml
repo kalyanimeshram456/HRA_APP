@@ -5,7 +5,7 @@
             android:shape="oval">
             <gradient
                 android:angle="90"
-                android:startColor="@color/Dark_Yellow_dis"
+                android:startColor="@color/Light_Red"
                 android:endColor="@color/Light_Yellow_dis" />
             <size
                 android:width="@dimen/_50dp"

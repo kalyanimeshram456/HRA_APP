@@ -190,7 +190,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="25/03/2021"
+                        android:text=""
                         android:textColor="@color/back_text_colour"
                         android:textSize="@dimen/_14sp" />
 
@@ -240,7 +240,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="25/04/2021"
+                        android:text=""
                         android:textColor="@color/back_text_colour"
                         android:textSize="@dimen/_14sp" />
 
@@ -303,7 +303,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/gilroy_semibold"
                         android:gravity="left"
-                        android:text="12:00 AM"
+                        android:text=""
                         android:textColor="@color/back_text_colour"
                         android:textSize="@dimen/_14sp" />
 
@@ -353,7 +353,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="04:00 AM"
+                        android:text=""
                         android:textColor="@color/back_text_colour"
                         android:textSize="@dimen/_14sp" />
 
@@ -398,7 +398,7 @@
 
         <!--TAG Text filed-->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_textSOE"
+            android:id="@+id/input_textType"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_40dp"
@@ -463,7 +463,7 @@
             app:placeholderTextAppearance="@style/Editext.Theme">
 
             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                android:id="@+id/AutoComTextViewPOI"
+                android:id="@+id/AutoComTextViewComment"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_40dp"
                 android:background="@drawable/toggle_add_reminder_edt"

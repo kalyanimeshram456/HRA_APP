@@ -54,6 +54,46 @@ public class LoginTable {
     private int id;
 
 
+    @ColumnInfo(name = "manager_id")
+    @Expose
+    @SerializedName("manager_id")
+    private String managerId;
+
+    @ColumnInfo(name = "branch_latitude")
+    @Expose
+    @SerializedName("branch_latitude")
+    private String branchLatitude;
+
+    @ColumnInfo(name = "branch_longitute")
+    @Expose
+    @SerializedName("branch_longitute")
+    private String branchLongitute;
+
+
+    public String getManagerId() {
+        return managerId;
+    }
+
+    public void setManagerId(String managerId) {
+        this.managerId = managerId;
+    }
+
+    public String getBranchLatitude() {
+        return branchLatitude;
+    }
+
+    public void setBranchLatitude(String branchLatitude) {
+        this.branchLatitude = branchLatitude;
+    }
+
+    public String getBranchLongitute() {
+        return branchLongitute;
+    }
+
+    public void setBranchLongitute(String branchLongitute) {
+        this.branchLongitute = branchLongitute;
+    }
+
     public int getId() {
         return id;
     }

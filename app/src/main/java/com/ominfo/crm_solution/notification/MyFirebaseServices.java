@@ -19,6 +19,8 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.ominfo.crm_solution.MainActivity;
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.interfaces.SharedPrefKey;
+import com.ominfo.crm_solution.ui.SplashActivity;
+import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.util.SharedPref;
 
 import java.text.SimpleDateFormat;
@@ -27,7 +29,7 @@ import java.util.Date;
 public class MyFirebaseServices extends FirebaseMessagingService {
 
     private static final String TAG = "PushNotification";
-    private static final String CHANNEL_ID ="101" ;
+    private static final String CHANNEL_ID ="109" ;
     private FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
     private DatabaseReference mDatabaseReference, mRef;
     int mAppCommunityMinutes;
@@ -75,8 +77,8 @@ public class MyFirebaseServices extends FirebaseMessagingService {
     }
 
     private void showNotification(String title,String message){
-        Intent intent = new Intent(this, MainActivity.class);
-        //SharedPref.getInstance(this).write(SharedPrefKey.IS_NOTIFY, true);
+        Intent intent = new Intent(this, NotificationsActivity.class);
+        SharedPref.getInstance(this).write(SharedPrefKey.IS_NOTIFY, true);
         //String iSNotify = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.IS_NOTIFY_COUNT, "0");
         //setAppCommunityMinutes();
         //SharedPref.getInstance(this).write(SharedPrefKey.IS_NOTIFY_COUNT, String.valueOf(Integer.parseInt(iSNotify)+1));
@@ -95,7 +97,7 @@ public class MyFirebaseServices extends FirebaseMessagingService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(message)
-                .setSmallIcon(R.drawable.ic_om_app_logo)
+                .setSmallIcon(R.drawable.ic_turanthbiz)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 // Set the intent that will fire when the user taps the notification

@@ -91,7 +91,7 @@
                 android:layout_marginTop="@dimen/_6dp"
                 android:layout_marginRight="@dimen/_16dp"
                 android:fontFamily="@font/gilroy_semibold"
-                android:text="Office Location : Tap on icon to add location"
+                android:text="Office Location : Fetching..."
                 android:textColor="@color/white"
                 android:textSize="@dimen/_14sp" />
         </RelativeLayout>
@@ -205,11 +205,11 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 >
-
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="@dimen/_17dp"
                     android:layout_height="@dimen/_17dp"
                     android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/_16dp"
                     android:src="@drawable/ic_att_current_location" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -217,13 +217,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:layout_marginLeft="@dimen/_30dp"
+                    android:layout_marginLeft="@dimen/_45dp"
                     android:layout_marginTop="@dimen/_6dp"
-                    android:layout_marginRight="@dimen/_16dp"
+                    android:layout_marginRight="@dimen/_0dp"
                     android:fontFamily="@font/gilroy_semibold"
-                    android:text="Current Location : "
+                    android:text="Current Location : Fetching..."
                     android:textColor="@color/white"
                     android:textSize="@dimen/_14sp" />
+
             </RelativeLayout>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -261,7 +262,7 @@
                     android:layout_below="@+id/imgCheckIn"
                     android:fontFamily="@font/gilroy_semibold"
                     android:gravity="center_horizontal"
-                    android:text="09:50 PM"
+                    android:text=""
                     android:textColor="@color/white"
                     android:textSize="@dimen/_17sp" />
                 <androidx.appcompat.widget.AppCompatTextView
@@ -300,7 +301,7 @@
                     android:layout_centerInParent="true"
                     android:fontFamily="@font/gilroy_semibold"
                     android:gravity="center_horizontal"
-                    android:text="09:50 PM"
+                    android:text=""
                     android:textColor="@color/white"
                     android:textSize="@dimen/_17sp" />
                 <androidx.appcompat.widget.AppCompatTextView
@@ -314,9 +315,7 @@
                     android:textSize="@dimen/_13sp" />
 
             </RelativeLayout>
-
            </androidx.appcompat.widget.LinearLayoutCompat>
-
     </androidx.appcompat.widget.LinearLayoutCompat>
-    <include layout="@layout/layout_loader"/>
+    <include layout="@layout/attendance_layout_loader"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

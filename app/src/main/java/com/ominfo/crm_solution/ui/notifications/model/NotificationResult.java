@@ -20,10 +20,21 @@ public class NotificationResult {
     private String mType;
     @SerializedName("url")
     private String mUrl;
+    @SerializedName("related_id")
+    private String relativeId;
 
-    public NotificationResult(String mHeading, String mText) {
+    public NotificationResult(String mHeading, String mText, String mType) {
         this.mHeading = mHeading;
         this.mText = mText;
+        this.mType = mType;
+    }
+
+    public String getRelativeId() {
+        return relativeId;
+    }
+
+    public void setRelativeId(String relativeId) {
+        this.relativeId = relativeId;
     }
 
     public String getCustomer() {

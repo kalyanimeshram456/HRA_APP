@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:id="@+id/swipeRefreshLayout"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_below="@+id/toolbar_layout"
+    android:focusable="true"
+    android:layout_gravity="center"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:layout_below="@+id/toolbar_layout"
     android:focusable="false"
     android:focusableInTouchMode="false"
@@ -508,6 +519,7 @@
             app:rb_strokeWidth="@dimen/_10dp"
             app:rb_rippleAmount="6"
             app:rb_duration="3000"
+            android:visibility="gone"
             android:clickable="true"
             android:focusable="true"
             android:layout_gravity="right|bottom"
@@ -530,3 +542,5 @@
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

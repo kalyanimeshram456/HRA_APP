@@ -4,6 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.ominfo.crm_solution.ui.attendance.model.LocationPerHourViewModel;
+import com.ominfo.crm_solution.ui.attendance.model.MarkAttendanceViewModel;
+import com.ominfo.crm_solution.ui.attendance.model.UpdateAttendanceViewModel;
 import com.ominfo.crm_solution.ui.dashboard.model.GetDashboardViewModel;
 import com.ominfo.crm_solution.ui.dispatch_pending.model.DisaptchViewModel;
 import com.ominfo.crm_solution.ui.enquiry_report.model.EnquiryStatusViewModel;
@@ -12,16 +15,21 @@ import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmViewModel;
 import com.ominfo.crm_solution.ui.enquiry_report.model.SaveEnquiryViewModel;
 import com.ominfo.crm_solution.ui.enquiry_report.model.SearchCustViewModel;
 import com.ominfo.crm_solution.ui.login.model.LoginViewModel;
+import com.ominfo.crm_solution.ui.login.model.LogoutViewModel;
 import com.ominfo.crm_solution.ui.lost_apportunity.model.GetLostApportunityViewModel;
 import com.ominfo.crm_solution.ui.lr_number.model.GetVehicleViewModel;
 import com.ominfo.crm_solution.ui.lr_number.model.PlantViewModel;
 import com.ominfo.crm_solution.ui.lr_number.model.SearchViewModel;
 import com.ominfo.crm_solution.ui.lr_number.model.VehicleDetailsViewModel;
+import com.ominfo.crm_solution.ui.my_account.model.ApplyLeaveViewModel;
 import com.ominfo.crm_solution.ui.my_account.model.ChangePasswordViewModel;
 import com.ominfo.crm_solution.ui.my_account.model.ChangeProfileImageViewModel;
 import com.ominfo.crm_solution.ui.my_account.model.GetProfileImageViewModel;
+import com.ominfo.crm_solution.ui.my_account.model.LeaveApplicationViewModel;
 import com.ominfo.crm_solution.ui.my_account.model.ProfileViewModel;
 import com.ominfo.crm_solution.ui.notifications.model.DeleteNotificationViewModel;
+import com.ominfo.crm_solution.ui.notifications.model.LeaveSingleRecordViewModel;
+import com.ominfo.crm_solution.ui.notifications.model.LeaveStatusViewModel;
 import com.ominfo.crm_solution.ui.notifications.model.NotificationViewModel;
 import com.ominfo.crm_solution.ui.product.model.ProductViewModel;
 import com.ominfo.crm_solution.ui.quotation_amount.model.QuotationViewModel;
@@ -159,6 +167,30 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
          }
          else  if (modelClass.isAssignableFrom(View30ViewModel.class)) {
              return (T) new View30ViewModel(service);
+         }
+         else  if (modelClass.isAssignableFrom(ApplyLeaveViewModel.class)) {
+             return (T) new ApplyLeaveViewModel(service);
+         }
+         else  if (modelClass.isAssignableFrom(MarkAttendanceViewModel.class)) {
+             return (T) new MarkAttendanceViewModel(service);
+         }
+         else  if (modelClass.isAssignableFrom(UpdateAttendanceViewModel.class)) {
+             return (T) new UpdateAttendanceViewModel(service);
+         }
+         else  if (modelClass.isAssignableFrom(LocationPerHourViewModel.class)) {
+             return (T) new LocationPerHourViewModel(service);
+         }
+         else  if (modelClass.isAssignableFrom(LeaveApplicationViewModel.class)) {
+             return (T) new LeaveApplicationViewModel(service);
+         }
+         else  if (modelClass.isAssignableFrom(LeaveSingleRecordViewModel.class)) {
+             return (T) new LeaveSingleRecordViewModel(service);
+         }
+         else  if (modelClass.isAssignableFrom(LeaveStatusViewModel.class)) {
+             return (T) new LeaveStatusViewModel(service);
+         }
+         else  if (modelClass.isAssignableFrom(LogoutViewModel.class)) {
+             return (T) new LogoutViewModel(service);
          }
 
         throw new IllegalArgumentException("Unknown class name");

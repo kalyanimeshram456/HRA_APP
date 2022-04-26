@@ -2,39 +2,27 @@ package com.ominfo.crm_solution.ui.attendance;
 
 import android.Manifest;
 import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.drawable.Animatable;
-import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
-import android.media.ExifInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
-import android.widget.Chronometer;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -43,13 +31,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -68,7 +54,6 @@ import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.basecontrol.BaseActivity;
 import com.ominfo.crm_solution.basecontrol.BaseApplication;
 import com.ominfo.crm_solution.common.BackgroundAttentionService;
-import com.ominfo.crm_solution.common.BackgroundLocationUpdateService;
 import com.ominfo.crm_solution.database.AppDatabase;
 import com.ominfo.crm_solution.interfaces.Constants;
 import com.ominfo.crm_solution.interfaces.SharedPrefKey;
@@ -76,11 +61,16 @@ import com.ominfo.crm_solution.network.ApiResponse;
 import com.ominfo.crm_solution.network.DynamicAPIPath;
 import com.ominfo.crm_solution.network.NetworkCheck;
 import com.ominfo.crm_solution.network.ViewModelFactory;
+import com.ominfo.crm_solution.ui.attendance.model.MarkAttendanceRequest;
+import com.ominfo.crm_solution.ui.attendance.model.MarkAttendanceResponse;
+import com.ominfo.crm_solution.ui.attendance.model.MarkAttendanceViewModel;
+import com.ominfo.crm_solution.ui.attendance.model.UpdateAttendanceRequest;
+import com.ominfo.crm_solution.ui.attendance.model.UpdateAttendanceResponse;
+import com.ominfo.crm_solution.ui.attendance.model.UpdateAttendanceViewModel;
 import com.ominfo.crm_solution.ui.attendance.ripple_effect.RippleBackground;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
 import com.ominfo.crm_solution.ui.login.model.LoginTable;
 import com.ominfo.crm_solution.ui.visit_report.activity.AddLocationActivity;
-import com.ominfo.crm_solution.ui.visit_report.activity.UploadVisitActivity;
 import com.ominfo.crm_solution.ui.visit_report.model.AddVisitRequest;
 import com.ominfo.crm_solution.ui.visit_report.model.AddVisitResponse;
 import com.ominfo.crm_solution.ui.visit_report.model.AddVisitViewModel;
@@ -88,9 +78,7 @@ import com.ominfo.crm_solution.ui.visit_report.model.GetVisitNoViewModel;
 import com.ominfo.crm_solution.ui.visit_report.model.VisitNoResponse;
 import com.ominfo.crm_solution.util.AppUtils;
 import com.ominfo.crm_solution.util.LogUtil;
-import com.ominfo.crm_solution.util.RealPathUtils;
 import com.ominfo.crm_solution.util.SharedPref;
-import com.ominfo.crm_solution.util.Util;
 
 import java.io.File;
 import java.io.IOException;
@@ -105,6 +93,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 public class StartAttendanceActivity extends BaseActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     Context mContext;
@@ -115,11 +105,16 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     AppCompatTextView textViewVisit;
     @BindView(R.id.visitNo)
     AppCompatTextView textVisitNo;
+    @BindView(R.id.tvCheckOutTime)
+    AppCompatTextView tvCheckOutTime;
+    @BindView(R.id.tvCheckInTime)
+    AppCompatTextView tvCheckInTime;
+
    /* @BindView(R.id.startVisitButton)
     AppCompatButton mButtonStartVisit;*/
     @BindView(R.id.imgChecked)
    AppCompatImageView imgChecked;
-    private MyReceiver myReceiver;
+
     GoogleApiClient googleApiClient;
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
     LocationManager locationManager;
@@ -130,6 +125,8 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     ViewModelFactory mViewModelFactory;
     private GetVisitNoViewModel getVisitNoViewModel;
     private AddVisitViewModel addVisitViewModel;
+    private MarkAttendanceViewModel markAttendanceViewModel;
+    private UpdateAttendanceViewModel updateAttendanceViewModel;
     private AppDatabase mDb;
     @BindView(R.id.progressBarHolder)
     FrameLayout mProgressBarHolder;
@@ -139,8 +136,8 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     AppCompatTextView tvCheckInName;
     @BindView(R.id.tvOfcLocation)
     AppCompatTextView tvOfcLocation;
-    @BindView(R.id.tvCurrLocation)
-    AppCompatTextView tvCurrLocation;
+    public static AppCompatTextView tvCurrLocation;
+
     @BindView(R.id.layBottomCheckOut)
     LinearLayoutCompat layBottomCheckOut;
 
@@ -163,38 +160,39 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     private void init(){
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         // initialise tha layout
-
+        setToolbar();
+        tvCurrLocation = findViewById(R.id.tvCurrLocation);
         final RippleBackground rippleBackground=(RippleBackground)findViewById(R.id.content);
         rippleBackground.startRippleAnimation(0,mContext);
         final Handler handler=new Handler();
         imgChecked.setVisibility(View.GONE);
         showSmallProgressBar(mProgressBarHolder);
-        LoginTable loginTable = mDb.getDbDAO().getLoginData();
-            if(loginTable!=null) {
-                tvCheckInName.setText("Hi "+loginTable.getName()+" ! \nPlease wait...");
-            }
-
-       /* ObjectAnimator scaleDown = ObjectAnimator.ofPropertyValuesHolder(
-                relRound,
-                PropertyValuesHolder.ofFloat("scaleX", 1.2f),
-                PropertyValuesHolder.ofFloat("scaleY", 1.2f));
-        scaleDown.setDuration(310);
-
-        scaleDown.setRepeatCount(ObjectAnimator.INFINITE);
-        scaleDown.setRepeatMode(ObjectAnimator.REVERSE);
-
-        scaleDown.start();*/
         if (!isGPSEnabled(mContext)) {
             requestPermission();
         } else {
             getLocation();
         }
-        myReceiver = new MyReceiver();
         Intent intent = getIntent();
         if (intent != null) {
             transactionId = intent.getStringExtra(Constants.TRANSACTION_ID);
-            Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_IN, false);
+            Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_IN_BUTTON, false);
             if (iSTimer){
+                String startlocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
+                String startlocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
+                Geocoder geocoder;
+                List<Address> addresses;
+                geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
+
+                try {
+                    addresses = geocoder.getFromLocation(Double.parseDouble(startlocationLat), Double.parseDouble(startlocationLng), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                    String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                    String city = addresses.get(0).getLocality();
+                    String state = addresses.get(0).getAdminArea();
+                    String country = addresses.get(0).getCountryName();
+                    String postalCode = addresses.get(0).getPostalCode();
+                    String knownName = addresses.get(0).getFeatureName();
+                    tvCurrLocation.setText("Current Location : " + address);
+                }catch (Exception e){}
                 layBottomCheckOut.setVisibility(View.VISIBLE);
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -213,30 +211,55 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                         dismissSmallProgressBar(mProgressBarHolder);
                         doBounceAnimationOnce(tvCheckInName);
                         tvCheckInName.setText("Check In");
+                        String address = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_TITLE, "Unavailable");
+
                     }
                 },1600);
             }
         }
+        prepareAllData();
+    }
 
-        setToolbar();
-        dashboardList.add(new DashModel("Sales Credit","₹13245647",getDrawable(R.drawable.ic_om_sales_credit)));
-        dashboardList.add(new DashModel("Receipt","₹13245647",getDrawable(R.drawable.ic_om_receipt)));
-        dashboardList.add(new DashModel("Top Customer","₹13245647",getDrawable(R.drawable.ic_om_rating)));
-        dashboardList.add(new DashModel("Total Quotation Amount","₹13245647",getDrawable(R.drawable.ic_om_total_quotation)));
-        dashboardList.add(new DashModel("Dispatch Pending","₹13245647",getDrawable(R.drawable.ic_om_dispatch_pending)));
-        dashboardList.add(new DashModel("Enquiry Report","₹13245647",getDrawable(R.drawable.ic_om_enquiry_report)));
-        dashboardList.add(new DashModel("Visit Report","₹13245647",getDrawable(R.drawable.ic_om_visit_report)));
-        dashboardList.add(new DashModel("Products","₹13245647",getDrawable(R.drawable.ic_om_product)));
-        dashboardList.add(new DashModel("Sales Credit","₹13245647",getDrawable(R.drawable.ic_om_sales_credit)));
-        dashboardList.add(new DashModel("Receipt","₹13245647",getDrawable(R.drawable.ic_om_receipt)));
-        dashboardList.add(new DashModel("Top Customer","₹13245647",getDrawable(R.drawable.ic_om_rating)));
-        //setAdapterForDashboardList();
+    private void prepareAllData(){
+        LoginTable loginTable = mDb.getDbDAO().getLoginData();
+        if(loginTable!=null) {
+            tvCheckInName.setText("Hi "+loginTable.getName()+" ! \nPlease wait...");
+        }
+        Geocoder geocoder = new Geocoder(StartAttendanceActivity.this);
+
+        try {
+            List<Address> addressList = geocoder.getFromLocation(Double.parseDouble(loginTable.getBranchLatitude()),
+                    Double.parseDouble(loginTable.getBranchLongitute()), 1);
+            if (addressList != null && addressList.size() > 0) {
+                Address address = addressList.get(0);
+                LatLng latLng1 = new LatLng(address.getLatitude(), address.getLongitude());
+                String locality = addressList.get(0).getAddressLine(0);
+                String country = addressList.get(0).getCountryName();
+                //mLocTitle = addressList.get(0).getFeatureName();
+                /*if (!locality.isEmpty() && !country.isEmpty())
+                    mLocDesc = locality + "  " + country;*/
+                tvOfcLocation.setText("Office Location : "+locality);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String dataDate = AppUtils.getCurrentDateTime();
+        String mDate = AppUtils.convertAlarmDate(dataDate);
+        textViewVisit.setText(AppUtils.getCurrentTime());
+        String startTime = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENDANCE_CHECKIN_TIME, "00:00:00");
+        tvCheckInTime.setText(AppUtils.convert24to12Attendance(startTime));
+        tvCheckOutTime.setText(AppUtils.getCurrentTime());
+        textVisitNo.setText(mDate);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        startLocationService();
+        Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_OUT_ENABLED, false);
+        if(!iSTimer) {
+            startLocationService();
+        }
     }
 
     private void doBounceAnimation(View targetView) {
@@ -279,6 +302,12 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
 
         addVisitViewModel = ViewModelProviders.of(this, mViewModelFactory).get(AddVisitViewModel.class);
         addVisitViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_ADD_VISIT));
+
+        markAttendanceViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MarkAttendanceViewModel.class);
+        markAttendanceViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_MARK_ATTENDANCE));
+
+        updateAttendanceViewModel = ViewModelProviders.of(this, mViewModelFactory).get(UpdateAttendanceViewModel.class);
+        updateAttendanceViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_UPDATE_ATTENDANCE));
     }
 
     /* Call Api For visit no */
@@ -297,7 +326,70 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
             LogUtil.printToastMSG(this, getString(R.string.err_msg_connection_was_refused));
         }
     }
+    /* Call Api For Mark Attendance */
+    private void callMarkAttendanceApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_mark_attendance);
+                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
+                RequestBody mRequestBodyDate = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentDateInyyyymmdd());
+                String startlocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
+                String startlocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
+                String mTime_ = AppUtils.getCurrentTimeIn24hr();
+                RequestBody mRequestBodyStartTime = RequestBody.create(MediaType.parse("text/plain"), mTime_);
+                RequestBody mRequestBodyStartLat = RequestBody.create(MediaType.parse("text/plain"), startlocationLat);
+                RequestBody mRequestBodyStartLong = RequestBody.create(MediaType.parse("text/plain"), startlocationLng);
+                SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENDANCE_CHECKIN_TIME,mTime_);
+                MarkAttendanceRequest markAttendanceRequest = new MarkAttendanceRequest();
+                markAttendanceRequest.setAction(mRequestBodyAction);
+                markAttendanceRequest.setEmpId(mRequestBodyTypeEmpId);
+                markAttendanceRequest.setDate(mRequestBodyDate);
+                markAttendanceRequest.setStartTime(mRequestBodyStartTime);
+                markAttendanceRequest.setStartLatitude(mRequestBodyStartLat);
+                markAttendanceRequest.setStartLongitude(mRequestBodyStartLong);
+                markAttendanceViewModel.hitMarkAttendanceApi(markAttendanceRequest);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
 
+    /* Call Api For Update Attendance */
+    private void callUpdateAttendanceApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                String id = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENDANCE_ID, "0");
+                String startTime = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENDANCE_CHECKIN_TIME, "00:00:00");
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_update_attendance);
+                RequestBody mRequestBodyStartTime = RequestBody.create(MediaType.parse("text/plain"),startTime);
+                RequestBody mRequestBodyEndTime = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentTimeIn24hr());
+                RequestBody mRequestBodyId = RequestBody.create(MediaType.parse("text/plain"), id);
+                String startlocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
+                String startlocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
+                RequestBody mRequestBodyEndLat = RequestBody.create(MediaType.parse("text/plain"), startlocationLat);
+                RequestBody mRequestBodyEndLong = RequestBody.create(MediaType.parse("text/plain"), startlocationLng);
+
+                UpdateAttendanceRequest markAttendanceRequest = new UpdateAttendanceRequest();
+                markAttendanceRequest.setAction(mRequestBodyAction);
+                markAttendanceRequest.setStartTime(mRequestBodyStartTime);
+                markAttendanceRequest.setEndTime(mRequestBodyEndTime);
+                markAttendanceRequest.setId(mRequestBodyId);
+                markAttendanceRequest.setEndLatitude(mRequestBodyEndLat);
+                markAttendanceRequest.setEndLongitude(mRequestBodyEndLong);
+                updateAttendanceViewModel.hitUpdateAttendanceApi(markAttendanceRequest);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
     /* Call Api For Add visit */
     private void callAddVisitApi() {
         if (NetworkCheck.isInternetAvailable(this)) {
@@ -539,52 +631,6 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
 
     }
 
-    /**
-     * Receiver for broadcasts sent by {@link }.
-     */
-    private class MyReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Location location = intent.getParcelableExtra(BackgroundAttentionService.EXTRA_LOCATION);
-            tvCurrLocation.setText("yo");
-            if (location != null) {
-                     lat = String.valueOf(location.getLatitude());
-                     lng = String.valueOf(location.getLongitude());
-                Geocoder geocoder;
-                List<Address> addresses;
-                geocoder = new Geocoder(mContext, Locale.getDefault());
-
-                try {
-                    addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-                    String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-                    String city = addresses.get(0).getLocality();
-                    String state = addresses.get(0).getAdminArea();
-                    String country = addresses.get(0).getCountryName();
-                    String postalCode = addresses.get(0).getPostalCode();
-                    String knownName = addresses.get(0).getFeatureName();
-                    tvCurrLocation.setText("Current Location : "+address);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
-               /* String isVisit = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.VISIT_ON, "0");
-                if(isVisit.equals("1")) {
-                    SharedPref.getInstance(mContext).write(SharedPrefKey.VISIT_ON, "0");
-                    //LogUtil.printToastMSG(mContext,"clicked started visit"+lat+","+lng);
-                    SharedPref.getInstance(mContext).write(SharedPrefKey.START_VISIT_LAT, lat);
-                    SharedPref.getInstance(mContext).write(SharedPrefKey.START_VISIT_LNG, lng);
-                    callAddVisitApi();
-                }
-                if(isVisit.equals("2")) {
-                    SharedPref.getInstance(mContext).write(SharedPrefKey.VISIT_ON, "0");
-                    //LogUtil.printToastMSG(mContext,"clicked end Visit"+lat+","+lng);
-                    SharedPref.getInstance(mContext).write(SharedPrefKey.END_VISIT_LAT, lat);
-                    SharedPref.getInstance(mContext).write(SharedPrefKey.END_VISIT_LNG, lng);
-                }*/
-            }
-        }
-    }
 
     private void deleteDir(){
         File dir = new File(Environment.getExternalStoragePublicDirectory(
@@ -604,7 +650,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     private void setToolbar() {
         //set toolbar title
         //toolbarTitle.setText(R.string.scr_lbl_add_new_lr);
-        //initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgReport, 0, R.id.imgCall);
+       //initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgReport, 0, R.id.imgCall);
     }
 
     public static void setTimerMillis(Context context, long millis)
@@ -620,39 +666,23 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     }
 
 
-    //starting foreground service and registering broadcast for lat long
-    private void startLocationService() {
-        startService(new Intent(this, BackgroundAttentionService.class));
-        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,
-                new IntentFilter(BackgroundAttentionService.ACTION_BROADCAST));
-    }
-
     //perform click actions
-    @OnClick({R.id.relRound,R.id.imgOfcLocation})
+    @OnClick({R.id.relRound,R.id.imgOfcLocation,R.id.layBack})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
                case R.id.relRound:
-                   imgChecked.setVisibility(View.VISIBLE);
-                   //doBounceAnimation(imgChecked);
-                   final Animation animation = AnimationUtils.loadAnimation(this,R.anim.bounce_out);
-                   imgChecked.startAnimation(animation);
-                   Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_IN, false);
+                   Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_IN_BUTTON, false);
                    if(iSTimer) {
-                       SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_IN, false);
-                       stopService(new Intent(mContext, BackgroundAttentionService.class));
+                       callUpdateAttendanceApi();
                    }
                    else{
-                       SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_IN, true);
+                       callMarkAttendanceApi();
                    }
-                   final Handler handler=new Handler();
-                   handler.postDelayed(new Runnable() {
-                       @Override
-                       public void run() {
-                          finish();
-                       }
-                   },1700);
                    break;
+            case R.id.layBack:
+                finish();
+                break;
             case R.id.imgOfcLocation:
             int LAUNCH_SECOND_ACTIVITY = 1000;
             Intent i = new Intent(this, AddLocationActivity.class);
@@ -660,6 +690,16 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
             break;
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_OUT_ENABLED, false);
+        if(!iSTimer){
+            stopService(new Intent(mContext, BackgroundAttentionService.class));
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -667,7 +707,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
             if(resultCode == Activity.RESULT_OK){
                  String result=data.getStringExtra("result");
                 //String str = "<b>"+result+"</b>";
-                tvOfcLocation.setText("Office Location : "+result);
+
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 // Write your code if there's no result
@@ -723,8 +763,61 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                             if (responseModel != null && responseModel.getStatus()==1) {
                                 //textVisitNo.setText("Visit Number : "+responseModel.getNumber());
                                 SharedPref.getInstance(this).write(SharedPrefKey.VISIT_NO, responseModel.getNumber());
+
                             } else {
                                 LogUtil.printToastMSG(mContext, responseModel.getMessage());
+                            }
+                        }
+                    }catch (Exception e){e.printStackTrace();}
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_MARK_ATTENDANCE)) {
+                            MarkAttendanceResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), MarkAttendanceResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
+                                imgChecked.setVisibility(View.VISIBLE);
+                                //doBounceAnimation(imgChecked);
+                                final Animation animation = AnimationUtils.loadAnimation(this,R.anim.bounce_out);
+                                imgChecked.startAnimation(animation);
+                                SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENDANCE_ID, String.valueOf(responseModel.getResult().getId()));
+                               //set toggle
+                                SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_IN_BUTTON, true);
+                                SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_OUT_ENABLED, true);
+                                final Handler handler=new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        finish();
+                                    }
+                                },1700);
+                            } else {
+                                LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
+                            }
+                        }
+                    }catch (Exception e){e.printStackTrace();}
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_UPDATE_ATTENDANCE)) {
+                            UpdateAttendanceResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), UpdateAttendanceResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
+                                imgChecked.setVisibility(View.VISIBLE);
+                                //doBounceAnimation(imgChecked);
+                                final Animation animation = AnimationUtils.loadAnimation(this,R.anim.bounce_out);
+                                imgChecked.startAnimation(animation);
+                                //set toggle
+                                SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_IN_BUTTON, false);
+                                SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_OUT_ENABLED, false);
+                                SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_OUT_TIME, AppUtils.getCurrentTimeIn24hr());
+                                stopService(new Intent(mContext, BackgroundAttentionService.class));
+
+                                final Handler handler=new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        finish();
+                                    }
+                                },1700);
+                            } else {
+                                LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                             }
                         }
                     }catch (Exception e){e.printStackTrace();}

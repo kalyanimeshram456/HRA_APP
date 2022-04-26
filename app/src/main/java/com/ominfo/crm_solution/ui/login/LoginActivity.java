@@ -17,7 +17,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.ominfo.crm_solution.MainActivity;
@@ -30,6 +29,7 @@ import com.ominfo.crm_solution.network.ApiResponse;
 import com.ominfo.crm_solution.network.NetworkCheck;
 import com.ominfo.crm_solution.network.ViewModelFactory;
 import com.ominfo.crm_solution.ui.dashboard.adapter.CallManagerAdapter;
+import com.ominfo.crm_solution.ui.login.model.AttendanceDaysTable;
 import com.ominfo.crm_solution.ui.login.model.LoginRequest;
 import com.ominfo.crm_solution.ui.login.model.LoginResponse;
 import com.ominfo.crm_solution.ui.login.model.LoginViewModel;
@@ -46,7 +46,7 @@ import okhttp3.RequestBody;
 
 public class LoginActivity extends BaseActivity {
     private static final String TAG = "PushNotification";
-    private static final String CHANNEL_ID = "101";
+    private static final String CHANNEL_ID = "109";
     String recentToken = "";
     @BindView(R.id.input_password)
     TextInputLayout inputPassword;
@@ -216,7 +216,8 @@ public class LoginActivity extends BaseActivity {
             RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), "login");
             RequestBody mRequestBodyTypeImage = RequestBody.create(MediaType.parse("text/plain"), editTextEmail.getEditableText().toString().trim());
             RequestBody mRequestBodyTypeImage1 = RequestBody.create(MediaType.parse("text/plain"), editTextPassword.getEditableText().toString().trim());
-            mLoginViewModel.hitLoginApi(mRequestBodyType,mRequestBodyTypeImage,mRequestBodyTypeImage1);
+            RequestBody mRequestBodyTypeToken = RequestBody.create(MediaType.parse("text/plain"), recentToken);
+            mLoginViewModel.hitLoginApi(mRequestBodyType,mRequestBodyTypeImage,mRequestBodyTypeImage1,mRequestBodyTypeToken);
         } else {
             LogUtil.printToastMSG(LoginActivity.this, getString(R.string.err_msg_connection_was_refused));
         }
@@ -239,7 +240,9 @@ public class LoginActivity extends BaseActivity {
 
     private boolean getValidUser(){
         String currentString = editTextEmail.getText().toString().trim();
-        if(currentString.substring(0, 2).toLowerCase().equals("hd")){
+        if(currentString.substring(0, 2).toLowerCase().equals("hd") ||
+                currentString.substring(0, 2).toLowerCase().equals("ho")
+                || currentString.substring(0, 2).toLowerCase().equals("jp")){
             return true;
         }
         else {
@@ -263,10 +266,13 @@ public class LoginActivity extends BaseActivity {
                         LoginResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LoginResponse.class);
                         if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                             finish();
+                            launchScreen(mContext,MainActivity.class);
                             LogUtil.printToastMSG(LoginActivity.this, responseModel.getResult().getMessage());
                             SharedPref.getInstance(this).write(SharedPrefKey.IS_LOGGED_IN, true);
                             mDb.getDbDAO().insertLoginData(responseModel.getDetails());
-                            launchScreen(mContext,MainActivity.class);
+                            AttendanceDaysTable daysTable = new AttendanceDaysTable();
+                            daysTable.setLoginDays(responseModel.getResult().getDayData());
+                            mDb.getDbDAO().insertAttendanceData(daysTable);
                         } else {
                             LogUtil.printToastMSG(LoginActivity.this, responseModel.getResult().getMessage());
                         }

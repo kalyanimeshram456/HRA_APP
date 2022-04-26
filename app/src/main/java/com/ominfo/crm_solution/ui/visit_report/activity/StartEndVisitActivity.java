@@ -574,7 +574,7 @@ public class StartEndVisitActivity extends BaseActivity implements GoogleApiClie
     }
 
     //starting foreground service and registering broadcast for lat long
-    private void startLocationService() {
+    private void startVisitLocationService() {
         startService(new Intent(this, BackgroundLocationUpdateService.class));
         LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,
                 new IntentFilter(BackgroundLocationUpdateService.ACTION_BROADCAST));
@@ -591,7 +591,7 @@ public class StartEndVisitActivity extends BaseActivity implements GoogleApiClie
                     SharedPref.getInstance(this).write(SharedPrefKey.TIMER_STATUS, true);
                     setTimerCounter(1);
                     showSuccessDialog("Visit Started Successfully!",false,StartEndVisitActivity.this);
-                    startLocationService();
+                    startVisitLocationService();
                     SharedPref.getInstance(mContext).write(SharedPrefKey.VISIT_ON, "1");
                 }
                 //end

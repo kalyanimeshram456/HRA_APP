@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -95,6 +96,12 @@ public class View360Activity extends BaseActivity {
     AppCompatTextView tvlayCredDaysColon;
     @BindView(R.id.imgNew)
     AppCompatButton imgNew;
+    @BindView(R.id.imgWeChat)
+    CircleImageView imgWeChat;
+    @BindView(R.id.imgWhatsApp)
+    CircleImageView imgWhatsApp;
+    @BindView(R.id.imgEmail)
+    CircleImageView imgEmail;
     @BindView(R.id.tvCreditAmtValue)
     AppCompatTextView tvCreditAmtValue;
     @BindView(R.id.tvCompanyName)
@@ -114,7 +121,7 @@ public class View360Activity extends BaseActivity {
     RecyclerView rvSalesList;
     @BindView(R.id.imgSales)
     CircleImageView imgSales;
-    private String frmSCR = "1";
+    private String frmSCR = "1",number = "",email = "";
     List<CustomerAllRecord> customerAllRecordList = new ArrayList<>();
     final Calendar myCalendar = Calendar.getInstance();
     @Inject
@@ -130,6 +137,7 @@ public class View360Activity extends BaseActivity {
     AppCompatTextView tv_emptyLayTitle;
     @BindView(R.id.empty_layoutActivity)
     LinearLayoutCompat emptyLayout;
+    CustomerData customerData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -161,10 +169,10 @@ public class View360Activity extends BaseActivity {
         layEnquiries.setTextColor(getResources().getColor(R.color.back_text_colour));
         layEnquiries.setBackground(null);
         textViewCol3.setVisibility(View.VISIBLE);
-        textViewCol1.setText(getString(R.string.scr_lbl_lr_date));
-        textViewCol2.setText(getString(R.string.scr_lbl_invoice_no));
-        textViewCol3.setText(getString(R.string.scr_lbl_quoted_no));
-        textViewCol4.setText(getString(R.string.scr_lbl_billed_amt));
+        textViewCol1.setText("Type");
+        textViewCol2.setText(getString(R.string.scr_lbl_lr_date));
+        textViewCol3.setText("Doc No");
+        textViewCol4.setText(getString(R.string.scr_lbl_amount));
         setAdapterForInvoiceList();
     }
     private void injectAPI() {
@@ -181,7 +189,7 @@ public class View360Activity extends BaseActivity {
                 RequestBody mRequestBodyTypeComId = RequestBody.create(MediaType.parse("text/plain"), /*loginTable.getCompanyId()*/"96");//loginTable.getCompanyId());
                 RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"), /*loginTable.getEmployeeId()*/"135");
                 RequestBody mRequestBodyTypePageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);//selectedRM.getEmpId());
-                RequestBody mRequestBodyTypePageSize = RequestBody.create(MediaType.parse("text/plain"), Constants.MIN_PAG_SIZE);
+                RequestBody mRequestBodyTypePageSize = RequestBody.create(MediaType.parse("text/plain"), "5"/*Constants.MIN_PAG_SIZE*/);
                 GetView360Request getView360Request = new GetView360Request();
                 getView360Request.setAction(mRequestBodyAction);
                 getView360Request.setEmployee(mRequestBodyTypeEmpId);
@@ -289,12 +297,100 @@ public class View360Activity extends BaseActivity {
         mDialog.setCanceledOnTouchOutside(true);
         AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
         AppCompatButton closeButton = mDialog.findViewById(R.id.closeButton);
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
+        CircleImageView imgPopCust = mDialog.findViewById(R.id.imgPopCust);
+        AppCompatTextView tvCustName = mDialog.findViewById(R.id.tvCustName);
+        CircleImageView imgWeChat =  mDialog.findViewById(R.id.imgWeChat);
+        CircleImageView imgWhatsApp =  mDialog.findViewById(R.id.imgWhatsApp);
+        CircleImageView imgEmail =  mDialog.findViewById(R.id.imgEmail);
+        AppCompatTextView tvRmValue = mDialog.findViewById(R.id.tvRmValue);
+        AppCompatTextView tvAddressValue = mDialog.findViewById(R.id.tvAddressValue);
+        AppCompatTextView tvGSTValue = mDialog.findViewById(R.id.tvGSTValue);
+        AppCompatTextView tvCreditAmtColon = mDialog.findViewById(R.id.tvCreditAmtColon);
+        AppCompatTextView tvCreditAmtValue = mDialog.findViewById(R.id.tvCreditAmtValue);
+        AppCompatTextView tvlayCredDaysColon = mDialog.findViewById(R.id.tvlayCredDaysColon);
+        AppCompatTextView tvEmployeeColon = mDialog.findViewById(R.id.tvEmployeeColon);
+        AppCompatImageView imgEmployeeValue = mDialog.findViewById(R.id.tvEmployeeValue);
+        AppCompatTextView tvEmployee2Colon = mDialog.findViewById(R.id.tvEmployee2Colon);
+        AppCompatImageView imgEmployee2Value = mDialog.findViewById(R.id.tvEmployee2Value);
+        AppCompatButton imgGold = mDialog.findViewById(R.id.imgGold);
+        AppCompatButton imgNew = mDialog.findViewById(R.id.imgNew);
+
+        AppUtils.loadImageURL(mContext,"https://ominfo.in/crm/"+customerData.getCustomerDetails().getEmpProfilePic(),
+                imgPopCust, null);
+        tvCustName.setText(customerData.getCustomerDetails().getCompanyName());
+        tvRmValue.setText(customerData.getCustomerDetails().getEmpName());
+        tvCreditAmtColon.setText(customerData.getCustomerCreditBalance());
+        tvlayCredDaysColon.setText(customerData.getCustomerDetails().getCreditLimitDays()+" Days");
+        tvCreditAmtValue.setText("("+getString(R.string.scr_lbl_rs)+customerData.getCustomerDetails().getCreditLimitMoney()+")");
+        if(customerData.getCustomerDetails().getIsnew().equals("YES")) {
+            imgNew.setVisibility(View.VISIBLE);
+        }else{ imgNew.setVisibility(View.INVISIBLE);}
+        String[] str = customerData.getCustomerCreditBalance().split("₹");
+        try{
+            double amount = Double.parseDouble(str[1]);
+            if(amount>0){
+                tvCreditAmtColon.setTextColor(getResources().getColor(R.color.Dark_Red));
+            }
+            else{
+                tvCreditAmtColon.setTextColor(getResources().getColor(R.color.green));
+            }
+        }catch (Exception e){}
+        tvAddressValue.setText(customerData.getCustomerDetails().getRegisteredAddress());
+        tvGSTValue.setText(customerData.getCustomerDetails().getGstNO());
+        String emp1N = "",emp1D= "",emp2N = "",emp2D= "";
+        emp1N = customerData.getCustomerDetails().getEmpName1()
+                ==null || customerData.getCustomerDetails().getEmpName1().equals("")?
+                getString(R.string.scr_lbl_unavailable):customerData.getCustomerDetails().getEmpName1();
+        emp1D = customerData.getCustomerDetails().getEmpDesignation1()==null
+                || customerData.getCustomerDetails().getEmpDesignation1().equals("")?
+                getString(R.string.scr_lbl_unavailable):customerData.getCustomerDetails().getEmpDesignation1();
+        emp2N = customerData.getCustomerDetails().getEmpName2()==null
+                || customerData.getCustomerDetails().getEmpName2().equals("")?getString(R.string.scr_lbl_unavailable):customerData.getCustomerDetails().getEmpName2();
+       emp2D =  customerData.getCustomerDetails().getEmpDesignation2()==null
+               || customerData.getCustomerDetails().getEmpDesignation2().equals("")?getString(R.string.scr_lbl_unavailable):customerData.getCustomerDetails().getEmpDesignation2();
+
+        tvEmployeeColon.setText(emp1N+" ("+emp1D+")");
+        tvEmployee2Colon.setText(emp2N+" ("+emp2D+")");
 
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDialog.dismiss();
+            }
+        });
+        imgWeChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+                setCallDialor(number);
+            }
+        });
+        imgEmployeeValue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+                setCallDialor(customerData.getCustomerDetails().getEmpMob1());
+            }
+        });
+        imgEmployee2Value.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+                setCallDialor(customerData.getCustomerDetails().getEmpMob2());
+            }
+        });
+        imgEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+                openMail(email);
+            }
+        });
+        imgWhatsApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+                openWhatsApp(number);
             }
         });
 
@@ -306,13 +402,47 @@ public class View360Activity extends BaseActivity {
         });
         mDialog.show();
     }
+              public void composeEmail(String[] addresses, String subject) {
+                  Intent intent = new Intent(Intent.ACTION_SENDTO);
+                  intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+                  intent.putExtra(Intent.EXTRA_EMAIL, addresses);
+                  intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+                  if (intent.resolveActivity(getPackageManager()) != null) {
+                      startActivity(intent);
+                  }
+              }
 
+              private void openWhatsApp(String number){
+                  String url = "https://api.whatsapp.com/send?phone="+"+91 "+number;
+                  Intent i = new Intent(Intent.ACTION_VIEW);
+                  i.setData(Uri.parse(url));
+                  startActivity(i);
+              }
+
+              private void openMail(String email){
+                  Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + email));
+                  emailIntent.putExtra(Intent.EXTRA_SUBJECT, "TuranthBiz Services");
+                  emailIntent.putExtra(Intent.EXTRA_TEXT, "body");
+                  //emailIntent.putExtra(Intent.EXTRA_HTML_TEXT, body); //If you are using HTML in your body text
+                  startActivity(Intent.createChooser(emailIntent, "Mail to "+tvCompanyName.getText().toString()+" via"));
+
+              }
 
     //perform click actions
-    @OnClick({R.id.layEnquiries,R.id.layQuotations,R.id.layInvoices,R.id.imgInfoBtn,R.id.tvCompanyName})
+    @OnClick({R.id.layEnquiries,R.id.layQuotations,R.id.layInvoices,R.id.imgInfoBtn,R.id.tvCompanyName,
+            R.id.imgWeChat,R.id.imgWhatsApp,R.id.imgEmail})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
+            case R.id.imgWeChat:
+                setCallDialor(number);
+                break;
+            case R.id.imgWhatsApp:
+                openWhatsApp(number);
+                break;
+            case R.id.imgEmail:
+                openMail(email);
+                 break;
             case R.id.tvCompanyName:
                 if(frmSCR.equals("0")) {
                     //showReceiptDetailsDialog();
@@ -361,7 +491,11 @@ public class View360Activity extends BaseActivity {
                 break;
 
             case R.id.imgInfoBtn:
-                show360iewDialog();
+                if(customerData!=null) {
+                    show360iewDialog();
+                }else{
+                    LogUtil.printToastMSG(mContext,"No data available!");
+                }
                 break;
         }
     }
@@ -584,8 +718,10 @@ public class View360Activity extends BaseActivity {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_VIEW360)) {
                             GetView360Response responseModel = new Gson().fromJson(apiResponse.data.toString(), GetView360Response.class);
                             if (responseModel != null/* && responseModel.getResult().getStatus().equals("success")*/) {
-                                CustomerData customerData = responseModel.getResult().getCustomerData();
+                                customerData = responseModel.getResult().getCustomerData();
                                 tvCompanyName.setText(customerData.getCustomerDetails().getCompanyName());
+                                number = customerData.getCustomerDetails().getContactNo();
+                                email = customerData.getCustomerDetails().getEmailId();
                                 tvRmName.setText(customerData.getCustomerDetails().getEmpName());
                                 tvCreditAmtColon.setText(customerData.getCustomerCreditBalance());
                                 tvlayCredDaysColon.setText(customerData.getCustomerDetails().getCreditLimitDays()+" Days");
@@ -619,8 +755,8 @@ public class View360Activity extends BaseActivity {
                                                     String.valueOf(((responseModel.getResult().getNextpage()-1) + customerAllRecordList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalenquiries()) + "\nEntries"));
                                         }
                                         else {
-                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getResult().getNextpage()-1)*4)+1) + " to " +
-                                                    String.valueOf(((responseModel.getResult().getNextpage()-1)*4)+ customerAllRecordList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalenquiries()) + "\nEntries");
+                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getResult().getNextpage()-1)*5)+1) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1)*5)+ customerAllRecordList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalenquiries()) + "\nEntries");
                                         }
                                     }
                                     else{

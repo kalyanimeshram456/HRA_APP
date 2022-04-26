@@ -1,9 +1,12 @@
 package com.ominfo.crm_solution.ui.my_account;
 
+import static com.ominfo.crm_solution.util.AppUtils.getChangeDateForHisab;
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -36,6 +39,7 @@ import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -78,11 +82,15 @@ import com.ominfo.crm_solution.network.NetworkCheck;
 import com.ominfo.crm_solution.network.ViewModelFactory;
 import com.ominfo.crm_solution.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
-import com.ominfo.crm_solution.ui.dashboard.model.HighlightModel;
 import com.ominfo.crm_solution.ui.login.LoginActivity;
 import com.ominfo.crm_solution.ui.login.model.LoginTable;
+import com.ominfo.crm_solution.ui.login.model.LogoutResponse;
+import com.ominfo.crm_solution.ui.login.model.LogoutViewModel;
 import com.ominfo.crm_solution.ui.my_account.adapter.AccountAdapter;
 import com.ominfo.crm_solution.ui.my_account.leave.LeaveListFragment;
+import com.ominfo.crm_solution.ui.my_account.model.ApplyLeaveRequest;
+import com.ominfo.crm_solution.ui.my_account.model.ApplyLeaveResponse;
+import com.ominfo.crm_solution.ui.my_account.model.ApplyLeaveViewModel;
 import com.ominfo.crm_solution.ui.my_account.model.ChangePasswordResponse;
 import com.ominfo.crm_solution.ui.my_account.model.ChangePasswordViewModel;
 import com.ominfo.crm_solution.ui.my_account.model.ChangeProfileImageResponse;
@@ -94,7 +102,6 @@ import com.ominfo.crm_solution.ui.my_account.model.ProfileResponse;
 import com.ominfo.crm_solution.ui.my_account.model.ProfileViewModel;
 import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.reminders.adapter.AddTagAdapter;
-import com.ominfo.crm_solution.ui.sale.SaleFragment;
 import com.ominfo.crm_solution.ui.sales_credit.model.GraphModel;
 import com.ominfo.crm_solution.util.AppUtils;
 import com.ominfo.crm_solution.util.LogUtil;
@@ -174,7 +181,9 @@ public class MyAccountFragment extends BaseFragment {
     private ProfileViewModel profileViewModel;
     private GetProfileImageViewModel getProfileImageViewModel;
     private ChangePasswordViewModel changePasswordViewModel;
+    private ApplyLeaveViewModel applyLeaveViewModel;
     private ChangeProfileImageViewModel changeProfileImageViewModel;
+    private LogoutViewModel logoutViewModel;
     public static DeleteReminderViewModel deleteReminderViewModel;
     final Calendar myCalendar = Calendar.getInstance();
     private AppDatabase mDb;
@@ -188,7 +197,7 @@ public class MyAccountFragment extends BaseFragment {
     AppCompatImageView imgAdd;
     private Uri picUri;
     private String tempUri;
-    int cam = 0;
+    int cam = 0,noOFDays = 0;
     private int SELECT_FILE = 1;
     private static final int REQUEST_CAMERA = 0;
     private String base64Path = "";
@@ -197,8 +206,15 @@ public class MyAccountFragment extends BaseFragment {
     AppCompatTextView tvNotifyCount;
     LinearLayoutCompat layoutLeaveTime;
     AppCompatTextView appcomptextLeaveTime;
+    AppCompatTextView appcomptextNoOfDays;
+    AppCompatTextView tvDateValueFrom;
+    AppCompatTextView tvDateValueTo,tvTimeValueFrom,tvTimeValueTo ;
+    AppCompatAutoCompleteTextView AutoComTextViewComment;
     View viewToDate;
     RelativeLayout layToDate;
+    AppCompatAutoCompleteTextView AutoComTextViewDuration;
+    AppCompatAutoCompleteTextView AutoComTextViewLeaveType;
+    Dialog mDialogLogout;
     public MyAccountFragment() {
         // Required empty public constructor
     }
@@ -284,6 +300,12 @@ public class MyAccountFragment extends BaseFragment {
 
         changePasswordViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ChangePasswordViewModel.class);
         changePasswordViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_CHANGE_PASS));
+
+        applyLeaveViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ApplyLeaveViewModel.class);
+        applyLeaveViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_APPLY_LEAVE));
+
+        logoutViewModel = ViewModelProviders.of(this, mViewModelFactory).get(LogoutViewModel.class);
+        logoutViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_LOGOUT));
     }
 
     /* Call Api For change password */
@@ -299,6 +321,74 @@ public class MyAccountFragment extends BaseFragment {
 
                 changePasswordViewModel.executeChangePasswordAPI(mRequestBodyType,mRequestBodyTypeCompId,
                         mRequestBodyTypeEmployee,mRequestBodyTypeOld,mRequestBodyTypeNew);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    /* Call Api For Logout */
+    private void callLogoutApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_logout);
+                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                logoutViewModel.hitLogoutApi(mRequestBodyAction,mRequestBodyTypeEmployee);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+
+    /* Call Api For Apply Leave */
+    private void callApplyLeaveApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_apply_leave);
+                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
+                RequestBody mRequestBodyDuration = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewDuration.getText().toString());
+                String startTimeStamp = "",endTimeStamp = "",
+                        startDateTimeStamp = AppUtils.changeDateHisab(tvDateValueFrom.getText().toString()),
+                        endDateTimeStamp = AppUtils.changeDateHisab(tvDateValueTo.getText().toString());
+
+                if(AutoComTextViewDuration.getText().toString().equals("Half Day"))
+                {
+                    startTimeStamp = AppUtils.convert12to24ForAttention(tvTimeValueFrom.getText().toString());
+                    endTimeStamp = AppUtils.convert12to24ForAttention(tvTimeValueTo.getText().toString());
+                } else  if(AutoComTextViewDuration.getText().toString().equals("Full Day"))
+                {
+                    startTimeStamp = "00:00:00";endTimeStamp = "23:59:00";
+                }else {
+                    startTimeStamp = "00:00:00";endTimeStamp = "23:59:00";
+                }
+
+                RequestBody mRequestBodyStartTime = RequestBody.create(MediaType.parse("text/plain"), startDateTimeStamp+" "+startTimeStamp);
+                RequestBody mRequestBodyEndTime = RequestBody.create(MediaType.parse("text/plain"), endDateTimeStamp+" "+endTimeStamp);
+                RequestBody mRequestBodyLeaveType = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewLeaveType.getText().toString());
+                RequestBody mRequestBodyComment = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewComment.getText().toString());
+               // RequestBody mRequestBodyLeaveStatus = RequestBody.create(MediaType.parse("text/plain") , "approved");
+                ///RequestBody mRequestBodyUpdatedBy = RequestBody.create(MediaType.parse("text/plain"),"12"  /*loginTable.getManagerId()*/);
+
+                ApplyLeaveRequest applyLeaveRequest = new ApplyLeaveRequest();
+                applyLeaveRequest.setAction(mRequestBodyAction);
+                applyLeaveRequest.setEmpId(mRequestBodyTypeEmpId);
+                applyLeaveRequest.setDuration(mRequestBodyDuration);
+                applyLeaveRequest.setStartTime(mRequestBodyStartTime);
+                applyLeaveRequest.setEndTime(mRequestBodyEndTime);
+                applyLeaveRequest.setLeaveType(mRequestBodyLeaveType);
+                applyLeaveRequest.setComment(mRequestBodyComment);
+               // applyLeaveRequest.setLeaveStatus(mRequestBodyLeaveStatus);
+                //applyLeaveRequest.setUpdatedBy(mRequestBodyUpdatedBy);
+                applyLeaveViewModel.hitApplyLeaveApi(applyLeaveRequest);
             }
             else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
@@ -623,16 +713,33 @@ public class MyAccountFragment extends BaseFragment {
         mDialogChangePass = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialogChangePass.setContentView(R.layout.dialog_add_leave_form);
         mDialogChangePass.setCanceledOnTouchOutside(true);
-        AppCompatAutoCompleteTextView AutoComTextViewDuration = mDialogChangePass.findViewById(R.id.AutoComTextViewDuration);
+        AutoComTextViewDuration = mDialogChangePass.findViewById(R.id.AutoComTextViewDuration);
+        AutoComTextViewLeaveType = mDialogChangePass.findViewById(R.id.AutoComTextViewLeaveType);
         AppCompatImageView mClose = mDialogChangePass.findViewById(R.id.imgCancel);
         AppCompatButton addReceiptButton = mDialogChangePass.findViewById(R.id.addReceiptButton);
         viewToDate = mDialogChangePass.findViewById(R.id.view);
         layToDate = mDialogChangePass.findViewById(R.id.layToDate);
         layoutLeaveTime = mDialogChangePass.findViewById(R.id.layoutLeaveTime);
         appcomptextLeaveTime = mDialogChangePass.findViewById(R.id.appcomptextLeaveTime);
+         appcomptextNoOfDays = mDialogChangePass.findViewById(R.id.appcomptextNoOfDays);
+         tvDateValueFrom = mDialogChangePass.findViewById(R.id.tvDateValueFrom);
+         tvDateValueTo = mDialogChangePass.findViewById(R.id.tvDateValue);
+        tvTimeValueFrom = mDialogChangePass.findViewById(R.id.tvTimeValueFrom);
+        tvTimeValueTo = mDialogChangePass.findViewById(R.id.tvTimeValue);
+        AutoComTextViewComment = mDialogChangePass.findViewById(R.id.AutoComTextViewComment);
+        TextInputLayout input_textDuration = mDialogChangePass.findViewById(R.id.input_textDuration);
+        TextInputLayout input_textType = mDialogChangePass.findViewById(R.id.input_textType);
         layoutLeaveTime.setVisibility(View.GONE);
         appcomptextLeaveTime.setVisibility(View.GONE);
-
+        String mDate = AppUtils.getCurrentDateTime_();//SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.KATA_CHITTI_DATE, AppUtils.getCurrentDateTime_());
+        tvDateValueFrom.setText(mDate);
+        tvDateValueTo.setText(mDate);
+        String mTime = AppUtils.getCurrentTime();
+        tvTimeValueFrom.setText(mTime);
+        tvTimeValueTo.setText(mTime);
+        int diff = getChangeDateForHisab(tvDateValueFrom.getText().toString(),tvDateValueTo.getText().toString());
+        appcomptextNoOfDays.setText("Number of days : "+diff +" Days");
+        noOFDays = diff;
         mClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -640,17 +747,77 @@ public class MyAccountFragment extends BaseFragment {
             }
         });
         setDropdownLeaveDuration(AutoComTextViewDuration);
+        setDropdownType(AutoComTextViewLeaveType);
+        tvDateValueFrom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDataPicker(1);
+            }
+        });
+        tvDateValueTo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDataPicker(0);
+            }
+        });
+        tvTimeValueFrom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OpenTimePicker(1);
+            }
+        });
+        tvTimeValueTo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OpenTimePicker(0);
+            }
+        });
+
         addReceiptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDialogChangePass.dismiss();
-               /* if(isDetailsValid(oldPass,input_textOldPass,newPass,input_textNewPass
-                        ,ConfPass,input_textConfirmPass)){
-                    callChangePassApi(oldPass.getText().toString(),newPass.getText().toString());
-                }*/
+                if(isAttendanceDetailsValid(AutoComTextViewDuration,input_textDuration,AutoComTextViewLeaveType,input_textType
+                        )){
+                    callApplyLeaveApi();
+                }
+
             }
         });
         mDialogChangePass.show();
+    }
+
+    private void OpenTimePicker(int val){
+        // TODO Auto-generated method stub
+        Calendar mcurrentTime = Calendar.getInstance();
+        int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+        int minute = mcurrentTime.get(Calendar.MINUTE);
+        TimePickerDialog mTimePicker;
+        mTimePicker = new TimePickerDialog(mContext, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                String am_pm = "";
+                myCalendar.set(Calendar.HOUR_OF_DAY, selectedHour);
+                myCalendar.set(Calendar.MINUTE, selectedMinute);
+                if (myCalendar.get(Calendar.AM_PM) == Calendar.AM)
+                    am_pm = "am";
+                else if (myCalendar.get(Calendar.AM_PM) == Calendar.PM)
+                    am_pm = "pm";
+                String strHrsToShow = (String.valueOf(myCalendar.get(Calendar.HOUR)).length() == 1) ? "0"+myCalendar.get(Calendar.HOUR) : myCalendar.get(Calendar.HOUR) + "";
+                //UIHelper.showLongToastInCenter(context, strHrsToShow + ":" + myCalendar.get(Calendar.MINUTE) + " " + am_pm);
+                //String min = convertDate(myCalendar.get(Calendar.MINUTE));
+                boolean isPM = (selectedHour >= 12);
+                if(val==0) {
+                    tvTimeValueTo.setText(String.format("%02d:%02d %s", (selectedHour == 12 || selectedHour == 0) ? 12 : selectedHour % 12, myCalendar.get(Calendar.MINUTE), isPM ? "pm" : "am"));
+                }
+                else{
+                    tvTimeValueFrom.setText(String.format("%02d:%02d %s", (selectedHour == 12 || selectedHour == 0) ? 12 : selectedHour % 12, myCalendar.get(Calendar.MINUTE), isPM ? "pm" : "am"));
+
+                }
+                // AutoComTextViewTime.setText(strHrsToShow + ":" + min + " " + am_pm);
+            }
+        }, hour, minute, false);//Yes 24 hour time
+        mTimePicker.setTitle("Select Time");
+        mTimePicker.show();
     }
 
     /*check validations on field*/
@@ -674,6 +841,26 @@ public class MyAccountFragment extends BaseFragment {
             return false;
         } else if (!newPass.getText().toString().trim().equals(ConfPass.getText().toString().trim())) {
             setError(AutoComConfirmPass, getString(R.string.err_msg_wrong_confirm_pass));
+            return false;
+        }
+        return true;
+    }
+
+    /*check validations on field*/
+    private boolean isAttendanceDetailsValid(AppCompatAutoCompleteTextView duration,
+                                   TextInputLayout input_textDuration,
+                                   AppCompatAutoCompleteTextView type,
+                                   TextInputLayout input_textType
+    ) {
+        setError(input_textDuration,"");setError(input_textType, "");
+        //setError(AutoComConfirmPass, "");
+        if (TextUtils.isEmpty(duration.getText().toString().trim())) {
+            setError(input_textDuration, "Select Duration");
+            LogUtil.printToastMSG(mContext,"Select Duration");
+            return false;
+        } else if (TextUtils.isEmpty(type.getText().toString().trim())) {
+            setError(input_textType, "Select Leave Type");
+            LogUtil.printToastMSG(mContext,"Select Leave Type");
             return false;
         }
         return true;
@@ -942,48 +1129,36 @@ public class MyAccountFragment extends BaseFragment {
         moveFromFragment(fragment,mContext);
     }
     public void showLogoutDialog(Context mContext) {
-        Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_logout);
-        mDialog.setCanceledOnTouchOutside(true);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.uploadButton);
-        AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
+        mDialogLogout = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialogLogout.setContentView(R.layout.dialog_logout);
+        mDialogLogout.setCanceledOnTouchOutside(true);
+        AppCompatImageView mClose = mDialogLogout.findViewById(R.id.imgCancel);
+        AppCompatButton okayButton = mDialogLogout.findViewById(R.id.uploadButton);
+        AppCompatButton cancelButton = mDialogLogout.findViewById(R.id.cancelButton);
 
         okayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDialog.dismiss();
-                getActivity().finishAffinity();
-                launchScreen(getActivity(), LoginActivity.class);
-                SharedPref.getInstance(mContext).write(SharedPrefKey.IS_LOGGED_IN, false);
-                try{
-                    mDb.getDbDAO().deleteLoginData();
-                    AsyncTask.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            deleteReminderViewModel.DeleteReminder();
-                        }
-                    });
-                }catch (Exception e){e.printStackTrace();}
+                callLogoutApi();
             }
         });
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDialog.dismiss();
+                mDialogLogout.dismiss();
             }
         });
         mClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDialog.dismiss();
+                mDialogLogout.dismiss();
             }
         });
-        mDialog.show();
+        mDialogLogout.show();
     }
 
     //set date picker view
-    private void openDataPicker(int val , AppCompatTextView datePickerField) {
+    private void openDataPicker(int val) {
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
             @Override
@@ -994,22 +1169,39 @@ public class MyAccountFragment extends BaseFragment {
                 myCalendar.set(Calendar.MONTH, monthOfYear);
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 String myFormat = "dd/MM/yyyy"; //In which you need put here
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-                if(val==1){
-                    datePickerField.setText(sdf.format(myCalendar.getTime()));
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
+                if(val==0){
+                    tvDateValueTo.setText(sdf.format(myCalendar.getTime()));
                 }
                 else {
-                    datePickerField.setText(sdf.format(myCalendar.getTime()));
+                    tvDateValueFrom.setText(sdf.format(myCalendar.getTime()));
                 }
+               int diff = getChangeDateForHisab(tvDateValueFrom.getText().toString(),tvDateValueTo.getText().toString());
+                appcomptextNoOfDays.setText("Number of days : "+diff +" Days");
+                noOFDays = diff;
             }
 
         };
-
-        new DatePickerDialog(mContext, date, myCalendar
+        /*  new DatePickerDialog(mContext, date, myCalendar
                 .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                myCalendar.get(Calendar.DAY_OF_MONTH)).show();*/
+
+        DatePickerDialog dpDialog = new DatePickerDialog(mContext, date, myCalendar
+                .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                myCalendar.get(Calendar.DAY_OF_MONTH));
+       /* if(val==0) {
+            String dateRestrict = AppUtils.changeDateHisab(tvDateValueTo.getText().toString());
+            dpDialog.getDatePicker().setMaxDate(getChangeDateForHisab(dateRestrict));
+        }
+        else {
+            String dateRestrict = AppUtils.changeDateHisab(tvDateValueFrom.getText().toString());
+            dpDialog.getDatePicker().setMinDate(getChangeDateForHisab(dateRestrict));
+        }*/
+        dpDialog.show();
 
     }
+
+
 
     public class MyBarDataSet extends BarDataSet {
 
@@ -1135,6 +1327,25 @@ public class MyAccountFragment extends BaseFragment {
                         e.printStackTrace();
                     }
                     try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_APPLY_LEAVE)) {
+                            ApplyLeaveResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ApplyLeaveResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                mDialogChangePass.dismiss();
+                                ((BaseActivity)mContext).showSuccessDialog(responseModel.getResult().getMessage(),
+                                        true,getActivity());
+                            }
+                            else {
+                                mDialogChangePass.dismiss();
+                                ((BaseActivity)mContext).showSuccessDialog(responseModel.getResult().getMessage(),
+                                        true,getActivity());
+                            }
+                        }
+                    }catch (Exception e){
+                        ((BaseActivity)mContext).showSuccessDialog("Leave application upload failed.",
+                                true,getActivity());
+                        e.printStackTrace();
+                    }
+                    try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_CHANGE_PASS)) {
                             ChangePasswordResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ChangePasswordResponse.class);
                             if (responseModel != null/* && responseModel.getStatus()==1*/) {
@@ -1173,6 +1384,34 @@ public class MyAccountFragment extends BaseFragment {
                                 AppUtils.loadImageURL(mContext,"https://ominfo.in/crm/"+responseModel.getResult().getProfileurl(),imgEmp,progressBar);
                                 //LogUtil.printLog("url_test","https://ominfo.in/crm/"+responseModel.getResult().getProfileurl());
                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                            }
+                            else{
+                                progressBar.setVisibility(View.GONE);
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_LOGOUT)) {
+                            LogoutResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LogoutResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                                mDialogLogout.dismiss();
+                                getActivity().finishAffinity();
+                                launchScreen(getActivity(), LoginActivity.class);
+                                SharedPref.getInstance(mContext).write(SharedPrefKey.IS_LOGGED_IN, false);
+                                try{
+                                    mDb.getDbDAO().deleteLoginData();
+                                    mDb.getDbDAO().deleteLocationData();
+                                    mDb.getDbDAO().deleteAttendanceData();
+                                    AsyncTask.execute(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            deleteReminderViewModel.DeleteReminder();
+                                        }
+                                    });
+                                }catch (Exception e){e.printStackTrace();}
                             }
                             else{
                                 progressBar.setVisibility(View.GONE);
@@ -1306,17 +1545,61 @@ public class MyAccountFragment extends BaseFragment {
                                 appcomptextLeaveTime.setVisibility(View.VISIBLE);
                                 viewToDate.setVisibility(View.GONE);
                                 layToDate.setVisibility(View.GONE);
+                                appcomptextNoOfDays.setText("Number of days : 0 Days");
+                                noOFDays = 0;
                             }
                             else if(mListDropdownView.getText().toString().equals("Full Day")){
                                 viewToDate.setVisibility(View.GONE);
                                 layToDate.setVisibility(View.GONE);
+                                layoutLeaveTime.setVisibility(View.GONE);
+                                appcomptextLeaveTime.setVisibility(View.GONE);
+                                appcomptextNoOfDays.setText("Number of days : 01 Days");
+                                noOFDays = 1;
                             }
                             else{
                                 viewToDate.setVisibility(View.VISIBLE);
                                 layToDate.setVisibility(View.VISIBLE);
                                 layoutLeaveTime.setVisibility(View.GONE);
                                 appcomptextLeaveTime.setVisibility(View.GONE);
+                                int diff = getChangeDateForHisab(tvDateValueFrom.getText().toString(),tvDateValueTo.getText().toString());
+                                appcomptextNoOfDays.setText("Number of days : "+diff +" Days");
+                                noOFDays = diff;
                             }
+                    }
+                });
+
+            } else {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //set value to Search dropdown
+    private void setDropdownType(AppCompatAutoCompleteTextView mListDropdownView) {
+        List<String> leaveModelList = new ArrayList<>();
+        leaveModelList.add("Casual Leave");
+        leaveModelList.add("Sick Leave");
+        //leaveModelList.add("Multiple Days");
+        try {
+            int pos = 0;
+            if (leaveModelList != null && leaveModelList.size() > 0) {
+                String[] mDropdownList = new String[leaveModelList.size()];
+                for (int i = 0; i < leaveModelList.size(); i++) {
+                    mDropdownList[i] = String.valueOf(leaveModelList.get(i));
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        mContext,
+                        R.layout.row_dropdown_item,
+                        mDropdownList);
+                //tvHighlight.setThreshold(1);
+                mListDropdownView.setAdapter(adapter);
+                //mListDropdownView.setHint(mDropdownList[pos]);
+                mListDropdownView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                     }
                 });
 

@@ -8,6 +8,10 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import com.ominfo.crm_solution.alarm.data.Alarm;
+import com.ominfo.crm_solution.ui.attendance.model.LocationPerHourTable;
+import com.ominfo.crm_solution.ui.login.model.AttendanceDaysTable;
+import com.ominfo.crm_solution.ui.login.model.LoginDays;
+import com.ominfo.crm_solution.ui.login.model.LoginResponse;
 import com.ominfo.crm_solution.ui.login.model.LoginTable;
 import com.ominfo.crm_solution.ui.lr_number.model.GetVehicleListResult;
 import com.ominfo.crm_solution.ui.lr_number.model.VehicleDetailsResultTable;
@@ -51,6 +55,18 @@ public interface DBDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertLoginData(LoginTable loginResultTable);
 
+    //for locations list
+    @Insert
+    void insertLocationPerHour(LocationPerHourTable location);
+
+    // For login Attendance Data
+   /* @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAttendanceData(LoginResponse loginResponse);*/
+
+    // For login Attendance test Data
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAttendanceData(AttendanceDaysTable attendanceDaysTable);
+
     @Insert
     void insertReminderData(ReminderModel reminderModel);
 
@@ -60,8 +76,26 @@ public interface DBDAO {
     @Query("SELECT * FROM login_data")
     LoginTable getLoginData();
 
+ /*   @Query("SELECT * FROM attendance_data")
+    LoginResponse getAttendanceData();*/
+
+    @Query("SELECT * FROM test_attendance_data")
+    AttendanceDaysTable getTestAttendanceData();
+
     @Query("DELETE FROM login_data")
     void deleteLoginData();
+
+    @Query("DELETE FROM test_attendance_data")
+    void deleteAttendanceData();
+
+    @Query("DELETE FROM location_data")
+    void deleteLocationData();
+
+    @Query("DELETE FROM location_data where requested_token=:id")
+    void deleteLocationById(String id);
+
+    @Query("SELECT COUNT(*) FROM location_data")
+    int getCountLocation();
 
     /* For vehicle details*/
     @Insert

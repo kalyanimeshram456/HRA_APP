@@ -129,7 +129,60 @@ public class AppUtils {
         return (isTablet ? Constants.TABLET : Constants.PHONE).toUpperCase();
     }*/
 
+    public static String changeDateHisab(String Date1){
+        try {
+            String dt = Date1;  // Start date
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyy");
+            Calendar c = Calendar.getInstance();
+            try {
+                c.setTime(sdf.parse(dt));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            //c.add(Calendar.DATE, 40);  // number of days to add, can also use Calendar.DAY_OF_MONTH in place of Calendar.DATE
+            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+            String output = sdf1.format(c.getTime());
+            return output;
+        }catch (Exception e){
+            e.printStackTrace();
+            return Date1;
+        }
+    }
+    public static int getChangeDateForHisab(String start,String end)
+    {
+        try {
+            String[] strStart = start.split("/");
+            String[] strEnd = end.split("/");
+            int mStartYear = Integer.parseInt(strStart[2]), mStartMonth = Integer.parseInt(strStart[1]), mStartDay = Integer.parseInt(strStart[0]);
+            int mEndYear = Integer.parseInt(strEnd[2]), mEndMonth = Integer.parseInt(strEnd[1]),
+                    mEndDay = Integer.parseInt(strEnd[0]);
+            Calendar startDate = Calendar.getInstance();
+            startDate.set(mStartYear, mStartMonth, mStartDay);
+            long startDateMillis = startDate.getTimeInMillis();
 
+            Calendar endDate = Calendar.getInstance();
+            endDate.set(mEndYear, mEndMonth, mEndDay);
+            long endDateMillis = endDate.getTimeInMillis();
+
+            long differenceMillis = endDateMillis - startDateMillis;
+            int daysDifference = (int) (differenceMillis / (1000 * 60 * 60 * 24));
+            return daysDifference;
+        }catch (Exception e){
+            return 0;
+        }
+    }
+    public static long getChangeDateForHisab(String Date1){
+        try {
+            String[] separated = Date1.split("-");
+            Calendar c = Calendar.getInstance();
+            int mon = (Integer.parseInt(separated[0])) - 1;
+            c.set(mon,Integer.parseInt(separated[0]), Integer.parseInt(separated[2]));//Year,Month -1,Day
+            return c.getTimeInMillis();
+        }catch (Exception e){
+            e.printStackTrace();
+            return 0;
+        }
+    }
     /**
      * this method return current app version
      *
@@ -351,6 +404,25 @@ public class AppUtils {
         return sDateFormate;
     }
 
+    public static String convertyyyytodd(String sDate) {
+        String sDateFormate = "";
+        try {
+            String pattern = "dd/MM/yyyy";
+            String inputPattern = "yyyy-MM-dd HH:mm:ss";
+
+            SimpleDateFormat fmt = new SimpleDateFormat(inputPattern);
+            Date date = fmt.parse(sDate);
+
+            SimpleDateFormat fmtOut = new SimpleDateFormat(pattern);
+            sDateFormate = fmtOut.format(date);
+
+            LogUtil.printLog(TAG, "sDateFormate: " + sDateFormate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sDateFormate;
+    }
+
     public static String getOSVersion() {
 
         String os = "";
@@ -424,8 +496,39 @@ public class AppUtils {
         }
     }
 
+    public static String convert12to24ForAttention(String date12){
+        try {
+            SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm:ss");
+            SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a"/*, Locale.getDefault()*/);
+            Date date = null;
+            try {
+                date = parseFormat.parse(date12);
+                return displayFormat.format(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return date12;
+            }
+        }catch (Exception e){
+            return "00:00:00";
+        }
+    }
+
+
     public static String convert24to12(String date12){
         SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a"/*, Locale.getDefault()*/);
+        Date date = null;
+        try {
+            date = displayFormat.parse(date12);
+            return parseFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return date12;
+        }
+    }
+
+    public static String convert24to12Attendance(String date12){
+        SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm:ss");
         SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a"/*, Locale.getDefault()*/);
         Date date = null;
         try {
@@ -547,12 +650,39 @@ public class AppUtils {
         // formattedDate have current date/time
         return formattedDate;
     }
+    public static String getCurrentDateInyyyymmdd() {
+        Calendar c = Calendar.getInstance();
+        //System.out.println("Current time => "+c.getTime());
+        //2021-04-08 16:45:14.084445
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDate = df.format(c.getTime());
+        // formattedDate have current date/time
+        return formattedDate;
+    }
+    public static String getCurrentTime() {
+        Calendar c = Calendar.getInstance();
+        //System.out.println("Current time => "+c.getTime());
+        //2021-04-08 16:45:14.084445
+        SimpleDateFormat df = new SimpleDateFormat("hh:mm a");
+        String formattedDate = df.format(c.getTime());
+        // formattedDate have current date/time
+        return formattedDate;
+    }
+    public static String getCurrentTimeIn24hr() {
+        Calendar c = Calendar.getInstance();
+        //System.out.println("Current time => "+c.getTime());
+        //2021-04-08 16:45:14.084445
+        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+        String formattedDate = df.format(c.getTime());
+        // formattedDate have current date/time
+        return formattedDate;
+    }
 
     public static String getCurrentDateTime_() {
         Calendar c = Calendar.getInstance();
         //System.out.println("Current time => "+c.getTime());
         //2021-04-08 16:45:14.084445
-        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         String formattedDate = df.format(c.getTime());
         // formattedDate have current date/time
         return formattedDate;
@@ -682,6 +812,13 @@ public class AppUtils {
     public static String getYesterdaysDate() {
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DATE, -1);
+        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
+        String formattedDate = df.format(c.getTime());
+        return formattedDate;
+    }
+    public static String getTommarowdaysDate() {
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DATE, +1);
         SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
         String formattedDate = df.format(c.getTime());
         return formattedDate;

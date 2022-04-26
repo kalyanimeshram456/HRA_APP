@@ -2,6 +2,7 @@
 package com.ominfo.crm_solution.ui.dashboard.model;
 
 import com.google.gson.annotations.SerializedName;
+import com.ominfo.crm_solution.ui.login.model.LoginDays;
 
 import javax.annotation.Generated;
 
@@ -13,8 +14,6 @@ public class Dashboard {
     private String mEnquiryCount;
     @SerializedName("lost_opportunity_count")
     private Long mLostOpportunityCount;
-    @SerializedName("notification_count")
-    private String mNotificationCount;
     @SerializedName("pending_dispatch_count")
     private String mPendingDispatchCount;
     @SerializedName("quotation_amount")
@@ -32,12 +31,23 @@ public class Dashboard {
     @SerializedName("notification_count")
     private String notificationCount;
 
-    public String getmNotificationCount() {
-        return mNotificationCount;
+    @SerializedName("emp_data")
+    private LoginDays loginDays;
+
+    public LoginDays getLoginDays() {
+        return loginDays;
     }
 
-    public void setmNotificationCount(String mNotificationCount) {
-        this.mNotificationCount = mNotificationCount;
+    public void setLoginDays(LoginDays loginDays) {
+        this.loginDays = loginDays;
+    }
+
+    public String getNotificationCount() {
+        return notificationCount;
+    }
+
+    public void setNotificationCount(String notificationCount) {
+        this.notificationCount = notificationCount;
     }
 
     public String getEnquiryCount() {
@@ -56,13 +66,6 @@ public class Dashboard {
         mLostOpportunityCount = lostOpportunityCount;
     }
 
-    public String getNotificationCount() {
-        return mNotificationCount;
-    }
-
-    public void setNotificationCount(String notificationCount) {
-        mNotificationCount = notificationCount;
-    }
 
     public String getPendingDispatchCount() {
         return mPendingDispatchCount;
