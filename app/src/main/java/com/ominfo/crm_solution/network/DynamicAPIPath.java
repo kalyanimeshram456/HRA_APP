@@ -52,6 +52,7 @@ public class DynamicAPIPath {
     public static final String POST_MARK_ATTENDANCE= BASE+"?action=mark_attendance";
     public static final String POST_UPDATE_ATTENDANCE= BASE+"?action=attendance_updated";
     public static final String POST_LOCATION_PER_HOUR= BASE+"?action=emp_long_lati_tracking";
+    public static final String POST_TOP_CUST= BASE+"?action=top_customer";
 
     //action string
     public static final String POST_FETCH_KATA_CHITTI = "index_with_DRapp.php?action=getKantaChitthi";
@@ -66,6 +67,7 @@ public class DynamicAPIPath {
     public static final String action_update_attendance = "attendance_updated";
     public static final String action_save_enquiry = "enquirysave";
     public static final String action_get_enquiry = "enquiryget";
+    public static final String action_get_top_customer = "top_customer";
     public static final String action_update_leave_status = "apply_leave_updated";
     public static final String action_get_lost_apportunity = "getlostopportunity";
     public static final String action_get_edit_visit = "editVisit";

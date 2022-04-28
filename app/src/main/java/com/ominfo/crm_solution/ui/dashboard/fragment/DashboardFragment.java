@@ -513,17 +513,17 @@ public class DashboardFragment extends BaseFragment {
         SharedPref.getInstance(mContext).write(SharedPrefKey.ATTENDANCE_START_TIME, "00:00:00");
         //LogUtil.printToastMSG(mContext,"att_before_Test-"+weekDay);
         for (int i = 0; i < attendanceListList.size(); i++) {
-            if (weekDay.equals(attendanceListList.get(i).getMonDay()) && attendanceListList.get(i).getMonWorking().equals("yes")) {
+            if (weekDay.toLowerCase().equals(attendanceListList.get(i).getMonDay().toLowerCase()) && attendanceListList.get(i).getMonWorking().equals("yes")) {
                 //LogUtil.printToastMSG(mContext,"att_Test"+weekDay);
                 SharedPref.getInstance(mContext).write(SharedPrefKey.ATTENDANCE_START_TIME, attendanceListList.get(i).getMonStartTime());
-                String startDate = AppUtils.getCurrentTimeIn24hr(),
+                String startDate = AppUtils.getCurrentDateTime_()+" "+AppUtils.getCurrentTimeIn24hr(),
                         endDate = attendanceListList.get(i).getMonStartTime() == null ||
-                                attendanceListList.get(i).getMonStartTime().equals("00:00:00") ? "10:00:00" : attendanceListList.get(i).getMonStartTime(),
+                                attendanceListList.get(i).getMonStartTime().equals("00:00:00") ? AppUtils.getCurrentDateTime_()+" "+"10:00:00" : AppUtils.getCurrentDateTime_()+" "+attendanceListList.get(i).getMonStartTime(),
                         attEndDate = attendanceListList.get(i).getMonEndTime() == null ||
-                                attendanceListList.get(i).getMonEndTime().equals("00:00:00") ? "19:00:00" : attendanceListList.get(i).getMonEndTime();
+                                attendanceListList.get(i).getMonEndTime().equals("00:00:00") ? AppUtils.getCurrentDateTime_()+" "+"19:00:00" : AppUtils.getCurrentDateTime_()+" "+attendanceListList.get(i).getMonEndTime();
                 String Min30LaterTime = "", Min60LaterTime = "";
                 try {
-                    SimpleDateFormat sdf30 = new SimpleDateFormat("HH:mm:ss");
+                    SimpleDateFormat sdf30 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                     String currentDateandTime = sdf30.format(new Date());
                     Date date = sdf30.parse(endDate);
                     Calendar calendar30 = Calendar.getInstance();
@@ -531,7 +531,7 @@ public class DashboardFragment extends BaseFragment {
                     calendar30.add(Calendar.MINUTE, 30);
                     Min30LaterTime = sdf30.format(calendar30.getTime());
                     //LogUtil.printToastMSG(mContext,Min30LaterTime);
-                    SimpleDateFormat sdf60 = new SimpleDateFormat("HH:mm:ss");
+                    SimpleDateFormat sdf60 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                     //String currentDateandTime = sdf30.format(new Date());
                     Date date60 = sdf60.parse(endDate);
                     Calendar calendar60 = Calendar.getInstance();
@@ -541,7 +541,7 @@ public class DashboardFragment extends BaseFragment {
                     //LogUtil.printToastMSG(mContext,Min60LaterTime);
                 } catch (Exception e) {
                 }
-                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 add_attendance.setVisibility(View.VISIBLE);
                 rippleEffect.setVisibility(View.VISIBLE);
                 try {
@@ -556,8 +556,9 @@ public class DashboardFragment extends BaseFragment {
                     Date date5 = sdf.parse(attEndDate);
                     LogUtil.printLog("att_realend ", attEndDate);
                     Boolean iSActiveChill = SharedPref.getInstance(mContext).read(SharedPrefKey.CHECK_OUT_ENABLED, false);
-                    String iSCheckInDoneChill = SharedPref.getInstance(mContext).read(SharedPrefKey.CHECK_OUT_TIME, "00:00:00");
-
+                    String iSCheckInDoneChill = SharedPref.getInstance(mContext).read(SharedPrefKey.CHECK_OUT_TIME, AppUtils.getCurrentDateTime_()+" "+"00:00:00");
+                    Date dateEnd = sdf.parse(iSCheckInDoneChill);
+                    String[] valll = iSCheckInDoneChill.split(" ");
                     if (iSActiveChill) {
                        // LogUtil.printToastMSG(mContext,iSActiveChill+"-"+iSCheckInDoneChill);
                         if (date1.compareTo(date2) == -1) {
@@ -574,7 +575,7 @@ public class DashboardFragment extends BaseFragment {
                         }
                     }
                     if (!iSActiveChill) {
-                        if (date1.compareTo(date2) == -1) {
+                        if ((date1.compareTo(date2) == -1) || (((!valll[1].equals("00:00:00")) && (dateEnd.compareTo(date2) == 1) && (dateEnd.compareTo(date5) == -1)))) {
                             // Outputs -1 as date1 is before date2
                             rippleEffect.stopRippleAnimation();
                             add_attendance.setVisibility(View.GONE);

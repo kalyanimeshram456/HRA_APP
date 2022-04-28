@@ -661,7 +661,8 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         imgNotifyCount = NotifyCount;
         //imgNotifyCount.invalidate();// = null;
         //LogUtil.printToastMSG(mContext,"counttt");
-        setNotifyCount();
+        if(val!=6){
+        setNotifyCount();}
         /*if(logoutId!=0) {
             LinearLayoutCompat imgLogout = findViewById(logoutId);
             imgLogout.setOnClickListener(new View.OnClickListener() {

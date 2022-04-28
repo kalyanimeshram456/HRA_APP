@@ -37,6 +37,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TimePicker;
@@ -102,6 +103,7 @@ import com.ominfo.crm_solution.ui.my_account.model.ProfileResponse;
 import com.ominfo.crm_solution.ui.my_account.model.ProfileViewModel;
 import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.reminders.adapter.AddTagAdapter;
+import com.ominfo.crm_solution.ui.sales_credit.activity.PdfPrintActivity;
 import com.ominfo.crm_solution.ui.sales_credit.model.GraphModel;
 import com.ominfo.crm_solution.util.AppUtils;
 import com.ominfo.crm_solution.util.LogUtil;
@@ -722,6 +724,10 @@ public class MyAccountFragment extends BaseFragment {
         layoutLeaveTime = mDialogChangePass.findViewById(R.id.layoutLeaveTime);
         appcomptextLeaveTime = mDialogChangePass.findViewById(R.id.appcomptextLeaveTime);
          appcomptextNoOfDays = mDialogChangePass.findViewById(R.id.appcomptextNoOfDays);
+        AppCompatImageView imgFromDate  = mDialogChangePass.findViewById(R.id.imgFromDate);
+        AppCompatImageView imgToDate  = mDialogChangePass.findViewById(R.id.imgToDate);
+        ImageView imgFromTime  = mDialogChangePass.findViewById(R.id.imgToTime);
+        ImageView imgToTime  = mDialogChangePass.findViewById(R.id.imgTime);
          tvDateValueFrom = mDialogChangePass.findViewById(R.id.tvDateValueFrom);
          tvDateValueTo = mDialogChangePass.findViewById(R.id.tvDateValue);
         tvTimeValueFrom = mDialogChangePass.findViewById(R.id.tvTimeValueFrom);
@@ -754,7 +760,18 @@ public class MyAccountFragment extends BaseFragment {
                 openDataPicker(1);
             }
         });
+        imgFromDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDataPicker(1);
+            }
+        });
         tvDateValueTo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDataPicker(0);
+            }
+        });imgToDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openDataPicker(0);
@@ -765,8 +782,18 @@ public class MyAccountFragment extends BaseFragment {
             public void onClick(View v) {
                 OpenTimePicker(1);
             }
+        });imgFromTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OpenTimePicker(1);
+            }
         });
         tvTimeValueTo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OpenTimePicker(0);
+            }
+        });imgToTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 OpenTimePicker(0);
@@ -1087,14 +1114,33 @@ public class MyAccountFragment extends BaseFragment {
         });
     }
 
-
+private void setTermsAndPolicy(String webUrl){
+    Intent iTerms = new Intent(getActivity(), PdfPrintActivity.class);
+    iTerms.putExtra(Constants.TRANSACTION_ID, "myacc");
+    iTerms.putExtra(Constants.URL, webUrl);
+    startActivity(iTerms);
+    ((Activity) getActivity()).overridePendingTransition(0, 0);
+}
 
     //perform click actions
     @OnClick({R.id.imgLogoutNew,R.id.tvLogoutNew,R.id.imgChangePass,R.id.tvChangePass,R.id.imgAdd,
-            R.id.imgApplyLeave,R.id.tvApplyLeave,R.id.tvLeaveApp,R.id.imgLeaveApp})
+            R.id.imgApplyLeave,R.id.tvApplyLeave,R.id.tvLeaveApp,R.id.imgLeaveApp,R.id.imgTerms
+    ,R.id.tvTerms,R.id.imgPrivacy,R.id.tvPrivacy})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
+            case R.id.imgTerms:
+                setTermsAndPolicy("https://ominfo.in/terms-conditions.php");
+                break;
+            case R.id.tvTerms:
+                setTermsAndPolicy("https://ominfo.in/terms-conditions.php");
+                break;
+            case R.id.imgPrivacy:
+                setTermsAndPolicy("https://ominfo.in/privacy-policy.php");
+                break;
+            case R.id.tvPrivacy:
+                setTermsAndPolicy("https://ominfo.in/privacy-policy.php");
+                break;
             case R.id.imgAdd:
                 showChooseCameraDialog();
                 break;
@@ -1545,7 +1591,7 @@ public class MyAccountFragment extends BaseFragment {
                                 appcomptextLeaveTime.setVisibility(View.VISIBLE);
                                 viewToDate.setVisibility(View.GONE);
                                 layToDate.setVisibility(View.GONE);
-                                appcomptextNoOfDays.setText("Number of days : 0 Days");
+                                appcomptextNoOfDays.setText("Number of days : Half Day");
                                 noOFDays = 0;
                             }
                             else if(mListDropdownView.getText().toString().equals("Full Day")){

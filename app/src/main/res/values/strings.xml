@@ -228,5 +228,8 @@
     <string name="scr_lbl_leave_details">Leave Details</string>
     <string name="scr_lbl_reject">Reject</string>
     <string name="scr_lbl_accept">Accept</string>
+    <string name="scr_lbl_privacy_policy">Privacy policy</string>
+    <string name="scr_lbl_terms_of_use">Terms of use</string>
+    <string name="scr_lbl_no_thanks">No, Thanks</string>
 
 </resources>

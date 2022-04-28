@@ -245,7 +245,7 @@ public class UploadVisitActivity extends BaseActivity {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         //mSelectedColor = mDropdownList[position];
-                        AppUtils.hideSoftKeyboard(UploadVisitActivity.this);
+                        //AppUtils.hideSoftKeyboard(UploadVisitActivity.this);
                     }
                 });
             } else {
@@ -1034,13 +1034,13 @@ public class UploadVisitActivity extends BaseActivity {
 
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EDIT_VISIT)) {
-                            LogUtil.printToastMSG(mContext, "Visit upload failed");
+                            //LogUtil.printToastMSG(mContext, "Visit upload failed");
                             EditVisitResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), EditVisitResponse.class);
                             if (responseModel != null ) {
-                                if(responseModel.getStatus()==1) {
+                                if(responseModel.getResult().getStatus().equals("success")) {
                                     String visit = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.VISIT_NO, "");
                                     SharedPref.getInstance(mContext).write(SharedPrefKey.VISIT_NO, "");
-                                    showSuccessDialog("Visit Uploaded Successfully!", false, UploadVisitActivity.this);
+                                    showSuccessDialog("Visit Report Uploaded Successfully!", false, UploadVisitActivity.this);
                                 }
                                 else{
                                     LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());

@@ -21,6 +21,7 @@ import com.ominfo.crm_solution.ui.reminders.model.UpdateReminderRequest;
 import com.ominfo.crm_solution.ui.sale.model.SalesRequest;
 import com.ominfo.crm_solution.ui.sales_credit.model.GetView360Request;
 import com.ominfo.crm_solution.ui.sales_credit.model.SalesCreditRequest;
+import com.ominfo.crm_solution.ui.top_customer.model.TopCustomerRequest;
 import com.ominfo.crm_solution.ui.visit_report.model.AddVisitRequest;
 import com.ominfo.crm_solution.ui.visit_report.model.EditVisitRequest;
 import com.ominfo.crm_solution.ui.visit_report.model.GetVisitRequest;
@@ -240,6 +241,12 @@ public class Service {
                 getEnquiryRequest.getFilterRm());
     }
 
+    public Observable<JsonElement> executeGetTopCustomerAPI(TopCustomerRequest topCustomerRequest) {
+        return networkAPIServices.getTopCustomer(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_TOP_CUST),
+                topCustomerRequest.getAction(),topCustomerRequest.getPageNo(),
+                topCustomerRequest.getPageSize(),topCustomerRequest.getRmId(),
+                topCustomerRequest.getCustName());
+    }
 
     public Observable<JsonElement> executeGetView360API(GetView360Request getView360Request) {
         return networkAPIServices.getView360(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_VIEW360),

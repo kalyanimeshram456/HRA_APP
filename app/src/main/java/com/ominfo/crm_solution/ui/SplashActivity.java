@@ -36,7 +36,7 @@ public class SplashActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setTimeStamp();
         Glide.with(this)
-                .load(R.drawable.ic_turanthbiz)
+                .load(R.drawable.ic_turanthbiz_name)
                 .into(imgheader);
     }
 

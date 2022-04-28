@@ -296,6 +296,14 @@ public interface NetworkAPIServices {
                                        @Part("filter_rm") RequestBody filter_rm);
     @Multipart
     @POST()
+    Observable<JsonElement> getTopCustomer(@Url String url,
+                                       @Part("action") RequestBody uploadType,
+                                       @Part("pageno") RequestBody pageno,
+                                       @Part("pagesize") RequestBody pagesize,
+                                       @Part("rmid") RequestBody rmid,
+                                       @Part("cust_name") RequestBody cust_name);
+    @Multipart
+    @POST()
     Observable<JsonElement> getLostApportunity(@Url String url,
                                        @Part("action") RequestBody uploadType,
                                        @Part("company_id") RequestBody uploadTypeCompId,

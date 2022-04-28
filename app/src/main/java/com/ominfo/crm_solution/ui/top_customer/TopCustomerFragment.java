@@ -1,33 +1,31 @@
 package com.ominfo.crm_solution.ui.top_customer;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -35,21 +33,16 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.model.GradientColor;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.gson.Gson;
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.basecontrol.BaseActivity;
@@ -63,17 +56,12 @@ import com.ominfo.crm_solution.network.NetworkCheck;
 import com.ominfo.crm_solution.network.ViewModelFactory;
 import com.ominfo.crm_solution.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
+import com.ominfo.crm_solution.ui.dashboard.model.HighlightModel;
 import com.ominfo.crm_solution.ui.enquiry_report.adapter.EnquiryPageAdapter;
 import com.ominfo.crm_solution.ui.enquiry_report.adapter.EnquiryReportAdapter;
 import com.ominfo.crm_solution.ui.enquiry_report.adapter.RmTagAdapter;
 import com.ominfo.crm_solution.ui.enquiry_report.model.EnquiryPagermodel;
-import com.ominfo.crm_solution.ui.enquiry_report.model.EnquiryStatusResponse;
-import com.ominfo.crm_solution.ui.enquiry_report.model.EnquiryStatusViewModel;
-import com.ominfo.crm_solution.ui.enquiry_report.model.EnquiryStatuslist;
 import com.ominfo.crm_solution.ui.enquiry_report.model.GetEnquiry;
-import com.ominfo.crm_solution.ui.enquiry_report.model.GetEnquiryRequest;
-import com.ominfo.crm_solution.ui.enquiry_report.model.GetEnquiryResponse;
-import com.ominfo.crm_solution.ui.enquiry_report.model.GetEnquiryViewModel;
 import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmResponse;
 import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmViewModel;
 import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmlist;
@@ -81,9 +69,12 @@ import com.ominfo.crm_solution.ui.login.model.LoginTable;
 import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.sale.adapter.CompanyTagAdapter;
 import com.ominfo.crm_solution.ui.sale.model.RmListModel;
-import com.ominfo.crm_solution.ui.sales_credit.activity.View360Activity;
-import com.ominfo.crm_solution.ui.sales_credit.adapter.SalesCreditAdapter;
 import com.ominfo.crm_solution.ui.sales_credit.model.GraphModel;
+import com.ominfo.crm_solution.ui.top_customer.adapter.TopCustomerReportAdapter;
+import com.ominfo.crm_solution.ui.top_customer.model.TopCustomerRequest;
+import com.ominfo.crm_solution.ui.top_customer.model.TopCustomerResponse;
+import com.ominfo.crm_solution.ui.top_customer.model.TopCustomerViewModel;
+import com.ominfo.crm_solution.ui.top_customer.model.Topcust;
 import com.ominfo.crm_solution.util.AppUtils;
 import com.ominfo.crm_solution.util.LogUtil;
 
@@ -114,7 +105,7 @@ import okhttp3.RequestBody;
 public class TopCustomerFragment extends BaseFragment {
 
     Context mContext;
-    EnquiryReportAdapter enquiryReportAdapter;
+    TopCustomerReportAdapter topCustomerReportAdapter;
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
     /*@BindView(R.id.fromDate)
@@ -151,7 +142,7 @@ public class TopCustomerFragment extends BaseFragment {
     AppCompatButton submitButton;
     @Inject
     ViewModelFactory mViewModelFactory;
-    private GetEnquiryViewModel getEnquiryViewModel;
+    private TopCustomerViewModel topCustomerViewModel;
     private GetRmViewModel getRmViewModel;
 
     BarData barData;
@@ -195,7 +186,7 @@ public class TopCustomerFragment extends BaseFragment {
     RmTagAdapter addRmTagAdapter;
     EnquiryPageAdapter enquiryPageAdapter;
     List<GetRmlist> RMDropdown = new ArrayList<>();
-    List<GetEnquiry> enquiryResultArrayList = new ArrayList<>();
+    List<Topcust> topcustArrayList = new ArrayList<>();
     GetRmlist selectedRM = new GetRmlist();
     final Calendar myCalendar = Calendar.getInstance();
     @BindView(R.id.progressBarHolder)
@@ -205,6 +196,8 @@ public class TopCustomerFragment extends BaseFragment {
     private AppDatabase mDb;
     @BindView(R.id.rvRm)
     RecyclerView rvRm;
+    @BindView(R.id.tvHighlight)
+    AppCompatAutoCompleteTextView tvHighlight;
     private String pagerClicked = "No";
     public TopCustomerFragment() {
         // Required empty public constructor
@@ -259,10 +252,12 @@ public class TopCustomerFragment extends BaseFragment {
 
         setToolbar();
         setEnquiryPagerList(1);
-        callGetEnquiryApi("0");
-        setAdapterForEnquiryList();
+        callGetTopCustomerApi("0",AppUtils.startMonth(), AppUtils.endMonth());
+        setAdapterForTopCustomerList();
         setAddTagList();
         setAddRmTagList();
+        tvHighlight.setText("This Month");
+        setDropdownTopCustomer();
         rvImages.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -298,9 +293,69 @@ public class TopCustomerFragment extends BaseFragment {
 
     }
 
+    //set value to Search dropdown
+    private void setDropdownTopCustomer() {
+        tvHighlight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tvHighlight.showDropDown();
+            }
+        });
+        List<HighlightModel> highlightModelList = new ArrayList<>();
+      /*  highlightModelList.add(new HighlightModel("Today's Hightlights",
+                AppUtils.getDashCurrentDateTime_(), AppUtils.getDashCurrentDateTime_()));*/
+       /* highlightModelList.add(new HighlightModel("Yesterday's Hightlights",
+                AppUtils.getDashYesterdaysDate(), AppUtils.getDashYesterdaysDate()));*/
+        highlightModelList.add(new HighlightModel("This Week",
+                AppUtils.getStartWeek(), AppUtils.getEndWeek()));
+        highlightModelList.add(new HighlightModel("Last Week"
+                , AppUtils.getStartLastWeek(), AppUtils.getEndLastWeek()));
+        highlightModelList.add(new HighlightModel("This Month",
+                AppUtils.startMonth(), AppUtils.endMonth()));
+        highlightModelList.add(new HighlightModel("Last Month",
+                AppUtils.startLastMonth(), AppUtils.endLastMonth()));
+        highlightModelList.add(new HighlightModel("This Year",
+                AppUtils.startYear(), AppUtils.endYear()));
+        try {
+            int pos = 0;
+            if (highlightModelList != null && highlightModelList.size() > 0) {
+                String[] mDropdownList = new String[highlightModelList.size()];
+                for (int i = 0; i < highlightModelList.size(); i++) {
+                    mDropdownList[i] = String.valueOf(highlightModelList.get(i).getHighlight());
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        mContext,
+                        R.layout.row_dropdown_item,
+                        mDropdownList);
+                //tvHighlight.setThreshold(1);
+                tvHighlight.setAdapter(adapter);
+                tvHighlight.setHint(mDropdownList[pos]);
+                tvHighlight.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        for (int i = 0; i < highlightModelList.size(); i++) {
+                            if (highlightModelList.get(i).getHighlight().equals(mDropdownList[position])) {
+                                 /* LogUtil.printToastMSG(mContext,highlightModelList.get(i).getDateFrom()
+                                  +"  "+highlightModelList.get(i).getDateTo());*/
+                                callGetTopCustomerApi("0",highlightModelList.get(i).getDateFrom()
+                                       , highlightModelList.get(i).getDateTo());
+                            }
+                        }
+                    }
+                });
+
+            } else {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     private void injectAPI() {
-        getEnquiryViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetEnquiryViewModel.class);
-        getEnquiryViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_ENQUIRY));
+        topCustomerViewModel = ViewModelProviders.of(this, mViewModelFactory).get(TopCustomerViewModel.class);
+        topCustomerViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_TOP_CUST));
 
         getRmViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetRmViewModel.class);
         getRmViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_RM));
@@ -308,61 +363,45 @@ public class TopCustomerFragment extends BaseFragment {
 
 
     /* Call Api For RM */
-    private void callGetEnquiryApi(String pageNo) {
+    private void callGetTopCustomerApi(String pageNo,String startDate,String endDate) {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
-                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_enquiry);
-                RequestBody mRequestBodyTypeEnquiry = RequestBody.create(MediaType.parse("text/plain"), "0");//loginTable.getEmployeeId());//loginTable.getEmployeeId());
-                RequestBody mRequestBodyTypeComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());//loginTable.getCompanyId());
-                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
-               /* String mStringFrmDate = AppUtils.splitsEnquiryDate(fromDate.getText().toString().trim()),
-                        mStringToDate = AppUtils.splitsEnquiryDate(toDate.getText().toString().trim());*/
-                RequestBody mRequestBodyTypeFromDate = RequestBody.create(MediaType.parse("text/plain"), "2022-12-02");
-                RequestBody mRequestBodyTypeToDate = RequestBody.create(MediaType.parse("text/plain"), "2022-12-02");
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_top_customer);
                 RequestBody mRequestBodyTypePageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);//selectedRM.getEmpId());
                 RequestBody mRequestBodyTypePageSize = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
                 String mCompanyNameList="",mRMList="";
-                for(int i=0;i<tagList.size();i++){
-                    if(i==0){
-                        mCompanyNameList = tagList.get(i).getTitle();
-                    }
-                    else {
-                        mCompanyNameList = mCompanyNameList+"~"+tagList.get(i).getTitle();
+                for(int i=0;i<tagList.size();i++) {
+                    if (tagList.get(i).getTitle() != null && !tagList.get(i).getTitle().equals("")) {
+                        if (i == 0) {
+                            mCompanyNameList = tagList.get(i).getTitle();
+                        } else {
+                            mCompanyNameList = mCompanyNameList + "~" + tagList.get(i).getTitle();
+                        }
                     }
                 }
                 for(int i=0;i<tagRmList.size();i++){
-                    if(i==0){
-                        mRMList = tagRmList.get(i).getTitle();
-                    }
-                    else {
-                        mRMList = mRMList+"~"+tagRmList.get(i).getTitle();
+                    if (tagRmList.get(i).getTitle() != null && !tagRmList.get(i).getTitle().equals("")) {
+                        if (i == 0) {
+                            mRMList = tagRmList.get(i).getTitle();
+                        } else {
+                            mRMList = mRMList + "~" + tagRmList.get(i).getTitle();
+                        }
                     }
                 }
-                RequestBody mRequestBodyTypeENo = RequestBody.create(MediaType.parse("text/plain"), "");
                 ///Gson gson = new Gson();
                 ///String bodyInStringFormat = gson.toJson(mCompanyNameList);
                 RequestBody mRequestBodyTypeCName = RequestBody.create(MediaType.parse("text/plain"), mCompanyNameList);
-                RequestBody mRequestBodyTypeEStatus = RequestBody.create(MediaType.parse("text/plain"), "");
-                RequestBody mRequestBodyTypeCloseReason = RequestBody.create(MediaType.parse("text/plain"), "");
                 RequestBody mRequestBodyTypeRm = RequestBody.create(MediaType.parse("text/plain"), mRMList);
 
-                GetEnquiryRequest getEnquiryRequest = new GetEnquiryRequest();
+                TopCustomerRequest getEnquiryRequest = new TopCustomerRequest();
                 getEnquiryRequest.setAction(mRequestBodyAction);
-                getEnquiryRequest.setEnquiry(mRequestBodyTypeEnquiry);
-                getEnquiryRequest.setCompanyId(mRequestBodyTypeComId);
-                getEnquiryRequest.setEmployee(mRequestBodyTypeEmpId);
-                getEnquiryRequest.setFromDate(mRequestBodyTypeFromDate);
-                getEnquiryRequest.setToDate(mRequestBodyTypeToDate);
-                getEnquiryRequest.setPageNumber(mRequestBodyTypePageNo);
+                getEnquiryRequest.setPageNo(mRequestBodyTypePageNo);
                 getEnquiryRequest.setPageSize(mRequestBodyTypePageSize);
-                getEnquiryRequest.setFilterEnquiryNo(mRequestBodyTypeENo);
-                getEnquiryRequest.setFilterCustomerName(mRequestBodyTypeCName);
-                getEnquiryRequest.setFilterEnquiryStatus(mRequestBodyTypeEStatus);
-                getEnquiryRequest.setFilterCloseReason(mRequestBodyTypeCloseReason);
-                getEnquiryRequest.setFilterRm(mRequestBodyTypeRm);
+                getEnquiryRequest.setCustName(mRequestBodyTypeCName);
+                getEnquiryRequest.setRmId(mRequestBodyTypeRm);
 
-                getEnquiryViewModel.hitGetEnquiryApi(getEnquiryRequest);
+                topCustomerViewModel.hitTopCustomerApi(getEnquiryRequest);
             }
             else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
@@ -625,8 +664,8 @@ public class TopCustomerFragment extends BaseFragment {
         return data;
     }
 
-    private void setAdapterForEnquiryList() {
-        if (enquiryResultArrayList.size() > 0) {
+    private void setAdapterForTopCustomerList() {
+        if (topcustArrayList.size() > 0) {
             rvSalesList.setVisibility(View.VISIBLE);
             emptyLayout.setVisibility(View.GONE);
         } else {
@@ -634,17 +673,17 @@ public class TopCustomerFragment extends BaseFragment {
             emptyLayout.setVisibility(View.VISIBLE);
         }
 
-        enquiryReportAdapter = new EnquiryReportAdapter(mContext, enquiryResultArrayList, new EnquiryReportAdapter.ListItemSelectListener() {
+        topCustomerReportAdapter = new TopCustomerReportAdapter(mContext, topcustArrayList, new TopCustomerReportAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket,GetEnquiry getEnquiry) {
+            public void onItemClick(int mDataTicket,Topcust getEnquiry) {
                 //For not killing pre fragment
-                showReceiptDetailsDialog();
+               // showReceiptDetailsDialog();
             }
         });
 
         rvSalesList.setHasFixedSize(true);
         rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
-        rvSalesList.setAdapter(enquiryReportAdapter);
+        rvSalesList.setAdapter(topCustomerReportAdapter);
         final boolean[] check = {false};
 
     }
@@ -828,13 +867,15 @@ public class TopCustomerFragment extends BaseFragment {
                 break;
 
             case R.id.submitButton:
-                enquiryResultArrayList.clear();
+                topcustArrayList.clear();
                 setEnquiryPagerList(0);
-                setAdapterForEnquiryList();
+                setAdapterForTopCustomerList();
                 tvPage.setText("Showing " + String.valueOf(0) + " to " +
                         String.valueOf(0) + " of " + String.valueOf(0) + "\nEntries");
                 try {
-                    callGetEnquiryApi("0");
+                    callGetTopCustomerApi("0",AppUtils.startMonth(), AppUtils.endMonth());
+                    tvHighlight.setText("This Month");
+                    setDropdownTopCustomer();
                 }catch (Exception e){e.printStackTrace();}
                 //add_fab.setVisibility(View.VISIBLE);
                 pieChart.setVisibility(View.GONE);
@@ -1185,7 +1226,10 @@ public class TopCustomerFragment extends BaseFragment {
                     enquiryPageAdapter.updateList(mDataList);
                 }catch (Exception e){e.printStackTrace();}
                 try {
-                    callGetEnquiryApi(String.valueOf(Integer.parseInt(mData.getPageNo()) - 1));
+                    callGetTopCustomerApi(String.valueOf(Integer.parseInt(mData.getPageNo()) - 1)
+                            ,AppUtils.startMonth(), AppUtils.endMonth());
+                    tvHighlight.setText("This Month");
+                    setDropdownTopCustomer();
                 }catch (Exception e){e.printStackTrace();}
             }
         });
@@ -1240,38 +1284,39 @@ public class TopCustomerFragment extends BaseFragment {
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
                     try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_ENQUIRY)) {
-                            GetEnquiryResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetEnquiryResponse.class);
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_TOP_CUST)) {
+                            TopCustomerResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), TopCustomerResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 long totalPage = 0;
-                                tvTotalCount.setText(String.valueOf(responseModel.getResult().getTotalEnquiries()));
                                 try {
-                                    if (responseModel.getResult().getEnquiries() != null && responseModel.getResult().getEnquiries().size()>0) {
-                                        enquiryResultArrayList.clear();
-                                        enquiryResultArrayList = responseModel.getResult().getEnquiries();
+                                    if (responseModel.getResult().getTopcust() != null && responseModel.getResult().getTopcust().size()>0) {
+                                        topcustArrayList.clear();
+                                        topcustArrayList = responseModel.getResult().getTopcust();
+                                        tvTotalCount.setText(String.valueOf(responseModel.getResult().getTopcust().get(0).getCustName()));
+
                                         totalPage=responseModel.getResult().getTotalpages();
 
                                         if(responseModel.getResult().getNextpage()==1) {
                                             tvPage.setText("Showing " + String.valueOf(responseModel.getResult().getNextpage()) + " to " +
-                                                    String.valueOf(((responseModel.getResult().getNextpage()-1) + enquiryResultArrayList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalEnquiries()) + "\nEntries"));
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1) + topcustArrayList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries"));
                                         }
                                         else {
                                             tvPage.setText("Showing " + String.valueOf(((responseModel.getResult().getNextpage()-1)*7)+1) + " to " +
-                                                    String.valueOf(((responseModel.getResult().getNextpage()-1)*7)+enquiryResultArrayList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalEnquiries()) + "\nEntries");
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1)*7)+ topcustArrayList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries");
                                         }
                                     }
                                     else{
                                         totalPage=0;
-                                        enquiryResultArrayList.clear();
+                                        topcustArrayList.clear();
                                     }
 
                                 }catch(Exception e){
                                     e.printStackTrace();
                                     totalPage=0;
-                                    enquiryResultArrayList.clear();
+                                    topcustArrayList.clear();
                                 }
                                 setEnquiryPagerList(totalPage);
-                                setAdapterForEnquiryList();
+                                setAdapterForTopCustomerList();
                             }
                         }
                     }catch (Exception e){e.printStackTrace();}

@@ -42,6 +42,7 @@ import com.ominfo.crm_solution.ui.sale.model.SalesViewModel;
 import com.ominfo.crm_solution.ui.sales_credit.model.SalesCreditViewModel;
 import com.ominfo.crm_solution.ui.sales_credit.model.View30ViewModel;
 import com.ominfo.crm_solution.ui.search.model.SearchCrmViewModel;
+import com.ominfo.crm_solution.ui.top_customer.model.TopCustomerViewModel;
 import com.ominfo.crm_solution.ui.visit_report.model.AddVisitViewModel;
 import com.ominfo.crm_solution.ui.visit_report.model.EditVisitViewModel;
 import com.ominfo.crm_solution.ui.visit_report.model.GetTourViewModel;
@@ -191,6 +192,9 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
          }
          else  if (modelClass.isAssignableFrom(LogoutViewModel.class)) {
              return (T) new LogoutViewModel(service);
+         }
+         else  if (modelClass.isAssignableFrom(TopCustomerViewModel.class)) {
+             return (T) new TopCustomerViewModel(service);
          }
 
         throw new IllegalArgumentException("Unknown class name");

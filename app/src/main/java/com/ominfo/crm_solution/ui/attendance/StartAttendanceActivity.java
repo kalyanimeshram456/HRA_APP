@@ -782,6 +782,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                                //set toggle
                                 SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_IN_BUTTON, true);
                                 SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_OUT_ENABLED, true);
+                                SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_OUT_TIME, AppUtils.getCurrentDateTime_()+" "+"00:00:00");
                                 final Handler handler=new Handler();
                                 handler.postDelayed(new Runnable() {
                                     @Override
@@ -806,7 +807,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                                 //set toggle
                                 SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_IN_BUTTON, false);
                                 SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_OUT_ENABLED, false);
-                                SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_OUT_TIME, AppUtils.getCurrentTimeIn24hr());
+                                SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_OUT_TIME, AppUtils.getCurrentDateTime_()+" "+AppUtils.getCurrentTimeIn24hr());
                                 stopService(new Intent(mContext, BackgroundAttentionService.class));
 
                                 final Handler handler=new Handler();

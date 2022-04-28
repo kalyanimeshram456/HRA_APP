@@ -60,7 +60,7 @@ public class PdfPrintActivity extends BaseActivity {
     @BindView(R.id.progressBarHolder)
     FrameLayout mProgressBarHolder;
     WebView printWeb;
-    String url = "";
+    String url = "",tranId="" ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,11 +84,11 @@ public class PdfPrintActivity extends BaseActivity {
         //webView.setWebViewClient(new MyBrowser());
         Intent intent = getIntent();
         if(intent!=null){
-            String tranId = intent.getStringExtra(Constants.TRANSACTION_ID);
+             tranId = intent.getStringExtra(Constants.TRANSACTION_ID);
             if(tranId.equals("1")){
                 url = "https://ominfo.in/crm/crm_product_invoice_print.php?orderid=82&orderno=4b6ecaf994a113cac150591120094adc";
             }
-            if(tranId.equals("2")){
+            if(tranId.equals("2") || tranId.equals("myacc")){
                 url = intent.getStringExtra(Constants.URL);
             }
         }
@@ -125,7 +125,9 @@ public class PdfPrintActivity extends BaseActivity {
             public void onPageFinished(WebView view, String url) {
                 ((BaseActivity) mContext).dismissSmallProgressBar(mProgressBarHolder);
                 //if page loaded successfully then show print button
-                printButton.setVisibility(View.VISIBLE);
+                if(!tranId.equals("myacc")) {
+                    printButton.setVisibility(View.VISIBLE);
+                }
             }
         });
 

@@ -161,8 +161,8 @@ public class BackgroundAttentionService extends Service implements GoogleApiClie
             builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
         }
 
-        builder.setContentTitle("Check-In");
-        builder.setContentText("Service is working in the background.");
+        builder.setContentTitle("Attendance Activity");
+        builder.setContentText("Logging is running in the background.");
         Uri notificationSound = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_NOTIFICATION);
         //builder.setSound(notificationSound);
         builder.setNotificationSilent();

@@ -1120,7 +1120,9 @@ public class LeaveListFragment extends BaseFragment {
                             LeaveApplicationResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LeaveApplicationResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 leaveArrayList.clear();
-                                tvTotalCount.setText(String.valueOf(responseModel.getResult().getTotalrows()));
+                                String ct = String.valueOf(responseModel.getResult().getTotalrows())==null
+                                        || String.valueOf(responseModel.getResult().getTotalrows()).equals("null")?"0":String.valueOf(responseModel.getResult().getTotalrows());
+                                tvTotalCount.setText(ct);
                                 try {
                                     if (responseModel.getResult().getLeave() != null && responseModel.getResult().getLeave().size()>0) {
                                         leaveArrayList = responseModel.getResult().getLeave();

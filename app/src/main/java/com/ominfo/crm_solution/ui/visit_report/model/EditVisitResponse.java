@@ -8,35 +8,16 @@ import com.google.gson.annotations.SerializedName;
 @SuppressWarnings("unused")
 public class EditVisitResponse {
 
-    @SerializedName("message")
-    private String mMessage;
     @SerializedName("result")
     private EditVisitResult mResult;
-    @SerializedName("status")
-    private Long mStatus;
-
-    public String getMessage() {
-        return mMessage;
-    }
-
-    public void setMessage(String message) {
-        mMessage = message;
-    }
-
-    public EditVisitResult getResult() {
-        return mResult;
-    }
 
     public void setResult(EditVisitResult result) {
         mResult = result;
     }
-
-    public Long getStatus() {
-        return mStatus;
+    public EditVisitResult getResult() {
+        return mResult;
     }
 
-    public void setStatus(Long status) {
-        mStatus = status;
-    }
+
 
 }

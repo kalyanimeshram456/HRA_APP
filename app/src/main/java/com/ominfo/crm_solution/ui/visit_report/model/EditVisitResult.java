@@ -8,55 +8,11 @@ import com.google.gson.annotations.SerializedName;
 @SuppressWarnings("unused")
 public class EditVisitResult {
 
-    @SerializedName("affectedRows")
-    private Long mAffectedRows;
-    @SerializedName("changedRows")
-    private Long mChangedRows;
-    @SerializedName("fieldCount")
-    private Long mFieldCount;
-    @SerializedName("insertId")
-    private Long mInsertId;
+
+    @SerializedName("status")
+    private String mStatus;
     @SerializedName("message")
     private String mMessage;
-    @SerializedName("protocol41")
-    private Boolean mProtocol41;
-    @SerializedName("serverStatus")
-    private Long mServerStatus;
-    @SerializedName("warningCount")
-    private Long mWarningCount;
-
-    public Long getAffectedRows() {
-        return mAffectedRows;
-    }
-
-    public void setAffectedRows(Long affectedRows) {
-        mAffectedRows = affectedRows;
-    }
-
-    public Long getChangedRows() {
-        return mChangedRows;
-    }
-
-    public void setChangedRows(Long changedRows) {
-        mChangedRows = changedRows;
-    }
-
-    public Long getFieldCount() {
-        return mFieldCount;
-    }
-
-    public void setFieldCount(Long fieldCount) {
-        mFieldCount = fieldCount;
-    }
-
-    public Long getInsertId() {
-        return mInsertId;
-    }
-
-    public void setInsertId(Long insertId) {
-        mInsertId = insertId;
-    }
-
     public String getMessage() {
         return mMessage;
     }
@@ -65,28 +21,12 @@ public class EditVisitResult {
         mMessage = message;
     }
 
-    public Boolean getProtocol41() {
-        return mProtocol41;
+    public String getStatus() {
+        return mStatus;
     }
 
-    public void setProtocol41(Boolean protocol41) {
-        mProtocol41 = protocol41;
-    }
-
-    public Long getServerStatus() {
-        return mServerStatus;
-    }
-
-    public void setServerStatus(Long serverStatus) {
-        mServerStatus = serverStatus;
-    }
-
-    public Long getWarningCount() {
-        return mWarningCount;
-    }
-
-    public void setWarningCount(Long warningCount) {
-        mWarningCount = warningCount;
+    public void setStatus(String status) {
+        mStatus = status;
     }
 
 }

@@ -258,16 +258,16 @@ public class NotificationsActivity extends BaseActivity {
         }
         tvDateValueFrom.setText(start);
         tvDateValue.setText(end);
-        int diff = 0;
+        String diff = "0";
         if(data.getDuration().equals("single day"))
         {
-            diff = 1;
+            diff = "1";
             viewToDate.setVisibility(View.GONE);
             layToDate.setVisibility(View.GONE);
             layoutLeaveTime.setVisibility(View.GONE);
             appcomptextLeaveTime.setVisibility(View.GONE);
         }else if(data.getDuration().equals("Half Day")){
-            diff = 0;
+            diff = "Half";
             viewToDate.setVisibility(View.GONE);
             layToDate.setVisibility(View.GONE);
             layoutLeaveTime.setVisibility(View.VISIBLE);
@@ -288,9 +288,15 @@ public class NotificationsActivity extends BaseActivity {
             layToDate.setVisibility(View.VISIBLE);
             layoutLeaveTime.setVisibility(View.GONE);
             appcomptextLeaveTime.setVisibility(View.GONE);
-            diff = getChangeDateForHisab(tvDateValueFrom.getText().toString(), tvDateValue.getText().toString());
+            diff = String.valueOf(getChangeDateForHisab(tvDateValueFrom.getText().toString(), tvDateValue.getText().toString()));
         }
-        appcomptextNoOfDays.setText("Number of days : " + diff + " Days");
+        if(diff.equals("Half")){
+            appcomptextNoOfDays.setText("Number of days : " + diff + " Day");
+        }
+        else {
+            appcomptextNoOfDays.setText("Number of days : " + diff + " Days");
+        }
+
         //disable boxes
         AutoComTextViewDuration.setEnabled(false);AutoComTextViewDuration.setText(data.getDuration());
         tvDateValueFrom.setEnabled(false);
