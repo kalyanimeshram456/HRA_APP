@@ -37,6 +37,8 @@
     <color name="Light_Green_quo">#32D256</color>
     <color name="dark_att_blue">#00BEFA</color>
     <color name="light_att_blue">#0168EC</color>
+    <color name="dark_tick_blue">#942FE3</color>
+    <color name="light_tick_blue">#646CC1</color>
     <color name="Dark_Green_quo">#28A945</color>
     <color name="Light_Blue">#1FC5BC</color>
     <color name="Dark_Blue">#17A4B8</color>

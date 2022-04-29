@@ -2,6 +2,7 @@ package com.ominfo.crm_solution.ui.dashboard.fragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -27,6 +28,7 @@ import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -37,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.basecontrol.BaseActivity;
@@ -69,6 +72,7 @@ import com.ominfo.crm_solution.ui.my_account.model.GetProfileImageViewModel;
 import com.ominfo.crm_solution.ui.my_account.model.ProfileImageResponse;
 import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.quotation_amount.QuotationFragment;
+import com.ominfo.crm_solution.ui.receipt.model.ReceiptResult;
 import com.ominfo.crm_solution.ui.sale.SaleFragment;
 import com.ominfo.crm_solution.ui.visit_report.activity.StartEndVisitActivity;
 import com.ominfo.crm_solution.util.AppUtils;
@@ -304,6 +308,44 @@ public class DashboardFragment extends BaseFragment {
             e.printStackTrace();
         }
     }
+    //show Receipt Details popup
+    public void showRateUsDialog() {
+        Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialog.setContentView(R.layout.dialog_rate_us);
+        mDialog.setCanceledOnTouchOutside(true);
+        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
+        AppCompatButton addReceiptButton = mDialog.findViewById(R.id.addReceiptButton);
+        AppCompatButton addRejectButton = mDialog.findViewById(R.id.addRejectButton);
+        AppCompatTextView appcomptextSubTitle = mDialog.findViewById(R.id.appcomptextSubTitle);
+        AppCompatTextView tvAmountValue = mDialog.findViewById(R.id.tvAmountValue);
+        AppCompatTextView appcomptextTitle = mDialog.findViewById(R.id.appcomptextTitle);
+        TextInputLayout input_textComment = mDialog.findViewById(R.id.input_textComment);
+        input_textComment.setVisibility(View.GONE);
+        addReceiptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //mDialog.dismiss()
+                input_textComment.setVisibility(View.VISIBLE);
+                addRejectButton.setText(R.string.scr_lbl_not_now);
+                appcomptextTitle.setText(R.string.scr_lbl_thanks);
+                appcomptextSubTitle.setText("You can also write a review");
+            }
+        });
+
+        addRejectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+        mDialog.show();
+    }
 
     private void setTimer() {
         Boolean iSTimer = SharedPref.getInstance(mContext).read(SharedPrefKey.TIMER_STATUS, false);
@@ -414,6 +456,7 @@ public class DashboardFragment extends BaseFragment {
             case R.id.imgProfileDash:
                /* Fragment fragmentAcc = new MyAccountFragment();
                 moveFromFragment(fragmentAcc,mContext);*/
+                showRateUsDialog();
                 break;
             case R.id.cardLostOpportunity:
                 Fragment fragmentLost = new LostApportunityFragment();

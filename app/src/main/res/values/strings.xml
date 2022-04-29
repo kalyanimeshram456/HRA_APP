@@ -231,5 +231,15 @@
     <string name="scr_lbl_privacy_policy">Privacy policy</string>
     <string name="scr_lbl_terms_of_use">Terms of use</string>
     <string name="scr_lbl_no_thanks">No, Thanks</string>
+    <string name="scr_lbl_not_now">Not now</string>
+    <string name="scr_lbl_thanks">Thanks for rating us !</string>
+    <string name="scr_lbl_report_a_problem">Report a problem</string>
+    <string name="scr_lbl_tickets">Tickets</string>
+    <string name="scr_lbl_ticket_number">Ticket Number</string>
+    <string name="scr_lbl_date_amp_time"><![CDATA[Date & Time]]></string>
+    <string name="scr_lbl_customer_support">Customer Support</string>
+    <string name="scr_lbl_issue_title">Issue title</string>
+    <string name="scr_lbl_issue_type">Issue type</string>
+    <string name="scr_lbl_priority">Priority</string>
 
 </resources>

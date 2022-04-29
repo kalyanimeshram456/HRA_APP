@@ -24,8 +24,8 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgCancel"
-            android:layout_width="@dimen/_45dp"
-            android:layout_height="@dimen/_45dp"
+            android:layout_width="@dimen/_50dp"
+            android:layout_height="@dimen/_50dp"
             android:layout_centerInParent="true"
             android:src="@drawable/ic_turanthbiz_name" />
 
@@ -39,11 +39,10 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10dp"
         android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/appcomptext"
+            android:id="@+id/appcomptextTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -57,27 +56,38 @@
             android:textSize="@dimen/_18sp" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/appcomptextLeaveDate"
+            android:id="@+id/appcomptextSubTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/_20dp"
+            android:layout_marginTop="@dimen/_16sp"
             android:layout_marginHorizontal="@dimen/_10dp"
             android:fontFamily="@font/gilroy_semibold"
             android:text="Top a star to rate"
             android:textColor="@color/back_text_colour"
-            android:textSize="@dimen/_12sp" />
+            android:textSize="@dimen/_14sp" />
 
-
+        <androidx.appcompat.widget.AppCompatRatingBar
+            android:id="@+id/ratingbar"
+            style="@style/RatingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_50dp"
+            android:layout_marginTop="@dimen/_10dp"
+            android:isIndicator="false"
+            android:numStars="5"
+            android:rating="0"
+            android:layout_gravity="center_horizontal"
+            android:secondaryProgressTint="#00000000"
+            android:stepSize="0.1" />
         <!--TAG Text filed-->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_textPOI"
+            android:id="@+id/input_textComment"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_70dp"
             app:hintEnabled="false"
             android:layout_marginHorizontal="@dimen/_10dp"
-            android:layout_marginTop="@dimen/_6dp"
+            android:layout_marginTop="@dimen/_10dp"
             app:boxCornerRadiusTopEnd="@dimen/_10dp"
             app:boxCornerRadiusTopStart="@dimen/_10dp"
             app:boxCornerRadiusBottomEnd="@dimen/_10dp"
@@ -90,7 +100,7 @@
             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                 android:id="@+id/AutoComTextViewComment"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_70dp"
+                android:layout_height="@dimen/_60dp"
                 android:background="@drawable/toggle_add_reminder_edt"
                 android:clickable="true"
                 android:focusable="true"
@@ -108,15 +118,13 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-
-
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/addReceiptButton"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_40dp"
             android:layout_alignParentBottom="true"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/_25dp"
+            android:layout_marginTop="@dimen/_10dp"
             android:layout_marginBottom="@dimen/_10dp"
             android:background="@drawable/bg_button_round_corner_5"
             android:fontFamily="@font/gilroy_semibold"

@@ -101,6 +101,7 @@ import com.ominfo.crm_solution.ui.my_account.model.ProfileImageResponse;
 import com.ominfo.crm_solution.ui.my_account.model.ProfileRequest;
 import com.ominfo.crm_solution.ui.my_account.model.ProfileResponse;
 import com.ominfo.crm_solution.ui.my_account.model.ProfileViewModel;
+import com.ominfo.crm_solution.ui.my_account.report.ReportListFragment;
 import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.reminders.adapter.AddTagAdapter;
 import com.ominfo.crm_solution.ui.sales_credit.activity.PdfPrintActivity;
@@ -1121,11 +1122,14 @@ private void setTermsAndPolicy(String webUrl){
     startActivity(iTerms);
     ((Activity) getActivity()).overridePendingTransition(0, 0);
 }
-
+    private void moveToReportAppList(){
+        Fragment fragment = new ReportListFragment();
+        moveFromFragment(fragment,mContext);
+    }
     //perform click actions
     @OnClick({R.id.imgLogoutNew,R.id.tvLogoutNew,R.id.imgChangePass,R.id.tvChangePass,R.id.imgAdd,
             R.id.imgApplyLeave,R.id.tvApplyLeave,R.id.tvLeaveApp,R.id.imgLeaveApp,R.id.imgTerms
-    ,R.id.tvTerms,R.id.imgPrivacy,R.id.tvPrivacy})
+    ,R.id.tvTerms,R.id.imgPrivacy,R.id.tvPrivacy,R.id.imgReport,R.id.tvReport})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
@@ -1140,6 +1144,12 @@ private void setTermsAndPolicy(String webUrl){
                 break;
             case R.id.tvPrivacy:
                 setTermsAndPolicy("https://ominfo.in/privacy-policy.php");
+                break;
+            case R.id.imgReport:
+                moveToReportAppList();
+                break;
+            case R.id.tvReport:
+                moveToReportAppList();
                 break;
             case R.id.imgAdd:
                 showChooseCameraDialog();

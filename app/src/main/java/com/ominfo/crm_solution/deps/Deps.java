@@ -13,6 +13,7 @@ import com.ominfo.crm_solution.ui.login.LoginActivity;
 import com.ominfo.crm_solution.ui.lost_apportunity.LostApportunityFragment;
 import com.ominfo.crm_solution.ui.my_account.MyAccountFragment;
 import com.ominfo.crm_solution.ui.my_account.leave.LeaveListFragment;
+import com.ominfo.crm_solution.ui.my_account.report.ReportListFragment;
 import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.product.ProductFragment;
 import com.ominfo.crm_solution.ui.quotation_amount.QuotationFragment;
@@ -38,6 +39,8 @@ public interface Deps
     void inject(BaseActivity baseActivity);
 
     void inject(LeaveListFragment leaveListFragment);
+
+    void inject(ReportListFragment reportListFragment);
 
     void inject(LostApportunityFragment lostApportunityFragment);
 
