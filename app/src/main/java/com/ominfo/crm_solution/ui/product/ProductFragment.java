@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
@@ -60,6 +61,7 @@ import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmlist;
 import com.ominfo.crm_solution.ui.login.model.LoginTable;
 import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.product.adapter.ProductAdapter;
+import com.ominfo.crm_solution.ui.product.model.Product;
 import com.ominfo.crm_solution.ui.product.model.ProductRequest;
 import com.ominfo.crm_solution.ui.product.model.ProductResponse;
 import com.ominfo.crm_solution.ui.product.model.ProductResult;
@@ -85,6 +87,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 //https://github.com/PhilJay/MPAndroidChart/wiki/Modifying-the-Viewport
 
 /**
@@ -95,7 +99,7 @@ import butterknife.OnClick;
 public class ProductFragment extends BaseFragment {
 
     Context mContext;
-    ProductAdapter enquiryReportAdapter;
+    ProductAdapter productAdapter;
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
    /* @BindView(R.id.fromDate)
@@ -123,9 +127,12 @@ public class ProductFragment extends BaseFragment {
     @BindView(R.id.imgNotify)
     AppCompatImageView imgNotify;
     private AppDatabase mDb;
-/*
-    @BindView(R.id.add_fab)
-    FloatingActionButton add_fab;*/
+    @BindView(R.id.layFilter)
+    LinearLayoutCompat layFilter;
+    @BindView(R.id.tvProductCode)
+    AppCompatAutoCompleteTextView tvProductCode;
+    @BindView(R.id.tvProdName)
+    AppCompatAutoCompleteTextView tvProdName;
 
     BarData barData;
     List<GradientColor> list = new ArrayList<>();
@@ -142,7 +149,7 @@ public class ProductFragment extends BaseFragment {
            "10"*//*, "45","90", "95","50", "55","60", "65"*//*};*/
     int startPos = 0 , endPos = 0;
 
-    List<ProductResult> productResultList = new ArrayList<>();
+    List<Product> productResultList = new ArrayList<>();
     List<GraphModel> graphModelsList = new ArrayList<>();
     @Inject
     ViewModelFactory mViewModelFactory;
@@ -171,6 +178,8 @@ public class ProductFragment extends BaseFragment {
     AppCompatImageView prePage;
     @BindView(R.id.tvNotifyCount)
     AppCompatTextView tvNotifyCount;
+    @BindView(R.id.submitButton)
+    AppCompatButton submitButton;
     private Calendar calendar;
     private SimpleDateFormat dateFormat;
   /*  @BindView(R.id.tvQutationNo)
@@ -241,7 +250,7 @@ public class ProductFragment extends BaseFragment {
         imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
         imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
         imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
-        //layFilter.setVisibility(View.GONE);
+        layFilter.setVisibility(View.GONE);
 
         setToolbar();
         setDate();
@@ -277,25 +286,18 @@ public class ProductFragment extends BaseFragment {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
-                String mCompanyNameList="",mRMList="";
-                /*for(int i=0;i<tagList.size();i++){
-                    if(i==0){
-                        mCompanyNameList = tagList.get(i).getTitle();
-                    }
-                    else {
-                        mCompanyNameList = mCompanyNameList+"~"+tagList.get(i).getTitle();
-                    }
-                }*/
-                for(int i=0;i<tagRmList.size();i++){
-                    mTRMList.add(tagRmList.get(i).getValue());
-                }
-               /* String mStringFrmDate = AppUtils.splitsEnquiryDate(fromDate.getText().toString().trim()),
-                        mStringToDate = AppUtils.splitsEnquiryDate(toDate.getText().toString().trim());
-               */ mCompnyList.clear();
-                mCompnyList.add("93"); mCompnyList.add("1");
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_products);
+                RequestBody mRequestBodyPageNo = RequestBody.create(MediaType.parse("text/plain"),pageNo);
+                RequestBody mRequestBodyPageSize = RequestBody.create(MediaType.parse("text/plain"),Constants.MIN_PAG_SIZE);
+                RequestBody mRequestBodyCode = RequestBody.create(MediaType.parse("text/plain"),tvProductCode.getText().toString());
+                RequestBody mRequestBodyName = RequestBody.create(MediaType.parse("text/plain"),tvProdName.getText().toString());
+
                 ProductRequest request = new ProductRequest();
-                request.setPageno(pageNo);
-                request.setPagesize(Constants.MIN_PAG_SIZE);
+                request.setAction(mRequestBodyAction);
+                request.setPageno(mRequestBodyPageNo);
+                request.setPagesize(mRequestBodyPageSize);
+                request.setProdCode(mRequestBodyCode);
+                request.setProdName(mRequestBodyName);
                 productViewModel.hitProductApi(request);
             }
             else {
@@ -533,9 +535,9 @@ public class ProductFragment extends BaseFragment {
             emptyLayout.setVisibility(View.VISIBLE);
             rvSalesList.setVisibility(View.GONE);
         }
-        enquiryReportAdapter = new ProductAdapter(mContext, productResultList, new ProductAdapter.ListItemSelectListener() {
+        productAdapter = new ProductAdapter(mContext, productResultList, new ProductAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket,ProductResult productResult) {
+            public void onItemClick(int mDataTicket,Product productResult) {
                 //For not killing pre fragment
                 if(mDataTicket==0) {
                     Intent i = new Intent(getActivity(), View360Activity.class);
@@ -551,21 +553,24 @@ public class ProductFragment extends BaseFragment {
 
         rvSalesList.setHasFixedSize(true);
         rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
-        rvSalesList.setAdapter(enquiryReportAdapter);
+        rvSalesList.setAdapter(productAdapter);
     }
 
     //show Receipt Details popup
-    public void showVisitDetailsDialog(ProductResult productResult) {
+    public void showVisitDetailsDialog(Product productResult) {
         Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialog.setContentView(R.layout.dialog_product_details);
         mDialog.setCanceledOnTouchOutside(true);
         AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
         AppCompatButton closeButton = mDialog.findViewById(R.id.closeButton);
-
+        AppCompatTextView tvQuantity = mDialog.findViewById(R.id.tvQuantity);
+        AppCompatTextView tvSaleAmount = mDialog.findViewById(R.id.tvSaleAmount);
         AppCompatTextView tvProdCode = mDialog.findViewById(R.id.tvProdCode);
         AppCompatTextView tvProdName = mDialog.findViewById(R.id.tvProdName);
         tvProdName.setText(productResult.getProdName()+"...");
         tvProdCode.setText(productResult.getProdCode());
+        tvQuantity.setText(productResult.getSalesquantity());
+        tvSaleAmount.setText(productResult.getTotalsaleamt());
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -676,8 +681,8 @@ public class ProductFragment extends BaseFragment {
 
 
     //perform click actions
-    @OnClick({R.id.imgGraph,R.id.imgTable,/*,R.id.add_fab,*/R.id.imgFilter/*,R.id.resetButton*/
-    ,R.id.toDate,R.id.fromDate})
+    @OnClick({R.id.imgGraph,R.id.imgTable,R.id.submitButton,R.id.resetButton
+    ,R.id.toDate,R.id.fromDate,R.id.imgFilter})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
@@ -687,12 +692,32 @@ public class ProductFragment extends BaseFragment {
             case R.id.fromDate:
                 //openDataPicker(0,fromDate);
                 break;
+            case R.id.submitButton:
+                //add_fab.setVisibility(View.VISIBLE);
+                productResultList.clear();
+                setEnquiryPagerList(0);
+                setAdapterForProductList();
+                tvPage.setText("Showing " + String.valueOf(0) + " to " +
+                        String.valueOf(0) + " of " + String.valueOf(0) + "\nEntries");
+                callProductApi("0");
+                pieChart.setVisibility(View.GONE);
+                layList.setVisibility(View.VISIBLE);
+                layPagination.setVisibility(View.VISIBLE);
+                layFilter.setVisibility(View.GONE);
+                emptyLayout.setVisibility(View.GONE);
+                submitButton.setVisibility(View.GONE);
+                imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
+                imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
+                imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
+                break;
             case R.id.imgFilter:
                 //add_fab.setVisibility(View.GONE);
                 pieChart.setVisibility(View.GONE);
                 layList.setVisibility(View.GONE);
                 layPagination.setVisibility(View.GONE);
-                //layFilter.setVisibility(View.VISIBLE);
+                layFilter.setVisibility(View.VISIBLE);
+                emptyLayout.setVisibility(View.GONE);
+                submitButton.setVisibility(View.VISIBLE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_table_blue));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_blue));
@@ -714,22 +739,18 @@ public class ProductFragment extends BaseFragment {
                 pieChart.setVisibility(View.GONE);
                 layList.setVisibility(View.VISIBLE);
                 layPagination.setVisibility(View.VISIBLE);
-               // layFilter.setVisibility(View.GONE);
+                layFilter.setVisibility(View.GONE);
+                emptyLayout.setVisibility(View.GONE);
+                submitButton.setVisibility(View.GONE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
                 break;
 
-          /*  case R.id.resetButton:
-                //add_fab.setVisibility(View.VISIBLE);
-                pieChart.setVisibility(View.GONE);
-                layList.setVisibility(View.VISIBLE);
-                layPagination.setVisibility(View.VISIBLE);
-                //layFilter.setVisibility(View.GONE);
-                imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
-                imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
-                imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
-                break;*/
+            case R.id.resetButton:
+                tvProductCode.setText("");
+                tvProdName.setText("");
+                break;
         }
     }
 
@@ -830,21 +851,21 @@ public class ProductFragment extends BaseFragment {
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_PRODUCT)) {
                             ProductResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ProductResponse.class);
-                            if (responseModel != null && responseModel.getStatus()==1) {
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 productResultList.clear();
                                 long totalPage = 0;
                                 //tvTotalCount.setText(String.valueOf(responseModel.getTotalenquiries()));
                                 try {
-                                    if (responseModel.getProducts() != null && responseModel.getProducts().size()>0) {
-                                        productResultList = responseModel.getProducts();
-                                        totalPage = responseModel.getTotalpages();
-                                        if(responseModel.getNextpage()==1) {
-                                            tvPage.setText("Showing " + String.valueOf(responseModel.getNextpage()) + " to " +
-                                                    String.valueOf(((responseModel.getNextpage()-1) + productResultList.size()) + " of " + String.valueOf(responseModel.getTotalproducts()) + "\nEntries"));
+                                    if (responseModel.getResult().getProduct() != null && responseModel.getResult().getProduct().size()>0) {
+                                        productResultList = responseModel.getResult().getProduct();
+                                        totalPage = responseModel.getResult().getTotalpages();
+                                        if(responseModel.getResult().getNextpage()==1) {
+                                            tvPage.setText("Showing " + String.valueOf(responseModel.getResult().getNextpage()) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1) + productResultList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries"));
                                         }
                                         else {
-                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getNextpage()-1)*4)+1) + " to " +
-                                                    String.valueOf(((responseModel.getNextpage()-1)*4)+productResultList.size()) + " of " + String.valueOf(responseModel.getTotalproducts()) + "\nEntries");
+                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getResult().getNextpage()-1)*4)+1) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1)*4)+productResultList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries");
                                         }
                                     }
 

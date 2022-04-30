@@ -170,16 +170,16 @@
                 android:textSize="@dimen/_14sp" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvRMValue"
+                android:id="@+id/tvQuantity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@+id/tvRMColon"
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start|center"
+                android:hint="@string/scr_lbl_unavailable"
                 android:inputType="textCapCharacters"
                 android:text=""
-                android:hint="@string/scr_lbl_unavailable"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
@@ -216,14 +216,14 @@
                 android:textSize="@dimen/_14sp" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvStateValue"
+                android:id="@+id/tvSaleAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/tvStateColon"
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
-                android:inputType="textCapCharacters"
                 android:hint="@string/scr_lbl_unavailable"
+                android:inputType="textCapCharacters"
                 android:text=""
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />

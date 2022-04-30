@@ -175,9 +175,9 @@
                 android:layout_toRightOf="@+id/tvRMColon"
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
+                android:hint="@string/scr_lbl_unavailable"
                 android:inputType="textCapCharacters"
                 android:text=""
-                android:hint="@string/scr_lbl_unavailable"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
@@ -187,6 +187,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_10dp"
+            android:visibility="gone"
             android:layout_marginTop="@dimen/_10dp">
 
             <androidx.appcompat.widget.AppCompatTextView

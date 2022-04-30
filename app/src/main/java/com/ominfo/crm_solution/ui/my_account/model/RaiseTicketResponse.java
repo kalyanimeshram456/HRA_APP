@@ -1,21 +1,21 @@
 
-package com.ominfo.crm_solution.ui.receipt.model;
+package com.ominfo.crm_solution.ui.my_account.model;
 
 import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class ReceiptResponse {
+public class RaiseTicketResponse {
 
     @SerializedName("result")
-    private ReceiptResultData mResult;
+    private RaiseTicketResult mResult;
 
-    public ReceiptResultData getResult() {
+    public RaiseTicketResult getResult() {
         return mResult;
     }
 
-    public void setResult(ReceiptResultData result) {
+    public void setResult(RaiseTicketResult result) {
         mResult = result;
     }
 

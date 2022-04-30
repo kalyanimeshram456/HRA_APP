@@ -44,6 +44,7 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.model.GradientColor;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.basecontrol.BaseActivity;
@@ -67,7 +68,10 @@ import com.ominfo.crm_solution.ui.my_account.model.ApplicationLeave;
 import com.ominfo.crm_solution.ui.my_account.model.LeaveApplicationRequest;
 import com.ominfo.crm_solution.ui.my_account.model.LeaveApplicationResponse;
 import com.ominfo.crm_solution.ui.my_account.model.LeaveApplicationViewModel;
+import com.ominfo.crm_solution.ui.my_account.model.RaiseTicketResponse;
+import com.ominfo.crm_solution.ui.my_account.model.RaiseTicketViewModel;
 import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
+import com.ominfo.crm_solution.ui.product.model.ProductRequest;
 import com.ominfo.crm_solution.ui.sale.adapter.CompanyTagAdapter;
 import com.ominfo.crm_solution.ui.sale.model.RmListModel;
 import com.ominfo.crm_solution.ui.sales_credit.model.GraphModel;
@@ -140,11 +144,12 @@ public class ReportListFragment extends BaseFragment {
     ViewModelFactory mViewModelFactory;
     private LeaveApplicationViewModel leaveApplicationViewModel;
     private GetRmViewModel getRmViewModel;
+    private RaiseTicketViewModel raiseTicketViewModel;
     BarData barData;
     List<GradientColor> list = new ArrayList<>();
     // variable for our bar data set.
     BarDataSet barDataSet;
-
+    AppCompatAutoCompleteTextView AutoComTextViewPriority;
     // array list for storing entries.
     ArrayList barEntriesArrayList;
     //private static final String[] DATA_BAR_GRAPH = new String[6];//{"","09:00",
@@ -200,6 +205,7 @@ public class ReportListFragment extends BaseFragment {
     AppCompatAutoCompleteTextView tvAutoLeaveStatus;
     @BindView(R.id.imgReport)
     AppCompatImageView imgReport;
+    String tickerNo = "";
 
     public ReportListFragment() {
         // Required empty public constructor
@@ -282,7 +288,7 @@ public class ReportListFragment extends BaseFragment {
         imgReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LogUtil.printToastMSG(mContext,"Clicked...");
+                callRaiseTicketApi();
             }
         });
     }
@@ -293,6 +299,9 @@ public class ReportListFragment extends BaseFragment {
 
         getRmViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetRmViewModel.class);
         getRmViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_RM));
+
+        raiseTicketViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RaiseTicketViewModel.class);
+        raiseTicketViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_RAISE_TICKET));
     }
 
     private void setDate(){
@@ -371,6 +380,121 @@ public class ReportListFragment extends BaseFragment {
         }
     }
 
+    //set value to Issue Type
+    private void setDropdownIssueType(AppCompatAutoCompleteTextView mListDropdownView) {
+        List<String> leaveModelList = new ArrayList<>();
+        leaveModelList.add("App is not Responding");
+        leaveModelList.add("Attendance related issue");
+        leaveModelList.add("Visit related issue");
+        leaveModelList.add("Enquiry related issue");
+        //leaveModelList.add("Multiple Days");
+        try {
+            int pos = 0;
+            if (leaveModelList != null && leaveModelList.size() > 0) {
+                String[] mDropdownList = new String[leaveModelList.size()];
+                for (int i = 0; i < leaveModelList.size(); i++) {
+                    mDropdownList[i] = String.valueOf(leaveModelList.get(i));
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        mContext,
+                        R.layout.row_dropdown_item,
+                        mDropdownList);
+                //tvHighlight.setThreshold(1);
+                mListDropdownView.setAdapter(adapter);
+                //mListDropdownView.setHint(mDropdownList[pos]);
+                mListDropdownView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    }
+                });
+
+            } else {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //set value to priority
+    private void setDropdownPriority(
+            AppCompatTextView tvResolution) {
+        List<String> leaveModelList = new ArrayList<>();
+        leaveModelList.add("Low");
+        leaveModelList.add("Medium");
+        leaveModelList.add("High");
+
+        try {
+            int pos = 0;
+            if (leaveModelList != null && leaveModelList.size() > 0) {
+                String[] mDropdownList = new String[leaveModelList.size()];
+                for (int i = 0; i < leaveModelList.size(); i++) {
+                    mDropdownList[i] = String.valueOf(leaveModelList.get(i));
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        mContext,
+                        R.layout.row_dropdown_item,
+                        mDropdownList);
+                //tvHighlight.setThreshold(1);
+                AutoComTextViewPriority.setAdapter(adapter);
+                //mListDropdownView.setHint(mDropdownList[pos]);
+                AutoComTextViewPriority.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        if(AutoComTextViewPriority.getText().toString().equals("Low")) {
+                            tvResolution.setText("Resolution time : Within 5 - 6 working days.");
+                        }
+                        else if(AutoComTextViewPriority.getText().toString().equals("Medium")) {
+                            tvResolution.setText("Resolution time : Within 2 - 3 working days.");
+                        }
+                        else{
+                            tvResolution.setText("Resolution time : Within 24 hrs.");
+                        }
+                    }
+                });
+
+            } else {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //set value to status
+    private void setDropdownIssueStatus(AppCompatAutoCompleteTextView mListDropdownView) {
+        List<String> leaveModelList = new ArrayList<>();
+        leaveModelList.add("Update");
+        leaveModelList.add("Close");
+
+        try {
+            int pos = 0;
+            if (leaveModelList != null && leaveModelList.size() > 0) {
+                String[] mDropdownList = new String[leaveModelList.size()];
+                for (int i = 0; i < leaveModelList.size(); i++) {
+                    mDropdownList[i] = String.valueOf(leaveModelList.get(i));
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        mContext,
+                        R.layout.row_dropdown_item,
+                        mDropdownList);
+                //tvHighlight.setThreshold(1);
+                mListDropdownView.setAdapter(adapter);
+                //mListDropdownView.setHint(mDropdownList[pos]);
+                mListDropdownView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    }
+                });
+
+            } else {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /* Call Api For Leave Applications */
     private void callLeaveListApi(String pageNo) {
@@ -485,6 +609,54 @@ public class ReportListFragment extends BaseFragment {
         mDialog.show();
     }
 
+    //show Report popup
+    public void showReportDialog(int status) {
+        Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialog.setContentView(R.layout.dialog_ticket_details);
+        mDialog.setCanceledOnTouchOutside(true);
+        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
+        AppCompatButton submitButton = mDialog.findViewById(R.id.submitButton);
+        AppCompatTextView tvStatus = mDialog.findViewById(R.id.tvStatus);
+        TextInputLayout input_textStatus = mDialog.findViewById(R.id.input_textStatus);
+        AppCompatTextView appcomptextReason = mDialog.findViewById(R.id.appcomptextReason);
+        AppCompatTextView tvTicketNo = mDialog.findViewById(R.id.tvTicketNo);
+        AppCompatTextView tvResolution = mDialog.findViewById(R.id.tvResolu);
+        TextInputLayout input_textReason = mDialog.findViewById(R.id.input_textReason);
+        AppCompatAutoCompleteTextView AutoComTextViewIssueType = mDialog.findViewById(R.id.AutoComTextViewIssueType);
+        AutoComTextViewPriority = mDialog.findViewById(R.id.AutoComTextViewPriority);
+        AppCompatAutoCompleteTextView AutoComTextViewStatus = mDialog.findViewById(R.id.AutoComTextViewStatus);
+
+        tvTicketNo.setText("Ticket No : "+tickerNo);
+        setDropdownIssueType(AutoComTextViewIssueType);
+        setDropdownPriority(tvResolution);
+        setDropdownIssueStatus(AutoComTextViewStatus);
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+                if(status==0){
+                    //raise issue
+                }
+                else{
+                    //update
+                }
+            }
+        });
+        if(status==0){
+            tvStatus.setVisibility(View.GONE);
+            input_textStatus.setVisibility(View.GONE);
+            appcomptextReason.setVisibility(View.GONE);
+            input_textReason.setVisibility(View.GONE);
+        }
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+        mDialog.show();
+    }
+
     private BarData getBarEntries() {
 
         barEntriesArrayList = new ArrayList<>();
@@ -518,19 +690,6 @@ public class ReportListFragment extends BaseFragment {
 
         //set1.setColor(R.drawable.chart_fill);
         set1.setGradientColors(list);
-        /*set1.setGradientColor(new int[]{new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(dark_Red)),
-                new GradientColor(Color.parseColor(Yellow),
-                        Color.parseColor(dark_Red)),
-                        new GradientColor(Color.parseColor(Yellow),
-                                Color.parseColor(dark_Red))});*/
-        //ArrayList<BarDataSet> dataSets = new ArrayList<>();
-        //dataSets.add(set1);
-
-
-       // BarData data = new BarData(xVals, dataSets);
-
-        //set1.setColor(getResources().getColor(R.color.deep_yellow));
         set1.setDrawValues(false);
         ArrayList<IBarDataSet> dataSets = new ArrayList<>();
 
@@ -541,6 +700,21 @@ public class ReportListFragment extends BaseFragment {
         // adding color to our bar data set.
         BarData data = new BarData(dataSets);
         return data;
+    }
+    /* Call Api For Raise Ticket */
+    private void callRaiseTicketApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_raise_ticket);
+                raiseTicketViewModel.hitRaiseTicketApi(mRequestBodyAction);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
     }
 
     private void setAdapterForSalesList() {
@@ -556,13 +730,12 @@ public class ReportListFragment extends BaseFragment {
             @Override
             public void onItemClick(int mDataTicket,ApplicationLeave applicationLeave) {
                 //For not killing pre fragment
-                showLeaveFormDialog(applicationLeave);
+                showReportDialog(1);
             }
         });
         rvSalesList.setHasFixedSize(true);
         rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
         rvSalesList.setAdapter(leaveListAdapter);
-
     }
 
     //show Receipt Details popup
@@ -1150,6 +1323,19 @@ public class ReportListFragment extends BaseFragment {
                                 }
                                 setEnquiryPagerList(totalPage);
                                 setAdapterForSalesList();
+                            }
+
+                        }
+
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_RAISE_TICKET)) {
+                            RaiseTicketResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), RaiseTicketResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                tickerNo = responseModel.getResult().getTicketno();
+                                showReportDialog(0);
                             }
 
                         }

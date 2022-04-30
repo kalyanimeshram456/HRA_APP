@@ -124,7 +124,7 @@
         <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/content_collapse_dashboard_header.xml" value="0.25" />
         <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/content_collapse_filter_header.xml" value="0.33" />
         <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/content_collapse_print_header.xml" value="0.16302083333333334" />
-        <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/content_collapse_visit_header.xml" value="0.5" />
+        <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/content_collapse_visit_header.xml" value="0.4666666666666667" />
         <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/content_complaints.xml" value="0.1875" />
         <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/content_dashboard.xml" value="0.33" />
         <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/content_dispatch_pending.xml" value="0.32459312839059673" />
@@ -146,6 +146,7 @@
         <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/content_my_account.xml" value="0.18" />
         <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/content_notifications.xml" value="0.1" />
         <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/content_pdf_print.xml" value="0.1625" />
+        <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/content_product_filter.xml" value="0.25" />
         <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/content_product_grid.xml" value="0.22" />
         <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/content_quotation.xml" value="0.2193939393939394" />
         <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/content_quotation_filter.xml" value="0.25" />
@@ -180,7 +181,7 @@
         <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/dialog_select_image.xml" value="0.25" />
         <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/dialog_single_quotation.xml" value="0.21" />
         <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/dialog_status_leave_form.xml" value="0.33" />
-        <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/dialog_ticket_details.xml" value="0.22" />
+        <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/dialog_ticket_details.xml" value="0.25" />
         <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/dialog_trip_awadhi.xml" value="0.25" />
         <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/dialog_truck_details.xml" value="0.11639492753623189" />
         <entry key="..\:/Om_informatic_projects/Om Info Crm/ominfo_crm/ominfo_crm_github/app/src/main/res/layout/dialog_upload_total_hisab.xml" value="0.11639492753623189" />

@@ -12,7 +12,7 @@ public class DynamicAPIPath {
     public static final String POST_LOGIN = BASE+"?action=login";
     public static final String POST_LOGOUT = BASE+"?action=logout_mt_update";
     public static final String POST_PROFILE= BASE_NODEJS+"getEmployee_profile";
-    public static final String POST_PRODUCT= BASE_NODEJS+"allproducts";
+    public static final String POST_PRODUCT=  BASE+"?action=get_product_records";
     public static final String POST_SALES= BASE_NODEJS+"getinvoice";
     public static final String POST_QUOTATION= BASE_NODEJS+"getquotations";
     public static final String POST_DISPATCH= BASE_NODEJS+"billpendinglist";
@@ -21,7 +21,7 @@ public class DynamicAPIPath {
     public static final String POST_EMP_LIST= BASE_NODEJS+"getemployee_list";
     public static final String POST_ADD_REMINDER= BASE_NODEJS+"addreminder";
     public static final String POST_UPDATE_REMINDER= BASE_NODEJS+"updatereminder";
-    public static final String POST_RECEIPT= BASE_NODEJS+"getreceipts";
+    public static final String POST_RECEIPT= BASE+"?action=get_receipt_records";
     public static final String POST_ADD_VISIT= BASE_NODEJS+"addvisit";
     public static final String POST_EDIT_VISIT= BASE+"?action=editVisit";
     public static final String POST_GET_PROFILE = BASE+"?action=getcrmempprofilepic";
@@ -53,6 +53,7 @@ public class DynamicAPIPath {
     public static final String POST_UPDATE_ATTENDANCE= BASE+"?action=attendance_updated";
     public static final String POST_LOCATION_PER_HOUR= BASE+"?action=emp_long_lati_tracking";
     public static final String POST_TOP_CUST= BASE+"?action=top_customer";
+    public static final String POST_RAISE_TICKET = BASE+"?action=getnewticketno";
 
     //action string
     public static final String POST_FETCH_KATA_CHITTI = "index_with_DRapp.php?action=getKantaChitthi";
@@ -83,7 +84,9 @@ public class DynamicAPIPath {
     public static final String action_notification = "getcrmempnotif";
     public static final String action_delete_notification = "marknotifread";
     public static final String GET_USER_LIST = "user";
-
+    public static final String action_products = "get_product_records";
+    public static final String action_raise_ticket = "getnewticketno";
+    public static final String action_receipt = "get_receipt_records";
 
     /**
      * Make dynamic url method

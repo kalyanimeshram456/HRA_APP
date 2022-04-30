@@ -1,93 +1,112 @@
 
 package com.ominfo.crm_solution.ui.receipt.model;
 
-import java.util.List;
-import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
+
+import javax.annotation.Generated;
+
+import okhttp3.RequestBody;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
 public class ReceiptRequest {
 
-    @SerializedName("companyName")
-    private List<String> mCompanyID;
-    @SerializedName("EndDate")
-    private String mEndDate;
-    @SerializedName("MaxAmount")
-    private String mMaxAmount;
-    @SerializedName("MinAmount")
-    private String mMinAmount;
+    @SerializedName("action")
+    private RequestBody action;
+
     @SerializedName("pageno")
-    private String mPageno;
+    private RequestBody pageno;
+
     @SerializedName("pagesize")
-    private String mPagesize;
-    @SerializedName("receiptNo")
-    private String mReceiptNo;
+    private RequestBody pagesize;
+
     @SerializedName("Startdate")
-    private String mStartdate;
+    private RequestBody startDate;
 
-    public List<String> getCompanyID() {
-        return mCompanyID;
+    @SerializedName("endDate")
+    private RequestBody endDate;
+
+    @SerializedName("MinAmount")
+    private RequestBody minAmount;
+
+    @SerializedName("MaxAmount")
+    private RequestBody maxAmount;
+
+    @SerializedName("ticket_no")
+    private RequestBody ticketNo;
+
+    @SerializedName("cust_name")
+    private RequestBody custName;
+
+    public RequestBody getTicketNo() {
+        return ticketNo;
     }
 
-    public void setCompanyID(List<String> companyID) {
-        mCompanyID = companyID;
+    public void setTicketNo(RequestBody ticketNo) {
+        this.ticketNo = ticketNo;
     }
 
-    public String getEndDate() {
-        return mEndDate;
+    public RequestBody getCustName() {
+        return custName;
     }
 
-    public void setEndDate(String endDate) {
-        mEndDate = endDate;
+    public void setCustName(RequestBody custName) {
+        this.custName = custName;
     }
 
-    public String getMaxAmount() {
-        return mMaxAmount;
+    public RequestBody getStartDate() {
+        return startDate;
     }
 
-    public void setMaxAmount(String maxAmount) {
-        mMaxAmount = maxAmount;
+    public void setStartDate(RequestBody startDate) {
+        this.startDate = startDate;
     }
 
-    public String getMinAmount() {
-        return mMinAmount;
+    public RequestBody getEndDate() {
+        return endDate;
     }
 
-    public void setMinAmount(String minAmount) {
-        mMinAmount = minAmount;
+    public void setEndDate(RequestBody endDate) {
+        this.endDate = endDate;
     }
 
-    public String getPageno() {
-        return mPageno;
+    public RequestBody getMinAmount() {
+        return minAmount;
     }
 
-    public void setPageno(String pageno) {
-        mPageno = pageno;
+    public void setMinAmount(RequestBody minAmount) {
+        this.minAmount = minAmount;
     }
 
-    public String getPagesize() {
-        return mPagesize;
+    public RequestBody getMaxAmount() {
+        return maxAmount;
     }
 
-    public void setPagesize(String pagesize) {
-        mPagesize = pagesize;
+    public void setMaxAmount(RequestBody maxAmount) {
+        this.maxAmount = maxAmount;
     }
 
-    public String getReceiptNo() {
-        return mReceiptNo;
+    public RequestBody getAction() {
+        return action;
     }
 
-    public void setReceiptNo(String receiptNo) {
-        mReceiptNo = receiptNo;
+    public void setAction(RequestBody action) {
+        this.action = action;
     }
 
-    public String getStartdate() {
-        return mStartdate;
+    public RequestBody getPageno() {
+        return pageno;
     }
 
-    public void setStartdate(String startdate) {
-        mStartdate = startdate;
+    public void setPageno(RequestBody pageno) {
+        this.pageno = pageno;
     }
 
+    public RequestBody getPagesize() {
+        return pagesize;
+    }
+
+    public void setPagesize(RequestBody pagesize) {
+        this.pagesize = pagesize;
+    }
 }

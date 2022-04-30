@@ -15,6 +15,17 @@
     android:layout_marginHorizontal="@dimen/_10dp"
     android:orientation="vertical">
 
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <androidx.appcompat.widget.LinearLayoutCompat
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fitsSystemWindows="true"
+    android:gravity="center"
+    android:background="@drawable/shape_round_dialog"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -58,7 +69,7 @@
             android:layout_marginTop="@dimen/_16dp"
             android:layout_marginHorizontal="@dimen/_10dp"
             android:fontFamily="@font/gilroy_semibold"
-            android:text="Ticket No : #123"
+            android:text="Ticket No : #"
             android:textColor="@color/back_text_colour"
             android:textSize="@dimen/_14sp" />
 
@@ -126,7 +137,7 @@
 
         <!--TAG Text filed-->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_textType"
+            android:id="@+id/input_textIssueType"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -138,23 +149,22 @@
             app:boxCornerRadiusBottomEnd="@dimen/_10dp"
             app:boxCornerRadiusBottomStart="@dimen/_10dp"
             app:hintTextAppearance="@style/Editext.Theme"
-            app:endIconDrawable="@android:color/transparent"
+            app:endIconDrawable="@drawable/ic_down"
             app:startIconContentDescription="$"
             app:placeholderTextAppearance="@style/Editext.Theme">
 
             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                android:id="@+id/AutoComTextViewType"
+                android:id="@+id/AutoComTextViewIssueType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/toggle_add_reminder_edt"
-                android:clickable="true"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:inputType="numberDecimal"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:inputType="text"
                 android:text=""
                 android:imeOptions="actionDone"
                 android:textColor="@color/black_heading"
-                android:hint="@string/scr_lbl_issue_type"
+                android:hint="Select priority"
                 android:textColorHint="@color/app_gray"
                 android:fontFamily="@font/gilroy_semibold"
                 android:padding="@dimen/_10dp"
@@ -176,7 +186,7 @@
 
         <!--TAG Text filed-->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_textRM"
+            android:id="@+id/input_textDescr"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_60dp"
@@ -193,7 +203,7 @@
             app:placeholderTextAppearance="@style/Editext.Theme">
 
             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                android:id="@+id/AutoComTextViewRM"
+                android:id="@+id/AutoComTextViewDescr"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_60dp"
                 android:background="@drawable/toggle_add_reminder_edt"
@@ -244,7 +254,7 @@
             app:placeholderTextAppearance="@style/Editext.Theme">
 
             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                android:id="@+id/AutoComTextViewState"
+                android:id="@+id/AutoComTextViewPriority"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/toggle_add_reminder_edt"
@@ -269,7 +279,7 @@
             android:layout_marginTop="@dimen/_10dp"
             android:layout_marginHorizontal="@dimen/_10dp"
             android:fontFamily="@font/gilroy_semibold"
-            android:text="Resolution time : Within 24 hrs"
+            android:text="Resolution time : "
             android:textColor="@color/back_text_colour"
             android:textSize="@dimen/_14sp" />
 
@@ -336,7 +346,7 @@
 
         <!--TAG Text filed-->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_textRM"
+            android:id="@+id/input_textReason"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_60dp"
@@ -353,7 +363,7 @@
             app:placeholderTextAppearance="@style/Editext.Theme">
 
             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                android:id="@+id/AutoComTextViewRM"
+                android:id="@+id/AutoComTextViewReason"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_60dp"
                 android:background="@drawable/toggle_add_reminder_edt"
@@ -365,7 +375,7 @@
                 android:gravity="top"
                 android:imeOptions="actionDone"
                 android:textColor="@color/black_heading"
-                android:hint="@string/scr_lbl_description_eng"
+                android:hint="@string/scr_lbl_reason"
                 android:textColorHint="@color/app_gray"
                 android:fontFamily="@font/gilroy_semibold"
                 android:padding="@dimen/_10dp"
@@ -374,7 +384,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/addReceiptButton"
+            android:id="@+id/submitButton"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_50dp"
             android:layout_alignParentBottom="true"
@@ -386,11 +396,13 @@
             android:gravity="center"
             android:layout_marginHorizontal="@dimen/_10dp"
             android:paddingTop="@dimen/_1dp"
-            android:text="@string/scr_lbl_add_receipt"
+            android:text="@string/scr_lbl_submit"
             android:textColor="@color/white"
             android:textSize="@dimen/_16sp" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 
+</androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.core.widget.NestedScrollView>
 </androidx.appcompat.widget.LinearLayoutCompat>

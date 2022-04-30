@@ -53,6 +53,10 @@ public class Service {
                 applyLeaveRequest.getComment()/*, applyLeaveRequest.getLeaveStatus(), applyLeaveRequest.getUpdatedBy()*/
                 );
     }
+    public Observable<JsonElement> executeRaiseTicketAPI(RequestBody action) {
+        return networkAPIServices.raiseTicket(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_RAISE_TICKET),
+                action);
+    }
     public Observable<JsonElement> executeMarkAttendanceAPI(MarkAttendanceRequest markAttendanceRequest) {
         return networkAPIServices.markAttendance(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_APPLY_LEAVE),
                 markAttendanceRequest.getAction(), markAttendanceRequest.getEmpId(), markAttendanceRequest.getDate(),
@@ -92,7 +96,9 @@ public class Service {
     }
 
     public Observable<JsonElement> executeProductAPI(ProductRequest request) {
-        return networkAPIServices.product(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_PRODUCT),request);
+        return networkAPIServices.product(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_PRODUCT),
+                request.getAction(),request.getPageno(),request.getPagesize(),request.getProdCode()
+                ,request.getProdName());
     }
 
     public Observable<JsonElement> executeReminderListAPI(ReminderListRequest request) {
@@ -112,7 +118,10 @@ public class Service {
     }
 
     public Observable<JsonElement> executeReceiptAPI(ReceiptRequest request) {
-        return networkAPIServices.receipt(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_RECEIPT),request);
+        return networkAPIServices.receipt(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_RECEIPT),
+                request.getAction(),request.getStartDate(),request.getEndDate(),
+                request.getMinAmount(),request.getMaxAmount(),request.getPageno(),
+                request.getPagesize(),request.getCustName(),request.getTicketNo());
     }
 
     public Observable<JsonElement> executeAddVisitAPI(AddVisitRequest request) {

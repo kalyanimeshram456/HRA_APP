@@ -165,6 +165,7 @@
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/layBorder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/layTop"
@@ -203,7 +204,7 @@
                             android:layout_alignParentEnd="true"
                             android:layout_gravity="right"
                             android:layout_marginRight="55dp"
-                            android:visibility="gone" />
+                            android:visibility="visible" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:id="@+id/imgGraph"
@@ -221,7 +222,7 @@
                             android:layout_alignParentEnd="true"
                             android:layout_gravity="right"
                             android:layout_marginHorizontal="@dimen/_16dp"
-                            android:visibility="gone" />
+                            android:visibility="visible" />
 
                     </RelativeLayout>
 
@@ -432,7 +433,7 @@
 
                     </RelativeLayout>
 
-                    <!-- <include layout="@layout/content_filter" />-->
+                    <include layout="@layout/content_product_filter" />
 
 
                     <!--Ui component for our bar chart-->
@@ -446,6 +447,25 @@
                         android:visibility="gone" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/submitButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_40dp"
+                    android:layout_below="@+id/layBorder"
+                    android:layout_alignParentBottom="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_marginBottom="@dimen/_30dp"
+                    android:layout_marginTop="@dimen/_6dp"
+                    android:background="@drawable/bg_button_round_corner_5"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/_2dp"
+                    android:text="Submit"
+                    android:visibility="gone"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_16sp" />
 
             </RelativeLayout>
 

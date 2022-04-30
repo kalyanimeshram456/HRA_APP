@@ -45,6 +45,12 @@ public interface NetworkAPIServices {
                                   @Part("comment") RequestBody comment/*,
                                   @Part("leave_status") RequestBody leave_status,
                                   @Part("updated_by") RequestBody updated_by*/);
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> raiseTicket(@Url String url,
+                                       @Part("action") RequestBody action);
+
     @Multipart
     @POST()
     Observable<JsonElement> markAttendance(@Url String url,
@@ -82,6 +88,14 @@ public interface NetworkAPIServices {
                                   @Part("username") RequestBody uploadTypeImage,
                                   @Part("password") RequestBody uploadTypeImage1,
                                   @Part("mobiletoken") RequestBody mobiletoken);
+    @Multipart
+    @POST()
+    Observable<JsonElement> product(@Url String url,
+                                    @Part("action") RequestBody uploadType,
+                                    @Part("pageno") RequestBody pageno,
+                                    @Part("pagesize") RequestBody pagesize,
+                                    @Part("prod_code") RequestBody prod_code,
+                                    @Part("prod_name") RequestBody prod_name);
 
     @Multipart
     @POST()
@@ -105,8 +119,6 @@ public interface NetworkAPIServices {
     @POST()
     Observable<JsonElement> dispatch(@Url String url,@Body DispatchRequest request);
 
-    @POST()
-    Observable<JsonElement> product(@Url String url,@Body ProductRequest request);
 
     @POST()
     Observable<JsonElement> reminderList(@Url String url,@Body ReminderListRequest request);
@@ -120,8 +132,18 @@ public interface NetworkAPIServices {
     @PUT()
     Observable<JsonElement> updateReminder(@Url String url,@Body UpdateReminderRequest request);
 
+    @Multipart
     @POST()
-    Observable<JsonElement> receipt(@Url String url,@Body ReceiptRequest request);
+    Observable<JsonElement> receipt(@Url String url,
+                                    @Part("action") RequestBody uploadType,
+                                    @Part("Startdate") RequestBody uploadTypecompany_ID,
+                                    @Part("EndDate") RequestBody uploadTypeemployee,
+                                    @Part("MinAmount") RequestBody uploadTypvisit_no,
+                                    @Part("MaxAmount") RequestBody uploadTypvisit_time_end,
+                                    @Part("pageno") RequestBody uploadTyprm_id,
+                                    @Part("pagesize") RequestBody uploadTypplace,
+                                    @Part("cust_name") RequestBody uploadTypcust_name,
+                                    @Part("ticket_no") RequestBody ticket_no);
 
     @POST()
     Observable<JsonElement> addVisit(@Url String url,@Body AddVisitRequest request);

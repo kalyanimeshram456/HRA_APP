@@ -27,6 +27,7 @@ import com.ominfo.crm_solution.ui.my_account.model.ChangeProfileImageViewModel;
 import com.ominfo.crm_solution.ui.my_account.model.GetProfileImageViewModel;
 import com.ominfo.crm_solution.ui.my_account.model.LeaveApplicationViewModel;
 import com.ominfo.crm_solution.ui.my_account.model.ProfileViewModel;
+import com.ominfo.crm_solution.ui.my_account.model.RaiseTicketViewModel;
 import com.ominfo.crm_solution.ui.notifications.model.DeleteNotificationViewModel;
 import com.ominfo.crm_solution.ui.notifications.model.LeaveSingleRecordViewModel;
 import com.ominfo.crm_solution.ui.notifications.model.LeaveStatusViewModel;
@@ -195,6 +196,9 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
          }
          else  if (modelClass.isAssignableFrom(TopCustomerViewModel.class)) {
              return (T) new TopCustomerViewModel(service);
+         }
+         else  if (modelClass.isAssignableFrom(RaiseTicketViewModel.class)) {
+             return (T) new RaiseTicketViewModel(service);
          }
 
         throw new IllegalArgumentException("Unknown class name");

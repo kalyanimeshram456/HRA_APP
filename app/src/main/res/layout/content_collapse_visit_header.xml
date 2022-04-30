@@ -135,7 +135,7 @@
                         android:layout_toRightOf="@+id/imgCall"
                         android:clickable="true"
                         android:onClick="onClick"
-                        android:src="@drawable/ic_add_card"
+                        android:src="@drawable/ic_plus_big_"
                         android:visibility="visible" />
 
                     <androidx.appcompat.widget.AppCompatTextView

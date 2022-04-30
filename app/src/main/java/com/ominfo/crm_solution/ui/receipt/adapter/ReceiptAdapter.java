@@ -14,13 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
+import com.ominfo.crm_solution.ui.receipt.model.Receipt;
 import com.ominfo.crm_solution.ui.receipt.model.ReceiptResult;
 
 import java.util.List;
 
 public class ReceiptAdapter extends RecyclerView.Adapter<ReceiptAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<ReceiptResult> mListData;
+    private List<Receipt> mListData;
     private Context mContext;
     private String mDate;
 
@@ -28,7 +29,7 @@ public class ReceiptAdapter extends RecyclerView.Adapter<ReceiptAdapter.ViewHold
         this.mContext = mContext;
     }
 
-    public ReceiptAdapter(Context context, List<ReceiptResult> listData, ListItemSelectListener itemClickListener) {
+    public ReceiptAdapter(Context context, List<Receipt> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -43,7 +44,7 @@ public class ReceiptAdapter extends RecyclerView.Adapter<ReceiptAdapter.ViewHold
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<ReceiptResult> list){
+    public void updateList(List<Receipt> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -52,8 +53,8 @@ public class ReceiptAdapter extends RecyclerView.Adapter<ReceiptAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         if(mListData.size()>0) {
             holder.setIsRecyclable(false);
-            holder.tvCompanyName.setText(mListData.get(position).getCompanyName());
-            holder.tvState.setText(mListData.get(position).getReceiptNumber());
+            holder.tvCompanyName.setText(mListData.get(position).getCustName());
+            holder.tvState.setText(mListData.get(position).getTicketNo());
             holder.tvRs.setText("₹"+mListData.get(position).getAmount());
             if (position % 2 != 0) {
                 holder.layClick.setBackground(mContext.getResources().getDrawable(R.drawable.shape_round_white_left_right_border_dialog));
@@ -110,6 +111,6 @@ public class ReceiptAdapter extends RecyclerView.Adapter<ReceiptAdapter.ViewHold
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(int mData,ReceiptResult receiptResult);
+        void onItemClick(int mData, Receipt receiptResult);
     }
 }

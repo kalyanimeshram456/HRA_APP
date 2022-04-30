@@ -12,13 +12,14 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.crm_solution.R;
+import com.ominfo.crm_solution.ui.product.model.Product;
 import com.ominfo.crm_solution.ui.product.model.ProductResult;
 
 import java.util.List;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<ProductResult> mListData;
+    private List<Product> mListData;
     private Context mContext;
     private String mDate;
 
@@ -26,7 +27,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         this.mContext = mContext;
     }
 
-    public ProductAdapter(Context context, List<ProductResult> listData, ListItemSelectListener itemClickListener) {
+    public ProductAdapter(Context context, List<Product> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -41,7 +42,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<ProductResult> list){
+    public void updateList(List<Product> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -126,6 +127,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(int mData,ProductResult productResult);
+        void onItemClick(int mData,Product productResult);
     }
 }

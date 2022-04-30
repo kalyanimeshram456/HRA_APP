@@ -70,6 +70,7 @@ import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.quotation_amount.model.Quotation;
 import com.ominfo.crm_solution.ui.quotation_amount.model.QuotationResponse;
 import com.ominfo.crm_solution.ui.receipt.adapter.ReceiptAdapter;
+import com.ominfo.crm_solution.ui.receipt.model.Receipt;
 import com.ominfo.crm_solution.ui.receipt.model.ReceiptListViewModel;
 import com.ominfo.crm_solution.ui.receipt.model.ReceiptRequest;
 import com.ominfo.crm_solution.ui.receipt.model.ReceiptResponse;
@@ -193,7 +194,7 @@ public class ReceiptFragment extends BaseFragment {
            "10"*//*, "45","90", "95","50", "55","60", "65"*//*};*/
     int startPos = 0 , endPos = 0;
 
-    List<ReceiptResult> receiptResultList = new ArrayList<>();
+    List<Receipt> receiptResultList = new ArrayList<>();
     List<GraphModel> graphModelsList = new ArrayList<>();
     @Inject
     ViewModelFactory mViewModelFactory;
@@ -326,27 +327,39 @@ public class ReceiptFragment extends BaseFragment {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
-                for(int i=0;i<tagList.size();i++){
-                    if(tagList.get(i).getTitle()!=null && !tagList.get(i).getTitle().equals("")) {
-                        mCompnyList.add(tagList.get(i).getTitle());
-                    }
-                }
-                for(int i=0;i<tagRmList.size();i++){
-                    if(tagRmList.get(i).getTitle()!=null && !tagRmList.get(i).getTitle().equals("")) {
-                        mTRMList.add(tagRmList.get(i).getId());
-                    }
-                }
                 String mStringFrmDate = AppUtils.splitsEnquiryDate(fromDate.getText().toString().trim()),
                         mStringToDate = AppUtils.splitsEnquiryDate(toDate.getText().toString().trim());
+
+                String mCompanyNameList="";
+                for(int i=0;i<tagList.size();i++){
+                    if(tagList.get(i).getTitle()!=null && !tagList.get(i).getTitle().equals("")) {
+                        if (i == 0) {
+                            mCompanyNameList = tagList.get(i).getTitle();
+                        } else {
+                            mCompanyNameList = mCompanyNameList + "~" + tagList.get(i).getTitle();
+                        }
+                    }
+                }
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_receipt);
+                RequestBody mRequestBodyPageNo = RequestBody.create(MediaType.parse("text/plain"),pageNo);
+                RequestBody mRequestBodyPageSize = RequestBody.create(MediaType.parse("text/plain"),Constants.MIN_PAG_SIZE);
+                RequestBody mRequestBodyStartdate = RequestBody.create(MediaType.parse("text/plain"),mStringFrmDate);
+                RequestBody mRequestBodyEndDate = RequestBody.create(MediaType.parse("text/plain"),mStringToDate);
+                RequestBody mRequestBodyMinAmount = RequestBody.create(MediaType.parse("text/plain"),tvMinAmount.getEditableText().toString());
+                RequestBody mRequestBodyMaxAmount = RequestBody.create(MediaType.parse("text/plain"),tvMaxAmount.getEditableText().toString());
+                RequestBody mRequestBodyTicketNo = RequestBody.create(MediaType.parse("text/plain"),tvReceiptNo.getEditableText().toString());
+                RequestBody mRequestBodyComp = RequestBody.create(MediaType.parse("text/plain"),mCompanyNameList);
+
                 ReceiptRequest request = new ReceiptRequest();
-                request.setReceiptNo(tvReceiptNo.getEditableText().toString());
-                request.setCompanyID(mCompnyList);
-                request.setEndDate(mStringToDate);
-                request.setMaxAmount(tvMaxAmount.getEditableText().toString());
-                request.setPageno(pageNo);
-                request.setPagesize(Constants.PAG_SIZE);
-                request.setStartdate(mStringFrmDate);
-                request.setMinAmount(tvMinAmount.getEditableText().toString());
+                request.setAction(mRequestBodyAction);
+                request.setTicketNo(mRequestBodyTicketNo);
+                request.setStartDate(mRequestBodyStartdate);
+                request.setEndDate(mRequestBodyEndDate);
+                request.setCustName(mRequestBodyComp);
+                request.setPageno(mRequestBodyPageNo);
+                request.setPagesize(mRequestBodyPageSize);
+                request.setMinAmount(mRequestBodyMinAmount);
+                request.setMaxAmount(mRequestBodyMaxAmount);
                 receiptListViewModel.hitReceiptApi(request);
             }
             else {
@@ -726,7 +739,7 @@ public class ReceiptFragment extends BaseFragment {
         }
         mReceiptAdapter = new ReceiptAdapter(mContext, receiptResultList, new ReceiptAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket,ReceiptResult receiptResult) {
+            public void onItemClick(int mDataTicket,Receipt receiptResult) {
                 //For not killing pre fragment
                 if(mDataTicket==1) {
                     Intent i = new Intent(getActivity(), View360Activity.class);
@@ -745,7 +758,7 @@ public class ReceiptFragment extends BaseFragment {
     }
 
     //show Receipt Details popup
-    public void showReceiptDetailsDialog(ReceiptResult receiptResult) {
+    public void showReceiptDetailsDialog(Receipt receiptResult) {
         Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialog.setContentView(R.layout.dialog_receipt_details);
         mDialog.setCanceledOnTouchOutside(true);
@@ -753,7 +766,10 @@ public class ReceiptFragment extends BaseFragment {
         AppCompatButton closeButton = mDialog.findViewById(R.id.closeButton);
         AppCompatTextView tvCompanyName = mDialog.findViewById(R.id.tvCompanyName);
         AppCompatTextView tvAmountValue = mDialog.findViewById(R.id.tvAmountValue);
-        tvCompanyName.setText(receiptResult.getCompanyName());
+        AppCompatTextView tvRMValue = mDialog.findViewById(R.id.tvRMValue);
+        String name = receiptResult.getRmId()==null?"Unavailable":receiptResult.getRmId();
+        tvRMValue.setText(name);
+        tvCompanyName.setText(receiptResult.getCustName());
         tvAmountValue.setText(getString(R.string.scr_lbl_rs)+""+receiptResult.getAmount());
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -954,11 +970,11 @@ public class ReceiptFragment extends BaseFragment {
         }
     }
     private void sortforCompany(){
-        Collections.sort(receiptResultList, new Comparator<ReceiptResult>() {
+        Collections.sort(receiptResultList, new Comparator<Receipt>() {
             @Override
-            public int compare(ReceiptResult item, ReceiptResult t1) {
-                String s1 = item.getCompanyName();
-                String s2 = t1.getCompanyName();
+            public int compare(Receipt item, Receipt t1) {
+                String s1 = item.getCustName();
+                String s2 = t1.getCustName();
                 return s1.compareToIgnoreCase(s2);
             }
         });
@@ -966,19 +982,19 @@ public class ReceiptFragment extends BaseFragment {
     }
     private void sortforQuoNum(){
 
-        Collections.sort(receiptResultList, new Comparator<ReceiptResult>() {
+        Collections.sort(receiptResultList, new Comparator<Receipt>() {
             @Override
-            public int compare(ReceiptResult item, ReceiptResult t1) {
-                return Long.compare(Long.valueOf(item.getReceiptNumber()), Long.valueOf(t1.getReceiptNumber()));
+            public int compare(Receipt item, Receipt t1) {
+                return Long.compare(Long.valueOf(item.getTicketNo()), Long.valueOf(t1.getTicketNo()));
                 //return s1.compareToIgnoreCase(s2);
             }
         });
         mReceiptAdapter.notifyDataSetChanged();
     }
     private void sortforAmount(){
-        Collections.sort(receiptResultList, new Comparator<ReceiptResult>() {
+        Collections.sort(receiptResultList, new Comparator<Receipt>() {
             @Override
-            public int compare(ReceiptResult item, ReceiptResult t1) {
+            public int compare(Receipt item, Receipt t1) {
                 return Long.compare(Long.valueOf(item.getAmount()), Long.valueOf(t1.getAmount()));
                 //return s1.compareToIgnoreCase(s2);
             }
@@ -1087,25 +1103,23 @@ public class ReceiptFragment extends BaseFragment {
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_RECEIPT)) {
                             ReceiptResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ReceiptResponse.class);
-                            if (responseModel != null && responseModel.getStatus()==1) {
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 receiptResultList.clear();
                                 long totalPage = 0;
-                                if (responseModel.getTotalAmountList() != null && responseModel.getTotalAmountList().size()>0) {
-                                    tvTotalCount.setText("₹"+String.valueOf(responseModel.getTotalAmountList().get(0).getTotalAmount()));
-                                }else{
-                                    tvTotalCount.setText(getString(R.string.scr_lbl_rs)+"0");
-                                }
+                                if (responseModel.getResult().getReceipt() != null && responseModel.getResult().getReceipt().size()>0) {
+                                    tvTotalCount.setText("₹"+String.valueOf(responseModel.getResult().getTotalamt()));
+
                                 try {
-                                    if (responseModel.getReceipts() != null && responseModel.getReceipts().size()>0) {
-                                        receiptResultList = responseModel.getReceipts();
-                                        totalPage = responseModel.getTotalpages();
-                                        if(responseModel.getNextpage()==1) {
-                                            tvPage.setText("Showing " + String.valueOf(responseModel.getNextpage()) + " to " +
-                                                    String.valueOf(((responseModel.getNextpage()-1) + receiptResultList.size()) + " of " + String.valueOf(responseModel.getTotalreceipts()) + "\nEntries"));
+                                    if (responseModel.getResult().getReceipt() != null && responseModel.getResult().getReceipt().size()>0) {
+                                        receiptResultList = responseModel.getResult().getReceipt();
+                                        totalPage = responseModel.getResult().getTotalpages();
+                                        if(responseModel.getResult().getNextpage()==1) {
+                                            tvPage.setText("Showing " + String.valueOf(responseModel.getResult().getNextpage()) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1) + receiptResultList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries"));
                                         }
                                         else {
-                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getNextpage()-1)*6)+1) + " to " +
-                                                    String.valueOf(((responseModel.getNextpage()-1)*6)+receiptResultList.size()) + " of " + String.valueOf(responseModel.getTotalreceipts()) + "\nEntries");
+                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getResult().getNextpage()-1)*6)+1) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1)*6)+receiptResultList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries");
                                         }
                                     }
                                     else{
@@ -1120,6 +1134,9 @@ public class ReceiptFragment extends BaseFragment {
                                 }
                                 setEnquiryPagerList(totalPage);
                                 setAdapterForReceiptList();
+                                }else{
+                                    tvTotalCount.setText(getString(R.string.scr_lbl_rs)+"0");
+                                }
                             }
 
                         }
