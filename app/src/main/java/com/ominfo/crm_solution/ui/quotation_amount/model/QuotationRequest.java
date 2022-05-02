@@ -1,113 +1,134 @@
 
 package com.ominfo.crm_solution.ui.quotation_amount.model;
 
-import java.util.List;
-import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
+
+import javax.annotation.Generated;
+
+import okhttp3.RequestBody;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
 public class QuotationRequest {
 
-    @SerializedName("companyName")
-    private List<String> mCompanyId;
-    @SerializedName("EndDate")
-    private String mEndDate;
+    @SerializedName("action")
+    private RequestBody action;
+
     @SerializedName("pageno")
-    private String mPageno;
+    private RequestBody pageno;
+
     @SerializedName("pagesize")
-    private String mPagesize;
-    @SerializedName("QuotationMaxAmount")
-    private String mQuotationMaxAmount;
-    @SerializedName("QuotationMinAmount")
-    private String mQuotationMinAmount;
-    @SerializedName("QuotationNumber")
-    private String mQuotationNumber;
-    @SerializedName("QuotationStatus")
-    private String mQuotationStatus;
-    @SerializedName("Rm")
-    private List<String> mRm;
+    private RequestBody pagesize;
+
+    @SerializedName("cust_name")
+    private RequestBody custName;
+
+    @SerializedName("order_status")
+    private RequestBody orderStatus;
+
+    @SerializedName("order_no")
+    private RequestBody orderNo;
+
     @SerializedName("Startdate")
-    private String mStartdate;
+    private RequestBody startDate;
 
-    public List<String> getCompanyId() {
-        return mCompanyId;
+    @SerializedName("EndDate")
+    private RequestBody endDate;
+
+    @SerializedName("MinAmount")
+    private RequestBody minAmount;
+
+    @SerializedName("MaxAmount")
+    private RequestBody maxAmount;
+
+    @SerializedName("rm_id")
+    private RequestBody rmId;
+
+    public RequestBody getAction() {
+        return action;
     }
 
-    public void setCompanyId(List<String> companyId) {
-        mCompanyId = companyId;
+    public void setAction(RequestBody action) {
+        this.action = action;
     }
 
-    public String getEndDate() {
-        return mEndDate;
+    public RequestBody getPageno() {
+        return pageno;
     }
 
-    public void setEndDate(String endDate) {
-        mEndDate = endDate;
+    public void setPageno(RequestBody pageno) {
+        this.pageno = pageno;
     }
 
-    public String getPageno() {
-        return mPageno;
+    public RequestBody getPagesize() {
+        return pagesize;
     }
 
-    public void setPageno(String pageno) {
-        mPageno = pageno;
+    public void setPagesize(RequestBody pagesize) {
+        this.pagesize = pagesize;
     }
 
-    public String getPagesize() {
-        return mPagesize;
+    public RequestBody getCustName() {
+        return custName;
     }
 
-    public void setPagesize(String pagesize) {
-        mPagesize = pagesize;
+    public void setCustName(RequestBody custName) {
+        this.custName = custName;
     }
 
-    public String getQuotationMaxAmount() {
-        return mQuotationMaxAmount;
+    public RequestBody getOrderStatus() {
+        return orderStatus;
     }
 
-    public void setQuotationMaxAmount(String quotationMaxAmount) {
-        mQuotationMaxAmount = quotationMaxAmount;
+    public void setOrderStatus(RequestBody orderStatus) {
+        this.orderStatus = orderStatus;
     }
 
-    public String getQuotationMinAmount() {
-        return mQuotationMinAmount;
+    public RequestBody getOrderNo() {
+        return orderNo;
     }
 
-    public void setQuotationMinAmount(String quotationMinAmount) {
-        mQuotationMinAmount = quotationMinAmount;
+    public void setOrderNo(RequestBody orderNo) {
+        this.orderNo = orderNo;
     }
 
-    public String getQuotationNumber() {
-        return mQuotationNumber;
+    public RequestBody getStartDate() {
+        return startDate;
     }
 
-    public void setQuotationNumber(String quotationNumber) {
-        mQuotationNumber = quotationNumber;
+    public void setStartDate(RequestBody startDate) {
+        this.startDate = startDate;
     }
 
-    public String getQuotationStatus() {
-        return mQuotationStatus;
+    public RequestBody getEndDate() {
+        return endDate;
     }
 
-    public void setQuotationStatus(String quotationStatus) {
-        mQuotationStatus = quotationStatus;
+    public void setEndDate(RequestBody endDate) {
+        this.endDate = endDate;
     }
 
-    public List<String> getRm() {
-        return mRm;
+    public RequestBody getMinAmount() {
+        return minAmount;
     }
 
-    public void setRm(List<String> rm) {
-        mRm = rm;
+    public void setMinAmount(RequestBody minAmount) {
+        this.minAmount = minAmount;
     }
 
-    public String getStartdate() {
-        return mStartdate;
+    public RequestBody getMaxAmount() {
+        return maxAmount;
     }
 
-    public void setStartdate(String startdate) {
-        mStartdate = startdate;
+    public void setMaxAmount(RequestBody maxAmount) {
+        this.maxAmount = maxAmount;
     }
 
+    public RequestBody getRmId() {
+        return rmId;
+    }
+
+    public void setRmId(RequestBody rmId) {
+        this.rmId = rmId;
+    }
 }

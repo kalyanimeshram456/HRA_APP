@@ -104,7 +104,7 @@
             app:placeholderTextAppearance="@style/Editext.Theme">
 
             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                android:id="@+id/AutoComTextView"
+                android:id="@+id/AutoComTextViewTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/toggle_add_reminder_edt"
@@ -164,7 +164,7 @@
                 android:text=""
                 android:imeOptions="actionDone"
                 android:textColor="@color/black_heading"
-                android:hint="Select priority"
+                android:hint="@string/scr_lbl_select_issue_type"
                 android:textColorHint="@color/app_gray"
                 android:fontFamily="@font/gilroy_semibold"
                 android:padding="@dimen/_10dp"

@@ -48,8 +48,8 @@ public interface NetworkAPIServices {
 
     @Multipart
     @POST()
-    Observable<JsonElement> raiseTicket(@Url String url,
-                                       @Part("action") RequestBody action);
+    Observable<JsonElement> getTicketNo(@Url String url,
+                                        @Part("action") RequestBody action);
 
     @Multipart
     @POST()
@@ -60,6 +60,27 @@ public interface NetworkAPIServices {
                                        @Part("start_time") RequestBody start_time,
                                        @Part("start_longitude") RequestBody end_time,
                                        @Part("start_latitude") RequestBody leave_type);
+    @Multipart
+    @POST()
+    Observable<JsonElement> raiseTicket(@Url String url,
+                                           @Part("action") RequestBody uploadType,
+                                           @Part("cust_id") RequestBody emp_id,
+                                           @Part("subject") RequestBody duration,
+                                           @Part("Description") RequestBody start_time,
+                                           @Part("priority") RequestBody end_time,
+                                           @Part("issue_type") RequestBody leave_type,
+                                           @Part("ticket_no") RequestBody ticket_no);
+    @Multipart
+    @POST()
+    Observable<JsonElement> updateTicket(@Url String url,
+                                        @Part("action") RequestBody uploadType,
+                                        @Part("subject") RequestBody duration,
+                                        @Part("Description") RequestBody start_time,
+                                        @Part("priority") RequestBody end_time,
+                                        @Part("issue_type") RequestBody leave_type,
+                                         @Part("status") RequestBody status,
+                                         @Part("reason") RequestBody reason,
+                                        @Part("ticket_no") RequestBody ticket_no);
     @Multipart
     @POST()
     Observable<JsonElement> updateAttendance(@Url String url,
@@ -107,11 +128,36 @@ public interface NetworkAPIServices {
     @POST()
     Observable<JsonElement> profile(@Url String url,@Body ProfileRequest request);
 
+    @Multipart
     @POST()
-    Observable<JsonElement> sales(@Url String url,@Body SalesRequest request);
+    Observable<JsonElement> sales(@Url String url,
+                                      @Part("action") RequestBody uploadType,
+                                      @Part("pageno") RequestBody pageno,
+                                      @Part("pagesize") RequestBody pagesize,
+                                      @Part("cust_name") RequestBody cust_name,
+                                      @Part("payment_status") RequestBody payment_status,
+                                      @Part("order_no") RequestBody order_no,
+                                      @Part("Startdate") RequestBody Startdate,
+                                      @Part("EndDate") RequestBody EndDate,
+                                      @Part("MinAmount") RequestBody MinAmount,
+                                      @Part("MaxAmount") RequestBody MaxAmount,
+                                      @Part("rm_id") RequestBody rm_id);
 
+
+    @Multipart
     @POST()
-    Observable<JsonElement> quotation(@Url String url,@Body QuotationRequest request);
+    Observable<JsonElement> quotation(@Url String url,
+                                   @Part("action") RequestBody uploadType,
+                                   @Part("pageno") RequestBody pageno,
+                                      @Part("pagesize") RequestBody pagesize,
+                                      @Part("cust_name") RequestBody cust_name,
+                                      @Part("order_status") RequestBody order_status,
+                                      @Part("order_no") RequestBody order_no,
+                                      @Part("Startdate") RequestBody Startdate,
+                                      @Part("EndDate") RequestBody EndDate,
+                                      @Part("MinAmount") RequestBody MinAmount,
+                                      @Part("MaxAmount") RequestBody MaxAmount,
+                                      @Part("rm_id") RequestBody rm_id);
 
     @POST()
     Observable<JsonElement> lostApportunity(@Url String url,@Body QuotationRequest request);
@@ -144,9 +190,16 @@ public interface NetworkAPIServices {
                                     @Part("pagesize") RequestBody uploadTypplace,
                                     @Part("cust_name") RequestBody uploadTypcust_name,
                                     @Part("ticket_no") RequestBody ticket_no);
-
+    @Multipart
     @POST()
-    Observable<JsonElement> addVisit(@Url String url,@Body AddVisitRequest request);
+    Observable<JsonElement> addVisit(@Url String url,
+                                     @Part("action") RequestBody uploadType,
+                                     @Part("visit_no") RequestBody uploadTypecompany_ID,
+                                     @Part("company_ID") RequestBody uploadTypeemployee,
+                                     @Part("start_location_name") RequestBody start_location_name,
+                                     @Part("start_location_address") RequestBody start_location_address,
+                                     @Part("start_location_latitude") RequestBody start_location_latitude,
+                                     @Part("start_location_longitute") RequestBody start_location_longitute);
 
     @Multipart
     @POST()
@@ -371,7 +424,18 @@ public interface NetworkAPIServices {
                                                 @Part("status") RequestBody status,
                                                 @Part("from_date") RequestBody from_date,
                                                 @Part("end_date") RequestBody end_date);
-
+    @Multipart
+    @POST()
+    Observable<JsonElement> getTicket(@Url String url,
+                                                @Part("action") RequestBody action,
+                                                @Part("emp_id") RequestBody emp_id,
+                                                @Part("pageno") RequestBody pageno,
+                                                @Part("pagesize") RequestBody pagesize,
+                                                @Part("ticket_no") RequestBody ticket_no,
+                                                @Part("priority") RequestBody priority,
+                                                @Part("status") RequestBody status,
+                                                @Part("from_date") RequestBody from_date,
+                                                @Part("end_date") RequestBody end_date);
     @Multipart
     @POST()
     Observable<JsonElement> getLeaveSingle(@Url String url,

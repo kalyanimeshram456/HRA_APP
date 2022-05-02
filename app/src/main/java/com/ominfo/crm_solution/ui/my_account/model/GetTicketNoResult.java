@@ -6,22 +6,14 @@ import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class RaiseTicketResult {
+public class GetTicketNoResult {
 
-    @SerializedName("id")
-    private String mId;
     @SerializedName("message")
     private String mMessage;
     @SerializedName("status")
     private String mStatus;
-
-    public String getId() {
-        return mId;
-    }
-
-    public void setId(String id) {
-        mId = id;
-    }
+    @SerializedName("ticketno")
+    private String mTicketno;
 
     public String getMessage() {
         return mMessage;
@@ -37,6 +29,14 @@ public class RaiseTicketResult {
 
     public void setStatus(String status) {
         mStatus = status;
+    }
+
+    public String getTicketno() {
+        return mTicketno;
+    }
+
+    public void setTicketno(String ticketno) {
+        mTicketno = ticketno;
     }
 
 }

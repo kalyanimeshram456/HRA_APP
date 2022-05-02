@@ -1,92 +1,90 @@
 
 package com.ominfo.crm_solution.ui.visit_report.model;
 
-import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
+
+import javax.annotation.Generated;
+
+import okhttp3.RequestBody;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
 public class AddVisitRequest {
 
-    @SerializedName("company_ID")
-    private String mCompanyID;
-    @SerializedName("start_location_address")
-    private String mStartLocationAddress;
-    @SerializedName("start_location_latitude")
-    private String mStartLocationLatitude;
-    @SerializedName("start_location_longitute")
-    private String mStartLocationLongitute;
-    @SerializedName("start_location_name")
-    private String mStartLocationName;
-    @SerializedName("visit_date")
-    private String mVisitDate;
+    @SerializedName("action")
+    private RequestBody action;
+
     @SerializedName("visit_no")
-    private String mVisitNo;
-    @SerializedName("visit_time")
-    private String mVisitTime;
+    private RequestBody visitNo;
 
-    public String getCompanyID() {
-        return mCompanyID;
+    @SerializedName("company_ID")
+    private RequestBody companyId;
+
+    @SerializedName("start_location_name")
+    private RequestBody startLocationName;
+
+    @SerializedName("start_location_address")
+    private RequestBody startLocationAddress;
+
+    @SerializedName("start_location_latitude")
+    private RequestBody startLocationLatitude;
+
+    @SerializedName("start_location_longitute")
+    private RequestBody startLocationLongitute;
+
+    public RequestBody getAction() {
+        return action;
     }
 
-    public void setCompanyID(String companyID) {
-        mCompanyID = companyID;
+    public void setAction(RequestBody action) {
+        this.action = action;
     }
 
-    public String getStartLocationAddress() {
-        return mStartLocationAddress;
+    public RequestBody getVisitNo() {
+        return visitNo;
     }
 
-    public void setStartLocationAddress(String startLocationAddress) {
-        mStartLocationAddress = startLocationAddress;
+    public void setVisitNo(RequestBody visitNo) {
+        this.visitNo = visitNo;
     }
 
-    public String getStartLocationLatitude() {
-        return mStartLocationLatitude;
+    public RequestBody getCompanyId() {
+        return companyId;
     }
 
-    public void setStartLocationLatitude(String startLocationLatitude) {
-        mStartLocationLatitude = startLocationLatitude;
+    public void setCompanyId(RequestBody companyId) {
+        this.companyId = companyId;
     }
 
-    public String getStartLocationLongitute() {
-        return mStartLocationLongitute;
+    public RequestBody getStartLocationName() {
+        return startLocationName;
     }
 
-    public void setStartLocationLongitute(String startLocationLongitute) {
-        mStartLocationLongitute = startLocationLongitute;
+    public void setStartLocationName(RequestBody startLocationName) {
+        this.startLocationName = startLocationName;
     }
 
-    public String getStartLocationName() {
-        return mStartLocationName;
+    public RequestBody getStartLocationAddress() {
+        return startLocationAddress;
     }
 
-    public void setStartLocationName(String startLocationName) {
-        mStartLocationName = startLocationName;
+    public void setStartLocationAddress(RequestBody startLocationAddress) {
+        this.startLocationAddress = startLocationAddress;
     }
 
-    public String getVisitDate() {
-        return mVisitDate;
+    public RequestBody getStartLocationLatitude() {
+        return startLocationLatitude;
     }
 
-    public void setVisitDate(String visitDate) {
-        mVisitDate = visitDate;
+    public void setStartLocationLatitude(RequestBody startLocationLatitude) {
+        this.startLocationLatitude = startLocationLatitude;
     }
 
-    public String getVisitNo() {
-        return mVisitNo;
+    public RequestBody getStartLocationLongitute() {
+        return startLocationLongitute;
     }
 
-    public void setVisitNo(String visitNo) {
-        mVisitNo = visitNo;
+    public void setStartLocationLongitute(RequestBody startLocationLongitute) {
+        this.startLocationLongitute = startLocationLongitute;
     }
-
-    public String getVisitTime() {
-        return mVisitTime;
-    }
-
-    public void setVisitTime(String visitTime) {
-        mVisitTime = visitTime;
-    }
-
 }

@@ -69,6 +69,7 @@ import com.ominfo.crm_solution.ui.sale.adapter.CompanyTagAdapter;
 import com.ominfo.crm_solution.ui.sale.adapter.SalesAdapter;
 import com.ominfo.crm_solution.ui.sale.model.ResultInvoice;
 import com.ominfo.crm_solution.ui.sale.model.RmListModel;
+import com.ominfo.crm_solution.ui.sale.model.SalesData;
 import com.ominfo.crm_solution.ui.sale.model.SalesRequest;
 import com.ominfo.crm_solution.ui.sale.model.SalesResponse;
 import com.ominfo.crm_solution.ui.sale.model.SalesViewModel;
@@ -169,7 +170,7 @@ public class SaleFragment extends BaseFragment {
     int startPos = 0 , endPos = 0;
     @BindView(R.id.tvNotifyCount)
     AppCompatTextView tvNotifyCount;
-    List<ResultInvoice> salesList = new ArrayList<>();
+    List<SalesData> salesList = new ArrayList<>();
     List<GraphModel> graphModelsList = new ArrayList<>();
     private AppDatabase mDb;
     final Calendar myCalendar = Calendar.getInstance();
@@ -345,29 +346,52 @@ public class SaleFragment extends BaseFragment {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
+                String mCompanyNameList="",mRm="";
                 for(int i=0;i<tagList.size();i++){
                     if(tagList.get(i).getTitle()!=null && !tagList.get(i).getTitle().equals("")) {
-                        mCompnyList.add(tagList.get(i).getTitle());
+                        if (i == 0) {
+                            mCompanyNameList = tagList.get(i).getTitle();
+                        } else {
+                            mCompanyNameList = mCompanyNameList + "~" + tagList.get(i).getTitle();
+                        }
                     }
                 }
                 for(int i=0;i<tagRmList.size();i++){
                     if(tagRmList.get(i).getTitle()!=null && !tagRmList.get(i).getTitle().equals("")) {
-                        mTRMList.add(tagRmList.get(i).getId());
+                        if (i == 0) {
+                            mRm = tagRmList.get(i).getTitle();
+                        } else {
+                            mRm = mRm + "~" + tagRmList.get(i).getTitle();
+                        }
                     }
                 }
                 String mStringFrmDate = AppUtils.splitsEnquiryDate(fromDate.getText().toString().trim()),
                         mStringToDate = AppUtils.splitsEnquiryDate(toDate.getText().toString().trim());
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_sales);
+                RequestBody mRequestBodyOrderNo = RequestBody.create(MediaType.parse("text/plain"), tvInvoices.getEditableText().toString());
+                RequestBody mRequestBodyStartdate = RequestBody.create(MediaType.parse("text/plain"),mStringFrmDate);
+                RequestBody mRequestBodyEndDate = RequestBody.create(MediaType.parse("text/plain"),mStringToDate);
+                RequestBody mRequestBodyMinAmount = RequestBody.create(MediaType.parse("text/plain"),tvMinAmount.getEditableText().toString());
+                RequestBody mRequestBodyMaxAmount = RequestBody.create(MediaType.parse("text/plain"),tvMaxAmount.getEditableText().toString());
+                RequestBody mRequestBodyPageNo = RequestBody.create(MediaType.parse("text/plain"),pageNo);
+                RequestBody mRequestBodyPageSize = RequestBody.create(MediaType.parse("text/plain"),Constants.MIN_PAG_SIZE);
+                RequestBody mRequestBodyComp = RequestBody.create(MediaType.parse("text/plain"),mCompanyNameList);
+                RequestBody mRequestBodyRm = RequestBody.create(MediaType.parse("text/plain"),mRm);
+                RequestBody mRequestBodyUnpaid = RequestBody.create(MediaType.parse("text/plain"),"UNPAID");
+
                 SalesRequest salesRequest = new SalesRequest();
-                salesRequest.setInvoiceNumber(tvInvoices.getEditableText().toString());
-                salesRequest.setCompanyId(mCompnyList);
-                salesRequest.setEndDate(mStringToDate);
-                salesRequest.setInvoiceMaxAmount(tvMaxAmount.getEditableText().toString());
-                salesRequest.setPageno(pageNo);
-                salesRequest.setPagesize(Constants.PAG_SIZE);
-                salesRequest.setPaymentStatus("");
-                salesRequest.setRm(mTRMList);
-                salesRequest.setStartdate(mStringFrmDate);
-                salesRequest.setInvoiceMinAmount(tvMinAmount.getEditableText().toString());
+                salesRequest.setAction(mRequestBodyAction);
+                salesRequest.setOrderNo(mRequestBodyOrderNo);
+                salesRequest.setStartDate(mRequestBodyStartdate);
+                salesRequest.setEndDate(mRequestBodyEndDate);
+                salesRequest.setMinAmount(mRequestBodyMinAmount);
+                salesRequest.setMaxAmount(mRequestBodyMaxAmount);
+                salesRequest.setPageno(mRequestBodyPageNo);
+                salesRequest.setPagesize(mRequestBodyPageSize);
+                salesRequest.setPaymentStatus(mRequestBodyUnpaid);
+                salesRequest.setCustName(mRequestBodyComp);
+                salesRequest.setRmId(mRequestBodyRm);
+
                 salesViewModel.hitSalesApi(salesRequest);
             }
             else {
@@ -810,13 +834,13 @@ public class SaleFragment extends BaseFragment {
     }
     private void sortforInvoiceNum(){
 
-        Collections.sort(salesList, new Comparator<ResultInvoice>() {
+        Collections.sort(salesList, new Comparator<SalesData>() {
             @Override
-            public int compare(ResultInvoice item, ResultInvoice t1) {
+            public int compare(SalesData item, SalesData t1) {
                 int returnVal = 0;
                 try {
-                    String[] s1 = item.getInvoiceNo().split("/");
-                    String[] s2 = t1.getInvoiceNo().split("/");
+                    String[] s1 = item.getOrderNo().split("/");
+                    String[] s2 = t1.getOrderNo().split("/");
                     returnVal = s1[3].compareToIgnoreCase(s2[3]);
                 }catch (Exception e){
                     returnVal = 0;
@@ -828,11 +852,11 @@ public class SaleFragment extends BaseFragment {
         salesAdapter.notifyDataSetChanged();
     }
     private void sortforCompany(){
-        Collections.sort(salesList, new Comparator<ResultInvoice>() {
+        Collections.sort(salesList, new Comparator<SalesData>() {
             @Override
-            public int compare(ResultInvoice item, ResultInvoice t1) {
-                String s1 = item.getCompanyName();
-                String s2 = t1.getCompanyName();
+            public int compare(SalesData item, SalesData t1) {
+                String s1 = item.getCustName();
+                String s2 = t1.getCustName();
                 return s1.compareToIgnoreCase(s2);
             }
         });
@@ -1051,20 +1075,20 @@ public class SaleFragment extends BaseFragment {
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_SALES)) {
                             SalesResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SalesResponse.class);
-                            if (responseModel != null && responseModel.getStatus()==1) {
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 salesList.clear();
-                                tvTotalCount.setText(String.valueOf(responseModel.getTotalInvoices()));
+                                tvTotalCount.setText(String.valueOf(responseModel.getResult().getTotalrows()));
                                 try {
-                                    if (responseModel.getInvoices() != null && responseModel.getInvoices().size()>0) {
-                                        salesList = responseModel.getInvoices();
-                                        totalPage = responseModel.getTotalpages();
-                                        if(responseModel.getNextpage()==1) {
-                                            tvPage.setText("Showing " + String.valueOf(responseModel.getNextpage()) + " to " +
-                                                    String.valueOf(((responseModel.getNextpage()-1) + salesList.size()) + " of " + String.valueOf(responseModel.getTotalInvoices()) + "\nEntries"));
+                                    if (responseModel.getResult().getQuot() != null && responseModel.getResult().getQuot().size()>0) {
+                                        salesList = responseModel.getResult().getQuot();
+                                        totalPage = responseModel.getResult().getTotalpages();
+                                        if(responseModel.getResult().getNextpage()==1) {
+                                            tvPage.setText("Showing " + String.valueOf(responseModel.getResult().getNextpage()) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1) + salesList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries"));
                                         }
                                         else {
-                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getNextpage()-1)*7)+1) + " to " +
-                                                    String.valueOf(((responseModel.getNextpage()-1)*7)+salesList.size()) + " of " + String.valueOf(responseModel.getTotalInvoices()) + "\nEntries");
+                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getResult().getNextpage()-1)*7)+1) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1)*7)+salesList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries");
                                         }
                                     }
                                     else{

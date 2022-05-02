@@ -84,6 +84,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 public class StartEndVisitActivity extends BaseActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     Context mContext;
@@ -240,22 +242,29 @@ public class StartEndVisitActivity extends BaseActivity implements GoogleApiClie
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                AddVisitRequest request = new AddVisitRequest();
-                request.setCompanyID(loginTable.getCompanyId());
-                request.setStartLocationAddress(mLocDesc);
-                request.setStartLocationName(mLocTitle);
-                request.setStartLocationLatitude(startlocationLat);
-                request.setStartLocationLongitute(startlocationLng);
+                String visitStr = "";
                 try {
                     String[] visitNo = textVisitNo.getText().toString().split("Visit Number : ");
-                    request.setVisitNo(visitNo[1]);
+                    visitStr = visitNo[1];
                 }catch (Exception e){
-                    request.setVisitNo("");
+                    visitStr ="";
                 }
-                String mD = AppUtils.getStartVisitDate()
-                , mT = AppUtils.getStartVisitTime();
-                request.setVisitDate(mD);
-                request.setVisitTime(mT);
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_add_visit);
+                RequestBody mRequestBodyComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
+                RequestBody mRequestBodyAddress = RequestBody.create(MediaType.parse("text/plain"),mLocDesc);
+                RequestBody mRequestBodyName = RequestBody.create(MediaType.parse("text/plain"),mLocTitle);
+                RequestBody mRequestBodyLat = RequestBody.create(MediaType.parse("text/plain"),startlocationLat);
+                RequestBody mRequestBodyLong = RequestBody.create(MediaType.parse("text/plain"),startlocationLng);
+                RequestBody mRequestBodyVisitNo = RequestBody.create(MediaType.parse("text/plain"),visitStr);
+
+                AddVisitRequest request = new AddVisitRequest();
+                request.setAction(mRequestBodyAction);
+                request.setCompanyId(mRequestBodyComId);
+                request.setStartLocationAddress(mRequestBodyAddress);
+                request.setStartLocationName(mRequestBodyName);
+                request.setStartLocationLatitude(mRequestBodyLat);
+                request.setStartLocationLongitute(mRequestBodyLong);
+                request.setVisitNo(mRequestBodyVisitNo);
                 addVisitViewModel.hitAddVisitApi(request);
             }
             else {
@@ -472,12 +481,12 @@ public class StartEndVisitActivity extends BaseActivity implements GoogleApiClie
                     SharedPref.getInstance(mContext).write(SharedPrefKey.START_VISIT_LNG, lng);
                     callAddVisitApi();
                 }
-                if(isVisit.equals("2")) {
-                    SharedPref.getInstance(mContext).write(SharedPrefKey.VISIT_ON, "0");
+                //if(isVisit.equals("2")) {
+                    //SharedPref.getInstance(mContext).write(SharedPrefKey.VISIT_ON, "0");
                     //LogUtil.printToastMSG(mContext,"clicked end Visit"+lat+","+lng);
                     SharedPref.getInstance(mContext).write(SharedPrefKey.END_VISIT_LAT, lat);
                     SharedPref.getInstance(mContext).write(SharedPrefKey.END_VISIT_LNG, lng);
-                }
+              //  }
             }
         }
     }
@@ -668,10 +677,10 @@ public class StartEndVisitActivity extends BaseActivity implements GoogleApiClie
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_ADD_VISIT)) {
                             AddVisitResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), AddVisitResponse.class);
-                            if (responseModel != null && responseModel.getStatus()==1) {
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 //LogUtil.printToastMSG(mContext, responseModel.getMessage());
                                  } else {
-                                LogUtil.printToastMSG(mContext, responseModel.getMessage());
+                                LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                             }
                         }
                     }catch (Exception e){e.printStackTrace();}

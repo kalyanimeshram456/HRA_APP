@@ -124,7 +124,6 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     @Inject
     ViewModelFactory mViewModelFactory;
     private GetVisitNoViewModel getVisitNoViewModel;
-    private AddVisitViewModel addVisitViewModel;
     private MarkAttendanceViewModel markAttendanceViewModel;
     private UpdateAttendanceViewModel updateAttendanceViewModel;
     private AppDatabase mDb;
@@ -300,9 +299,6 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
         getVisitNoViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetVisitNoViewModel.class);
         getVisitNoViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_VISIT_NO));
 
-        addVisitViewModel = ViewModelProviders.of(this, mViewModelFactory).get(AddVisitViewModel.class);
-        addVisitViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_ADD_VISIT));
-
         markAttendanceViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MarkAttendanceViewModel.class);
         markAttendanceViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_MARK_ATTENDANCE));
 
@@ -388,58 +384,6 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
             }
         } else {
             LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
-        }
-    }
-    /* Call Api For Add visit */
-    private void callAddVisitApi() {
-        if (NetworkCheck.isInternetAvailable(this)) {
-            LoginTable loginTable = mDb.getDbDAO().getLoginData();
-            if(loginTable!=null) {
-                String mLocDesc = "",mLocTitle = "";
-                String startlocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.START_VISIT_LAT, "0.0");
-                String startlocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.START_VISIT_LNG, "0.0");
-
-                Geocoder geocoder = new Geocoder(StartAttendanceActivity.this);
-
-                try {
-                    List<Address> addressList = geocoder.getFromLocation(Double.parseDouble(startlocationLat),
-                            Double.parseDouble(startlocationLng), 1);
-                    if (addressList != null && addressList.size() > 0) {
-                        Address address = addressList.get(0);
-                        LatLng latLng1 = new LatLng(address.getLatitude(), address.getLongitude());
-                        String locality = addressList.get(0).getAddressLine(0);
-                        String country = addressList.get(0).getCountryName();
-                        mLocTitle = addressList.get(0).getFeatureName();
-                        if (!locality.isEmpty() && !country.isEmpty())
-                            mLocDesc = locality + "  " + country;
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                AddVisitRequest request = new AddVisitRequest();
-                request.setCompanyID(loginTable.getCompanyId());
-                request.setStartLocationAddress(mLocDesc);
-                request.setStartLocationName(mLocTitle);
-                request.setStartLocationLatitude(startlocationLat);
-                request.setStartLocationLongitute(startlocationLng);
-                try {
-                    String[] visitNo = textVisitNo.getText().toString().split("Visit Number : ");
-                    request.setVisitNo(visitNo[1]);
-                }catch (Exception e){
-                    request.setVisitNo("");
-                }
-                String mD = AppUtils.getStartVisitDate()
-                , mT = AppUtils.getStartVisitTime();
-                request.setVisitDate(mD);
-                request.setVisitTime(mT);
-                addVisitViewModel.hitAddVisitApi(request);
-            }
-            else {
-                LogUtil.printToastMSG(this, "Something is wrong.");
-            }
-        } else {
-            LogUtil.printToastMSG(this, getString(R.string.err_msg_connection_was_refused));
         }
     }
 
@@ -819,16 +763,6 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                                 },1700);
                             } else {
                                 LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
-                            }
-                        }
-                    }catch (Exception e){e.printStackTrace();}
-                    try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_ADD_VISIT)) {
-                            AddVisitResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), AddVisitResponse.class);
-                            if (responseModel != null && responseModel.getStatus()==1) {
-                                //LogUtil.printToastMSG(mContext, responseModel.getMessage());
-                                 } else {
-                                LogUtil.printToastMSG(mContext, responseModel.getMessage());
                             }
                         }
                     }catch (Exception e){e.printStackTrace();}

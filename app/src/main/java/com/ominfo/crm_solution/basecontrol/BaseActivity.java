@@ -618,6 +618,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         mDialog.show();
     }
 
+
     public void showUploadDialog() {
         Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
         mDialog.setContentView(R.layout.dialog_upload_total_hisab);

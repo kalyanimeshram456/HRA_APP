@@ -1,10 +1,12 @@
 package com.ominfo.crm_solution.basecontrol;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -18,6 +20,7 @@ import android.widget.ViewSwitcher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.Fragment;
@@ -284,4 +287,47 @@ public class BaseFragment extends Fragment {
         }
         //customAnimationUtil.showErrorEditTextAnimation(textInputLayout, R.anim.shake);
     }
+    public void showSuccessDialogFragment(Context context,String msg,boolean status,Dialog dialog) {
+        Dialog mDialog = new Dialog(context, R.style.ThemeDialogCustom);
+        mDialog.setContentView(R.layout.dialog_weight_submitted);
+        mDialog.setCanceledOnTouchOutside(true);
+        AppCompatTextView mTextViewTitle = mDialog.findViewById(R.id.tv_dialogTitle);
+        AppCompatButton button = mDialog.findViewById(R.id.okayButton);
+        mTextViewTitle.setText(msg);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mDialog.dismiss();
+                if(!status) {
+                    dialog.dismiss();
+                }
+            }
+        }, 1100);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDialog.dismiss();
+                //finish();
+            }
+        });
+        //AppCompatButton appCompatButton = mDialog.findViewById(R.id.btn_done);
+        //LinearLayoutCompat appCompatLayout = mDialog.findViewById(R.id.layPopup);
+        /*appCompatButton.setVisibility(View.VISIBLE);
+        appCompatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(TextUtils.isEmpty(mEditTextNote.getText().toString()))
+                {
+                    LogUtil.printToastMSG(mContext,getString(R.string.val_msg_please_enter_note));
+                }
+                else {
+                    callUpdateMarkApi(mEditTextNote.getText().toString());
+                    mDialog.dismiss();
+                }
+            }
+        });*/
+        mDialog.show();
+    }
+
 }

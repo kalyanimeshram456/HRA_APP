@@ -13,8 +13,8 @@ public class DynamicAPIPath {
     public static final String POST_LOGOUT = BASE+"?action=logout_mt_update";
     public static final String POST_PROFILE= BASE_NODEJS+"getEmployee_profile";
     public static final String POST_PRODUCT=  BASE+"?action=get_product_records";
-    public static final String POST_SALES= BASE_NODEJS+"getinvoice";
-    public static final String POST_QUOTATION= BASE_NODEJS+"getquotations";
+    public static final String POST_SALES= BASE+"?action=get_all_product";
+    public static final String POST_QUOTATION= BASE+"?action=get_quotation_record";
     public static final String POST_DISPATCH= BASE_NODEJS+"billpendinglist";
     public static final String POST_SALES_CREDIT= BASE_NODEJS+"sales_unpaid";
     public static final String POST_REMINDER= BASE_NODEJS+"getreminder";
@@ -22,7 +22,7 @@ public class DynamicAPIPath {
     public static final String POST_ADD_REMINDER= BASE_NODEJS+"addreminder";
     public static final String POST_UPDATE_REMINDER= BASE_NODEJS+"updatereminder";
     public static final String POST_RECEIPT= BASE+"?action=get_receipt_records";
-    public static final String POST_ADD_VISIT= BASE_NODEJS+"addvisit";
+    public static final String POST_ADD_VISIT= BASE+"?action=add_visit";
     public static final String POST_EDIT_VISIT= BASE+"?action=editVisit";
     public static final String POST_GET_PROFILE = BASE+"?action=getcrmempprofilepic";
     public static final String POST_NOTIFICATION = BASE+"?action=getcrmempnotif";
@@ -53,7 +53,10 @@ public class DynamicAPIPath {
     public static final String POST_UPDATE_ATTENDANCE= BASE+"?action=attendance_updated";
     public static final String POST_LOCATION_PER_HOUR= BASE+"?action=emp_long_lati_tracking";
     public static final String POST_TOP_CUST= BASE+"?action=top_customer";
-    public static final String POST_RAISE_TICKET = BASE+"?action=getnewticketno";
+    public static final String POST_GET_TICKET_NO = BASE+"?action=getnewticketno";
+    public static final String POST_RAISE_TICKET = BASE+"?action=raise_ticket";
+    public static final String POST_GET_TICKET = BASE+"?action=get_filterraised_record";
+    public static final String POST_UPDATE_TICKET = BASE+"?action=ticket_updated";
 
     //action string
     public static final String POST_FETCH_KATA_CHITTI = "index_with_DRapp.php?action=getKantaChitthi";
@@ -73,7 +76,9 @@ public class DynamicAPIPath {
     public static final String action_get_lost_apportunity = "getlostopportunity";
     public static final String action_get_edit_visit = "editVisit";
     public static final String action_get_leave_app = "get_leave_records";
-     public static final String action_get_view360 = "custOverAllData";
+    public static final String action_raise_ticket = "raise_ticket";
+    public static final String action_get_view360 = "custOverAllData";
+    public static final String action_get_quotation = "get_quotation_record";
     public static final String action_get_sales_credit = "salescreditreport";
     public static final String action_dashboard = "getDashboard";
     public static final String action_get_profile_img = "getcrmempprofilepic";
@@ -85,8 +90,12 @@ public class DynamicAPIPath {
     public static final String action_delete_notification = "marknotifread";
     public static final String GET_USER_LIST = "user";
     public static final String action_products = "get_product_records";
-    public static final String action_raise_ticket = "getnewticketno";
+    public static final String action_get_ticket_no = "getnewticketno";
     public static final String action_receipt = "get_receipt_records";
+    public static final String action_get_ticket = "get_filterraised_record";
+    public static final String action_update_ticket = "ticket_updated";
+    public static final String action_get_sales = "get_all_product";
+    public static final String action_add_visit = "add_visit";
 
     /**
      * Make dynamic url method

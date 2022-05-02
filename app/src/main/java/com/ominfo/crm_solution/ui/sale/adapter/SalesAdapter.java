@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
 import com.ominfo.crm_solution.ui.sale.model.ResultInvoice;
+import com.ominfo.crm_solution.ui.sale.model.SalesData;
+import com.ominfo.crm_solution.util.AppUtils;
 
 import java.util.List;
 
@@ -21,7 +23,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<ResultInvoice> mListData;
+    private List<SalesData> mListData;
     private Context mContext;
     private String mDate;
 
@@ -29,7 +31,7 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.ViewHolder> 
         this.mContext = mContext;
     }
 
-    public SalesAdapter(Context context, List<ResultInvoice> listData, ListItemSelectListener itemClickListener) {
+    public SalesAdapter(Context context, List<SalesData> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -44,7 +46,7 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.ViewHolder> 
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<ResultInvoice> list){
+    public void updateList(List<SalesData> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -54,9 +56,9 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.ViewHolder> 
 
         if(mListData.size()>0) {
                 holder.setIsRecyclable(false);
-                holder.tvCompanyName.setText(mListData.get(position).getCompanyName());
-                holder.tvState.setText(mListData.get(position).getInvoiceNo());
-                holder.tvRs.setText(mListData.get(position).getInvoiceDate());
+                holder.tvCompanyName.setText(mListData.get(position).getCustName());
+                holder.tvState.setText(mListData.get(position).getOrderNo());
+                holder.tvRs.setText(AppUtils.convertyyyytodd(mListData.get(position).getCreatedOn()));
                 holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
                 if(mListData.get(position).getPaymentStatus().equals("PAID"))
                 {

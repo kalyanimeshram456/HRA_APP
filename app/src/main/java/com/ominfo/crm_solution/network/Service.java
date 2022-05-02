@@ -9,8 +9,11 @@ import com.ominfo.crm_solution.ui.enquiry_report.model.GetEnquiryRequest;
 import com.ominfo.crm_solution.ui.enquiry_report.model.SaveEnquiryRequest;
 import com.ominfo.crm_solution.ui.lost_apportunity.model.GetLostApportunityRequest;
 import com.ominfo.crm_solution.ui.my_account.model.ApplyLeaveRequest;
+import com.ominfo.crm_solution.ui.my_account.model.GetTicketRequest;
 import com.ominfo.crm_solution.ui.my_account.model.LeaveApplicationRequest;
 import com.ominfo.crm_solution.ui.my_account.model.ProfileRequest;
+import com.ominfo.crm_solution.ui.my_account.model.RaiseTicketRequest;
+import com.ominfo.crm_solution.ui.my_account.model.UpdateTicketRequest;
 import com.ominfo.crm_solution.ui.product.model.ProductRequest;
 import com.ominfo.crm_solution.ui.quotation_amount.model.QuotationRequest;
 import com.ominfo.crm_solution.ui.receipt.model.ReceiptRequest;
@@ -23,7 +26,6 @@ import com.ominfo.crm_solution.ui.sales_credit.model.GetView360Request;
 import com.ominfo.crm_solution.ui.sales_credit.model.SalesCreditRequest;
 import com.ominfo.crm_solution.ui.top_customer.model.TopCustomerRequest;
 import com.ominfo.crm_solution.ui.visit_report.model.AddVisitRequest;
-import com.ominfo.crm_solution.ui.visit_report.model.EditVisitRequest;
 import com.ominfo.crm_solution.ui.visit_report.model.GetVisitRequest;
 import com.ominfo.crm_solution.ui.visit_report.model.PhpEditVisitRequest;
 
@@ -53,9 +55,22 @@ public class Service {
                 applyLeaveRequest.getComment()/*, applyLeaveRequest.getLeaveStatus(), applyLeaveRequest.getUpdatedBy()*/
                 );
     }
-    public Observable<JsonElement> executeRaiseTicketAPI(RequestBody action) {
-        return networkAPIServices.raiseTicket(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_RAISE_TICKET),
+    public Observable<JsonElement> executeGetTicketNoAPI(RequestBody action) {
+        return networkAPIServices.getTicketNo(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_TICKET_NO),
                 action);
+    }
+    public Observable<JsonElement> executeRaiseTicketAPI(RaiseTicketRequest request) {
+        return networkAPIServices.raiseTicket(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_RAISE_TICKET),
+                request.getAction(), request.getCustId(), request.getSubject(),
+                request.getDescription(), request.getPriority(), request.getIssueType(),request.getTicketNo()
+        );
+    }
+    public Observable<JsonElement> executeUpdateTicketAPI(UpdateTicketRequest request) {
+        return networkAPIServices.updateTicket(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_UPDATE_TICKET),
+                request.getAction(), request.getSubject(), request.getDescription(),
+                request.getPriority(), request.getIssueType(),request.getStatus(),request.getReason()
+                ,request.getTicket_no()
+        );
     }
     public Observable<JsonElement> executeMarkAttendanceAPI(MarkAttendanceRequest markAttendanceRequest) {
         return networkAPIServices.markAttendance(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_APPLY_LEAVE),
@@ -80,11 +95,18 @@ public class Service {
     }
 
     public Observable<JsonElement> executeSalesAPI(SalesRequest salesRequest) {
-        return networkAPIServices.sales(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_SALES),salesRequest);
+        return networkAPIServices.sales(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_SALES),
+                salesRequest.getAction(),salesRequest.getPageno(),salesRequest.getPagesize(),
+                salesRequest.getCustName(),salesRequest.getPaymentStatus(),salesRequest.getOrderNo(),
+                salesRequest.getStartDate(),salesRequest.getEndDate(),salesRequest.getMinAmount(),
+                salesRequest.getMaxAmount(),salesRequest.getRmId());
     }
 
     public Observable<JsonElement> executeQuotationAPI(QuotationRequest request) {
-        return networkAPIServices.quotation(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_QUOTATION),request);
+        return networkAPIServices.quotation(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_QUOTATION),
+                request.getAction(),request.getPageno(),request.getPagesize(),request.getCustName()
+        ,request.getOrderStatus(),request.getOrderNo(),request.getStartDate(),request.getEndDate(),
+                request.getMinAmount(),request.getMaxAmount(),request.getRmId());
     }
 
  /*   public Observable<JsonElement> executeLostApportunityAPI(GetLostApportunityRequest request) {
@@ -125,7 +147,10 @@ public class Service {
     }
 
     public Observable<JsonElement> executeAddVisitAPI(AddVisitRequest request) {
-        return networkAPIServices.addVisit(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_ADD_VISIT),request);
+        return networkAPIServices.addVisit(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_ADD_VISIT),
+                request.getAction(),request.getVisitNo(),request.getCompanyId(),
+                request.getStartLocationName(),request.getStartLocationAddress(),
+                request.getStartLocationLatitude(),request.getStartLocationLongitute());
     }
 
     public Observable<JsonElement> executeEditVisitAPI(PhpEditVisitRequest request) {
@@ -292,6 +317,13 @@ public class Service {
                 leaveApplicationRequest.getPageno(),leaveApplicationRequest.getPagesize(),
                 leaveApplicationRequest.getLeaveType(),leaveApplicationRequest.getStatus(),
                 leaveApplicationRequest.getFromDate(),leaveApplicationRequest.getEndDate());
+    }
+    public Observable<JsonElement> executeGetTicketAPI(GetTicketRequest getTicketRequest) {
+        return networkAPIServices.getTicket(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_TICKET),
+                getTicketRequest.getAction(),getTicketRequest.getEmpId(),
+                getTicketRequest.getPageno(),getTicketRequest.getPagesize(),
+                getTicketRequest.getTicketNo(), getTicketRequest.getPriority(),getTicketRequest.getStatus(),
+                getTicketRequest.getFromDate(),getTicketRequest.getEndDate());
     }
     public Observable<JsonElement> executeLeaveSingleRecordAPI(RequestBody action, RequestBody id) {
         return networkAPIServices.getLeaveSingle(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_LEAVE_APP),

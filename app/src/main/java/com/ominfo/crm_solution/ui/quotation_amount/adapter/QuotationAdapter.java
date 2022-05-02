@@ -12,8 +12,7 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.crm_solution.R;
-import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
-import com.ominfo.crm_solution.ui.quotation_amount.model.Quotation;
+import com.ominfo.crm_solution.ui.quotation_amount.model.QuotationData;
 
 import java.util.List;
 
@@ -21,7 +20,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class QuotationAdapter extends RecyclerView.Adapter<QuotationAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<Quotation> mListData;
+    private List<QuotationData> mListData;
     private Context mContext;
     private String mDate;
 
@@ -29,7 +28,7 @@ public class QuotationAdapter extends RecyclerView.Adapter<QuotationAdapter.View
         this.mContext = mContext;
     }
 
-    public QuotationAdapter(Context context, List<Quotation> listData, ListItemSelectListener itemClickListener) {
+    public QuotationAdapter(Context context, List<QuotationData> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -44,7 +43,7 @@ public class QuotationAdapter extends RecyclerView.Adapter<QuotationAdapter.View
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<Quotation> list){
+    public void updateList(List<QuotationData> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -55,7 +54,7 @@ public class QuotationAdapter extends RecyclerView.Adapter<QuotationAdapter.View
         if(mListData.size()>0) {
             holder.setIsRecyclable(false);
              holder.tvCompanyName.setText(mListData.get(position).getOrderNo());
-                holder.tvState.setText(mListData.get(position).getCompanyName());
+                holder.tvState.setText(mListData.get(position).getCustName());
                 holder.tvRs.setText(mContext.getResources().getString(R.string.scr_lbl_rs)+mListData.get(position).getTotalCharge().toString());
                 holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
                 try{

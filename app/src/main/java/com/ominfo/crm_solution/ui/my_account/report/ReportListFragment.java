@@ -65,13 +65,18 @@ import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmlist;
 import com.ominfo.crm_solution.ui.login.model.LoginTable;
 import com.ominfo.crm_solution.ui.my_account.leave.adapter.LeaveListAdapter;
 import com.ominfo.crm_solution.ui.my_account.model.ApplicationLeave;
-import com.ominfo.crm_solution.ui.my_account.model.LeaveApplicationRequest;
+import com.ominfo.crm_solution.ui.my_account.model.GetTicketRequest;
+import com.ominfo.crm_solution.ui.my_account.model.GetTicketViewModel;
 import com.ominfo.crm_solution.ui.my_account.model.LeaveApplicationResponse;
-import com.ominfo.crm_solution.ui.my_account.model.LeaveApplicationViewModel;
+import com.ominfo.crm_solution.ui.my_account.model.GetTicketNoResponse;
+import com.ominfo.crm_solution.ui.my_account.model.GetTicketNoViewModel;
+import com.ominfo.crm_solution.ui.my_account.model.RaiseTicketRequest;
 import com.ominfo.crm_solution.ui.my_account.model.RaiseTicketResponse;
 import com.ominfo.crm_solution.ui.my_account.model.RaiseTicketViewModel;
+import com.ominfo.crm_solution.ui.my_account.model.UpdateTicketRequest;
+import com.ominfo.crm_solution.ui.my_account.model.UpdateTicketResponse;
+import com.ominfo.crm_solution.ui.my_account.model.UpdateTicketViewModel;
 import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
-import com.ominfo.crm_solution.ui.product.model.ProductRequest;
 import com.ominfo.crm_solution.ui.sale.adapter.CompanyTagAdapter;
 import com.ominfo.crm_solution.ui.sale.model.RmListModel;
 import com.ominfo.crm_solution.ui.sales_credit.model.GraphModel;
@@ -142,9 +147,11 @@ public class ReportListFragment extends BaseFragment {
     FrameLayout mProgressBarHolder;
     @Inject
     ViewModelFactory mViewModelFactory;
-    private LeaveApplicationViewModel leaveApplicationViewModel;
+    private GetTicketViewModel getTicketViewModel;
     private GetRmViewModel getRmViewModel;
+    private GetTicketNoViewModel getTicketNoViewModel;
     private RaiseTicketViewModel raiseTicketViewModel;
+    private UpdateTicketViewModel updateTicketViewModel;
     BarData barData;
     List<GradientColor> list = new ArrayList<>();
     // variable for our bar data set.
@@ -206,7 +213,10 @@ public class ReportListFragment extends BaseFragment {
     @BindView(R.id.imgReport)
     AppCompatImageView imgReport;
     String tickerNo = "";
-
+    Dialog mDialogReport;
+    AppCompatAutoCompleteTextView AutoComTextViewTitle,AutoComTextViewIssueType,
+            AutoComTextViewDescr,AutoComTextViewStatus,AutoComTextViewReason;
+    AppCompatTextView tvResolu,tvTicketNo;
     public ReportListFragment() {
         // Required empty public constructor
     }
@@ -262,7 +272,7 @@ public class ReportListFragment extends BaseFragment {
         setDate();
         setEnquiryPagerList(1);
         setAdapterForSalesList();
-        callLeaveListApi("0");
+        callReportListApi("0");
 
         graphModelsList.removeAll(graphModelsList);
         graphModelsList.add(new GraphModel("State C1", "Company Test 1", "5"));
@@ -288,20 +298,26 @@ public class ReportListFragment extends BaseFragment {
         imgReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                callRaiseTicketApi();
+                callGetTicketNoApi();
             }
         });
     }
 
     private void injectAPI() {
-        leaveApplicationViewModel = ViewModelProviders.of(this, mViewModelFactory).get(LeaveApplicationViewModel.class);
-        leaveApplicationViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_LEAVE_APP));
+        getTicketViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetTicketViewModel.class);
+        getTicketViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_TICKET));
 
         getRmViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetRmViewModel.class);
         getRmViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_RM));
 
+        getTicketNoViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetTicketNoViewModel.class);
+        getTicketNoViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_TICKET_NO));
+
         raiseTicketViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RaiseTicketViewModel.class);
         raiseTicketViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_RAISE_TICKET));
+
+        updateTicketViewModel = ViewModelProviders.of(this, mViewModelFactory).get(UpdateTicketViewModel.class);
+        updateTicketViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_UPDATE_TICKET));
     }
 
     private void setDate(){
@@ -418,8 +434,7 @@ public class ReportListFragment extends BaseFragment {
     }
 
     //set value to priority
-    private void setDropdownPriority(
-            AppCompatTextView tvResolution) {
+    private void setDropdownPriority(AppCompatTextView tvResolution) {
         List<String> leaveModelList = new ArrayList<>();
         leaveModelList.add("Low");
         leaveModelList.add("Medium");
@@ -497,31 +512,33 @@ public class ReportListFragment extends BaseFragment {
     }
 
     /* Call Api For Leave Applications */
-    private void callLeaveListApi(String pageNo) {
+    private void callReportListApi(String pageNo) {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
                 String startLeaveDate = AppUtils.dateReminder(fromDate.getText().toString()) ,
                         endLeaveDate =  AppUtils.dateReminder(toDate.getText().toString());
-                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_leave_app);
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_ticket);
                 RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
                 RequestBody mRequestBodyPageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);
                 RequestBody mRequestBodyPageSize = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
-                RequestBody mRequestBodyleaveType = RequestBody.create(MediaType.parse("text/plain"),tvAutoTypeLeave.getText().toString() );
+                RequestBody mRequestBodyTicketNo = RequestBody.create(MediaType.parse("text/plain"),tvAutoTypeLeave.getText().toString() );
                 RequestBody mRequestBodyTypestatus = RequestBody.create(MediaType.parse("text/plain"),tvAutoLeaveStatus.getText().toString());
                 RequestBody mRequestBodyfrom_date = RequestBody.create(MediaType.parse("text/plain"), startLeaveDate);
                 RequestBody mRequestBodyend_date = RequestBody.create(MediaType.parse("text/plain"), endLeaveDate);
+                RequestBody mRequestBodyPriority = RequestBody.create(MediaType.parse("text/plain"), endLeaveDate);
 
-                LeaveApplicationRequest applicationRequest = new LeaveApplicationRequest();
+                GetTicketRequest applicationRequest = new GetTicketRequest();
                 applicationRequest.setAction(mRequestBodyAction);
                 applicationRequest.setEmpId(mRequestBodyTypeEmpId);
                 applicationRequest.setPageno(mRequestBodyPageNo);
                 applicationRequest.setPagesize(mRequestBodyPageSize);
-                applicationRequest.setLeaveType(mRequestBodyleaveType);
+                applicationRequest.setTicketNo(mRequestBodyTicketNo);
                 applicationRequest.setStatus(mRequestBodyTypestatus);
                 applicationRequest.setFromDate(mRequestBodyfrom_date);
                 applicationRequest.setEndDate(mRequestBodyend_date);
-                leaveApplicationViewModel.hitLeaveApplicationApi(applicationRequest);
+                applicationRequest.setPriority(mRequestBodyPriority);
+                getTicketViewModel.hitGetTicketApi(applicationRequest);
             }
             else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
@@ -611,34 +628,40 @@ public class ReportListFragment extends BaseFragment {
 
     //show Report popup
     public void showReportDialog(int status) {
-        Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_ticket_details);
-        mDialog.setCanceledOnTouchOutside(true);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton submitButton = mDialog.findViewById(R.id.submitButton);
-        AppCompatTextView tvStatus = mDialog.findViewById(R.id.tvStatus);
-        TextInputLayout input_textStatus = mDialog.findViewById(R.id.input_textStatus);
-        AppCompatTextView appcomptextReason = mDialog.findViewById(R.id.appcomptextReason);
-        AppCompatTextView tvTicketNo = mDialog.findViewById(R.id.tvTicketNo);
-        AppCompatTextView tvResolution = mDialog.findViewById(R.id.tvResolu);
-        TextInputLayout input_textReason = mDialog.findViewById(R.id.input_textReason);
-        AppCompatAutoCompleteTextView AutoComTextViewIssueType = mDialog.findViewById(R.id.AutoComTextViewIssueType);
-        AutoComTextViewPriority = mDialog.findViewById(R.id.AutoComTextViewPriority);
-        AppCompatAutoCompleteTextView AutoComTextViewStatus = mDialog.findViewById(R.id.AutoComTextViewStatus);
+        mDialogReport = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialogReport.setContentView(R.layout.dialog_ticket_details);
+        mDialogReport.setCanceledOnTouchOutside(true);
+         AutoComTextViewTitle = mDialogReport.findViewById(R.id.AutoComTextViewTitle);
+         AutoComTextViewIssueType = mDialogReport.findViewById(R.id.AutoComTextViewIssueType);
+         AutoComTextViewDescr = mDialogReport.findViewById(R.id.AutoComTextViewDescr);
+         AutoComTextViewPriority = mDialogReport.findViewById(R.id.AutoComTextViewPriority);
+         tvResolu = mDialogReport.findViewById(R.id.tvResolu);
+         AutoComTextViewStatus = mDialogReport.findViewById(R.id.AutoComTextViewStatus);
+         AutoComTextViewReason = mDialogReport.findViewById(R.id.AutoComTextViewReason);
 
+        AppCompatImageView mClose = mDialogReport.findViewById(R.id.imgCancel);
+        AppCompatButton submitButton = mDialogReport.findViewById(R.id.submitButton);
+        AppCompatTextView tvStatus = mDialogReport.findViewById(R.id.tvStatus);
+        AppCompatTextView appcomptextReason = mDialogReport.findViewById(R.id.appcomptextReason);
+        TextInputLayout input_textStatus = mDialogReport.findViewById(R.id.input_textStatus);
+        tvTicketNo = mDialogReport.findViewById(R.id.tvTicketNo);
+        TextInputLayout input_textReason = mDialogReport.findViewById(R.id.input_textReason);
+        AppCompatAutoCompleteTextView AutoComTextViewStatus = mDialogReport.findViewById(R.id.AutoComTextViewStatus);
         tvTicketNo.setText("Ticket No : "+tickerNo);
         setDropdownIssueType(AutoComTextViewIssueType);
-        setDropdownPriority(tvResolution);
+        setDropdownPriority(tvResolu);
         setDropdownIssueStatus(AutoComTextViewStatus);
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDialog.dismiss();
+                mDialogReport.dismiss();
                 if(status==0){
                     //raise issue
+                    callRaiseTicketApi();
                 }
                 else{
                     //update
+                    callUpdateTicketApi();
                 }
             }
         });
@@ -651,10 +674,10 @@ public class ReportListFragment extends BaseFragment {
         mClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDialog.dismiss();
+                mDialogReport.dismiss();
             }
         });
-        mDialog.show();
+        mDialogReport.show();
     }
 
     private BarData getBarEntries() {
@@ -701,13 +724,97 @@ public class ReportListFragment extends BaseFragment {
         BarData data = new BarData(dataSets);
         return data;
     }
+    /* Call Api For get Ticket no*/
+    private void callGetTicketNoApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_ticket_no);
+                getTicketNoViewModel.hitGetTicketNoApi(mRequestBodyAction);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
     /* Call Api For Raise Ticket */
     private void callRaiseTicketApi() {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
                 RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_raise_ticket);
-                raiseTicketViewModel.hitRaiseTicketApi(mRequestBodyAction);
+                RequestBody mRequestBodyCustId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                RequestBody mRequestBodySubj = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewTitle.getText().toString());
+                RequestBody mRequestBodyDesr = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewDescr.getText().toString());
+                String val = "3";
+                if(AutoComTextViewPriority.getText().toString().equals("Low")){
+                    val = "3";
+                }
+                else if(AutoComTextViewPriority.getText().toString().equals("Medium")){
+                    val = "2";
+                }
+                else if(AutoComTextViewPriority.getText().toString().equals("High")){
+                    val = "1";
+                }
+                RequestBody mRequestBodyPri = RequestBody.create(MediaType.parse("text/plain"), val);
+                RequestBody mRequestBodyIssType = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewIssueType.getText().toString());
+                RequestBody mRequestBodyTicketNo = RequestBody.create(MediaType.parse("text/plain"), tvTicketNo.getText().toString());
+
+                RaiseTicketRequest raiseTicketRequest = new RaiseTicketRequest();
+                raiseTicketRequest.setAction(mRequestBodyAction);
+                raiseTicketRequest.setCustId(mRequestBodyCustId);
+                raiseTicketRequest.setSubject(mRequestBodySubj);
+                raiseTicketRequest.setDescription(mRequestBodyDesr);
+                raiseTicketRequest.setPriority(mRequestBodyPri);
+                raiseTicketRequest.setIssueType(mRequestBodyIssType);
+                raiseTicketRequest.setTicketNo(mRequestBodyTicketNo);
+                raiseTicketViewModel.hitRaiseTicketApi(raiseTicketRequest);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    /* Call Api For Update Ticket */
+    private void callUpdateTicketApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_update_ticket);
+                //RequestBody mRequestBodyCustId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
+                RequestBody mRequestBodySubj = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewTitle.getText().toString());
+                RequestBody mRequestBodyDesr = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewDescr.getText().toString());
+                String val = "3";
+                if(AutoComTextViewPriority.getText().toString().equals("Low")){
+                    val = "3";
+                }
+                else if(AutoComTextViewPriority.getText().toString().equals("Medium")){
+                    val = "2";
+                }
+                else if(AutoComTextViewPriority.getText().toString().equals("High")){
+                    val = "1";
+                }
+                RequestBody mRequestBodyPri = RequestBody.create(MediaType.parse("text/plain"), val);
+                RequestBody mRequestBodyIssType = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewIssueType.getText().toString());
+                RequestBody mRequestBodyTicketNo = RequestBody.create(MediaType.parse("text/plain"), tvTicketNo.getText().toString());
+                RequestBody mRequestBodyStatus = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewStatus.getText().toString());
+                RequestBody mRequestBodyReason = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewReason.getText().toString());
+
+                UpdateTicketRequest updateTicketRequest = new UpdateTicketRequest();
+                updateTicketRequest.setAction(mRequestBodyAction);
+                updateTicketRequest.setSubject(mRequestBodySubj);
+                updateTicketRequest.setDescription(mRequestBodyDesr);
+                updateTicketRequest.setPriority(mRequestBodyPri);
+                updateTicketRequest.setIssueType(mRequestBodyIssType);
+                updateTicketRequest.setStatus(mRequestBodyStatus);
+                updateTicketRequest.setReason(mRequestBodyReason);
+                updateTicketRequest.setTicket_no(mRequestBodyTicketNo);
+                updateTicketViewModel.hitUpdateTicketApi(updateTicketRequest);
             }
             else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
@@ -893,7 +1000,7 @@ public class ReportListFragment extends BaseFragment {
                 tvPage.setText("Showing " + String.valueOf(0) + " to " +
                         String.valueOf(0) + " of " + String.valueOf(0) + "\nEntries");
                 try {
-                    callLeaveListApi("0");
+                    callReportListApi("0");
                 }catch (Exception e){e.printStackTrace();}
                 pieChart.setVisibility(View.GONE);
                 layList.setVisibility(View.VISIBLE);
@@ -1131,7 +1238,7 @@ public class ReportListFragment extends BaseFragment {
                 else {
                     datePickerField.setText(sdf.format(myCalendar.getTime()));
                 }
-                callLeaveListApi("0");
+                callReportListApi("0");
             }
 
         };
@@ -1236,7 +1343,7 @@ public class ReportListFragment extends BaseFragment {
                     enquiryPageAdapter.updateList(mDataList);
                 }catch (Exception e){e.printStackTrace();}
                 try {
-                    callLeaveListApi(String.valueOf(Integer.parseInt(mData.getPageNo()) - 1));
+                    callReportListApi(String.valueOf(Integer.parseInt(mData.getPageNo()) - 1));
                 }catch (Exception e){e.printStackTrace();}
             }
         });
@@ -1331,8 +1438,8 @@ public class ReportListFragment extends BaseFragment {
                         e.printStackTrace();
                     }
                     try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_RAISE_TICKET)) {
-                            RaiseTicketResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), RaiseTicketResponse.class);
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_TICKET_NO)) {
+                            GetTicketNoResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetTicketNoResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 tickerNo = responseModel.getResult().getTicketno();
                                 showReportDialog(0);
@@ -1340,6 +1447,28 @@ public class ReportListFragment extends BaseFragment {
 
                         }
 
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_RAISE_TICKET)) {
+                            RaiseTicketResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), RaiseTicketResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),
+                                        false,mDialogReport);
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_UPDATE_TICKET)) {
+                            UpdateTicketResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), UpdateTicketResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),
+                                        false,mDialogReport);
+                            }
+                        }
                     }catch (Exception e){
                         e.printStackTrace();
                     }

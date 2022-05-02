@@ -696,6 +696,8 @@ public class UploadVisitActivity extends BaseActivity {
                 }
 
                 PhpEditVisitRequest request = new PhpEditVisitRequest();
+                RequestBody mRequestBodyComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
+                RequestBody mRequestBodyEmpd = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
                 RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_edit_visit);
                 RequestBody mRequestBodyResult = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewResult.getText().toString());
                 RequestBody mRequestBodyCustMobile = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewMobile.getText().toString());
@@ -733,7 +735,9 @@ public class UploadVisitActivity extends BaseActivity {
                 request.setStopLocationLongitute(mRequestBodyStopLocationLongitute);
                 request.setRmId(mRequestBodyRmId);
                 request.setTopic(mRequestBodyTopic);
+                request.setEmployee(mRequestBodyEmpd);
                 request.setTourId(mRequestBodyTourId);
+                request.setCompanyID(mRequestBodyComId);
                 request.setDescription(mRequestBodyDescription);
                 request.setVisitDuration(mRequestBodyVisitDuration);
                 request.setVisitingCard(mRequestBodyVisitingCard);

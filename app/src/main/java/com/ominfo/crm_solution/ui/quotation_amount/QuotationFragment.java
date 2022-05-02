@@ -68,12 +68,11 @@ import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmlist;
 import com.ominfo.crm_solution.ui.login.model.LoginTable;
 import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.quotation_amount.adapter.QuotationAdapter;
-import com.ominfo.crm_solution.ui.quotation_amount.model.Quotation;
+import com.ominfo.crm_solution.ui.quotation_amount.model.QuotationData;
 import com.ominfo.crm_solution.ui.quotation_amount.model.QuotationRequest;
 import com.ominfo.crm_solution.ui.quotation_amount.model.QuotationResponse;
 import com.ominfo.crm_solution.ui.quotation_amount.model.QuotationViewModel;
 import com.ominfo.crm_solution.ui.sale.adapter.CompanyTagAdapter;
-import com.ominfo.crm_solution.ui.sale.model.ResultInvoice;
 import com.ominfo.crm_solution.ui.sale.model.RmListModel;
 import com.ominfo.crm_solution.ui.sales_credit.activity.PdfPrintActivity;
 import com.ominfo.crm_solution.ui.sales_credit.activity.View360Activity;
@@ -204,7 +203,7 @@ public class QuotationFragment extends BaseFragment {
            "10"*//*, "45","90", "95","50", "55","60", "65"*//*};*/
     int startPos = 0 , endPos = 0;
 
-    List<Quotation> quotationList = new ArrayList<>();
+    List<QuotationData> quotationList = new ArrayList<>();
     List<GraphModel> graphModelsList = new ArrayList<>();
     @Inject
     ViewModelFactory mViewModelFactory;
@@ -436,29 +435,51 @@ public class QuotationFragment extends BaseFragment {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
+                String mCompanyNameList="",mRm="";
                 for(int i=0;i<tagList.size();i++){
                     if(tagList.get(i).getTitle()!=null && !tagList.get(i).getTitle().equals("")) {
-                        mCompnyList.add(tagList.get(i).getTitle());
+                        if (i == 0) {
+                            mCompanyNameList = tagList.get(i).getTitle();
+                        } else {
+                            mCompanyNameList = mCompanyNameList + "~" + tagList.get(i).getTitle();
+                        }
                     }
                 }
                 for(int i=0;i<tagRmList.size();i++){
                     if(tagRmList.get(i).getTitle()!=null && !tagRmList.get(i).getTitle().equals("")) {
-                        mTRMList.add(tagRmList.get(i).getId());
+                        if (i == 0) {
+                            mRm = tagRmList.get(i).getTitle();
+                        } else {
+                            mRm = mRm + "~" + tagRmList.get(i).getTitle();
+                        }
                     }
                 }
                 String mStringFrmDate = AppUtils.splitsEnquiryDate(fromDate.getText().toString().trim()),
-                mStringToDate = AppUtils.splitsEnquiryDate(toDate.getText().toString().trim());
+                        mStringToDate = AppUtils.splitsEnquiryDate(toDate.getText().toString().trim());
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_quotation);
+                RequestBody mRequestBodyOrderStat = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewQuoStatus.getText().toString());
+                RequestBody mRequestBodyOrderNo = RequestBody.create(MediaType.parse("text/plain"), tvQutationNo.getEditableText().toString());
+                RequestBody mRequestBodyStartdate = RequestBody.create(MediaType.parse("text/plain"),mStringFrmDate);
+                RequestBody mRequestBodyEndDate = RequestBody.create(MediaType.parse("text/plain"),mStringToDate);
+                RequestBody mRequestBodyMinAmount = RequestBody.create(MediaType.parse("text/plain"),tvMinAmount.getEditableText().toString());
+                RequestBody mRequestBodyMaxAmount = RequestBody.create(MediaType.parse("text/plain"),tvMaxAmount.getEditableText().toString());
+                RequestBody mRequestBodyPageNo = RequestBody.create(MediaType.parse("text/plain"),pageNo);
+                RequestBody mRequestBodyPageSize = RequestBody.create(MediaType.parse("text/plain"),Constants.MIN_PAG_SIZE);
+                RequestBody mRequestBodyComp = RequestBody.create(MediaType.parse("text/plain"),mCompanyNameList);
+                RequestBody mRequestBodyRm = RequestBody.create(MediaType.parse("text/plain"),mRm);
+
                 QuotationRequest request = new QuotationRequest();
-                request.setQuotationNumber(tvQutationNo.getEditableText().toString());
-                request.setCompanyId(mCompnyList);
-                request.setEndDate(mStringToDate);
-                request.setQuotationMaxAmount(tvMaxAmount.getEditableText().toString());
-                request.setPageno(pageNo);
-                request.setPagesize("6");
-                request.setQuotationStatus(AutoComTextViewQuoStatus.getText().toString());
-                request.setRm(mTRMList);
-                request.setStartdate(mStringFrmDate);
-                request.setQuotationMinAmount(tvMinAmount.getEditableText().toString());
+                request.setAction(mRequestBodyAction);
+                request.setOrderStatus(mRequestBodyOrderStat);
+                request.setOrderNo(mRequestBodyOrderNo);
+                request.setStartDate(mRequestBodyStartdate);
+                request.setEndDate(mRequestBodyEndDate);
+                request.setMinAmount(mRequestBodyMinAmount);
+                request.setMaxAmount(mRequestBodyMaxAmount);
+                request.setPageno(mRequestBodyPageNo);
+                request.setPagesize(mRequestBodyPageSize);
+                request.setCustName(mRequestBodyComp);
+                request.setRmId(mRequestBodyRm);
                 quotationViewModel.hitQuotationApi(request);
             }
             else {
@@ -1014,11 +1035,11 @@ public class QuotationFragment extends BaseFragment {
         }
     }
     private void sortforCompany(){
-        Collections.sort(quotationList, new Comparator<Quotation>() {
+        Collections.sort(quotationList, new Comparator<QuotationData>() {
             @Override
-            public int compare(Quotation item, Quotation t1) {
-                String s1 = item.getCompanyName();
-                String s2 = t1.getCompanyName();
+            public int compare(QuotationData item, QuotationData t1) {
+                String s1 = item.getCustName();
+                String s2 = t1.getCustName();
                 return s1.compareToIgnoreCase(s2);
             }
         });
@@ -1026,9 +1047,9 @@ public class QuotationFragment extends BaseFragment {
     }
     private void sortforQuoNum(){
 
-        Collections.sort(quotationList, new Comparator<Quotation>() {
+        Collections.sort(quotationList, new Comparator<QuotationData>() {
             @Override
-            public int compare(Quotation item, Quotation t1) {
+            public int compare(QuotationData item, QuotationData t1) {
                 int returnVal = 0;
                 try {
                     String[] s1 = item.getOrderNo().split("/");
@@ -1043,10 +1064,10 @@ public class QuotationFragment extends BaseFragment {
         quotationAdapter.notifyDataSetChanged();
     }
     private void sortforAmount(){
-        Collections.sort(quotationList, new Comparator<Quotation>() {
+        Collections.sort(quotationList, new Comparator<QuotationData>() {
             @Override
-            public int compare(Quotation item, Quotation t1) {
-                    return Long.compare(item.getTotalCharge(), t1.getTotalCharge());
+            public int compare(QuotationData item, QuotationData t1) {
+                    return Long.compare(Long.parseLong(item.getTotalCharge()), Long.parseLong(t1.getTotalCharge()));
                    //return s1.compareToIgnoreCase(s2);
             }
         });
@@ -1127,24 +1148,24 @@ public class QuotationFragment extends BaseFragment {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_QUOTATION)) {
                             QuotationResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), QuotationResponse.class);
                             long totalPage = 0;
-                            if (responseModel != null && responseModel.getStatus()==1) {
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 quotationList.clear();
-                                if (responseModel.getTotalamount() != null && responseModel.getTotalamount().size()>0) {
-                                    tvTotalCount.setText(getString(R.string.scr_lbl_rs)+String.valueOf(responseModel.getTotalamount().get(0).getAmount()));
+                                if (responseModel.getResult().getTotalamt() != null && !responseModel.getResult().getTotalamt().equals("")) {
+                                    tvTotalCount.setText(getString(R.string.scr_lbl_rs)+String.valueOf(responseModel.getResult().getTotalamt()));
                                 }else{
                                     tvTotalCount.setText(getString(R.string.scr_lbl_rs)+"0");
                                 }
                                 try {
-                                    if (responseModel.getQuotations() != null && responseModel.getQuotations().size()>0) {
-                                        quotationList = responseModel.getQuotations();
-                                        totalPage = responseModel.getTotalpages();
-                                        if(responseModel.getNextpage()==1) {
-                                            tvPage.setText("Showing " + String.valueOf(responseModel.getNextpage()) + " to " +
-                                                    String.valueOf(((responseModel.getNextpage()-1) + quotationList.size()) + " of " + String.valueOf(responseModel.getTotalQuotations()) + "\nEntries"));
+                                    if (responseModel.getResult().getQuot() != null && responseModel.getResult().getQuot().size()>0) {
+                                        quotationList = responseModel.getResult().getQuot();
+                                        totalPage = responseModel.getResult().getTotalpages();
+                                        if(responseModel.getResult().getNextpage()==1) {
+                                            tvPage.setText("Showing " + String.valueOf(responseModel.getResult().getNextpage()) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1) + quotationList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries"));
                                         }
                                         else {
-                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getNextpage()-1)*6)+1) + " to " +
-                                                    String.valueOf(((responseModel.getNextpage()-1)*6)+quotationList.size()) + " of " + String.valueOf(responseModel.getTotalQuotations()) + "\nEntries");
+                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getResult().getNextpage()-1)*6)+1) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1)*6)+quotationList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries");
                                         }
                                     }
                                     else{

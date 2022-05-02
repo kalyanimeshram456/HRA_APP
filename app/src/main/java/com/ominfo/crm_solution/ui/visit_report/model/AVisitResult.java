@@ -1,12 +1,12 @@
 
-package com.ominfo.crm_solution.ui.my_account.model;
+package com.ominfo.crm_solution.ui.visit_report.model;
 
 import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class RaiseTicketResult {
+public class AVisitResult {
 
     @SerializedName("id")
     private String mId;

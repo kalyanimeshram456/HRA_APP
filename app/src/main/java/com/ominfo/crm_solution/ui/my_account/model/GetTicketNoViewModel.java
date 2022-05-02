@@ -11,13 +11,13 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.RequestBody;
 
-public class RaiseTicketViewModel extends ViewModel {
+public class GetTicketNoViewModel extends ViewModel {
     private final CompositeDisposable disposables = new CompositeDisposable();
     private final MutableLiveData<ApiResponse> responseLiveData = new MutableLiveData<>();
     private Service service;
 
 
-    public RaiseTicketViewModel(Service service) {
+    public GetTicketNoViewModel(Service service) {
         this.service = service;
     }
 
@@ -26,9 +26,9 @@ public class RaiseTicketViewModel extends ViewModel {
     }
 
 
-    public void hitRaiseTicketApi(RaiseTicketRequest request) {
+    public void hitGetTicketNoApi(RequestBody action) {
 
-        disposables.add(service.executeRaiseTicketAPI(request)
+        disposables.add(service.executeGetTicketNoAPI(action)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe((d) -> responseLiveData.setValue(ApiResponse.loading()))
