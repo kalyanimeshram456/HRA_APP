@@ -121,7 +121,7 @@ public class View360Activity extends BaseActivity {
     RecyclerView rvSalesList;
     @BindView(R.id.imgSales)
     CircleImageView imgSales;
-    private String frmSCR = "1",number = "",email = "";
+    private String frmSCR = "0",number = "",email = "";
     List<CustomerAllRecord> customerAllRecordList = new ArrayList<>();
     final Calendar myCalendar = Calendar.getInstance();
     @Inject
@@ -185,9 +185,9 @@ public class View360Activity extends BaseActivity {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
                 RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_view360);
-                RequestBody mRequestBodyTypeCustId = RequestBody.create(MediaType.parse("text/plain"), "1583"/*loginTable.getIsadmin()*/);//loginTable.getEmployeeId());//loginTable.getEmployeeId());
-                RequestBody mRequestBodyTypeComId = RequestBody.create(MediaType.parse("text/plain"), /*loginTable.getCompanyId()*/"96");//loginTable.getCompanyId());
-                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"), /*loginTable.getEmployeeId()*/"135");
+                RequestBody mRequestBodyTypeCustId = RequestBody.create(MediaType.parse("text/plain"), frmSCR);//loginTable.getEmployeeId());//loginTable.getEmployeeId());
+                RequestBody mRequestBodyTypeComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId()/*"96"*/);//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId()/*"135"*/);
                 RequestBody mRequestBodyTypePageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);//selectedRM.getEmpId());
                 RequestBody mRequestBodyTypePageSize = RequestBody.create(MediaType.parse("text/plain"), "5"/*Constants.MIN_PAG_SIZE*/);
                 GetView360Request getView360Request = new GetView360Request();
@@ -280,7 +280,9 @@ public class View360Activity extends BaseActivity {
     {
         //RECEIVE DATA VIA INTENT
         Intent i = getIntent();
-        frmSCR = i.getStringExtra(Constants.TRANSACTION_ID);
+        if(i!=null) {
+            frmSCR = i.getStringExtra(Constants.TRANSACTION_ID);
+        }
     }
 
 
@@ -444,9 +446,6 @@ public class View360Activity extends BaseActivity {
                 openMail(email);
                  break;
             case R.id.tvCompanyName:
-                if(frmSCR.equals("0")) {
-                    //showReceiptDetailsDialog();
-                }
                 break;
             case R.id.layInvoices:
                 layInvoices.setTextColor(getResources().getColor(R.color.white));
@@ -528,38 +527,6 @@ public class View360Activity extends BaseActivity {
         rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
         rvSalesList.setAdapter(invoiceAdapter);
         final boolean[] check = {false};
-        if(frmSCR.equals("0")) {
-            rvSalesList.addOnItemTouchListener(
-                    new RecyclerView.OnItemTouchListener() {
-                        @Override
-                        public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                            if (!check[0]) {
-                                //showReceiptDetailsDialog();
-                                check[0] = true;
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        check[0] = false;
-                                    }
-                                }, 50);
-                            }
-                            return false;
-
-                        }
-
-                        @Override
-                        public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                            // Toast.makeText(mContext, "View where A: " + rv.getAdapter().getItemCount() + " is Clicked", Toast.LENGTH_SHORT).show();
-
-                        }
-
-                        @Override
-                        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-                        }
-                    }
-            );
-        }
     }
 
     //set Quotations list
@@ -581,38 +548,6 @@ public class View360Activity extends BaseActivity {
         rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
         rvSalesList.setAdapter(quotationsAdapter);
         final boolean[] check = {false};
-        if(frmSCR.equals("0")) {
-            rvSalesList.addOnItemTouchListener(
-                    new RecyclerView.OnItemTouchListener() {
-                        @Override
-                        public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                            if (!check[0]) {
-                                //showReceiptDetailsDialog();
-                                check[0] = true;
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        check[0] = false;
-                                    }
-                                }, 50);
-                            }
-                            return false;
-
-                        }
-
-                        @Override
-                        public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                            // Toast.makeText(mContext, "View where A: " + rv.getAdapter().getItemCount() + " is Clicked", Toast.LENGTH_SHORT).show();
-
-                        }
-
-                        @Override
-                        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-                        }
-                    }
-            );
-        }
     }
 
     //set Enquiries list
@@ -639,38 +574,6 @@ public class View360Activity extends BaseActivity {
         rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
         rvSalesList.setAdapter(enquiriesAdapter);
         final boolean[] check = {false};
-        if(frmSCR.equals("0")) {
-            rvSalesList.addOnItemTouchListener(
-                    new RecyclerView.OnItemTouchListener() {
-                        @Override
-                        public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                            if (!check[0]) {
-                                //showReceiptDetailsDialog();
-                                check[0] = true;
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        check[0] = false;
-                                    }
-                                }, 50);
-                            }
-                            return false;
-
-                        }
-
-                        @Override
-                        public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                            // Toast.makeText(mContext, "View where A: " + rv.getAdapter().getItemCount() + " is Clicked", Toast.LENGTH_SHORT).show();
-
-                        }
-
-                        @Override
-                        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-                        }
-                    }
-            );
-        }
     }
 
     //set date picker view

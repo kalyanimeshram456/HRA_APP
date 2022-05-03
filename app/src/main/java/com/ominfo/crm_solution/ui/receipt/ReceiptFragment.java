@@ -739,7 +739,7 @@ public class ReceiptFragment extends BaseFragment {
                 //For not killing pre fragment
                 if(mDataTicket==1) {
                     Intent i = new Intent(getActivity(), View360Activity.class);
-                    i.putExtra(Constants.TRANSACTION_ID, "0");
+                    i.putExtra(Constants.TRANSACTION_ID, receiptResult.getCustId());
                     startActivity(i);
                     ((Activity) getActivity()).overridePendingTransition(0, 0);
                 }

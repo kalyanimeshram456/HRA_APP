@@ -58,9 +58,9 @@ import com.ominfo.crm_solution.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
 import com.ominfo.crm_solution.ui.dispatch_pending.adapter.DispatchPendingAdapter;
 import com.ominfo.crm_solution.ui.dispatch_pending.model.DisaptchViewModel;
+import com.ominfo.crm_solution.ui.dispatch_pending.model.DispatchData;
 import com.ominfo.crm_solution.ui.dispatch_pending.model.DispatchRequest;
 import com.ominfo.crm_solution.ui.dispatch_pending.model.DispatchResponse;
-import com.ominfo.crm_solution.ui.dispatch_pending.model.DispatchResult;
 import com.ominfo.crm_solution.ui.enquiry_report.adapter.EnquiryPageAdapter;
 import com.ominfo.crm_solution.ui.enquiry_report.adapter.RmTagAdapter;
 import com.ominfo.crm_solution.ui.enquiry_report.model.EnquiryPagermodel;
@@ -73,6 +73,7 @@ import com.ominfo.crm_solution.ui.sale.adapter.CompanyTagAdapter;
 import com.ominfo.crm_solution.ui.sale.model.RmListModel;
 import com.ominfo.crm_solution.ui.sales_credit.activity.View360Activity;
 import com.ominfo.crm_solution.ui.sales_credit.model.GraphModel;
+import com.ominfo.crm_solution.ui.sales_credit.model.SalesCreditReport;
 import com.ominfo.crm_solution.util.AppUtils;
 import com.ominfo.crm_solution.util.LogUtil;
 
@@ -80,6 +81,8 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -103,7 +106,7 @@ import okhttp3.RequestBody;
 public class DispatchPendingFragment extends BaseFragment {
 
     Context mContext;
-    DispatchPendingAdapter salesCreditAdapter;
+    DispatchPendingAdapter dispatchPendingAdapter;
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
     @BindView(R.id.fromDate)
@@ -168,6 +171,18 @@ public class DispatchPendingFragment extends BaseFragment {
     List<GetRmlist> RMDropdown = new ArrayList<>();
     @BindView(R.id.tvNotifyCount)
     AppCompatTextView tvNotifyCount;
+    @BindView(R.id.tvCompanyName)
+    AppCompatTextView tvCompanyName;
+    @BindView(R.id.tvPo)
+    AppCompatTextView tvPo;
+    @BindView(R.id.tvQuo)
+    AppCompatTextView tvQuo;
+    @BindView(R.id.imgCompanyName)
+    AppCompatImageView imgCompanyName;
+    @BindView(R.id.imgPo)
+    AppCompatImageView imgPo;
+    @BindView(R.id.imgQuo)
+    AppCompatImageView imgQuo;
 /*
     @BindView(R.id.add_fab)
     FloatingActionButton add_fab;*/
@@ -187,7 +202,7 @@ public class DispatchPendingFragment extends BaseFragment {
            "10"*//*, "45","90", "95","50", "55","60", "65"*//*};*/
     int startPos = 0 , endPos = 0;
 
-    List<DispatchResult> dispatchResultList = new ArrayList<>();
+    List<DispatchData> dispatchResultList = new ArrayList<>();
     List<GraphModel> graphModelsList = new ArrayList<>();
     @Inject
     ViewModelFactory mViewModelFactory;
@@ -417,27 +432,52 @@ public class DispatchPendingFragment extends BaseFragment {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
-                //String mCompanyNameList="",mRMList="";
+
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_dispatch_pend);
+                RequestBody mRequestBodyTypeComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                String mStringFrmDate = AppUtils.splitsEnquiryDate(fromDate.getText().toString().trim()),
+                        mStringToDate = AppUtils.splitsEnquiryDate(toDate.getText().toString().trim());
+                RequestBody mRequestBodyTypeFromDate = RequestBody.create(MediaType.parse("text/plain"), mStringFrmDate);
+                RequestBody mRequestBodyTypeToDate = RequestBody.create(MediaType.parse("text/plain"), mStringToDate);
+                RequestBody mRequestBodyTypePageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);//selectedRM.getEmpId());
+                RequestBody mRequestBodyTypePageSize = RequestBody.create(MediaType.parse("text/plain"), Constants.MIN_PAG_SIZE);
+                String mCompanyNameList="",mRMList="";
                 for(int i=0;i<tagList.size();i++){
                     if(tagList.get(i).getTitle()!=null && !tagList.get(i).getTitle().equals("")) {
-                        mCompnyList.add(tagList.get(i).getTitle());
+                        if (i == 0) {
+                            mCompanyNameList = tagList.get(i).getTitle();
+                        } else {
+                            mCompanyNameList = mCompanyNameList + "~" + tagList.get(i).getTitle();
+                        }
                     }
                 }
                 for(int i=0;i<tagRmList.size();i++){
                     if(tagRmList.get(i).getTitle()!=null && !tagRmList.get(i).getTitle().equals("")) {
-                        mTRMList.add(tagRmList.get(i).getId());
+                        if (i == 0) {
+                            mRMList = tagRmList.get(i).getTitle();
+                        } else {
+                            mRMList = mRMList + "~" + tagRmList.get(i).getTitle();
+                        }
                     }
                 }
-                String mStringFrmDate = AppUtils.splitsEnquiryDate(fromDate.getText().toString().trim()),
-                        mStringToDate = AppUtils.splitsEnquiryDate(toDate.getText().toString().trim());
+                RequestBody mRequestBodyTypeCName = RequestBody.create(MediaType.parse("text/plain"), mCompanyNameList);
+                RequestBody mRequestBodyTypeRm = RequestBody.create(MediaType.parse("text/plain"), mRMList);
+                RequestBody mRequestBodyPo = RequestBody.create(MediaType.parse("text/plain"), tvPONumber.getEditableText().toString());
+                RequestBody mRequestBodyqty = RequestBody.create(MediaType.parse("text/plain"), tvQuantity.getEditableText().toString());
+
                 DispatchRequest request = new DispatchRequest();
-                request.setPoNumber(tvPONumber.getEditableText().toString());
-                request.setCompanyID(mCompnyList);
-                request.setPageno(pageNo);
-                request.setPagesize("7");
-                request.setRmID(mTRMList);
-                request.setStartDate(mStringFrmDate);
-                request.setEndDate(mStringToDate);
+                request.setAction(mRequestBodyAction);
+                request.setCompanyId(mRequestBodyTypeComId);
+                request.setEmployeeId(mRequestBodyTypeEmpId);
+                request.setStartDate(mRequestBodyTypeFromDate);
+                request.setEndDate(mRequestBodyTypeToDate);
+                request.setPageno(mRequestBodyTypePageNo);
+                request.setPagesize(mRequestBodyTypePageSize);
+                request.setCompanyName(mRequestBodyTypeCName);
+                request.setRmId(mRequestBodyTypeRm);
+                request.setPoNumber(mRequestBodyPo);
+                request.setQuantity(mRequestBodyqty);
                 disaptchViewModel.hitDisaptchApi(request);
             }
             else {
@@ -735,13 +775,13 @@ public class DispatchPendingFragment extends BaseFragment {
             rvSalesList.setVisibility(View.GONE);
             emptyLayout.setVisibility(View.VISIBLE);
         }
-        salesCreditAdapter = new DispatchPendingAdapter(mContext, dispatchResultList, new DispatchPendingAdapter.ListItemSelectListener() {
+        dispatchPendingAdapter = new DispatchPendingAdapter(mContext, dispatchResultList, new DispatchPendingAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket) {
+            public void onItemClick(int mDataTicket,DispatchData dispatchData) {
                 //For not killing pre fragment
                 if(mDataTicket==0) {
                     Intent i = new Intent(getActivity(), View360Activity.class);
-                    i.putExtra(Constants.TRANSACTION_ID, "1");
+                    i.putExtra(Constants.TRANSACTION_ID, dispatchData.getCustId());
                     startActivity(i);
                     ((Activity) getActivity()).overridePendingTransition(0, 0);
                 }
@@ -753,7 +793,7 @@ public class DispatchPendingFragment extends BaseFragment {
 
         rvSalesList.setHasFixedSize(true);
         rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
-        rvSalesList.setAdapter(salesCreditAdapter);
+        rvSalesList.setAdapter(dispatchPendingAdapter);
         final boolean[] check = {false};
 
     }
@@ -893,18 +933,73 @@ public class DispatchPendingFragment extends BaseFragment {
         }
     }
 
-
+    private void sortforCompany(){
+        Collections.sort(dispatchResultList, new Comparator<DispatchData>() {
+            @Override
+            public int compare(DispatchData item, DispatchData t1) {
+                String s1 = item.getCompanyName();
+                String s2 = t1.getCompanyName();
+                return s1.compareToIgnoreCase(s2);
+            }
+        });
+        dispatchPendingAdapter.notifyDataSetChanged();
+    }
+    private void sortforPoNumber(){
+        Collections.sort(dispatchResultList, new Comparator<DispatchData>() {
+            @Override
+            public int compare(DispatchData item, DispatchData t1) {
+                return Long.compare(Long.valueOf(item.getPoNumber()), Long.valueOf(t1.getPoNumber()));
+                //return s1.compareToIgnoreCase(s2);
+            }
+        });
+        dispatchPendingAdapter.notifyDataSetChanged();
+    }
+    private void sortforQty(){
+        Collections.sort(dispatchResultList, new Comparator<DispatchData>() {
+            @Override
+            public int compare(DispatchData item, DispatchData t1) {
+                return Long.compare(Long.valueOf(item.getPendqty()), Long.valueOf(t1.getPendqty()));
+                //return s1.compareToIgnoreCase(s2);
+            }
+        });
+        dispatchPendingAdapter.notifyDataSetChanged();
+    }
     //perform click actions
     @OnClick({R.id.imgGraph,R.id.imgTable,/*,R.id.add_fab,*/R.id.imgFilter,R.id.submitButton
-    ,R.id.toDate,R.id.fromDate,R.id.resetButton})
+    ,R.id.toDate,R.id.fromDate,R.id.resetButton,R.id.tvCompanyName,R.id.imgCompanyName
+            ,R.id.tvPo,R.id.imgPo,R.id.tvQuo,R.id.imgQuo})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
+            case R.id.tvCompanyName:
+                setSortIconComQuoAmo(0);
+                sortforCompany();
+                break;
+            case R.id.imgCompanyName:
+                setSortIconComQuoAmo(0);
+                sortforCompany();
+                break;
+            case R.id.tvPo:
+                setSortIconComQuoAmo(2);
+                sortforPoNumber();
+                break;
+            case R.id.imgPo:
+                setSortIconComQuoAmo(2);
+                sortforPoNumber();
+                break;
+            case R.id.tvQuo:
+                setSortIconComQuoAmo(1);
+                sortforQty();
+                break;
+            case R.id.imgQuo:
+                setSortIconComQuoAmo(1);
+                sortforQty();
+                break;
             case R.id.toDate:
-                openDataPicker(1,toDate);
+                openDataPicker(1);
                 break;
             case R.id.fromDate:
-                openDataPicker(0,fromDate);
+                openDataPicker(0);
                 break;
             case R.id.submitButton:
                 mCompnyList.clear();
@@ -974,9 +1069,34 @@ public class DispatchPendingFragment extends BaseFragment {
                 break;
         }
     }
-
+    private void setSortIconComQuoAmo(int res){
+        if(res==0){
+            imgQuo.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            imgCompanyName.setImageDrawable(getResources().getDrawable(R.drawable.ic_sort_blue));
+            imgPo.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            tvCompanyName.setTextColor(getResources().getColor(R.color.color_main));
+            tvQuo.setTextColor(getResources().getColor(R.color.back_text_colour));
+            tvPo.setTextColor(getResources().getColor(R.color.back_text_colour));
+        }
+        else if(res==1){ //quo
+            imgQuo.setImageDrawable(getResources().getDrawable(R.drawable.ic_sort_blue));
+            imgCompanyName.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            imgPo.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            tvCompanyName.setTextColor(getResources().getColor(R.color.back_text_colour));
+            tvQuo.setTextColor(getResources().getColor(R.color.color_main));
+            tvPo.setTextColor(getResources().getColor(R.color.back_text_colour));
+        }
+        else { //po
+            imgQuo.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            imgCompanyName.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            imgPo.setImageDrawable(getResources().getDrawable(R.drawable.ic_sort_blue));
+            tvCompanyName.setTextColor(getResources().getColor(R.color.back_text_colour));
+            tvQuo.setTextColor(getResources().getColor(R.color.back_text_colour));
+            tvPo.setTextColor(getResources().getColor(R.color.color_main));
+        }
+    }
     //set date picker view
-    private void openDataPicker(int val , AppCompatTextView datePickerField) {
+    private void openDataPicker(int val) {
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
             @Override
@@ -989,10 +1109,10 @@ public class DispatchPendingFragment extends BaseFragment {
                 String myFormat = "dd/MM/yyyy"; //In which you need put here
                 SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
                 if(val==1){
-                    datePickerField.setText(sdf.format(myCalendar.getTime()));
+                    toDate.setText(sdf.format(myCalendar.getTime()));
                 }
                 else {
-                    datePickerField.setText(sdf.format(myCalendar.getTime()));
+                    fromDate.setText(sdf.format(myCalendar.getTime()));
                 }
                 callDispatchApi("0");
             }
@@ -1070,21 +1190,22 @@ public class DispatchPendingFragment extends BaseFragment {
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_DISPATCH)) {
                             DispatchResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), DispatchResponse.class);
-                            if (responseModel != null && responseModel.getStatus()==1) {
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 dispatchResultList.clear();
                                 long totalPage = 0;
-                                tvTotalCount.setText(String.valueOf(responseModel.getTotalpendingorders()));
+                                String count = String.valueOf(responseModel.getResult().getTotalrows())==null?"0":String.valueOf(responseModel.getResult().getTotalrows());
+                                tvTotalCount.setText(count);
                                 try {
-                                    if (responseModel.getPendingorders() != null && responseModel.getPendingorders().size()>0) {
-                                        dispatchResultList = responseModel.getPendingorders();
-                                        totalPage = responseModel.getTotalpages();
-                                        if(responseModel.getNextpage()==1) {
-                                            tvPage.setText("Showing " + String.valueOf(responseModel.getNextpage()) + " to " +
-                                                    String.valueOf(((responseModel.getNextpage()-1) + dispatchResultList.size()) + " of " + String.valueOf(responseModel.getTotalpendingorders()) + "\nEntries"));
+                                    if (responseModel.getResult().getDispatch() != null && responseModel.getResult().getDispatch().size()>0) {
+                                        dispatchResultList = responseModel.getResult().getDispatch();
+                                        totalPage = responseModel.getResult().getTotalpages();
+                                        if(responseModel.getResult().getNextpage()==1) {
+                                            tvPage.setText("Showing " + String.valueOf(responseModel.getResult().getNextpage()) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1) + dispatchResultList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries"));
                                         }
                                         else {
-                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getNextpage()-1)*7)+1) + " to " +
-                                                    String.valueOf(((responseModel.getNextpage()-1)*7)+dispatchResultList.size()) + " of " + String.valueOf(responseModel.getTotalpendingorders()) + "\nEntries");
+                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getResult().getNextpage()-1)*7)+1) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1)*7)+dispatchResultList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries");
                                         }
                                     }
                                     else{

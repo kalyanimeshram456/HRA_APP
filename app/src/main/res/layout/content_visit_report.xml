@@ -329,7 +329,7 @@
                                     android:gravity="right|center"
                                     android:imeOptions="actionDone"
                                     android:inputType="textMultiLine"
-                                    android:text="@string/scr_lbl_status"
+                                    android:text="@string/scr_lbl_result"
                                     android:textColor="@color/back_text_colour"
                                     android:textColorHint="@color/back_text_colour"
                                     android:textSize="@dimen/_12sp" />

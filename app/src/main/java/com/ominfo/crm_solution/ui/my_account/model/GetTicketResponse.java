@@ -1,21 +1,21 @@
 
-package com.ominfo.crm_solution.ui.dispatch_pending.model;
+package com.ominfo.crm_solution.ui.my_account.model;
 
 import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class DispatchResponse {
+public class GetTicketResponse {
 
     @SerializedName("result")
-    private DispatchResult mResult;
+    private GetTicketResult mResult;
 
-    public DispatchResult getResult() {
+    public GetTicketResult getResult() {
         return mResult;
     }
 
-    public void setResult(DispatchResult result) {
+    public void setResult(GetTicketResult result) {
         mResult = result;
     }
 

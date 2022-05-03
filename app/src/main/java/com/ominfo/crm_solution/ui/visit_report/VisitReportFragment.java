@@ -74,9 +74,11 @@ import com.ominfo.crm_solution.ui.sale.model.RmListModel;
 import com.ominfo.crm_solution.ui.sales_credit.activity.View360Activity;
 import com.ominfo.crm_solution.ui.sales_credit.model.GraphModel;
 import com.ominfo.crm_solution.ui.visit_report.adapter.TourTagAdapter;
+import com.ominfo.crm_solution.ui.visit_report.adapter.VisitReportAdapter;
 import com.ominfo.crm_solution.ui.visit_report.model.GetTourResponse;
 import com.ominfo.crm_solution.ui.visit_report.model.GetTourStatuslist;
 import com.ominfo.crm_solution.ui.visit_report.model.GetTourViewModel;
+import com.ominfo.crm_solution.ui.visit_report.model.GetVisit;
 import com.ominfo.crm_solution.ui.visit_report.model.GetVisitRequest;
 import com.ominfo.crm_solution.ui.visit_report.model.GetVisitResponse;
 import com.ominfo.crm_solution.ui.visit_report.model.GetVisitViewModel;
@@ -112,7 +114,7 @@ import okhttp3.RequestBody;
 public class VisitReportFragment extends BaseFragment {
 
     Context mContext;
-    EnquiryReportAdapter visitReportAdapter;
+    VisitReportAdapter visitReportAdapter;
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
     @BindView(R.id.fromDate)
@@ -193,7 +195,7 @@ public class VisitReportFragment extends BaseFragment {
     List<RmListModel> tagTourList = new ArrayList<>();
     List<GetRmlist> RMDropdown = new ArrayList<>();
     List<GetTourStatuslist> tourDropdown = new ArrayList<>();
-    List<GetEnquiry> visitResultArrayList = new ArrayList<>();
+    List<GetVisit> visitResultArrayList = new ArrayList<>();
     RmTagAdapter addRmTagAdapter;
     TourTagAdapter tourTagAdapter;
     private GetRmViewModel getRmViewModel;
@@ -419,13 +421,13 @@ public class VisitReportFragment extends BaseFragment {
                 emptyLayout.setVisibility(View.VISIBLE);
             }
 
-            visitReportAdapter = new EnquiryReportAdapter(mContext, visitResultArrayList, new EnquiryReportAdapter.ListItemSelectListener() {
+            visitReportAdapter = new VisitReportAdapter(mContext, visitResultArrayList, new VisitReportAdapter.ListItemSelectListener() {
                 @Override
-                public void onItemClick(int mDataTicket, GetEnquiry getEnquiry) {
+                public void onItemClick(int mDataTicket, GetVisit getEnquiry) {
                     //For not killing pre fragment
                     if (mDataTicket == 0) {
                         Intent i = new Intent(getActivity(), View360Activity.class);
-                        i.putExtra(Constants.TRANSACTION_ID, "1");
+                        i.putExtra(Constants.TRANSACTION_ID, getEnquiry.getCustId());
                         startActivity(i);
                         ((Activity) getActivity()).overridePendingTransition(0, 0);
                     }
@@ -599,7 +601,7 @@ public class VisitReportFragment extends BaseFragment {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
-                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_enquiry);
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_visit);
                 RequestBody mRequestBodyTypeVisit = RequestBody.create(MediaType.parse("text/plain"), "0");//loginTable.getEmployeeId());//loginTable.getEmployeeId());
                 RequestBody mRequestBodyTypeComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());//loginTable.getCompanyId());
                 RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
@@ -983,19 +985,19 @@ public class VisitReportFragment extends BaseFragment {
         switch (id) {
             case R.id.tvStatus:
                 setSortIconComQuoAmo(2);
-                sortforCompany();
+                sortforStatus();
                 break;
             case R.id.imgStatus:
                 setSortIconComQuoAmo(2);
-                sortforCompany();
+                sortforStatus();
                 break;
             case R.id.tvPlace:
                 setSortIconComQuoAmo(1);
-                sortforCompany();
+                sortforPlace();
                 break;
             case R.id.imgPlace:
                 setSortIconComQuoAmo(1);
-                sortforCompany();
+                sortforPlace();
                 break;
             case R.id.imgCompanySort:
                 setSortIconComQuoAmo(0);
@@ -1110,9 +1112,9 @@ public class VisitReportFragment extends BaseFragment {
         }
     }
     private void sortforCompany(){
-        Collections.sort(visitResultArrayList, new Comparator<GetEnquiry>() {
+        Collections.sort(visitResultArrayList, new Comparator<GetVisit>() {
             @Override
-            public int compare(GetEnquiry item, GetEnquiry t1) {
+            public int compare(GetVisit item, GetVisit t1) {
                 String s1 = item.getCustName();
                 String s2 = t1.getCustName();
                 return s1.compareToIgnoreCase(s2);
@@ -1120,18 +1122,28 @@ public class VisitReportFragment extends BaseFragment {
         });
         visitReportAdapter.notifyDataSetChanged();
     }
-    /*private void sortforPlace(){
-        Collections.sort(visitResultArrayList, new Comparator<GetEnquiry>() {
+    private void sortforPlace(){
+        Collections.sort(visitResultArrayList, new Comparator<GetVisit>() {
             @Override
-            public int compare(GetEnquiry item, GetEnquiry t1) {
-                String s1 = item.get();
-                String s2 = t1.getCustName();
+            public int compare(GetVisit item, GetVisit t1) {
+                String s1 = item.getPlace();
+                String s2 = t1.getPlace();
                 return s1.compareToIgnoreCase(s2);
             }
         });
         visitReportAdapter.notifyDataSetChanged();
-    }*/
-
+    }
+    private void sortforStatus(){
+        Collections.sort(visitResultArrayList, new Comparator<GetVisit>() {
+            @Override
+            public int compare(GetVisit item, GetVisit t1) {
+                String s1 = item.getResult();
+                String s2 = t1.getResult();
+                return s1.compareToIgnoreCase(s2);
+            }
+        });
+        visitReportAdapter.notifyDataSetChanged();
+    }
     //set date picker view
     private void openDataPicker(int val , AppCompatTextView datePickerField) {
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
@@ -1236,7 +1248,7 @@ public class VisitReportFragment extends BaseFragment {
                                 String visitVal = String.valueOf(responseModel.getResult().getTotalvisits());
                                 tvTotalCount.setText(visitVal.equals("")||visitVal.equals("null")?"0":visitVal/*+"\n Companies"*/);
                                 try {
-                                    if (visitResultArrayList != null && visitResultArrayList.size()>0) {
+                                    if (responseModel.getResult().getVisits() != null && responseModel.getResult().getVisits().size()>0) {
                                         visitResultArrayList = responseModel.getResult().getVisits();
                                         totalPage=responseModel.getResult().getTotalpages();
                                         if(responseModel.getResult().getNextpage()==1) {

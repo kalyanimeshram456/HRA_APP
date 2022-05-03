@@ -103,21 +103,21 @@ public class QuotationAdapter extends RecyclerView.Adapter<QuotationAdapter.View
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(0);
+                listItemSelectListener.onItemClick(0,mListData.get(position));
             }
         });
         holder.tvRs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(1);
+                listItemSelectListener.onItemClick(1,mListData.get(position));
             }
         });
         holder.tvCompanyName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(1);
+                listItemSelectListener.onItemClick(1,mListData.get(position));
             }
         });
 
@@ -151,6 +151,6 @@ public class QuotationAdapter extends RecyclerView.Adapter<QuotationAdapter.View
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(int mData);
+        void onItemClick(int mData,QuotationData quotationData);
     }
 }

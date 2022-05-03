@@ -15,7 +15,7 @@ public class DynamicAPIPath {
     public static final String POST_PRODUCT=  BASE+"?action=get_product_records";
     public static final String POST_SALES= BASE+"?action=get_all_product";
     public static final String POST_QUOTATION= BASE+"?action=get_quotation_record";
-    public static final String POST_DISPATCH= BASE_NODEJS+"billpendinglist";
+    public static final String POST_DISPATCH=  BASE+"?action=dispatchpendingdets";
     public static final String POST_SALES_CREDIT= BASE_NODEJS+"sales_unpaid";
     public static final String POST_REMINDER= BASE_NODEJS+"getreminder";
     public static final String POST_EMP_LIST= BASE_NODEJS+"getemployee_list";
@@ -71,6 +71,7 @@ public class DynamicAPIPath {
     public static final String action_update_attendance = "attendance_updated";
     public static final String action_save_enquiry = "enquirysave";
     public static final String action_get_enquiry = "enquiryget";
+    public static final String action_get_visit = "visitget";
     public static final String action_get_top_customer = "top_customer";
     public static final String action_update_leave_status = "apply_leave_updated";
     public static final String action_get_lost_apportunity = "getlostopportunity";
@@ -80,6 +81,7 @@ public class DynamicAPIPath {
     public static final String action_get_view360 = "custOverAllData";
     public static final String action_get_quotation = "get_quotation_record";
     public static final String action_get_sales_credit = "salescreditreport";
+    public static final String action_get_dispatch_pend = "dispatchpendingdets";
     public static final String action_dashboard = "getDashboard";
     public static final String action_get_profile_img = "getcrmempprofilepic";
     public static final String action_change_profile_img = "changecrmempprofilepic";

@@ -266,6 +266,7 @@
                                     android:textSize="@dimen/_12sp" />
 
                                 <androidx.appcompat.widget.AppCompatImageView
+                                    android:id="@+id/imgCompanyName"
                                     android:layout_width="@dimen/_12dp"
                                     android:layout_height="@dimen/_12dp"
                                     android:layout_centerVertical="true"
@@ -283,7 +284,7 @@
                                 android:paddingLeft="@dimen/_24dp">
 
                                 <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/tvOverall"
+                                    android:id="@+id/tvPo"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/gilroy_bold"
@@ -298,12 +299,13 @@
                                     android:textSize="@dimen/_12sp" />
 
                                 <androidx.appcompat.widget.AppCompatImageView
+                                    android:id="@+id/imgPo"
                                     android:layout_width="@dimen/_12dp"
                                     android:layout_height="@dimen/_12dp"
                                     android:layout_centerInParent="true"
                                     android:layout_marginLeft="@dimen/_2dp"
                                     android:layout_marginTop="@dimen/_3dp"
-                                    android:layout_toRightOf="@+id/tvOverall"
+                                    android:layout_toRightOf="@+id/tvPo"
                                     android:src="@drawable/ic_om_sort" />
                             </RelativeLayout>
 
@@ -316,7 +318,7 @@
                                 android:gravity="right">
 
                                 <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/tvAmount"
+                                    android:id="@+id/tvQuo"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentEnd="true"
@@ -330,11 +332,12 @@
                                     android:textSize="@dimen/_12sp" />
 
                                 <androidx.appcompat.widget.AppCompatImageView
+                                    android:id="@+id/imgQuo"
                                     android:layout_width="@dimen/_12dp"
                                     android:layout_height="@dimen/_12dp"
                                     android:layout_centerVertical="true"
                                     android:layout_marginLeft="@dimen/_2dp"
-                                    android:layout_toRightOf="@+id/tvAmount"
+                                    android:layout_toRightOf="@+id/tvQuo"
                                     android:src="@drawable/ic_om_sort"
                                     android:visibility="visible" />
                             </RelativeLayout>

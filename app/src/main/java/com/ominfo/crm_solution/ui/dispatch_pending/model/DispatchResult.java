@@ -1,6 +1,7 @@
 
 package com.ominfo.crm_solution.ui.dispatch_pending.model;
 
+import java.util.List;
 import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
 
@@ -8,65 +9,85 @@ import com.google.gson.annotations.SerializedName;
 @SuppressWarnings("unused")
 public class DispatchResult {
 
-    @SerializedName("company_ID")
-    private Long mCompanyID;
-    @SerializedName("companyName")
-    private String mCompanyName;
-    @SerializedName("cust_id")
-    private Long mCustId;
-    @SerializedName("order_status")
-    private String mOrderStatus;
-    @SerializedName("po_number")
-    private String mPoNumber;
-    @SerializedName("total_charge")
-    private Long mTotalCharge;
+    @SerializedName("currentpage")
+    private String mCurrentpage;
+    @SerializedName("dispatch")
+    private List<DispatchData> mDispatch;
+    @SerializedName("message")
+    private String mMessage;
+    @SerializedName("nextpage")
+    private Long mNextpage;
+    @SerializedName("prevpage")
+    private Long mPrevpage;
+    @SerializedName("status")
+    private String mStatus;
+    @SerializedName("totalpages")
+    private Long mTotalpages;
+    @SerializedName("totalrows")
+    private String mTotalrows;
 
-    public Long getCompanyID() {
-        return mCompanyID;
+    public String getCurrentpage() {
+        return mCurrentpage;
     }
 
-    public void setCompanyID(Long companyID) {
-        mCompanyID = companyID;
+    public void setCurrentpage(String currentpage) {
+        mCurrentpage = currentpage;
     }
 
-    public String getCompanyName() {
-        return mCompanyName;
+    public List<DispatchData> getDispatch() {
+        return mDispatch;
     }
 
-    public void setCompanyName(String companyName) {
-        mCompanyName = companyName;
+    public void setDispatch(List<DispatchData> dispatch) {
+        mDispatch = dispatch;
     }
 
-    public Long getCustId() {
-        return mCustId;
+    public String getMessage() {
+        return mMessage;
     }
 
-    public void setCustId(Long custId) {
-        mCustId = custId;
+    public void setMessage(String message) {
+        mMessage = message;
     }
 
-    public String getOrderStatus() {
-        return mOrderStatus;
+    public Long getNextpage() {
+        return mNextpage;
     }
 
-    public void setOrderStatus(String orderStatus) {
-        mOrderStatus = orderStatus;
+    public void setNextpage(Long nextpage) {
+        mNextpage = nextpage;
     }
 
-    public String getPoNumber() {
-        return mPoNumber;
+    public Long getPrevpage() {
+        return mPrevpage;
     }
 
-    public void setPoNumber(String poNumber) {
-        mPoNumber = poNumber;
+    public void setPrevpage(Long prevpage) {
+        mPrevpage = prevpage;
     }
 
-    public Long getTotalCharge() {
-        return mTotalCharge;
+    public String getStatus() {
+        return mStatus;
     }
 
-    public void setTotalCharge(Long totalCharge) {
-        mTotalCharge = totalCharge;
+    public void setStatus(String status) {
+        mStatus = status;
+    }
+
+    public Long getTotalpages() {
+        return mTotalpages;
+    }
+
+    public void setTotalpages(Long totalpages) {
+        mTotalpages = totalpages;
+    }
+
+    public String getTotalrows() {
+        return mTotalrows;
+    }
+
+    public void setTotalrows(String totalrows) {
+        mTotalrows = totalrows;
     }
 
 }

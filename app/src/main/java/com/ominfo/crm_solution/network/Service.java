@@ -114,7 +114,11 @@ public class Service {
     }*/
 
     public Observable<JsonElement> executeDispatchAPI(DispatchRequest request) {
-        return networkAPIServices.dispatch(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_DISPATCH),request);
+        return networkAPIServices.dispatch(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_DISPATCH),
+                request.getAction(),request.getCompanyId(),request.getEmployeeId(),request.getPageno(),
+                request.getPagesize(),request.getRmId(),request.getCompanyName(),
+                request.getStartDate(),request.getEndDate(),request.getPoNumber(),
+                request.getQuantity());
     }
 
     public Observable<JsonElement> executeProductAPI(ProductRequest request) {
@@ -322,7 +326,7 @@ public class Service {
         return networkAPIServices.getTicket(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_TICKET),
                 getTicketRequest.getAction(),getTicketRequest.getEmpId(),
                 getTicketRequest.getPageno(),getTicketRequest.getPagesize(),
-                getTicketRequest.getTicketNo(), getTicketRequest.getPriority(),getTicketRequest.getStatus(),
+                getTicketRequest.getTicketNo()/*, getTicketRequest.getPriority()*/,getTicketRequest.getStatus(),
                 getTicketRequest.getFromDate(),getTicketRequest.getEndDate());
     }
     public Observable<JsonElement> executeLeaveSingleRecordAPI(RequestBody action, RequestBody id) {

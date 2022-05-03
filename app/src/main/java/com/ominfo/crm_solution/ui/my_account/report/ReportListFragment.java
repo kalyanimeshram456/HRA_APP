@@ -66,16 +66,18 @@ import com.ominfo.crm_solution.ui.login.model.LoginTable;
 import com.ominfo.crm_solution.ui.my_account.leave.adapter.LeaveListAdapter;
 import com.ominfo.crm_solution.ui.my_account.model.ApplicationLeave;
 import com.ominfo.crm_solution.ui.my_account.model.GetTicketRequest;
+import com.ominfo.crm_solution.ui.my_account.model.GetTicketResponse;
 import com.ominfo.crm_solution.ui.my_account.model.GetTicketViewModel;
-import com.ominfo.crm_solution.ui.my_account.model.LeaveApplicationResponse;
 import com.ominfo.crm_solution.ui.my_account.model.GetTicketNoResponse;
 import com.ominfo.crm_solution.ui.my_account.model.GetTicketNoViewModel;
 import com.ominfo.crm_solution.ui.my_account.model.RaiseTicketRequest;
 import com.ominfo.crm_solution.ui.my_account.model.RaiseTicketResponse;
 import com.ominfo.crm_solution.ui.my_account.model.RaiseTicketViewModel;
+import com.ominfo.crm_solution.ui.my_account.model.Raisedticketfilter;
 import com.ominfo.crm_solution.ui.my_account.model.UpdateTicketRequest;
 import com.ominfo.crm_solution.ui.my_account.model.UpdateTicketResponse;
 import com.ominfo.crm_solution.ui.my_account.model.UpdateTicketViewModel;
+import com.ominfo.crm_solution.ui.my_account.report.model.GetReportListAdapter;
 import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.sale.adapter.CompanyTagAdapter;
 import com.ominfo.crm_solution.ui.sale.model.RmListModel;
@@ -110,7 +112,7 @@ import okhttp3.RequestBody;
 public class ReportListFragment extends BaseFragment {
 
     Context mContext;
-    LeaveListAdapter leaveListAdapter;
+    GetReportListAdapter getReportListAdapter;
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
     @BindView(R.id.empty_layoutActivity)
@@ -168,7 +170,7 @@ public class ReportListFragment extends BaseFragment {
     int startPos = 0 , endPos = 0;
     @BindView(R.id.tvNotifyCount)
     AppCompatTextView tvNotifyCount;
-    List<ApplicationLeave> leaveArrayList = new ArrayList<>();
+    List<Raisedticketfilter> raisedticketfilterList = new ArrayList<>();
     List<GraphModel> graphModelsList = new ArrayList<>();
     private AppDatabase mDb;
     final Calendar myCalendar = Calendar.getInstance();
@@ -206,12 +208,12 @@ public class ReportListFragment extends BaseFragment {
     AppCompatTextView appcomptextLeaveTime;
     View viewToDate;
     RelativeLayout layToDate;
-    @BindView(R.id.AutoComTextView)
-    AppCompatAutoCompleteTextView tvAutoTypeLeave;
     @BindView(R.id.tvAutoLeaveStatus)
     AppCompatAutoCompleteTextView tvAutoLeaveStatus;
     @BindView(R.id.imgReport)
     AppCompatImageView imgReport;
+    @BindView(R.id.AutoComTextViewTicketNumber)
+    AppCompatAutoCompleteTextView AutoComTextViewTicketNumber;
     String tickerNo = "";
     Dialog mDialogReport;
     AppCompatAutoCompleteTextView AutoComTextViewTitle,AutoComTextViewIssueType,
@@ -522,11 +524,11 @@ public class ReportListFragment extends BaseFragment {
                 RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
                 RequestBody mRequestBodyPageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);
                 RequestBody mRequestBodyPageSize = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
-                RequestBody mRequestBodyTicketNo = RequestBody.create(MediaType.parse("text/plain"),tvAutoTypeLeave.getText().toString() );
+                RequestBody mRequestBodyTicketNo = RequestBody.create(MediaType.parse("text/plain"),AutoComTextViewTicketNumber.getText().toString() );
                 RequestBody mRequestBodyTypestatus = RequestBody.create(MediaType.parse("text/plain"),tvAutoLeaveStatus.getText().toString());
                 RequestBody mRequestBodyfrom_date = RequestBody.create(MediaType.parse("text/plain"), startLeaveDate);
                 RequestBody mRequestBodyend_date = RequestBody.create(MediaType.parse("text/plain"), endLeaveDate);
-                RequestBody mRequestBodyPriority = RequestBody.create(MediaType.parse("text/plain"), endLeaveDate);
+                //RequestBody mRequestBodyPriority = RequestBody.create(MediaType.parse("text/plain"), endLeaveDate);
 
                 GetTicketRequest applicationRequest = new GetTicketRequest();
                 applicationRequest.setAction(mRequestBodyAction);
@@ -537,7 +539,7 @@ public class ReportListFragment extends BaseFragment {
                 applicationRequest.setStatus(mRequestBodyTypestatus);
                 applicationRequest.setFromDate(mRequestBodyfrom_date);
                 applicationRequest.setEndDate(mRequestBodyend_date);
-                applicationRequest.setPriority(mRequestBodyPriority);
+                //applicationRequest.setPriority(mRequestBodyPriority);
                 getTicketViewModel.hitGetTicketApi(applicationRequest);
             }
             else {
@@ -627,7 +629,7 @@ public class ReportListFragment extends BaseFragment {
     }
 
     //show Report popup
-    public void showReportDialog(int status) {
+    public void showReportDialog(int status,Raisedticketfilter data) {
         mDialogReport = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialogReport.setContentView(R.layout.dialog_ticket_details);
         mDialogReport.setCanceledOnTouchOutside(true);
@@ -641,16 +643,52 @@ public class ReportListFragment extends BaseFragment {
 
         AppCompatImageView mClose = mDialogReport.findViewById(R.id.imgCancel);
         AppCompatButton submitButton = mDialogReport.findViewById(R.id.submitButton);
+        AppCompatButton dismissButton = mDialogReport.findViewById(R.id.dismissButton);
         AppCompatTextView tvStatus = mDialogReport.findViewById(R.id.tvStatus);
         AppCompatTextView appcomptextReason = mDialogReport.findViewById(R.id.appcomptextReason);
         TextInputLayout input_textStatus = mDialogReport.findViewById(R.id.input_textStatus);
         tvTicketNo = mDialogReport.findViewById(R.id.tvTicketNo);
         TextInputLayout input_textReason = mDialogReport.findViewById(R.id.input_textReason);
-        AppCompatAutoCompleteTextView AutoComTextViewStatus = mDialogReport.findViewById(R.id.AutoComTextViewStatus);
-        tvTicketNo.setText("Ticket No : "+tickerNo);
         setDropdownIssueType(AutoComTextViewIssueType);
-        setDropdownPriority(tvResolu);
         setDropdownIssueStatus(AutoComTextViewStatus);
+        if(status==0){
+            tvTicketNo.setText("Ticket No : "+tickerNo);
+            tvStatus.setVisibility(View.GONE);
+            input_textStatus.setVisibility(View.GONE);
+            appcomptextReason.setVisibility(View.GONE);
+            input_textReason.setVisibility(View.GONE);
+            AutoComTextViewPriority.setText("Low");
+            setDropdownPriority(tvResolu);
+            tvResolu.setText("Resolution time : Within 5 - 6 working days.");
+        }
+        else{
+            dismissButton.setVisibility(View.VISIBLE);
+            submitButton.setText("Save changes");
+            dismissButton.setText("Don't save");
+            tickerNo = data.getTicketNo();
+            tvTicketNo.setText("Ticket No : "+tickerNo);
+            AutoComTextViewTitle.setText(data.getSubject());
+            AutoComTextViewIssueType.setText(data.getIssueType());
+            setDropdownIssueType(AutoComTextViewIssueType);
+            AutoComTextViewDescr.setText(data.getDescription());
+            String statUpdate = data.getStatus()==null || data.getStatus().equals("Open")?"Update":data.getStatus();
+            AutoComTextViewStatus.setText(statUpdate);
+            setDropdownIssueStatus(AutoComTextViewStatus);
+            AutoComTextViewReason.setText(data.getReason());
+            if(data.getPriority().equals("3")) {
+                AutoComTextViewPriority.setText("Low");
+                tvResolu.setText("Resolution time : Within 5 - 6 working days.");
+            }
+            else if(data.getPriority().equals("2")) {
+                AutoComTextViewPriority.setText("Medium");
+                tvResolu.setText("Resolution time : Within 2 - 3 working days.");
+            }
+            else {
+                AutoComTextViewPriority.setText("High");
+                tvResolu.setText("Resolution time : Within 24 hrs.");
+            }
+            setDropdownPriority(tvResolu);
+        }
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -665,13 +703,14 @@ public class ReportListFragment extends BaseFragment {
                 }
             }
         });
-        if(status==0){
-            tvStatus.setVisibility(View.GONE);
-            input_textStatus.setVisibility(View.GONE);
-            appcomptextReason.setVisibility(View.GONE);
-            input_textReason.setVisibility(View.GONE);
-        }
+
         mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogReport.dismiss();
+            }
+        });
+        dismissButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDialogReport.dismiss();
@@ -758,9 +797,10 @@ public class ReportListFragment extends BaseFragment {
                 else if(AutoComTextViewPriority.getText().toString().equals("High")){
                     val = "1";
                 }
+                String[] tickData = tvTicketNo.getText().toString().split("Ticket No : ");
                 RequestBody mRequestBodyPri = RequestBody.create(MediaType.parse("text/plain"), val);
                 RequestBody mRequestBodyIssType = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewIssueType.getText().toString());
-                RequestBody mRequestBodyTicketNo = RequestBody.create(MediaType.parse("text/plain"), tvTicketNo.getText().toString());
+                RequestBody mRequestBodyTicketNo = RequestBody.create(MediaType.parse("text/plain"),tickerNo);
 
                 RaiseTicketRequest raiseTicketRequest = new RaiseTicketRequest();
                 raiseTicketRequest.setAction(mRequestBodyAction);
@@ -799,10 +839,12 @@ public class ReportListFragment extends BaseFragment {
                 else if(AutoComTextViewPriority.getText().toString().equals("High")){
                     val = "1";
                 }
+                String[] tickData = tvTicketNo.getText().toString().split("Ticket No : ");
                 RequestBody mRequestBodyPri = RequestBody.create(MediaType.parse("text/plain"), val);
                 RequestBody mRequestBodyIssType = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewIssueType.getText().toString());
-                RequestBody mRequestBodyTicketNo = RequestBody.create(MediaType.parse("text/plain"), tvTicketNo.getText().toString());
-                RequestBody mRequestBodyStatus = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewStatus.getText().toString());
+                RequestBody mRequestBodyTicketNo = RequestBody.create(MediaType.parse("text/plain"), tickerNo);
+                String status = AutoComTextViewStatus.getText().toString().equals("Update")?"Open":AutoComTextViewStatus.getText().toString();
+                RequestBody mRequestBodyStatus = RequestBody.create(MediaType.parse("text/plain"), status);
                 RequestBody mRequestBodyReason = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewReason.getText().toString());
 
                 UpdateTicketRequest updateTicketRequest = new UpdateTicketRequest();
@@ -825,7 +867,7 @@ public class ReportListFragment extends BaseFragment {
     }
 
     private void setAdapterForSalesList() {
-        if (leaveArrayList !=null && leaveArrayList.size() > 0) {
+        if (raisedticketfilterList !=null && raisedticketfilterList.size() > 0) {
 
             rvSalesList.setVisibility(View.VISIBLE);
             emptyLayout.setVisibility(View.GONE);
@@ -833,16 +875,15 @@ public class ReportListFragment extends BaseFragment {
             rvSalesList.setVisibility(View.GONE);
             emptyLayout.setVisibility(View.VISIBLE);
         }
-        leaveListAdapter = new LeaveListAdapter(mContext, leaveArrayList, new LeaveListAdapter.ListItemSelectListener() {
+        getReportListAdapter = new GetReportListAdapter(mContext, raisedticketfilterList, new GetReportListAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket,ApplicationLeave applicationLeave) {
-                //For not killing pre fragment
-                showReportDialog(1);
+            public void onItemClick(int mDataTicket,Raisedticketfilter raisedticketfilter) {
+                showReportDialog(1,raisedticketfilter);
             }
         });
         rvSalesList.setHasFixedSize(true);
         rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
-        rvSalesList.setAdapter(leaveListAdapter);
+        rvSalesList.setAdapter(getReportListAdapter);
     }
 
     //show Receipt Details popup
@@ -986,15 +1027,15 @@ public class ReportListFragment extends BaseFragment {
                 //sortforCompany();
                 break;
             case R.id.toDate:
-                openDataPicker(1,toDate);
+                openDataPicker(1);
                 break;
             case R.id.fromDate:
-                openDataPicker(0,fromDate);
+                openDataPicker(0);
                 break;
             case R.id.submitButton:
                 mCompnyList.clear();
                 mTRMList.clear();
-                leaveArrayList.clear();
+                raisedticketfilterList.clear();
                 setEnquiryPagerList(0);
                 setAdapterForSalesList();
                 tvPage.setText("Showing " + String.valueOf(0) + " to " +
@@ -1054,7 +1095,7 @@ public class ReportListFragment extends BaseFragment {
                 break;
 
             case R.id.resetButton:
-                tvAutoLeaveStatus.setText(""); tvAutoTypeLeave.setText("");
+                tvAutoLeaveStatus.setText(""); AutoComTextViewTicketNumber.setText("");
                 break;
         }
     }
@@ -1220,7 +1261,7 @@ public class ReportListFragment extends BaseFragment {
 
     }
     //set date picker view
-    private void openDataPicker(int val , AppCompatTextView datePickerField) {
+    private void openDataPicker(int val) {
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
             @Override
@@ -1233,10 +1274,10 @@ public class ReportListFragment extends BaseFragment {
                 String myFormat = "dd/MM/yyyy"; //In which you need put here
                 SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
                 if(val==1){
-                    datePickerField.setText(sdf.format(myCalendar.getTime()));
+                    toDate.setText(sdf.format(myCalendar.getTime()));
                 }
                 else {
-                    datePickerField.setText(sdf.format(myCalendar.getTime()));
+                    fromDate.setText(sdf.format(myCalendar.getTime()));
                 }
                 callReportListApi("0");
             }
@@ -1398,33 +1439,33 @@ public class ReportListFragment extends BaseFragment {
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
                     try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_LEAVE_APP)) {
-                            LeaveApplicationResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LeaveApplicationResponse.class);
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_TICKET)) {
+                            GetTicketResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetTicketResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                leaveArrayList.clear();
+                                raisedticketfilterList.clear();
                                 String ct = String.valueOf(responseModel.getResult().getTotalrows())==null
                                         || String.valueOf(responseModel.getResult().getTotalrows()).equals("null")?"0":String.valueOf(responseModel.getResult().getTotalrows());
                                 tvTotalCount.setText(ct);
                                 try {
-                                    if (responseModel.getResult().getLeave() != null && responseModel.getResult().getLeave().size()>0) {
-                                        leaveArrayList = responseModel.getResult().getLeave();
+                                    if (responseModel.getResult().getRaisedticketfilter() != null && responseModel.getResult().getRaisedticketfilter().size()>0) {
+                                        raisedticketfilterList = responseModel.getResult().getRaisedticketfilter();
                                         totalPage = responseModel.getResult().getTotalpages();
                                         if(responseModel.getResult().getNextpage()==1) {
                                             tvPage.setText("Showing " + String.valueOf(responseModel.getResult().getNextpage()) + " to " +
-                                                    String.valueOf(((responseModel.getResult().getNextpage()-1) + leaveArrayList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries"));
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1) + raisedticketfilterList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries"));
                                         }
                                         else {
                                             tvPage.setText("Showing " + String.valueOf(((responseModel.getResult().getNextpage()-1)*7)+1) + " to " +
-                                                    String.valueOf(((responseModel.getResult().getNextpage()-1)*7)+ leaveArrayList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries");
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1)*7)+ raisedticketfilterList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries");
                                         }
                                     }
                                     else{
                                         totalPage = 0;
-                                        leaveArrayList.clear();
+                                        raisedticketfilterList.clear();
                                     }
                                 }catch(Exception e){
                                     totalPage = 0;
-                                    leaveArrayList.clear();
+                                    raisedticketfilterList.clear();
                                     e.printStackTrace();
 
                                 }
@@ -1442,7 +1483,7 @@ public class ReportListFragment extends BaseFragment {
                             GetTicketNoResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetTicketNoResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 tickerNo = responseModel.getResult().getTicketno();
-                                showReportDialog(0);
+                                showReportDialog(0,null);
                             }
 
                         }
@@ -1456,6 +1497,7 @@ public class ReportListFragment extends BaseFragment {
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),
                                         false,mDialogReport);
+                                callReportListApi("0");
                             }
                         }
                     }catch (Exception e){
@@ -1467,6 +1509,8 @@ public class ReportListFragment extends BaseFragment {
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),
                                         false,mDialogReport);
+                                callReportListApi("0");
+
                             }
                         }
                     }catch (Exception e){
@@ -1479,7 +1523,7 @@ public class ReportListFragment extends BaseFragment {
                 LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
                 if(tag.equalsIgnoreCase(DynamicAPIPath.POST_SALES)){
                     totalPage = 0;
-                    leaveArrayList.clear();
+                    raisedticketfilterList.clear();
                     setEnquiryPagerList(totalPage);
                     setAdapterForSalesList();
                 }

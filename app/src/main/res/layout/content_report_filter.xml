@@ -75,7 +75,7 @@
                         app:placeholderTextAppearance="@style/Editext.Theme">
 
                         <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                            android:id="@+id/AutoComTextView"
+                            android:id="@+id/AutoComTextViewTicketNumber"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_45dp"
                             android:background="@drawable/toggle_add_reminder_edt"

@@ -1,5 +1,5 @@
 
-package com.ominfo.crm_solution.ui.visit_report.model;
+package com.ominfo.crm_solution.ui.my_account.model;
 
 import java.util.List;
 import javax.annotation.Generated;
@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class GetVisitResult {
+public class GetTicketResult {
 
     @SerializedName("currentpage")
     private String mCurrentpage;
@@ -17,14 +17,14 @@ public class GetVisitResult {
     private Long mNextpage;
     @SerializedName("prevpage")
     private Long mPrevpage;
+    @SerializedName("raisedticketfilter")
+    private List<Raisedticketfilter> mRaisedticketfilter;
     @SerializedName("status")
     private String mStatus;
     @SerializedName("totalpages")
     private Long mTotalpages;
-    @SerializedName("totalvisits")
-    private Long mTotalvisits;
-    @SerializedName("visits")
-    private List<GetVisit> mVisits;
+    @SerializedName("totalrows")
+    private String mTotalrows;
 
     public String getCurrentpage() {
         return mCurrentpage;
@@ -58,6 +58,14 @@ public class GetVisitResult {
         mPrevpage = prevpage;
     }
 
+    public List<Raisedticketfilter> getRaisedticketfilter() {
+        return mRaisedticketfilter;
+    }
+
+    public void setRaisedticketfilter(List<Raisedticketfilter> raisedticketfilter) {
+        mRaisedticketfilter = raisedticketfilter;
+    }
+
     public String getStatus() {
         return mStatus;
     }
@@ -74,20 +82,12 @@ public class GetVisitResult {
         mTotalpages = totalpages;
     }
 
-    public Long getTotalvisits() {
-        return mTotalvisits;
+    public String getTotalrows() {
+        return mTotalrows;
     }
 
-    public void setTotalvisits(Long totalvisits) {
-        mTotalvisits = totalvisits;
-    }
-
-    public List<GetVisit> getVisits() {
-        return mVisits;
-    }
-
-    public void setVisits(List<GetVisit> visits) {
-        mVisits = visits;
+    public void setTotalrows(String totalrows) {
+        mTotalrows = totalrows;
     }
 
 }

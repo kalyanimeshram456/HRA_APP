@@ -162,8 +162,20 @@ public interface NetworkAPIServices {
     @POST()
     Observable<JsonElement> lostApportunity(@Url String url,@Body QuotationRequest request);
 
+    @Multipart
     @POST()
-    Observable<JsonElement> dispatch(@Url String url,@Body DispatchRequest request);
+    Observable<JsonElement> dispatch(@Url String url,
+                                     @Part("action") RequestBody uploadType,
+                                     @Part("company_id") RequestBody company_id,
+                                     @Part("employee_id") RequestBody employee_id,
+                                     @Part("pageno") RequestBody pageno,
+                                     @Part("pagesize") RequestBody pagesize,
+                                     @Part("rmID") RequestBody rmID,
+                                     @Part("companyName") RequestBody companyName,
+                                     @Part("Startdate") RequestBody Startdate,
+                                     @Part("EndDate") RequestBody EndDate,
+                                     @Part("po_number") RequestBody po_number,
+                                     @Part("pending_qty") RequestBody pending_qty);
 
 
     @POST()
@@ -432,7 +444,7 @@ public interface NetworkAPIServices {
                                                 @Part("pageno") RequestBody pageno,
                                                 @Part("pagesize") RequestBody pagesize,
                                                 @Part("ticket_no") RequestBody ticket_no,
-                                                @Part("priority") RequestBody priority,
+                                               /* @Part("priority") RequestBody priority,*/
                                                 @Part("status") RequestBody status,
                                                 @Part("from_date") RequestBody from_date,
                                                 @Part("end_date") RequestBody end_date);

@@ -452,7 +452,7 @@ public class SearchFragment extends BaseFragment {
             public void onItemClick(int mDataTicket,Searchresult searchresult) {
                 if(mDataTicket==0) {
                     Intent i = new Intent(getActivity(), View360Activity.class);
-                    i.putExtra(Constants.TRANSACTION_ID, "1");
+                    i.putExtra(Constants.TRANSACTION_ID, searchresult.getId());
                     startActivity(i);
                     ((Activity) getActivity()).overridePendingTransition(0, 0);
                 }

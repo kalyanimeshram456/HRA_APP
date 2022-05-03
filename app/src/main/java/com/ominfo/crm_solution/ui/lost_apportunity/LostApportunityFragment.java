@@ -712,11 +712,11 @@ public class LostApportunityFragment extends BaseFragment {
         }
         lostOpportunityAdapter = new LostOpportunityAdapter(mContext, lostopporDataArrayList, new LostOpportunityAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket) {
+            public void onItemClick(int mDataTicket,LostopporData lostopporData) {
                 //For not killing pre fragment
                 if(mDataTicket==0) {
                     Intent i = new Intent(getActivity(), View360Activity.class);
-                    i.putExtra(Constants.TRANSACTION_ID, "1");
+                    i.putExtra(Constants.TRANSACTION_ID, lostopporData.getCustId());
                     startActivity(i);
                     ((Activity) getActivity()).overridePendingTransition(0, 0);
                 }

@@ -5,80 +5,120 @@ import java.util.List;
 import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
 
+import okhttp3.RequestBody;
+
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
 public class DispatchRequest {
 
-    @SerializedName("companyName")
-    private List<String> mCompanyID;
+    @SerializedName("action")
+    private RequestBody action;
+    @SerializedName("company_id")
+    private RequestBody companyId;
+    @SerializedName("employee_id")
+    private RequestBody employeeId;
     @SerializedName("pageno")
-    private String mPageno;
+    private RequestBody pageno;
     @SerializedName("pagesize")
-    private String mPagesize;
+    private RequestBody pagesize;
     @SerializedName("po_number")
-    private String mPoNumber;
+    private RequestBody poNumber;
+    @SerializedName("pending_qty")
+    private RequestBody quantity;
+    @SerializedName("companyName")
+    private RequestBody companyName;
     @SerializedName("rmID")
-    private List<String> mRmID;
+    private RequestBody rmId;
     @SerializedName("Startdate")
-    private String startDate;
+    private RequestBody startDate;
     @SerializedName("EndDate")
-    private String endDate;
+    private RequestBody endDate;
 
+    public RequestBody getAction() {
+        return action;
+    }
 
-    public String getStartDate() {
+    public void setAction(RequestBody action) {
+        this.action = action;
+    }
+
+    public RequestBody getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(RequestBody companyId) {
+        this.companyId = companyId;
+    }
+
+    public RequestBody getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(RequestBody employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public RequestBody getPageno() {
+        return pageno;
+    }
+
+    public void setPageno(RequestBody pageno) {
+        this.pageno = pageno;
+    }
+
+    public RequestBody getPagesize() {
+        return pagesize;
+    }
+
+    public void setPagesize(RequestBody pagesize) {
+        this.pagesize = pagesize;
+    }
+
+    public RequestBody getPoNumber() {
+        return poNumber;
+    }
+
+    public void setPoNumber(RequestBody poNumber) {
+        this.poNumber = poNumber;
+    }
+
+    public RequestBody getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(RequestBody quantity) {
+        this.quantity = quantity;
+    }
+
+    public RequestBody getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(RequestBody companyName) {
+        this.companyName = companyName;
+    }
+
+    public RequestBody getRmId() {
+        return rmId;
+    }
+
+    public void setRmId(RequestBody rmId) {
+        this.rmId = rmId;
+    }
+
+    public RequestBody getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
+    public void setStartDate(RequestBody startDate) {
         this.startDate = startDate;
     }
 
-    public String getEndDate() {
+    public RequestBody getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(String endDate) {
+    public void setEndDate(RequestBody endDate) {
         this.endDate = endDate;
     }
-
-    public List<String> getCompanyID() {
-        return mCompanyID;
-    }
-
-    public void setCompanyID(List<String> companyID) {
-        mCompanyID = companyID;
-    }
-
-    public String getPageno() {
-        return mPageno;
-    }
-
-    public void setPageno(String pageno) {
-        mPageno = pageno;
-    }
-
-    public String getPagesize() {
-        return mPagesize;
-    }
-
-    public void setPagesize(String pagesize) {
-        mPagesize = pagesize;
-    }
-
-    public String getPoNumber() {
-        return mPoNumber;
-    }
-
-    public void setPoNumber(String poNumber) {
-        mPoNumber = poNumber;
-    }
-
-    public List<String> getRmID() {
-        return mRmID;
-    }
-
-    public void setRmID(List<String> rmID) {
-        mRmID = rmID;
-    }
-
 }

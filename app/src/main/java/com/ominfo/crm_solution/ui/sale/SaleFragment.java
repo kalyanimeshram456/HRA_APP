@@ -582,11 +582,11 @@ public class SaleFragment extends BaseFragment {
         }
         salesAdapter = new SalesAdapter(mContext, salesList, new SalesAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket) {
+            public void onItemClick(int mDataTicket,SalesData salesData) {
                 //For not killing pre fragment
                 if(mDataTicket==0) {
                     Intent i = new Intent(getActivity(), View360Activity.class);
-                    i.putExtra(Constants.TRANSACTION_ID, "1");
+                    i.putExtra(Constants.TRANSACTION_ID, salesData.getCustId());
                     startActivity(i);
                     ((Activity) getActivity()).overridePendingTransition(0, 0);
                 }
@@ -1077,7 +1077,10 @@ public class SaleFragment extends BaseFragment {
                             SalesResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SalesResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 salesList.clear();
-                                tvTotalCount.setText(String.valueOf(responseModel.getResult().getTotalrows()));
+                                String count = responseModel.getResult().getTotalrows()==null||
+                                       responseModel.getResult().getTotalrows().equals("null")||
+                                       responseModel.getResult().getTotalrows().equals("")?"0":String.valueOf(responseModel.getResult().getTotalrows());
+                                tvTotalCount.setText(count);
                                 try {
                                     if (responseModel.getResult().getQuot() != null && responseModel.getResult().getQuot().size()>0) {
                                         salesList = responseModel.getResult().getQuot();

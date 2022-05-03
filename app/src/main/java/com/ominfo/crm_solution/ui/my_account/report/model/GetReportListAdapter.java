@@ -1,4 +1,4 @@
-package com.ominfo.crm_solution.ui.sale.adapter;
+package com.ominfo.crm_solution.ui.my_account.report.model;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,26 +12,25 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.crm_solution.R;
-import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
-import com.ominfo.crm_solution.ui.sale.model.ResultInvoice;
-import com.ominfo.crm_solution.ui.sale.model.SalesData;
+import com.ominfo.crm_solution.ui.my_account.model.ApplicationLeave;
+import com.ominfo.crm_solution.ui.my_account.model.Raisedticketfilter;
 import com.ominfo.crm_solution.util.AppUtils;
 
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.ViewHolder> {
+public class GetReportListAdapter extends RecyclerView.Adapter<GetReportListAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<SalesData> mListData;
+    private List<Raisedticketfilter> mListData;
     private Context mContext;
     private String mDate;
 
-    public SalesAdapter(Context mContext) {
+    public GetReportListAdapter(Context mContext) {
         this.mContext = mContext;
     }
 
-    public SalesAdapter(Context context, List<SalesData> listData, ListItemSelectListener itemClickListener) {
+    public GetReportListAdapter(Context context, List<Raisedticketfilter> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -46,7 +45,7 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.ViewHolder> 
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<SalesData> list){
+    public void updateList(List<Raisedticketfilter> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -56,11 +55,20 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.ViewHolder> 
 
         if(mListData.size()>0) {
                 holder.setIsRecyclable(false);
-                holder.tvCompanyName.setText(mListData.get(position).getCustName());
-                holder.tvState.setText(mListData.get(position).getOrderNo());
-                holder.tvRs.setText(AppUtils.convertyyyytodd(mListData.get(position).getCreatedOn()));
+                String date = "" ,time = "";
+                try{
+                    String[] mConverted = mListData.get(position).getCreatedOn().split(" ");
+                    date = AppUtils.convertyyyytodd(mListData.get(position).getCreatedOn());
+                    time = AppUtils.convert24to12(mConverted[1]);
+                }catch (Exception e){
+                }
+                holder.tvCompanyName.setText(mListData.get(position).getTicketNo());
+                holder.tvState.setText(date+" "+time);
+                String status = mListData.get(position).getStatus()==null || mListData.get(position).getStatus().equals("")?"Open":mListData.get(position).getStatus();
+                holder.tvRs.setText(status);
                 holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
-                if(mListData.get(position).getPaymentStatus().equals("PAID"))
+                holder.imgIndicator.setVisibility(View.GONE);
+               /* if(mListData.get(position).getPaymentStatus().equals("PAID"))
                 {
                     holder.imgIndicator.setColorFilter(mContext.getResources().getColor(R.color.Light_Green_quo));
                 }
@@ -70,13 +78,34 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.ViewHolder> 
                 }
                 else {
                     holder.imgIndicator.setColorFilter(mContext.getResources().getColor(R.color.Light_Red));
-                }
+                }*/
 
                 if (position % 2 != 0) {
                 holder.layClick.setBackground(mContext.getResources().getDrawable(R.drawable.shape_round_white_left_right_border_dialog));
             } else {
                 holder.layClick.setBackground(mContext.getResources().getDrawable(R.drawable.shape_round_grey_left_right_border_dialog));
             }
+            holder.tvState.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //LogUtil.printToastMSG(mContext,"from adapter");
+                    listItemSelectListener.onItemClick(1,mListData.get(position));
+                }
+            });
+            holder.tvRs.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //LogUtil.printToastMSG(mContext,"from adapter");
+                    listItemSelectListener.onItemClick(1,mListData.get(position));
+                }
+            });
+            holder.tvCompanyName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //LogUtil.printToastMSG(mContext,"from adapter");
+                    listItemSelectListener.onItemClick(0,mListData.get(position));
+                }
+            });
         }
         else {
             holder.setIsRecyclable(true);
@@ -90,27 +119,7 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.ViewHolder> 
                 //Toast.makeText(mContext, "View where A: " + position + " is Clicked", Toast.LENGTH_SHORT).show();
             }
         });*/
-        holder.tvState.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(1,mListData.get(position));
-            }
-        });
-        holder.tvRs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(1,mListData.get(position));
-            }
-        });
-        holder.tvCompanyName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(0,mListData.get(position));
-            }
-        });
+
 
 
     }
@@ -142,6 +151,6 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.ViewHolder> 
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(int mData,SalesData salesData);
+        void onItemClick(int mData,Raisedticketfilter applicationLeave);
     }
 }

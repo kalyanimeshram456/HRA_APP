@@ -616,7 +616,7 @@ public class SalesCreditFragment extends BaseFragment {
                 //For not killing pre fragment
                // if(mDataTicket==0) {
                     Intent i = new Intent(getActivity(), View360Activity.class);
-                    i.putExtra(Constants.TRANSACTION_ID, "1");
+                    i.putExtra(Constants.TRANSACTION_ID, getEnquiry.getCustomerId());
                     startActivity(i);
                     ((Activity) getActivity()).overridePendingTransition(0, 0);
 
