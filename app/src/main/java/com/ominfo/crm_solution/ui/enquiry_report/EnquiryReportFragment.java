@@ -138,7 +138,7 @@ public class EnquiryReportFragment extends BaseFragment {
     @BindView(R.id.AutoComTextViewENo)
     AppCompatEditText textViewENo;
     @BindView(R.id.imgBack)
-    AppCompatImageView imgBack;
+    LinearLayoutCompat imgBack;
     @BindView(R.id.imgNotify)
     AppCompatImageView imgNotify;
     @BindView(R.id.tvNotifyCount)
@@ -713,7 +713,7 @@ public class EnquiryReportFragment extends BaseFragment {
     private void setToolbar() {
         //set toolbar title
         //toolbarTitle.setText(R.string.scr_lbl_add_new_lr);
-        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.layBack, R.id.imgCall);
+        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.imgBack, R.id.imgCall);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -747,19 +747,21 @@ public class EnquiryReportFragment extends BaseFragment {
                 RequestBody mRequestBodyTypePageSize = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
                 String mCompanyNameList="",mRMList="";
                 for(int i=0;i<tagList.size();i++){
-                    if(i==0){
-                        mCompanyNameList = tagList.get(i).getTitle();
-                    }
-                   else {
-                        mCompanyNameList = mCompanyNameList+"~"+tagList.get(i).getTitle();
+                    if(tagList.get(i).getTitle()!=null && !tagList.get(i).getTitle().equals("")) {
+                        if (i == 0) {
+                            mCompanyNameList = tagList.get(i).getTitle();
+                        } else {
+                            mCompanyNameList = mCompanyNameList + "~" + tagList.get(i).getTitle();
+                        }
                     }
                 }
                 for(int i=0;i<tagRmList.size();i++){
-                    if(i==0){
-                        mRMList = tagRmList.get(i).getTitle();
-                    }
-                    else {
-                        mRMList = mRMList+"~"+tagRmList.get(i).getTitle();
+                    if(tagRmList.get(i).getId()!=null && !tagRmList.get(i).getId().equals("")) {
+                        if (i == 0) {
+                            mRMList = tagRmList.get(i).getId();
+                        } else {
+                            mRMList = mRMList + "~" + tagRmList.get(i).getId();
+                        }
                     }
                 }
                 RequestBody mRequestBodyTypeENo = RequestBody.create(MediaType.parse("text/plain"), textViewENo.getText().toString().trim());

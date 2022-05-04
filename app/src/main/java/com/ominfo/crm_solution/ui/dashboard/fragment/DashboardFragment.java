@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Chronometer;
@@ -72,7 +71,6 @@ import com.ominfo.crm_solution.ui.my_account.model.GetProfileImageViewModel;
 import com.ominfo.crm_solution.ui.my_account.model.ProfileImageResponse;
 import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.quotation_amount.QuotationFragment;
-import com.ominfo.crm_solution.ui.receipt.model.ReceiptResult;
 import com.ominfo.crm_solution.ui.sale.SaleFragment;
 import com.ominfo.crm_solution.ui.visit_report.activity.StartEndVisitActivity;
 import com.ominfo.crm_solution.util.AppUtils;
@@ -139,7 +137,7 @@ public class DashboardFragment extends BaseFragment {
     @BindView(R.id.chronometer)
     Chronometer tvCounter;
     @BindView(R.id.imgBack)
-    AppCompatImageView imgBack;
+    LinearLayoutCompat imgBack;
     @BindView(R.id.imgNotify)
     AppCompatImageView imgNotify;
     @BindView(R.id.progress_bar)
@@ -225,10 +223,13 @@ public class DashboardFragment extends BaseFragment {
         super.onResume();
         setToolbar();
         setTimer();
-        Window window = getActivity().getWindow();
+        /*Window window = getActivity().getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));
+        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));*/
+        Window window = getActivity().getWindow();
+        View view = window.getDecorView();
+        BaseActivity.DarkStatusBar.setLightStatusBar(view,getActivity());
         try {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if (loginTable != null) {
@@ -727,9 +728,9 @@ public class DashboardFragment extends BaseFragment {
                 RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(loginTable.getEmployeeId()));
                 RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(loginTable.getCompanyId()));
                 RequestBody mRequestBodyTypeStart = RequestBody.create(MediaType.parse("text/plain"), "2021-02-08"/*startDate*/);
-                RequestBody mRequestBodyTypeEnd = RequestBody.create(MediaType.parse("text/plain"), "2021-02-08"/*endDate*/);
-                LogUtil.printLog("httpdashboard_data", String.valueOf(loginTable.getEmployeeId()) + " " + String.valueOf(loginTable.getCompanyId())
-                        + " " + startDate + " " + endDate);
+                RequestBody mRequestBodyTypeEnd = RequestBody.create(MediaType.parse("text/plain"), "2021-05-08"/*endDate*/);
+                /*LogUtil.printLog("httpdashboard_data", String.valueOf(loginTable.getEmployeeId()) + " " + String.valueOf(loginTable.getCompanyId())
+                        + " " + startDate + " " + endDate);*/
                 dashboardRequest.setAction(mRequestBodyType);
                 dashboardRequest.setEmployee(mRequestBodyTypeEmployee);
                 dashboardRequest.setCompanyId(mRequestBodyTypeCompId);
@@ -818,22 +819,19 @@ public class DashboardFragment extends BaseFragment {
 
     }
 
-    private void checkIFNull(String checkString, AppCompatTextView textView) {
+    private String checkIFNull(String checkString) {
         if (checkString != null && !checkString.equals("") && !checkString.equals("null")) {
-            textView.setText(checkString);
         } else {
-            textView.setText("0");
+            checkString = "0";
         }
+        return checkString;
     }
 
     private String iSNull(String checkString, int status) {
         String returnVal = "";
         try {
-            if (status == 1) {
-                //returnVal = "0";
-            }
             if (checkString != null && !checkString.equals("") && !checkString.equals("null")) {
-                return checkString;
+                returnVal = checkString;
             } else {
                 returnVal = "0";
             }
@@ -861,12 +859,12 @@ public class DashboardFragment extends BaseFragment {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_DASHBOARD)) {
                             GetDashboardResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetDashboardResponse.class);
                             if (responseModel != null /*&& responseModel.getResult().getStatus().equals("success")*/) {
-                                dashboardList.removeAll(dashboardList);
-                                checkIFNull(String.valueOf(responseModel.getDashboard().getTotalSales()), tvSale);
-                                checkIFNull(String.valueOf(responseModel.getDashboard().getQuotationAmount()), tvQuotationCount);
-                                checkIFNull(String.valueOf(responseModel.getDashboard().getLostOpportunityCount()), tvLostApp);
-                                checkIFNull(String.valueOf(responseModel.getDashboard().getEnquiryCount()), tvEnquiryCount);
-                                checkIFNull(String.valueOf(responseModel.getDashboard().getNotificationCount()), tvNotifyCount);
+                                dashboardList.clear();
+                                tvSale.setText(checkIFNull(String.valueOf(responseModel.getDashboard().getTotalSales())));
+                                tvQuotationCount.setText(checkIFNull(String.valueOf(responseModel.getDashboard().getQuotationAmount())));
+                                tvLostApp.setText(checkIFNull(String.valueOf(responseModel.getDashboard().getLostOpportunityCount())));
+                                tvEnquiryCount.setText(checkIFNull(String.valueOf(responseModel.getDashboard().getEnquiryCount())));
+                                tvNotifyCount.setText(checkIFNull(String.valueOf(responseModel.getDashboard().getNotificationCount())));
                                 Dashboard dashboard = responseModel.getDashboard();
                                 dashboardList.add(new DashModel("Sales Credit", "₹" + iSNull(String.valueOf(dashboard.getSalesCredit()), 1), mContext.getDrawable(R.drawable.ic_om_sales_credit)));
                                 dashboardList.add(new DashModel("Receipt", "₹" + iSNull(dashboard.getReceiptAmount(), 1), mContext.getDrawable(R.drawable.ic_om_receipt)));

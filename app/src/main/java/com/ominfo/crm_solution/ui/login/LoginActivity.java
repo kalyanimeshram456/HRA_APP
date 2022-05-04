@@ -1,14 +1,17 @@
 package com.ominfo.crm_solution.ui.login;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProviders;
@@ -77,9 +80,9 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         //for full screen toolbar
-        getWindow().getDecorView().setSystemUiVisibility(
+       /* getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);*/
         getDeps().inject(this);
         ButterKnife.bind(this);
         mContext = this;
@@ -90,7 +93,6 @@ public class LoginActivity extends BaseActivity {
         createNotificationChannel();
         getToken();
     }
-
     private void injectAPI() {
          mLoginViewModel = ViewModelProviders.of(LoginActivity.this, mViewModelFactory).get(LoginViewModel.class);
          mLoginViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, "Login"));
@@ -180,7 +182,9 @@ public class LoginActivity extends BaseActivity {
         //editTextEmail.setText("hd001");
         //editTextPassword.setText("2437");
         setErrorMSG();
-
+        Window window = getWindow();
+        View view = window.getDecorView();
+        DarkStatusBar.setLightStatusBar(view,this);
     }
 
     // set error if input field is blank

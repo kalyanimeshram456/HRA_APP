@@ -133,7 +133,7 @@ public class TopCustomerFragment extends BaseFragment {
     @BindView(R.id.rvImages)
     RecyclerView rvImages;
     @BindView(R.id.imgBack)
-    AppCompatImageView imgBack;
+    LinearLayoutCompat imgBack;
     @BindView(R.id.imgNotify)
     AppCompatImageView imgNotify;
     List<DashModel> tagList = new ArrayList<>();
@@ -198,7 +198,9 @@ public class TopCustomerFragment extends BaseFragment {
     RecyclerView rvRm;
     @BindView(R.id.tvHighlight)
     AppCompatAutoCompleteTextView tvHighlight;
+    String startDateRequest= "",endDateRequest= "";
     private String pagerClicked = "No";
+    List<HighlightModel> highlightModelList = new ArrayList<>();
     public TopCustomerFragment() {
         // Required empty public constructor
     }
@@ -252,12 +254,12 @@ public class TopCustomerFragment extends BaseFragment {
 
         setToolbar();
         setEnquiryPagerList(1);
-        callGetTopCustomerApi("0",AppUtils.startMonth(), AppUtils.endMonth());
+        tvHighlight.setText("This Month");
+        setDropdownTopCustomer();
+        callGetTopCustomerApi("0");
         setAdapterForTopCustomerList();
         setAddTagList();
         setAddRmTagList();
-        tvHighlight.setText("This Month");
-        setDropdownTopCustomer();
         rvImages.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -301,11 +303,6 @@ public class TopCustomerFragment extends BaseFragment {
                 tvHighlight.showDropDown();
             }
         });
-        List<HighlightModel> highlightModelList = new ArrayList<>();
-      /*  highlightModelList.add(new HighlightModel("Today's Hightlights",
-                AppUtils.getDashCurrentDateTime_(), AppUtils.getDashCurrentDateTime_()));*/
-       /* highlightModelList.add(new HighlightModel("Yesterday's Hightlights",
-                AppUtils.getDashYesterdaysDate(), AppUtils.getDashYesterdaysDate()));*/
         highlightModelList.add(new HighlightModel("This Week",
                 AppUtils.getStartWeek(), AppUtils.getEndWeek()));
         highlightModelList.add(new HighlightModel("Last Week"
@@ -333,14 +330,7 @@ public class TopCustomerFragment extends BaseFragment {
                 tvHighlight.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        for (int i = 0; i < highlightModelList.size(); i++) {
-                            if (highlightModelList.get(i).getHighlight().equals(mDropdownList[position])) {
-                                 /* LogUtil.printToastMSG(mContext,highlightModelList.get(i).getDateFrom()
-                                  +"  "+highlightModelList.get(i).getDateTo());*/
-                                callGetTopCustomerApi("0",highlightModelList.get(i).getDateFrom()
-                                       , highlightModelList.get(i).getDateTo());
-                            }
-                        }
+                            callGetTopCustomerApi("0");
                     }
                 });
 
@@ -362,11 +352,17 @@ public class TopCustomerFragment extends BaseFragment {
   }
 
 
-    /* Call Api For RM */
-    private void callGetTopCustomerApi(String pageNo,String startDate,String endDate) {
+    /* Call Api For Top Customer */
+    private void callGetTopCustomerApi(String pageNo) {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
+                for (int i = 0; i < highlightModelList.size(); i++) {
+                    if (highlightModelList.get(i).getHighlight().equals(tvHighlight.getText().toString())) {
+                        startDateRequest = highlightModelList.get(i).getDateFrom();
+                        endDateRequest = highlightModelList.get(i).getDateTo();
+                    }
+                }
                 RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_top_customer);
                 RequestBody mRequestBodyTypePageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);//selectedRM.getEmpId());
                 RequestBody mRequestBodyTypePageSize = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
@@ -381,11 +377,11 @@ public class TopCustomerFragment extends BaseFragment {
                     }
                 }
                 for(int i=0;i<tagRmList.size();i++){
-                    if (tagRmList.get(i).getTitle() != null && !tagRmList.get(i).getTitle().equals("")) {
+                    if (tagRmList.get(i).getId() != null && !tagRmList.get(i).getId().equals("")) {
                         if (i == 0) {
-                            mRMList = tagRmList.get(i).getTitle();
+                            mRMList = tagRmList.get(i).getId();
                         } else {
-                            mRMList = mRMList + "~" + tagRmList.get(i).getTitle();
+                            mRMList = mRMList + "~" + tagRmList.get(i).getId();
                         }
                     }
                 }
@@ -393,6 +389,12 @@ public class TopCustomerFragment extends BaseFragment {
                 ///String bodyInStringFormat = gson.toJson(mCompanyNameList);
                 RequestBody mRequestBodyTypeCName = RequestBody.create(MediaType.parse("text/plain"), mCompanyNameList);
                 RequestBody mRequestBodyTypeRm = RequestBody.create(MediaType.parse("text/plain"), mRMList);
+                RequestBody mRequestBodyinv_max = RequestBody.create(MediaType.parse("text/plain"), inputInvMaxAmount.getText().toString());
+                RequestBody mRequestBodyinv_min = RequestBody.create(MediaType.parse("text/plain"), inputInvMinAmount.getText().toString());
+                RequestBody mRequestBodysale_min_amt = RequestBody.create(MediaType.parse("text/plain"), inputMinSaleAmount.getText().toString());
+                RequestBody mRequestBodysale_max_amt = RequestBody.create(MediaType.parse("text/plain"), inputMaxSaleAmount.getText().toString());
+                RequestBody mRequestBodyfrom_date = RequestBody.create(MediaType.parse("text/plain"), startDateRequest);
+                RequestBody mRequestBodyend_date = RequestBody.create(MediaType.parse("text/plain"), endDateRequest);
 
                 TopCustomerRequest getEnquiryRequest = new TopCustomerRequest();
                 getEnquiryRequest.setAction(mRequestBodyAction);
@@ -400,6 +402,12 @@ public class TopCustomerFragment extends BaseFragment {
                 getEnquiryRequest.setPageSize(mRequestBodyTypePageSize);
                 getEnquiryRequest.setCustName(mRequestBodyTypeCName);
                 getEnquiryRequest.setRmId(mRequestBodyTypeRm);
+                getEnquiryRequest.setInvMax(mRequestBodyinv_max);
+                getEnquiryRequest.setInvMin(mRequestBodyinv_min);
+                getEnquiryRequest.setSaleMinAmt(mRequestBodysale_min_amt);
+                getEnquiryRequest.setSaleMaxAmt(mRequestBodysale_max_amt);
+                getEnquiryRequest.setFromDate(mRequestBodyfrom_date);
+                getEnquiryRequest.setEndDate(mRequestBodyend_date);
 
                 topCustomerViewModel.hitTopCustomerApi(getEnquiryRequest);
             }
@@ -732,7 +740,7 @@ public class TopCustomerFragment extends BaseFragment {
     private void setToolbar() {
         //set toolbar title
         //toolbarTitle.setText(R.string.scr_lbl_add_new_lr);
-        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.layBack, R.id.imgCall);
+        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.imgBack, R.id.imgCall);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -873,9 +881,7 @@ public class TopCustomerFragment extends BaseFragment {
                 tvPage.setText("Showing " + String.valueOf(0) + " to " +
                         String.valueOf(0) + " of " + String.valueOf(0) + "\nEntries");
                 try {
-                    callGetTopCustomerApi("0",AppUtils.startMonth(), AppUtils.endMonth());
-                    tvHighlight.setText("This Month");
-                    setDropdownTopCustomer();
+                    callGetTopCustomerApi("0");
                 }catch (Exception e){e.printStackTrace();}
                 //add_fab.setVisibility(View.VISIBLE);
                 pieChart.setVisibility(View.GONE);
@@ -1226,10 +1232,7 @@ public class TopCustomerFragment extends BaseFragment {
                     enquiryPageAdapter.updateList(mDataList);
                 }catch (Exception e){e.printStackTrace();}
                 try {
-                    callGetTopCustomerApi(String.valueOf(Integer.parseInt(mData.getPageNo()) - 1)
-                            ,AppUtils.startMonth(), AppUtils.endMonth());
-                    tvHighlight.setText("This Month");
-                    setDropdownTopCustomer();
+                    callGetTopCustomerApi(String.valueOf(Integer.parseInt(mData.getPageNo()) - 1));
                 }catch (Exception e){e.printStackTrace();}
             }
         });

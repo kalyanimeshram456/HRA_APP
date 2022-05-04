@@ -157,7 +157,7 @@ public class MyAccountFragment extends BaseFragment {
     @BindView(R.id.tvSearchView)
     AppCompatTextView tvToolbarTitle;
     @BindView(R.id.imgBack)
-    AppCompatImageView imgBack;
+    LinearLayoutCompat imgBack;
     @BindView(R.id.imgNotify)
     AppCompatImageView imgNotify;
     BarData barData;
@@ -613,11 +613,13 @@ public class MyAccountFragment extends BaseFragment {
     @Override
     public void onPause() {
         super.onPause();
-        Window window = getActivity().getWindow();
+       /* Window window = getActivity().getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));
-
+        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));*/
+        Window window = getActivity().getWindow();
+        View view = window.getDecorView();
+        BaseActivity.DarkStatusBar.setLightStatusBar(view,getActivity());
     }
 
     @Override
@@ -1099,7 +1101,7 @@ public class MyAccountFragment extends BaseFragment {
     private void setToolbar() {
         //set toolbar title
         tvToolbarTitle.setText(R.string.scr_lbl_my_account);
-        ((BaseActivity)mContext).initToolbar(5, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.layBack, R.id.imgCall);
+        ((BaseActivity)mContext).initToolbar(5, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.imgBack, R.id.imgCall);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -1117,14 +1119,20 @@ public class MyAccountFragment extends BaseFragment {
 
 private void setTermsAndPolicy(String webUrl){
     Intent iTerms = new Intent(getActivity(), PdfPrintActivity.class);
-    iTerms.putExtra(Constants.TRANSACTION_ID, "myacc");
     iTerms.putExtra(Constants.URL, webUrl);
+    iTerms.putExtra(Constants.TRANSACTION_ID, "acc");
     startActivity(iTerms);
     ((Activity) getActivity()).overridePendingTransition(0, 0);
 }
     private void moveToReportAppList(){
         Fragment fragment = new ReportListFragment();
         moveFromFragment(fragment,mContext);
+    }
+    private void setTranStatus(){
+        Window window = getActivity().getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(Color.TRANSPARENT);
     }
     //perform click actions
     @OnClick({R.id.imgLogoutNew,R.id.tvLogoutNew,R.id.imgChangePass,R.id.tvChangePass,R.id.imgAdd,
@@ -1134,15 +1142,19 @@ private void setTermsAndPolicy(String webUrl){
         int id = view.getId();
         switch (id) {
             case R.id.imgTerms:
+                setTranStatus();
                 setTermsAndPolicy("https://ominfo.in/terms-conditions.php");
                 break;
             case R.id.tvTerms:
+                setTranStatus();
                 setTermsAndPolicy("https://ominfo.in/terms-conditions.php");
                 break;
             case R.id.imgPrivacy:
+                setTranStatus();
                 setTermsAndPolicy("https://ominfo.in/privacy-policy.php");
                 break;
             case R.id.tvPrivacy:
+                setTranStatus();
                 setTermsAndPolicy("https://ominfo.in/privacy-policy.php");
                 break;
             case R.id.imgReport:

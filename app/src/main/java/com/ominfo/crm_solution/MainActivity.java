@@ -47,6 +47,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
@@ -239,6 +240,9 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
     }
 
     private void initToolbar() {
+        Window window = getWindow();
+        View view = window.getDecorView();
+        DarkStatusBar.setLightStatusBar(view,this);
         //initToolbar(0, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify, R.id.layBack, R.id.imgCall);
     }
 

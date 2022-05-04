@@ -109,7 +109,6 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     AppCompatTextView tvCheckOutTime;
     @BindView(R.id.tvCheckInTime)
     AppCompatTextView tvCheckInTime;
-
    /* @BindView(R.id.startVisitButton)
     AppCompatButton mButtonStartVisit;*/
     @BindView(R.id.imgChecked)
@@ -136,7 +135,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     @BindView(R.id.tvOfcLocation)
     AppCompatTextView tvOfcLocation;
     public static AppCompatTextView tvCurrLocation;
-
+    public String addressCurr = "",addressOff = "";
     @BindView(R.id.layBottomCheckOut)
     LinearLayoutCompat layBottomCheckOut;
 
@@ -237,6 +236,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                 //mLocTitle = addressList.get(0).getFeatureName();
                 /*if (!locality.isEmpty() && !country.isEmpty())
                     mLocDesc = locality + "  " + country;*/
+                addressOff = locality;
                 tvOfcLocation.setText("Office Location : "+locality);
             }
 
@@ -611,26 +611,39 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
 
 
     //perform click actions
-    @OnClick({R.id.relRound,R.id.imgOfcLocation,R.id.layBack})
+    @OnClick({R.id.relRound,R.id.imgOfcLocation,R.id.imgBack})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
                case R.id.relRound:
-                   Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_IN_BUTTON, false);
-                   if(iSTimer) {
-                       callUpdateAttendanceApi();
+                   try {
+                       String[] loc = tvOfcLocation.getText().toString().split("Office Location : ");
+                       addressOff = loc[1];
+                       String[] curr = tvCurrLocation.getText().toString().split("Current Location : ");
+                       addressCurr = curr[1];
+                       if(addressOff.equals("Fetching...") || addressOff.equals("")||
+                               addressCurr.equals("Fetching...") || addressCurr.equals(""))
+                       { LogUtil.printToastMSG(mContext,"Please wait, Location is getting fetch.");
+                       }
+                       else {
+                           Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_IN_BUTTON, false);
+                           if (iSTimer) {
+                               callUpdateAttendanceApi();
+                           } else {
+                               callMarkAttendanceApi();
+                           }
+                       }
+                       break;
+                   }catch (Exception e){
+                       LogUtil.printToastMSG(mContext,"Please wait, Location is getting fetch.");
                    }
-                   else{
-                       callMarkAttendanceApi();
-                   }
-                   break;
-            case R.id.layBack:
+            case R.id.imgBack:
                 finish();
                 break;
             case R.id.imgOfcLocation:
-            int LAUNCH_SECOND_ACTIVITY = 1000;
+            /*int LAUNCH_SECOND_ACTIVITY = 1000;
             Intent i = new Intent(this, AddLocationActivity.class);
-            startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
+            startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);*/
             break;
         }
     }

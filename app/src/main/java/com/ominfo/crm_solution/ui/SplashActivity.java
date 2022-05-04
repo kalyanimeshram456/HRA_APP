@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -11,6 +12,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import com.bumptech.glide.Glide;
 import com.ominfo.crm_solution.MainActivity;
 import com.ominfo.crm_solution.R;
+import com.ominfo.crm_solution.basecontrol.BaseActivity;
 import com.ominfo.crm_solution.interfaces.Constants;
 import com.ominfo.crm_solution.interfaces.SharedPrefKey;
 import com.ominfo.crm_solution.ui.login.LoginActivity;
@@ -38,6 +40,9 @@ public class SplashActivity extends AppCompatActivity {
         Glide.with(this)
                 .load(R.drawable.ic_turanthbiz_name)
                 .into(imgheader);
+        Window window =getWindow();
+        View view = window.getDecorView();
+        BaseActivity.DarkStatusBar.setLightStatusBar(view,this);
     }
 
     /*wait for few second than launch new screen*/

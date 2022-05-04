@@ -1,9 +1,8 @@
 
 package com.ominfo.crm_solution.ui.dashboard.model;
 
-import com.google.gson.annotations.SerializedName;
-
 import javax.annotation.Generated;
+import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
@@ -12,7 +11,7 @@ public class GetDashboardResponse {
     @SerializedName("dashboard")
     private Dashboard mDashboard;
     @SerializedName("result")
-    private GetDashboardResult mResult;
+    private Result mResult;
 
     public Dashboard getDashboard() {
         return mDashboard;
@@ -22,11 +21,11 @@ public class GetDashboardResponse {
         mDashboard = dashboard;
     }
 
-    public GetDashboardResult getResult() {
+    public Result getResult() {
         return mResult;
     }
 
-    public void setResult(GetDashboardResult result) {
+    public void setResult(Result result) {
         mResult = result;
     }
 

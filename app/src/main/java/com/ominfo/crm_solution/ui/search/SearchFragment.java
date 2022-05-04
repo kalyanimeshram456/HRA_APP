@@ -100,7 +100,7 @@ public class SearchFragment extends BaseFragment {
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
     @BindView(R.id.imgBack)
-    AppCompatImageView imgBack;
+    LinearLayoutCompat imgBack;
     @BindView(R.id.imgNotify)
     AppCompatImageView imgNotify;
     @BindView(R.id.tvSearchView)
@@ -317,10 +317,13 @@ public class SearchFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        Window window = getActivity().getWindow();
+       /* Window window = getActivity().getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));
+        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));*/
+        Window window = getActivity().getWindow();
+        View view = window.getDecorView();
+        BaseActivity.DarkStatusBar.setLightStatusBar(view,getActivity());
 
         if(getView() == null){
             return;
@@ -344,10 +347,13 @@ public class SearchFragment extends BaseFragment {
     @Override
     public void onPause() {
         super.onPause();
-        Window window = getActivity().getWindow();
+       /* Window window = getActivity().getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));
+        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));*/
+        Window window = getActivity().getWindow();
+        View view = window.getDecorView();
+        BaseActivity.DarkStatusBar.setLightStatusBar(view,getActivity());
 
     }
 
@@ -460,7 +466,6 @@ public class SearchFragment extends BaseFragment {
                     //showQuotationDialog();
                     //mDialog.dismiss();
                     Intent i = new Intent(getActivity(), PdfPrintActivity.class);
-                    i.putExtra(Constants.TRANSACTION_ID, "2");
                     i.putExtra(Constants.URL, searchresult.getUrl());
                     startActivity(i);
                     ((Activity) getActivity()).overridePendingTransition(0, 0);
@@ -587,7 +592,7 @@ public class SearchFragment extends BaseFragment {
     private void setToolbar() {
         //set toolbar title
         tvToolbarTitle.setText(R.string.scr_lbl_search);
-        ((BaseActivity)mContext).initToolbar(5, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.layBack, R.id.imgCall);
+        ((BaseActivity)mContext).initToolbar(5, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.imgBack, R.id.imgCall);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

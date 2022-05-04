@@ -82,13 +82,13 @@ public class DispatchPendingAdapter extends RecyclerView.Adapter<DispatchPending
                 listItemSelectListener.onItemClick(1,mListData.get(position));
             }
         });
-        holder.tvRs.setOnClickListener(new View.OnClickListener() {
+       /* holder.tvRs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
                 listItemSelectListener.onItemClick(1,mListData.get(position));
             }
-        });
+        });*/
         holder.tvCompanyName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

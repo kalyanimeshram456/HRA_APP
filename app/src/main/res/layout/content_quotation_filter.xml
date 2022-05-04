@@ -335,7 +335,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_40dp"
                     android:layout_gravity="bottom"
-                    android:layout_marginTop="@dimen/_40dp"
+                    android:layout_marginTop="@dimen/reset_25dp"
                     android:layout_marginBottom="@dimen/_0dp"
                     android:background="@drawable/layout_round_shape_corners_15_light_yellow"
                     android:fontFamily="@font/gilroy_semibold"

@@ -58,7 +58,7 @@ public class AlarmService extends Service {
             channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
             channel.setLightColor(Color.GREEN);
             channel.setShowBadge(true);
-            channel.setDescription("bibzcj");
+            channel.setDescription("");
             notificationManager.createNotificationChannel(channel);
             builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
             builder.setChannelId(CHANNEL_ID);
@@ -93,7 +93,7 @@ public class AlarmService extends Service {
 
         }
         builder.setContentTitle(alarmTitle);
-        builder.setContentText("Tap here to perform action.");
+        builder.setContentText("Tap to perform action.");
         Uri notificationSound = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_NOTIFICATION);
         //builder.setSound(notificationSound);
         builder.setNotificationSilent();

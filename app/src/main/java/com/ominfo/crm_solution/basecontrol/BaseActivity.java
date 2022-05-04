@@ -184,7 +184,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         @Override
         public void onReceive(Context context, Intent intent) {
             Location location = intent.getParcelableExtra(BackgroundAttentionService.EXTRA_LOCATION);
-            tvCurrLocation.setText("Current Location : Fetching.....");
+            tvCurrLocation.setText("Current Location : Fetching...");
             if (location != null) {
                 Geocoder geocoder;
                 List<Address> addresses;
@@ -655,7 +655,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
     }
 
     public void initToolbar(int val,Context mContext,int backId,int complaintId,int NotifyId,AppCompatTextView NotifyCount,int logoutId,int callId) {
-        AppCompatImageView imgBack = findViewById(backId);
+        LinearLayoutCompat imgBack = findViewById(backId);
         AppCompatImageView imgComplaint = findViewById(complaintId);
         AppCompatImageView imgNotify = findViewById(NotifyId);
         AppCompatImageView imgCall = findViewById(callId);
@@ -899,6 +899,19 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                 //dismissLoader();
                 //LogUtil.printToastMSG(DashbooardActivity.this, getString(R.string.err_msg_connection_was_refused));
                 break;
+        }
+    }
+
+    public static class DarkStatusBar {
+        public static void setLightStatusBar(View view, Activity activity){
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+                int flags = view.getSystemUiVisibility();
+                flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                view.setSystemUiVisibility(flags);
+                activity.getWindow().setStatusBarColor(Color.WHITE);
+            }
         }
     }
 

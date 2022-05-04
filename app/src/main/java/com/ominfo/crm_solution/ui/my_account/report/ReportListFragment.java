@@ -63,6 +63,7 @@ import com.ominfo.crm_solution.ui.enquiry_report.model.EnquiryPagermodel;
 import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmViewModel;
 import com.ominfo.crm_solution.ui.enquiry_report.model.GetRmlist;
 import com.ominfo.crm_solution.ui.login.model.LoginTable;
+import com.ominfo.crm_solution.ui.my_account.MyAccountFragment;
 import com.ominfo.crm_solution.ui.my_account.leave.adapter.LeaveListAdapter;
 import com.ominfo.crm_solution.ui.my_account.model.ApplicationLeave;
 import com.ominfo.crm_solution.ui.my_account.model.GetTicketRequest;
@@ -138,7 +139,7 @@ public class ReportListFragment extends BaseFragment {
     @BindView(R.id.layFilter)
     LinearLayoutCompat layFilter;
     @BindView(R.id.imgBack)
-    AppCompatImageView imgBack;
+    LinearLayoutCompat imgBack;
     @BindView(R.id.imgNotify)
     AppCompatImageView imgNotify;
    /* @BindView(R.id.layIndicators)
@@ -929,11 +930,11 @@ public class ReportListFragment extends BaseFragment {
     private void setToolbar() {
         //set toolbar title
         //toolbarTitle.setText(R.string.scr_lbl_add_new_lr);
-        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.layBack, R.id.imgCall);
+        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.imgBack, R.id.imgCall);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment fragment = new DashboardFragment();
+                Fragment fragment = new MyAccountFragment();
                 ((BaseActivity)mContext).moveFragment(mContext,fragment);
             }
         });
@@ -1254,10 +1255,13 @@ public class ReportListFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        Window window = getActivity().getWindow();
+        /*Window window = getActivity().getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));
+        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));*/
+        Window window = getActivity().getWindow();
+        View view = window.getDecorView();
+        BaseActivity.DarkStatusBar.setLightStatusBar(view,getActivity());
 
     }
     //set date picker view
@@ -1530,5 +1534,14 @@ public class ReportListFragment extends BaseFragment {
                break;
         }
     }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Window window = getActivity().getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(Color.TRANSPARENT);
+    }
+
 
 }

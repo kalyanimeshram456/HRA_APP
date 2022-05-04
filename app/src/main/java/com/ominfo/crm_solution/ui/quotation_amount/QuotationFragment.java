@@ -147,7 +147,7 @@ public class QuotationFragment extends BaseFragment {
     @BindView(R.id.rvImages)
     RecyclerView rvImages;
     @BindView(R.id.imgBack)
-    AppCompatImageView imgBack;
+    LinearLayoutCompat imgBack;
     @BindView(R.id.submitButton)
     AppCompatButton submitButton;
     @BindView(R.id.imgNotify)
@@ -446,11 +446,11 @@ public class QuotationFragment extends BaseFragment {
                     }
                 }
                 for(int i=0;i<tagRmList.size();i++){
-                    if(tagRmList.get(i).getTitle()!=null && !tagRmList.get(i).getTitle().equals("")) {
+                    if(tagRmList.get(i).getId()!=null && !tagRmList.get(i).getId().equals("")) {
                         if (i == 0) {
-                            mRm = tagRmList.get(i).getTitle();
+                            mRm = tagRmList.get(i).getId();
                         } else {
-                            mRm = mRm + "~" + tagRmList.get(i).getTitle();
+                            mRm = mRm + "~" + tagRmList.get(i).getId();
                         }
                     }
                 }
@@ -637,7 +637,7 @@ public class QuotationFragment extends BaseFragment {
         }
     }
 
-    //show Quotation popup
+   /* //show Quotation popup
     public void showQuotationDialog() {
         Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialog.setContentView(R.layout.dialog_single_quotation);
@@ -666,7 +666,7 @@ public class QuotationFragment extends BaseFragment {
         });
         mDialog.show();
     }
-    
+    */
     private BarData getBarEntries() {
 
         barEntriesArrayList = new ArrayList<>();
@@ -741,7 +741,7 @@ public class QuotationFragment extends BaseFragment {
                         //showQuotationDialog();
                         //mDialog.dismiss();
                         Intent i = new Intent(getActivity(), PdfPrintActivity.class);
-                        i.putExtra(Constants.TRANSACTION_ID, "1");
+                        i.putExtra(Constants.URL, quotationData.getPdfLink());
                         startActivity(i);
                         ((Activity) getActivity()).overridePendingTransition(0, 0);
                     }
@@ -805,7 +805,7 @@ public class QuotationFragment extends BaseFragment {
     private void setToolbar() {
         //set toolbar title
         //toolbarTitle.setText(R.string.scr_lbl_add_new_lr);
-        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.layBack, R.id.imgCall);
+        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.imgBack, R.id.imgCall);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -162,7 +162,7 @@ public class BackgroundLocationUpdateService extends Service implements GoogleAp
         }
 
         builder.setContentTitle("Visit Started");
-        builder.setContentText("Logging is running in the background.");
+        builder.setContentText("Log is running in the background.");
         Uri notificationSound = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_NOTIFICATION);
         //builder.setSound(notificationSound);
         builder.setNotificationSilent();

@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.view.View;
+import android.view.Window;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -43,6 +44,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.ominfo.crm_solution.R;
+import com.ominfo.crm_solution.basecontrol.BaseActivity;
 import com.ominfo.crm_solution.common.BackgroundLocationUpdateService;
 import com.ominfo.crm_solution.interfaces.SharedPrefKey;
 import com.ominfo.crm_solution.util.AppUtils;
@@ -102,7 +104,9 @@ public class AddLocationActivity extends FragmentActivity implements OnMapReadyC
         } else {
             getLocation();
         }
-
+        Window window = getWindow();
+        View view = window.getDecorView();
+        BaseActivity.DarkStatusBar.setLightStatusBar(view,this);
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 

@@ -99,7 +99,7 @@
                     </RelativeLayout>
 
 
-                    <androidx.appcompat.widget.AppCompatImageView
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:id="@+id/imgBack"
                         android:layout_width="@dimen/_30dp"
                         android:layout_height="@dimen/_30dp"
@@ -107,9 +107,9 @@
                         android:clickable="true"
                         android:gravity="left"
                         android:onClick="onClick"
-                        android:src="@drawable/ic_menu"
-                        android:visibility="gone" />
 
+                        android:visibility="gone" />
+<!-- android:src="@drawable/ic_menu"-->
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvName"
                         android:layout_width="match_parent"

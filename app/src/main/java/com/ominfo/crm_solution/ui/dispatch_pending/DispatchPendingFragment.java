@@ -71,6 +71,7 @@ import com.ominfo.crm_solution.ui.login.model.LoginTable;
 import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.sale.adapter.CompanyTagAdapter;
 import com.ominfo.crm_solution.ui.sale.model.RmListModel;
+import com.ominfo.crm_solution.ui.sales_credit.activity.PdfPrintActivity;
 import com.ominfo.crm_solution.ui.sales_credit.activity.View360Activity;
 import com.ominfo.crm_solution.ui.sales_credit.model.GraphModel;
 import com.ominfo.crm_solution.ui.sales_credit.model.SalesCreditReport;
@@ -132,7 +133,7 @@ public class DispatchPendingFragment extends BaseFragment {
     @BindView(R.id.rvImages)
     RecyclerView rvImages;
     @BindView(R.id.imgBack)
-    AppCompatImageView imgBack;
+    LinearLayoutCompat imgBack;
     @BindView(R.id.imgNotify)
     AppCompatImageView imgNotify;
     @BindView(R.id.submitButton)
@@ -453,11 +454,11 @@ public class DispatchPendingFragment extends BaseFragment {
                     }
                 }
                 for(int i=0;i<tagRmList.size();i++){
-                    if(tagRmList.get(i).getTitle()!=null && !tagRmList.get(i).getTitle().equals("")) {
+                    if(tagRmList.get(i).getId()!=null && !tagRmList.get(i).getId().equals("")) {
                         if (i == 0) {
-                            mRMList = tagRmList.get(i).getTitle();
+                            mRMList = tagRmList.get(i).getId();
                         } else {
-                            mRMList = mRMList + "~" + tagRmList.get(i).getTitle();
+                            mRMList = mRMList + "~" + tagRmList.get(i).getId();
                         }
                     }
                 }
@@ -786,7 +787,11 @@ public class DispatchPendingFragment extends BaseFragment {
                     ((Activity) getActivity()).overridePendingTransition(0, 0);
                 }
                 if(mDataTicket==1){
-                    showQuotationDialog();
+                    Intent iTerms = new Intent(getActivity(), PdfPrintActivity.class);
+                    iTerms.putExtra(Constants.URL, dispatchData.getPdf());
+                    startActivity(iTerms);
+                    ((Activity) getActivity()).overridePendingTransition(0, 0);
+                    //showQuotationDialog();
                 }
             }
         });
@@ -842,7 +847,7 @@ public class DispatchPendingFragment extends BaseFragment {
     private void setToolbar() {
         //set toolbar title
         //toolbarTitle.setText(R.string.scr_lbl_add_new_lr);
-        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.layBack, R.id.imgCall);
+        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.imgBack, R.id.imgCall);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

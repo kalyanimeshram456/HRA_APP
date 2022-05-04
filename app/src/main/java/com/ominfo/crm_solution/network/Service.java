@@ -283,7 +283,9 @@ public class Service {
         return networkAPIServices.getTopCustomer(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_TOP_CUST),
                 topCustomerRequest.getAction(),topCustomerRequest.getPageNo(),
                 topCustomerRequest.getPageSize(),topCustomerRequest.getRmId(),
-                topCustomerRequest.getCustName());
+                topCustomerRequest.getCustName(), topCustomerRequest.getInvMax(), topCustomerRequest.getInvMin(),
+                topCustomerRequest.getSaleMinAmt(), topCustomerRequest.getSaleMaxAmt(), topCustomerRequest.getFromDate(),
+                topCustomerRequest.getEndDate());
     }
 
     public Observable<JsonElement> executeGetView360API(GetView360Request getView360Request) {

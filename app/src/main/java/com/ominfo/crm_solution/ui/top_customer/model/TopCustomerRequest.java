@@ -26,6 +26,72 @@ public class TopCustomerRequest {
     @SerializedName("pagesize")
     private RequestBody pageSize;
 
+    @SerializedName("inv_max")
+    private RequestBody invMax;
+
+    @SerializedName("inv_min")
+    private RequestBody invMin;
+
+    @SerializedName("sale_min_amt")
+    private RequestBody saleMinAmt;
+
+    @SerializedName("sale_max_amt")
+    private RequestBody saleMaxAmt;
+
+    @SerializedName("from_date")
+    private RequestBody fromDate;
+
+    @SerializedName("end_date")
+    private RequestBody endDate;
+
+    public RequestBody getInvMax() {
+        return invMax;
+    }
+
+    public void setInvMax(RequestBody invMax) {
+        this.invMax = invMax;
+    }
+
+    public RequestBody getInvMin() {
+        return invMin;
+    }
+
+    public void setInvMin(RequestBody invMin) {
+        this.invMin = invMin;
+    }
+
+    public RequestBody getSaleMinAmt() {
+        return saleMinAmt;
+    }
+
+    public void setSaleMinAmt(RequestBody saleMinAmt) {
+        this.saleMinAmt = saleMinAmt;
+    }
+
+    public RequestBody getSaleMaxAmt() {
+        return saleMaxAmt;
+    }
+
+    public void setSaleMaxAmt(RequestBody saleMaxAmt) {
+        this.saleMaxAmt = saleMaxAmt;
+    }
+
+    public RequestBody getFromDate() {
+        return fromDate;
+    }
+
+    public void setFromDate(RequestBody fromDate) {
+        this.fromDate = fromDate;
+    }
+
+    public RequestBody getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(RequestBody endDate) {
+        this.endDate = endDate;
+    }
+
     public RequestBody getAction() {
         return action;
     }

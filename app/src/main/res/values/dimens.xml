@@ -115,6 +115,7 @@
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+    <dimen name="reset_25dp">25dp</dimen>
     <dimen name="_25dp">25dp</dimen>
 
     <dimen name="design_fab_image_size" tools:override="true">50dp</dimen>

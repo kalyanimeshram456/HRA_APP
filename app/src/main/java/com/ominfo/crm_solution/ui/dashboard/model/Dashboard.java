@@ -1,19 +1,22 @@
 
 package com.ominfo.crm_solution.ui.dashboard.model;
 
+import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
 import com.ominfo.crm_solution.ui.login.model.LoginDays;
-
-import javax.annotation.Generated;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
 public class Dashboard {
 
+    @SerializedName("emp_data")
+    private LoginDays loginDays;
     @SerializedName("enquiry_count")
     private String mEnquiryCount;
     @SerializedName("lost_opportunity_count")
     private Long mLostOpportunityCount;
+    @SerializedName("notification_count")
+    private String mNotificationCount;
     @SerializedName("pending_dispatch_count")
     private String mPendingDispatchCount;
     @SerializedName("quotation_amount")
@@ -28,11 +31,6 @@ public class Dashboard {
     private String mTotalSales;
     @SerializedName("visit_report")
     private String mVisitReport;
-    @SerializedName("notification_count")
-    private String notificationCount;
-
-    @SerializedName("emp_data")
-    private LoginDays loginDays;
 
     public LoginDays getLoginDays() {
         return loginDays;
@@ -40,14 +38,6 @@ public class Dashboard {
 
     public void setLoginDays(LoginDays loginDays) {
         this.loginDays = loginDays;
-    }
-
-    public String getNotificationCount() {
-        return notificationCount;
-    }
-
-    public void setNotificationCount(String notificationCount) {
-        this.notificationCount = notificationCount;
     }
 
     public String getEnquiryCount() {
@@ -66,6 +56,13 @@ public class Dashboard {
         mLostOpportunityCount = lostOpportunityCount;
     }
 
+    public String getNotificationCount() {
+        return mNotificationCount;
+    }
+
+    public void setNotificationCount(String notificationCount) {
+        mNotificationCount = notificationCount;
+    }
 
     public String getPendingDispatchCount() {
         return mPendingDispatchCount;

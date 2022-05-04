@@ -122,8 +122,8 @@ public class ProductFragment extends BaseFragment {
     AppCompatImageView imgFilter;
    /* @BindView(R.id.layFilter)
     LinearLayoutCompat layFilter;*/
-    @BindView(R.id.imgBack)
-    AppCompatImageView imgBack;
+   @BindView(R.id.imgBack)
+   LinearLayoutCompat imgBack;
     @BindView(R.id.imgNotify)
     AppCompatImageView imgNotify;
     private AppDatabase mDb;
@@ -605,7 +605,7 @@ public class ProductFragment extends BaseFragment {
     private void setToolbar() {
         //set toolbar title
         //toolbarTitle.setText(R.string.scr_lbl_add_new_lr);
-        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.layBack, R.id.imgCall);
+        ((BaseActivity)mContext).initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.imgBack, R.id.imgCall);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

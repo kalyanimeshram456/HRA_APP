@@ -15,7 +15,7 @@
     <color name="green">#71C951</color>
     <color name="rippelColor">#0099CC</color>
     <color name="blue_graph">#ff33b5e5</color>
-    <color name="status_bar_color">#E0E7FB</color>
+    <color name="status_bar_color">#0062CC</color><!--#E0E7FB-->
 
     <!--textfiled colours-->
     <color name="color_text_filed">#EEEFF1</color>

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -24,6 +25,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.bumptech.glide.Glide;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
+import com.ominfo.crm_solution.MainActivity;
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.basecontrol.BaseActivity;
 import com.ominfo.crm_solution.basecontrol.BaseApplication;
@@ -35,6 +37,7 @@ import com.ominfo.crm_solution.network.DynamicAPIPath;
 import com.ominfo.crm_solution.network.NetworkCheck;
 import com.ominfo.crm_solution.network.ViewModelFactory;
 import com.ominfo.crm_solution.ui.attendance.model.UpdateAttendanceResponse;
+import com.ominfo.crm_solution.ui.login.LoginActivity;
 import com.ominfo.crm_solution.ui.login.model.LoginTable;
 import com.ominfo.crm_solution.ui.my_account.model.ApplicationLeave;
 import com.ominfo.crm_solution.ui.my_account.model.LeaveApplicationRequest;
@@ -85,7 +88,8 @@ public class NotificationsActivity extends BaseActivity {
     SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.emptyBox)
     LinearLayoutCompat emptyBox;
-
+    @BindView(R.id.imgBack)
+    LinearLayoutCompat imgBack;
     NotificationsAdapter mNotificationsAdapter;
     List<NotificationResult> notificationList = new ArrayList<>();
     @Inject
@@ -122,6 +126,20 @@ public class NotificationsActivity extends BaseActivity {
         //set toolbar
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         setToolbar();
+        Boolean iSLoggedIn = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.IS_LOGGED_IN, false);
+        if (iSLoggedIn){
+            //launchScreen(MainActivity.class);
+            imgBack.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    finishAffinity();
+                    launchScreen(mContext,MainActivity.class);
+                }
+            });
+        }else {
+            finishAffinity();
+            launchScreen(mContext,LoginActivity.class);
+        }
         SharedPref.getInstance(getApplicationContext()).write(SharedPrefKey.IS_NOTIFY, false);
         SharedPref.getInstance(mContext).write(SharedPrefKey.IS_NOTIFY_COUNT,"0");
         //initToolbar(1,mContext,R.id.imgBack,R.id.imgReport,R.id.tvComplaintCount,R.id.imgNotify,R.id.tvNotifyCount,0,R.id.imgCall);
@@ -153,8 +171,23 @@ public class NotificationsActivity extends BaseActivity {
 
     private void setToolbar(){
         //set toolbar title
+        Window window = getWindow();
+        View view = window.getDecorView();
+        BaseActivity.DarkStatusBar.setLightStatusBar(view,this);
+
         toolbarTitle.setText("Notifications");
         initToolbar(1,mContext,R.id.imgBack,R.id.imgReport,R.id.imgNotify,tvNotifyCount,0,R.id.imgCall);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Boolean iSLoggedIn = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.IS_LOGGED_IN, false);
+        if (iSLoggedIn){
+            //launchScreen(MainActivity.class);
+            finishAffinity();
+            launchScreen(mContext,MainActivity.class);
+        }
     }
 
     private void injectAPI() {

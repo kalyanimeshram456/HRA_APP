@@ -162,12 +162,12 @@ public class BackgroundAttentionService extends Service implements GoogleApiClie
         }
 
         builder.setContentTitle("Attendance Activity");
-        builder.setContentText("Logging is running in the background.");
+        builder.setContentText("Log is running in the background.");
         Uri notificationSound = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_NOTIFICATION);
         //builder.setSound(notificationSound);
         builder.setNotificationSilent();
         builder.setAutoCancel(true);
-        builder.setSmallIcon(R.drawable.ic_attendance);
+        builder.setSmallIcon(R.drawable.ic_attendance_black);
         builder.setContentIntent(pendingIntent);
         Notification notification = builder.build();
         startForeground(102, notification);

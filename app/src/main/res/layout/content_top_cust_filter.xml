@@ -199,7 +199,7 @@
                         android:gravity="center_vertical">
 
                         <androidx.appcompat.widget.AppCompatEditText
-                            android:id="@+id/inputMaxSaleAmount"
+                            android:id="@+id/inputMinSaleAmount"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_45dp"
                             android:layout_gravity="center_vertical"
@@ -232,7 +232,7 @@
                             android:background="@color/back_text_colour" />
 
                         <androidx.appcompat.widget.AppCompatEditText
-                            android:id="@+id/inputMinSaleAmount"
+                            android:id="@+id/inputMaxSaleAmount"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_45dp"
                             android:layout_toRightOf="@+id/view"
@@ -298,7 +298,7 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="invisible"
+                    android:visibility="gone"
                     android:layout_marginTop="@dimen/_10dp"
                     >
 
@@ -342,7 +342,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_40dp"
                     android:layout_gravity="bottom"
-                    android:layout_marginTop="@dimen/_40dp"
+                    android:layout_marginTop="@dimen/reset_25dp"
                     android:layout_marginBottom="@dimen/_0dp"
                     android:background="@drawable/layout_round_shape_corners_15_light_yellow"
                     android:fontFamily="@font/gilroy_semibold"

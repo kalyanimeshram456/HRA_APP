@@ -13,6 +13,7 @@ import android.print.PrintJob;
 import android.print.PrintManager;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -77,6 +78,9 @@ public class PdfPrintActivity extends BaseActivity {
     }
 
     private void init(Bundle savedInstanceState){
+        Window window = getWindow();
+        View view = window.getDecorView();
+        BaseActivity.DarkStatusBar.setLightStatusBar(view,this);
         //mDb =BaseApplication.getInstance(mContext).getAppDatabase();
         //requestPermission();
         //tvPage.setText("Showing 01 to 05 of\n12 Entries");
@@ -84,13 +88,8 @@ public class PdfPrintActivity extends BaseActivity {
         //webView.setWebViewClient(new MyBrowser());
         Intent intent = getIntent();
         if(intent!=null){
-             tranId = intent.getStringExtra(Constants.TRANSACTION_ID);
-            if(tranId.equals("1")){
-                url = "https://ominfo.in/crm/crm_product_invoice_print.php?orderid=82&orderno=4b6ecaf994a113cac150591120094adc";
-            }
-            if(tranId.equals("2") || tranId.equals("myacc")){
                 url = intent.getStringExtra(Constants.URL);
-            }
+                try{tranId= intent.getStringExtra(Constants.TRANSACTION_ID);}catch (Exception e){}
         }
         myWebView.getSettings().setLoadsImagesAutomatically(true);
         myWebView.getSettings().setJavaScriptEnabled(true);
@@ -125,7 +124,7 @@ public class PdfPrintActivity extends BaseActivity {
             public void onPageFinished(WebView view, String url) {
                 ((BaseActivity) mContext).dismissSmallProgressBar(mProgressBarHolder);
                 //if page loaded successfully then show print button
-                if(!tranId.equals("myacc")) {
+                if(!tranId.equals("acc")) {
                     printButton.setVisibility(View.VISIBLE);
                 }
             }

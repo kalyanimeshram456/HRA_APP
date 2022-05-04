@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
 
@@ -151,7 +152,6 @@ public class View360Activity extends BaseActivity {
         ButterKnife.bind(this);
         injectAPI();
         init();
-
     }
 
     private void init(){
@@ -289,6 +289,9 @@ public class View360Activity extends BaseActivity {
     private void setToolbar() {
         //set toolbar title
         //toolbarTitle.setText(R.string.scr_lbl_add_new_lr);
+        Window window = getWindow();
+        View view = window.getDecorView();
+        BaseActivity.DarkStatusBar.setLightStatusBar(view,this);
         initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgReport,tvNotifyCount, 0, R.id.imgCall);
     }
 
