@@ -769,6 +769,7 @@ public class LeaveListFragment extends BaseFragment {
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
+                callLeaveListApi("0");
                 break;
 
             case R.id.resetButton:

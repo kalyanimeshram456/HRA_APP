@@ -52,6 +52,7 @@ import com.ominfo.crm_solution.network.NetworkCheck;
 import com.ominfo.crm_solution.network.ViewModelFactory;
 import com.ominfo.crm_solution.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.crm_solution.ui.dashboard.model.DashModel;
+import com.ominfo.crm_solution.ui.dispatch_pending.model.DispatchData;
 import com.ominfo.crm_solution.ui.enquiry_report.adapter.EnquiryPageAdapter;
 import com.ominfo.crm_solution.ui.enquiry_report.adapter.RmTagAdapter;
 import com.ominfo.crm_solution.ui.enquiry_report.model.EnquiryPagermodel;
@@ -76,6 +77,8 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -182,12 +185,14 @@ public class ProductFragment extends BaseFragment {
     AppCompatButton submitButton;
     private Calendar calendar;
     private SimpleDateFormat dateFormat;
-  /*  @BindView(R.id.tvQutationNo)
-    AppCompatEditText tvQutationNo;
-    @BindView(R.id.tvMinAmount)
-    AppCompatEditText tvMinAmount;
-    @BindView(R.id.tvMaxAmount)
-    AppCompatEditText tvMaxAmount;*/
+    @BindView(R.id.tvTProductCode)
+    AppCompatTextView tvTProductCode;
+    @BindView(R.id.tvTProdName)
+    AppCompatTextView tvTProdName;
+    @BindView(R.id.imgTProductCode)
+    AppCompatImageView imgTProductCode;
+    @BindView(R.id.imgTProdName)
+    AppCompatImageView imgTProdName;
     @BindView(R.id.empty_layoutActivity)
     LinearLayoutCompat emptyLayout;
     List<GetRmlist> RMDropdown = new ArrayList<>();
@@ -682,10 +687,24 @@ public class ProductFragment extends BaseFragment {
 
     //perform click actions
     @OnClick({R.id.imgGraph,R.id.imgTable,R.id.submitButton,R.id.resetButton
-    ,R.id.toDate,R.id.fromDate,R.id.imgFilter})
+    ,R.id.toDate,R.id.fromDate,R.id.imgFilter,R.id.tvTProductCode,R.id.imgTProductCode,
+            R.id.tvTProdName, R.id.imgTProdName})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
+            case R.id.tvTProductCode:
+                setSortIconComQuoAmo(1);
+                sortforProdCode();
+                break;
+            case R.id.imgTProductCode:
+                setSortIconComQuoAmo(1);sortforProdCode();
+                break;
+            case R.id.tvTProdName:
+                setSortIconComQuoAmo(0);sortforProdName();
+                break;
+            case R.id.imgTProdName:
+                setSortIconComQuoAmo(0);sortforProdName();
+                break;
             case R.id.toDate:
                 //openDataPicker(1,toDate);
                 break;
@@ -745,12 +764,51 @@ public class ProductFragment extends BaseFragment {
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
+                callProductApi("0");
                 break;
 
             case R.id.resetButton:
                 tvProductCode.setText("");
                 tvProdName.setText("");
                 break;
+        }
+    }
+    private void sortforProdName(){
+        Collections.sort(productResultList, new Comparator<Product>() {
+            @Override
+            public int compare(Product item, Product t1) {
+                String s1 = "",s2 = "";
+                    s1 = item.getProdName()==null?"":item.getProdName();
+                    s2 = t1.getProdName()==null?"":t1.getProdName();
+                return s1.compareToIgnoreCase(s2);
+            }
+        });
+        productAdapter.notifyDataSetChanged();
+    }
+    private void sortforProdCode(){
+        Collections.sort(productResultList, new Comparator<Product>() {
+            @Override
+            public int compare(Product item, Product t1) {
+                String s1 = "",s2 = "";
+                 s1 = item.getProdCode()==null?"":item.getProdCode();
+                 s2 = t1.getProdCode()==null?"":t1.getProdCode();
+                return s1.compareToIgnoreCase(s2);
+            }
+        });
+        productAdapter.notifyDataSetChanged();
+    }
+    private void setSortIconComQuoAmo(int res){
+        if(res==0){
+            imgTProductCode.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            imgTProdName.setImageDrawable(getResources().getDrawable(R.drawable.ic_sort_blue));
+            tvTProductCode.setTextColor(getResources().getColor(R.color.back_text_colour));
+            tvTProdName.setTextColor(getResources().getColor(R.color.color_main));
+        }
+        else { //po
+            imgTProductCode.setImageDrawable(getResources().getDrawable(R.drawable.ic_sort_blue));
+            imgTProdName.setImageDrawable(getResources().getDrawable(R.drawable.ic_om_sort));
+            tvTProductCode.setTextColor(getResources().getColor(R.color.color_main));
+            tvTProdName.setTextColor(getResources().getColor(R.color.back_text_colour));
         }
     }
 

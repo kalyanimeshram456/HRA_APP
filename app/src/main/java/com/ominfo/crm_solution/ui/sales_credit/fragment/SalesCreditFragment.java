@@ -740,6 +740,7 @@ public class SalesCreditFragment extends BaseFragment {
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_bar_graph));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
+                callGetSalesCreditApi("0");
                 break;
 
             case R.id.submitButton:

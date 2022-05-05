@@ -109,16 +109,16 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     AppCompatTextView tvCheckOutTime;
     @BindView(R.id.tvCheckInTime)
     AppCompatTextView tvCheckInTime;
-   /* @BindView(R.id.startVisitButton)
-    AppCompatButton mButtonStartVisit;*/
+    /* @BindView(R.id.startVisitButton)
+     AppCompatButton mButtonStartVisit;*/
     @BindView(R.id.imgChecked)
-   AppCompatImageView imgChecked;
+    AppCompatImageView imgChecked;
 
     GoogleApiClient googleApiClient;
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
     LocationManager locationManager;
     private static final int REQUEST_LOCATION = 1;
-    String lat="",lng="";
+    String lat = "", lng = "";
     boolean mStartVisit = false;
     @Inject
     ViewModelFactory mViewModelFactory;
@@ -135,7 +135,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     @BindView(R.id.tvOfcLocation)
     AppCompatTextView tvOfcLocation;
     public static AppCompatTextView tvCurrLocation;
-    public String addressCurr = "",addressOff = "";
+    public String addressCurr = "", addressOff = "";
     @BindView(R.id.layBottomCheckOut)
     LinearLayoutCompat layBottomCheckOut;
 
@@ -155,14 +155,14 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
 
     }
 
-    private void init(){
+    private void init() {
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         // initialise tha layout
         setToolbar();
         tvCurrLocation = findViewById(R.id.tvCurrLocation);
-        final RippleBackground rippleBackground=(RippleBackground)findViewById(R.id.content);
-        rippleBackground.startRippleAnimation(0,mContext);
-        final Handler handler=new Handler();
+        final RippleBackground rippleBackground = (RippleBackground) findViewById(R.id.content);
+        rippleBackground.startRippleAnimation(0, mContext);
+        final Handler handler = new Handler();
         imgChecked.setVisibility(View.GONE);
         showSmallProgressBar(mProgressBarHolder);
         if (!isGPSEnabled(mContext)) {
@@ -174,7 +174,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
         if (intent != null) {
             transactionId = intent.getStringExtra(Constants.TRANSACTION_ID);
             Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_IN_BUTTON, false);
-            if (iSTimer){
+            if (iSTimer) {
                 String startlocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
                 String startlocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
                 Geocoder geocoder;
@@ -190,7 +190,8 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                     String postalCode = addresses.get(0).getPostalCode();
                     String knownName = addresses.get(0).getFeatureName();
                     tvCurrLocation.setText("Current Location : " + address);
-                }catch (Exception e){}
+                } catch (Exception e) {
+                }
                 layBottomCheckOut.setVisibility(View.VISIBLE);
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -199,9 +200,8 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                         doBounceAnimationOnce(tvCheckInName);
                         tvCheckInName.setText("Check Out");
                     }
-                },1600);
-             }
-            else {
+                }, 1600);
+            } else {
                 layBottomCheckOut.setVisibility(View.INVISIBLE);
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -212,16 +212,16 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                         String address = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_TITLE, "Unavailable");
 
                     }
-                },1600);
+                }, 1600);
             }
         }
         prepareAllData();
     }
 
-    private void prepareAllData(){
+    private void prepareAllData() {
         LoginTable loginTable = mDb.getDbDAO().getLoginData();
-        if(loginTable!=null) {
-            tvCheckInName.setText("Hi "+loginTable.getName()+" ! \nPlease wait...");
+        if (loginTable != null) {
+            tvCheckInName.setText("Hi " + loginTable.getName() + " ! \nPlease wait...");
         }
         Geocoder geocoder = new Geocoder(StartAttendanceActivity.this);
 
@@ -237,7 +237,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                 /*if (!locality.isEmpty() && !country.isEmpty())
                     mLocDesc = locality + "  " + country;*/
                 addressOff = locality;
-                tvOfcLocation.setText("Office Location : "+locality);
+                tvOfcLocation.setText("Office Location : " + locality);
             }
 
         } catch (IOException e) {
@@ -256,7 +256,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     protected void onStart() {
         super.onStart();
         Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_OUT_ENABLED, false);
-        if(!iSTimer) {
+        if (!iSTimer) {
             startLocationService();
         }
     }
@@ -265,7 +265,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
         Interpolator interpolator = new Interpolator() {
             @Override
             public float getInterpolation(float v) {
-                return getPowOut(v,2);//Add getPowOut(v,3); for more up animation
+                return getPowOut(v, 2);//Add getPowOut(v,3); for more up animation
             }
         };
         ObjectAnimator animator = ObjectAnimator.ofFloat(targetView, "translationY", 0, 25, 0);
@@ -280,7 +280,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
         Interpolator interpolator = new Interpolator() {
             @Override
             public float getInterpolation(float v) {
-                return getPowOut(v,1);//Add getPowOut(v,3); for more up animation
+                return getPowOut(v, 1);//Add getPowOut(v,3); for more up animation
             }
         };
         ObjectAnimator animator = ObjectAnimator.ofFloat(targetView, "translationY", 0, 25, 0);
@@ -297,13 +297,13 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
 
     private void injectAPI() {
         getVisitNoViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetVisitNoViewModel.class);
-        getVisitNoViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_VISIT_NO));
+        getVisitNoViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_GET_VISIT_NO));
 
         markAttendanceViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MarkAttendanceViewModel.class);
-        markAttendanceViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_MARK_ATTENDANCE));
+        markAttendanceViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_MARK_ATTENDANCE));
 
         updateAttendanceViewModel = ViewModelProviders.of(this, mViewModelFactory).get(UpdateAttendanceViewModel.class);
-        updateAttendanceViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_UPDATE_ATTENDANCE));
+        updateAttendanceViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_UPDATE_ATTENDANCE));
     }
 
     /* Call Api For visit no */
@@ -313,7 +313,8 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
             /*if(loginTable!=null) {
                 RequestBody mRequestBodyTypeAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_visit_no);
                 RequestBody mRequestBodyTypeCompID = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());//loginTable.getCompanyId());
-            */    getVisitNoViewModel.hitGetVisitNoApi();
+            */
+            getVisitNoViewModel.hitGetVisitNoApi();
             /*}
             else {
                 LogUtil.printToastMSG(this, "Something is wrong.");
@@ -322,13 +323,14 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
             LogUtil.printToastMSG(this, getString(R.string.err_msg_connection_was_refused));
         }
     }
+
     /* Call Api For Mark Attendance */
     private void callMarkAttendanceApi() {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
-            if(loginTable!=null) {
+            if (loginTable != null) {
                 RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_mark_attendance);
-                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
+                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
                 RequestBody mRequestBodyDate = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentDateInyyyymmdd());
                 String startlocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
                 String startlocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
@@ -336,7 +338,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                 RequestBody mRequestBodyStartTime = RequestBody.create(MediaType.parse("text/plain"), mTime_);
                 RequestBody mRequestBodyStartLat = RequestBody.create(MediaType.parse("text/plain"), startlocationLat);
                 RequestBody mRequestBodyStartLong = RequestBody.create(MediaType.parse("text/plain"), startlocationLng);
-                SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENDANCE_CHECKIN_TIME,mTime_);
+                SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENDANCE_CHECKIN_TIME, mTime_);
                 MarkAttendanceRequest markAttendanceRequest = new MarkAttendanceRequest();
                 markAttendanceRequest.setAction(mRequestBodyAction);
                 markAttendanceRequest.setEmpId(mRequestBodyTypeEmpId);
@@ -345,8 +347,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                 markAttendanceRequest.setStartLatitude(mRequestBodyStartLat);
                 markAttendanceRequest.setStartLongitude(mRequestBodyStartLong);
                 markAttendanceViewModel.hitMarkAttendanceApi(markAttendanceRequest);
-            }
-            else {
+            } else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
             }
         } else {
@@ -358,11 +359,11 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     private void callUpdateAttendanceApi() {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
-            if(loginTable!=null) {
+            if (loginTable != null) {
                 String id = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENDANCE_ID, "0");
                 String startTime = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENDANCE_CHECKIN_TIME, "00:00:00");
                 RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_update_attendance);
-                RequestBody mRequestBodyStartTime = RequestBody.create(MediaType.parse("text/plain"),startTime);
+                RequestBody mRequestBodyStartTime = RequestBody.create(MediaType.parse("text/plain"), startTime);
                 RequestBody mRequestBodyEndTime = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentTimeIn24hr());
                 RequestBody mRequestBodyId = RequestBody.create(MediaType.parse("text/plain"), id);
                 String startlocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
@@ -378,8 +379,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                 markAttendanceRequest.setEndLatitude(mRequestBodyEndLat);
                 markAttendanceRequest.setEndLongitude(mRequestBodyEndLong);
                 updateAttendanceViewModel.hitUpdateAttendanceApi(markAttendanceRequest);
-            }
-            else {
+            } else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
             }
         } else {
@@ -426,7 +426,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                 public void run() {
                     Location locationGPS = finalBestLocation;
                     if (locationGPS != null) {
-                           } else {
+                    } else {
                         //Toast.makeText(this, "Unable to find location.", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -456,6 +456,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
             OnGPS();
         }
     }
+
     /*
      * ACCESS_FINE_LOCATION permission result
      * */
@@ -576,15 +577,13 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     }
 
 
-    private void deleteDir(){
+    private void deleteDir() {
         File dir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), Constants.FILE_NAME);
         //File oldFile = new File(myDir);
-        if (dir.isDirectory())
-        {
+        if (dir.isDirectory()) {
             String[] children = dir.list();
-            for (int i = 0; i < children.length; i++)
-            {
+            for (int i = 0; i < children.length; i++) {
                 new File(dir, children[i]).delete();
             }
         }
@@ -594,14 +593,14 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     private void setToolbar() {
         //set toolbar title
         //toolbarTitle.setText(R.string.scr_lbl_add_new_lr);
-       //initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgReport, 0, R.id.imgCall);
+        //initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgReport, 0, R.id.imgCall);
     }
 
-    public static void setTimerMillis(Context context, long millis)
-    {
+    public static void setTimerMillis(Context context, long millis) {
         SharedPreferences sp = context.getSharedPreferences(Constants.BANK_LIST, Context.MODE_PRIVATE);
         SharedPreferences.Editor spe = sp.edit();
-        spe.putLong(Constants.BANK_LIST, millis); spe.apply();
+        spe.putLong(Constants.BANK_LIST, millis);
+        spe.apply();
     }
 
     public static long getTimerMillis(Context context) {
@@ -611,32 +610,31 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
 
 
     //perform click actions
-    @OnClick({R.id.relRound,R.id.imgOfcLocation,R.id.imgBack})
+    @OnClick({R.id.relRound, R.id.imgOfcLocation, R.id.imgBack})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
-               case R.id.relRound:
-                   try {
-                       String[] loc = tvOfcLocation.getText().toString().split("Office Location : ");
-                       addressOff = loc[1];
-                       String[] curr = tvCurrLocation.getText().toString().split("Current Location : ");
-                       addressCurr = curr[1];
-                       if(addressOff.equals("Fetching...") || addressOff.equals("")||
-                               addressCurr.equals("Fetching...") || addressCurr.equals(""))
-                       { LogUtil.printToastMSG(mContext,"Please wait, Location is getting fetch.");
-                       }
-                       else {
-                           Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_IN_BUTTON, false);
-                           if (iSTimer) {
-                               callUpdateAttendanceApi();
-                           } else {
-                               callMarkAttendanceApi();
-                           }
-                       }
-                       break;
-                   }catch (Exception e){
-                       LogUtil.printToastMSG(mContext,"Please wait, Location is getting fetch.");
-                   }
+            case R.id.relRound:
+                try {
+                    String[] loc = tvOfcLocation.getText().toString().split("Office Location : ");
+                    addressOff = loc[1];
+                    String[] curr = tvCurrLocation.getText().toString().split("Current Location : ");
+                    addressCurr = curr[1];
+                    if (addressOff.equals("Fetching...") || addressOff.equals("") ||
+                            addressCurr.equals("Fetching...") || addressCurr.equals("")) {
+                        LogUtil.printToastMSG(mContext, "Please wait, Location is getting fetch.");
+                    } else {
+                        Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_IN_BUTTON, false);
+                        if (iSTimer) {
+                            callUpdateAttendanceApi();
+                        } else {
+                            callMarkAttendanceApi();
+                        }
+                    }
+                    break;
+                } catch (Exception e) {
+                    LogUtil.printToastMSG(mContext, "Please wait, Location is getting fetch.");
+                }
             case R.id.imgBack:
                 finish();
                 break;
@@ -644,7 +642,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
             /*int LAUNCH_SECOND_ACTIVITY = 1000;
             Intent i = new Intent(this, AddLocationActivity.class);
             startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);*/
-            break;
+                break;
         }
     }
 
@@ -652,7 +650,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     protected void onDestroy() {
         super.onDestroy();
         Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_OUT_ENABLED, false);
-        if(!iSTimer){
+        if (!iSTimer) {
             stopService(new Intent(mContext, BackgroundAttentionService.class));
         }
     }
@@ -661,8 +659,8 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1000) {
-            if(resultCode == Activity.RESULT_OK){
-                 String result=data.getStringExtra("result");
+            if (resultCode == Activity.RESULT_OK) {
+                String result = data.getStringExtra("result");
                 //String str = "<b>"+result+"</b>";
 
             }
@@ -674,7 +672,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
 
 
     //set date picker view
-    private void openDataPicker(int val , AppCompatTextView datePickerField) {
+    private void openDataPicker(int val, AppCompatTextView datePickerField) {
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
             @Override
@@ -686,10 +684,9 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 String myFormat = "dd/MM/yyyy"; //In which you need put here
                 SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-                if(val==1){
-                datePickerField.setText("-"+sdf.format(myCalendar.getTime()));
-                }
-                else {
+                if (val == 1) {
+                    datePickerField.setText("-" + sdf.format(myCalendar.getTime()));
+                } else {
                     datePickerField.setText(sdf.format(myCalendar.getTime()));
                 }
             }
@@ -717,7 +714,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_VISIT_NO)) {
                             VisitNoResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), VisitNoResponse.class);
-                            if (responseModel != null && responseModel.getStatus()==1) {
+                            if (responseModel != null && responseModel.getStatus() == 1) {
                                 //textVisitNo.setText("Visit Number : "+responseModel.getNumber());
                                 SharedPref.getInstance(this).write(SharedPrefKey.VISIT_NO, responseModel.getNumber());
 
@@ -725,7 +722,9 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                                 LogUtil.printToastMSG(mContext, responseModel.getMessage());
                             }
                         }
-                    }catch (Exception e){e.printStackTrace();}
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_MARK_ATTENDANCE)) {
                             MarkAttendanceResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), MarkAttendanceResponse.class);
@@ -733,25 +732,27 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                                 LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                                 imgChecked.setVisibility(View.VISIBLE);
                                 //doBounceAnimation(imgChecked);
-                                final Animation animation = AnimationUtils.loadAnimation(this,R.anim.bounce_out);
+                                final Animation animation = AnimationUtils.loadAnimation(this, R.anim.bounce_out);
                                 imgChecked.startAnimation(animation);
                                 SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENDANCE_ID, String.valueOf(responseModel.getResult().getId()));
-                               //set toggle
+                                //set toggle
                                 SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_IN_BUTTON, true);
                                 SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_OUT_ENABLED, true);
-                                SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_OUT_TIME, AppUtils.getCurrentDateTime_()+" "+"00:00:00");
-                                final Handler handler=new Handler();
+                                SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_OUT_TIME, AppUtils.getCurrentDateTime_() + " " + "00:00:00");
+                                final Handler handler = new Handler();
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
                                         finish();
                                     }
-                                },1700);
+                                }, 1700);
                             } else {
                                 LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                             }
                         }
-                    }catch (Exception e){e.printStackTrace();}
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_UPDATE_ATTENDANCE)) {
                             UpdateAttendanceResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), UpdateAttendanceResponse.class);
@@ -759,26 +760,30 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                                 LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                                 imgChecked.setVisibility(View.VISIBLE);
                                 //doBounceAnimation(imgChecked);
-                                final Animation animation = AnimationUtils.loadAnimation(this,R.anim.bounce_out);
+                                final Animation animation = AnimationUtils.loadAnimation(this, R.anim.bounce_out);
                                 imgChecked.startAnimation(animation);
                                 //set toggle
                                 SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_IN_BUTTON, false);
                                 SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_OUT_ENABLED, false);
-                                SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_OUT_TIME, AppUtils.getCurrentDateTime_()+" "+AppUtils.getCurrentTimeIn24hr());
+                                SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_OUT_TIME, AppUtils.getCurrentDateTime_() + " " + AppUtils.getCurrentTimeIn24hr());
                                 stopService(new Intent(mContext, BackgroundAttentionService.class));
-
-                                final Handler handler=new Handler();
+                                final Handler handler = new Handler();
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
                                         finish();
+                                        try{
+                                        setRateUsCounter(mContext);}catch (Exception
+                                        e){}
                                     }
-                                },1700);
+                                }, 1700);
                             } else {
                                 LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                             }
                         }
-                    }catch (Exception e){e.printStackTrace();}
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
             case ERROR:

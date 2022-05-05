@@ -254,6 +254,7 @@
                             android:background="@drawable/toggle_add_reminder_edt"
                             android:focusable="false"
                             android:focusableInTouchMode="false"
+                            android:clickable="true"
                             android:inputType="text"
                             android:text=""
                             android:hint="@string/scr_lbl_select_status"

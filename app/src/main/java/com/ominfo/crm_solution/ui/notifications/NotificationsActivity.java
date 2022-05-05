@@ -129,13 +129,13 @@ public class NotificationsActivity extends BaseActivity {
         Boolean iSLoggedIn = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.IS_LOGGED_IN, false);
         if (iSLoggedIn){
             //launchScreen(MainActivity.class);
-            imgBack.setOnClickListener(new View.OnClickListener() {
+           /* imgBack.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    finishAffinity();
-                    launchScreen(mContext,MainActivity.class);
-                }
-            });
+                    //finishAffinity();
+                    //launchScreen(mContext,MainActivity.class);
+                }*/
+            //});
         }else {
             finishAffinity();
             launchScreen(mContext,LoginActivity.class);
@@ -183,11 +183,11 @@ public class NotificationsActivity extends BaseActivity {
     public void onBackPressed() {
         super.onBackPressed();
         Boolean iSLoggedIn = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.IS_LOGGED_IN, false);
-        if (iSLoggedIn){
+        /*if (!iSLoggedIn){
             //launchScreen(MainActivity.class);
             finishAffinity();
             launchScreen(mContext,MainActivity.class);
-        }
+        }*/
     }
 
     private void injectAPI() {

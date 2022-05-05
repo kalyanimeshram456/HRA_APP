@@ -928,6 +928,7 @@ public class ReceiptFragment extends BaseFragment {
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_bar_graph));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
+                callReceiptApi("0");
                 break;
 
             case R.id.resetButton:
@@ -1130,8 +1131,13 @@ public class ReceiptFragment extends BaseFragment {
                                 }
                                 setEnquiryPagerList(totalPage);
                                 setAdapterForReceiptList();
-                                }else{
+                                }
+                                else{
+                                    totalPage = 0;
+                                    receiptResultList.clear();
                                     tvTotalCount.setText(getString(R.string.scr_lbl_rs)+"0");
+                                    setEnquiryPagerList(totalPage);
+                                    setAdapterForReceiptList();
                                 }
                             }
 

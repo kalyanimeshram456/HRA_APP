@@ -561,7 +561,8 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
                     callSearchCustApi();
                 }
                 else {
-                    LogUtil.printToastMSG(mContext,"Search filed is empty.");
+                    //LogUtil.printToastMSG(mContext,"Search filed is empty.");
+                    callSearchCustApi();
                 }
             }
         });
@@ -622,8 +623,8 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
                 RequestBody mRequestBodyTypeAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_search_cust);
-                RequestBody mRequestBodyTypeEmpID = RequestBody.create(MediaType.parse("text/plain"), "134"/*loginTable.getEmployeeId()*/);//loginTable.getEmployeeId());//loginTable.getEmployeeId());
-                RequestBody mRequestBodyTypeCompID = RequestBody.create(MediaType.parse("text/plain"),"96" /*loginTable.getCompanyId()*/);//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpID = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());//loginTable.getEmployeeId());//loginTable.getEmployeeId());
+                RequestBody mRequestBodyTypeCompID = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());//loginTable.getCompanyId());
                 RequestBody mRequestBodyTypeString = RequestBody.create(MediaType.parse("text/plain"), tvSearchView.getText().toString().trim());
                 searchCustViewModel.hitSearchCustApi(mRequestBodyTypeAction, mRequestBodyTypeEmpID, mRequestBodyTypeCompID,
                         mRequestBodyTypeString);
@@ -723,9 +724,10 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_SAVE_ENQUIRY)) {
                             SaveEnquiryResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SaveEnquiryResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                LogUtil.printToastMSG(MainActivity.this, responseModel.getResult().getMessage());
+                                //LogUtil.printToastMSG(MainActivity.this, responseModel.getResult().getMessage());
                                 mDialog.dismiss();
                                 showSuccessDialog("Enquiry saved successfully!",true,MainActivity.this);
+                                setRateUsCounter(mContext);
                             } else {
                                 LogUtil.printToastMSG(MainActivity.this, responseModel.getResult().getMessage());
                             }

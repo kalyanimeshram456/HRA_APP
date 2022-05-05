@@ -721,7 +721,7 @@ public class AppUtils {
         Calendar c = Calendar.getInstance();
         //System.out.println("Current time => "+c.getTime());
         //2021-04-08 16:45:14.084445
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault());
         String formattedDate = df.format(c.getTime());
         // formattedDate have current date/time
         return formattedDate;
@@ -735,7 +735,7 @@ public class AppUtils {
         calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
         Date monthLastDay = calendar.getTime();
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault());
         String startDateStr = df.format(monthFirstDay);
         String endDateStr = df.format(monthLastDay);
 
@@ -751,7 +751,7 @@ public class AppUtils {
         calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
         Date monthLastDay = calendar.getTime();
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault());
         String startDateStr = df.format(monthFirstDay);
         String endDateStr = df.format(monthLastDay);
 
@@ -767,7 +767,7 @@ public class AppUtils {
         calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
         Date monthLastDay = calendar.getTime();
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault());
         String startDateStr = df.format(monthFirstDay);
         String endDateStr = df.format(monthLastDay);
 
@@ -783,7 +783,7 @@ public class AppUtils {
         calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
         Date monthLastDay = calendar.getTime();
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault());
         String startDateStr = df.format(monthFirstDay);
         String endDateStr = df.format(monthLastDay);
 
@@ -792,7 +792,7 @@ public class AppUtils {
     }
 
     public static String startYear(){
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault());
         // Create first day of year
         Calendar firstDayOfCurrentYear = Calendar.getInstance();
         firstDayOfCurrentYear.set(Calendar.DATE, 1);
@@ -801,7 +801,7 @@ public class AppUtils {
     }
 
     public static String endYear(){
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault());
        // Create last day of year
         Calendar lastDayOfCurrentYear = Calendar.getInstance();
         lastDayOfCurrentYear.set(Calendar.DATE, 31);
@@ -847,7 +847,7 @@ public class AppUtils {
     public static String getDashYesterdaysDate() {
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DATE, -1);
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault());
         String formattedDate = df.format(c.getTime());
         return formattedDate;
     }
@@ -865,7 +865,7 @@ public class AppUtils {
 
         // Date format
         String strDateFormat = "yyyy-MM-dd";
-        SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat);
+        SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat,Locale.getDefault());
 
         String MONDAY = sdf.format(mDateMonday);
         String SUNDAY = sdf.format(mDateSunday);
@@ -890,7 +890,7 @@ public class AppUtils {
 
         // Date format
         String strDateFormat = "yyyy-MM-dd";
-        SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat);
+        SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat,Locale.getDefault());
 
         String MONDAY = sdf.format(mDateMonday);
         String SUNDAY = sdf.format(mDateSunday);
@@ -926,7 +926,7 @@ public class AppUtils {
 
         //Get format date
         String strDateFormat = "yyyy-MM-dd";
-        SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat);
+        SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat,Locale.getDefault());
 
         String MONDAY = sdf.format(mDateMonday);
         String SUNDAY = sdf.format(mDateSunday);
@@ -962,7 +962,7 @@ public class AppUtils {
 
         //Get format date
         String strDateFormat = "yyyy-MM-dd";
-        SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat);
+        SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat,Locale.getDefault());
 
         String MONDAY = sdf.format(mDateMonday);
         String SUNDAY = sdf.format(mDateSunday);

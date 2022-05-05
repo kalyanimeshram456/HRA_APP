@@ -1063,7 +1063,8 @@ public class ReminderFragment extends BaseFragment implements OnToggleAlarmListe
                                 scheduleAlarm(mTimeHour, mTimeMinute, AutoComTextViewDesr.getText().toString().trim()
                                         , AutoComTextViewDate.getText().toString().trim(), AutoComTextViewTime.getText().toString().trim()
                                         ,String.valueOf(responseModel.getAddRemResultList().get(0).getRecordId()),"CREATED");
-                               /* //TODO UPDATE
+                                ((BaseActivity)mContext).setRateUsCounter(mContext);
+                                /* //TODO UPDATE
                                 updateOnlyRecordIdViewModel.updateOnlyRecordId(AutoComTextViewDesr.getText().toString().trim(),
                                         AutoComTextViewDate.getText().toString().trim(), AutoComTextViewTime.getText().toString().trim()
                                 , String.valueOf(responseModel.getAddRemResultList().get(0).getRecordId()));*/

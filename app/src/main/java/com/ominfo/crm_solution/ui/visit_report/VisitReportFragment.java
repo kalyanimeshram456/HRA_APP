@@ -964,7 +964,7 @@ public class VisitReportFragment extends BaseFragment {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
                 RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_rm);
-                RequestBody mRequestBodyTypeImage = RequestBody.create(MediaType.parse("text/plain"), "0");//loginTable.getEmployeeId());
+                RequestBody mRequestBodyTypeImage = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
                 RequestBody mRequestBodyTypeImage1 = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
                 getRmViewModel.hitGetRmApi(mRequestBodyType, mRequestBodyTypeImage, mRequestBodyTypeImage1);
             }
@@ -1053,6 +1053,7 @@ public class VisitReportFragment extends BaseFragment {
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
+                callGetVisitApi("0");
                 break;
 
             case R.id.submitButton:

@@ -239,7 +239,7 @@ public class DashboardFragment extends BaseFragment {
             e.printStackTrace();
         }
         callDashboardApi(AppUtils.getDashCurrentDateTime_(), AppUtils.getDashCurrentDateTime_());
-        tvHighlight.setText("Today's Hightlights");
+        tvHighlight.setText("Today's Highlights");
         setDropdownHighlight();
     }
 
@@ -260,19 +260,19 @@ public class DashboardFragment extends BaseFragment {
             }
         });
         List<HighlightModel> highlightModelList = new ArrayList<>();
-        highlightModelList.add(new HighlightModel("Today's Hightlights",
+        highlightModelList.add(new HighlightModel("Today's Highlights",
                 AppUtils.getDashCurrentDateTime_(), AppUtils.getDashCurrentDateTime_()));
-        highlightModelList.add(new HighlightModel("Yesterday's Hightlights",
+        highlightModelList.add(new HighlightModel("Yesterday's Highlights",
                 AppUtils.getDashYesterdaysDate(), AppUtils.getDashYesterdaysDate()));
-        highlightModelList.add(new HighlightModel("This Week's Hightlights",
+        highlightModelList.add(new HighlightModel("This Week's Highlights",
                 AppUtils.getStartWeek(), AppUtils.getEndWeek()));
-        highlightModelList.add(new HighlightModel("Last Week's Hightlights"
+        highlightModelList.add(new HighlightModel("Last Week's Highlights"
                 , AppUtils.getStartLastWeek(), AppUtils.getEndLastWeek()));
-        highlightModelList.add(new HighlightModel("This Month's Hightlights",
+        highlightModelList.add(new HighlightModel("This Month's Highlights",
                 AppUtils.startMonth(), AppUtils.endMonth()));
-        highlightModelList.add(new HighlightModel("Last Month's Hightlights",
+        highlightModelList.add(new HighlightModel("Last Month's Highlights",
                 AppUtils.startLastMonth(), AppUtils.endLastMonth()));
-        highlightModelList.add(new HighlightModel("This Year's Hightlights",
+        highlightModelList.add(new HighlightModel("This Year's Highlights",
                 AppUtils.startYear(), AppUtils.endYear()));
         try {
             int pos = 0;
@@ -308,44 +308,6 @@ public class DashboardFragment extends BaseFragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-    //show Receipt Details popup
-    public void showRateUsDialog() {
-        Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_rate_us);
-        mDialog.setCanceledOnTouchOutside(true);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton addReceiptButton = mDialog.findViewById(R.id.addReceiptButton);
-        AppCompatButton addRejectButton = mDialog.findViewById(R.id.addRejectButton);
-        AppCompatTextView appcomptextSubTitle = mDialog.findViewById(R.id.appcomptextSubTitle);
-        AppCompatTextView tvAmountValue = mDialog.findViewById(R.id.tvAmountValue);
-        AppCompatTextView appcomptextTitle = mDialog.findViewById(R.id.appcomptextTitle);
-        TextInputLayout input_textComment = mDialog.findViewById(R.id.input_textComment);
-        input_textComment.setVisibility(View.GONE);
-        addReceiptButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //mDialog.dismiss()
-                input_textComment.setVisibility(View.VISIBLE);
-                addRejectButton.setText(R.string.scr_lbl_not_now);
-                appcomptextTitle.setText(R.string.scr_lbl_thanks);
-                appcomptextSubTitle.setText("You can also write a review");
-            }
-        });
-
-        addRejectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
     }
 
     private void setTimer() {
@@ -457,7 +419,6 @@ public class DashboardFragment extends BaseFragment {
             case R.id.imgProfileDash:
                /* Fragment fragmentAcc = new MyAccountFragment();
                 moveFromFragment(fragmentAcc,mContext);*/
-                showRateUsDialog();
                 break;
             case R.id.cardLostOpportunity:
                 Fragment fragmentLost = new LostApportunityFragment();
@@ -504,7 +465,7 @@ public class DashboardFragment extends BaseFragment {
                     swipeStatus = true;
                     setToolbar();
                     callDashboardApi(AppUtils.getDashCurrentDateTime_(), AppUtils.getDashCurrentDateTime_());
-                    tvHighlight.setText("Today's Hightlights");
+                    tvHighlight.setText("Today's Highlights");
                     setDropdownHighlight();
                 } else {
                     swipeStatus = false;
@@ -727,8 +688,8 @@ public class DashboardFragment extends BaseFragment {
                 RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_dashboard);
                 RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(loginTable.getEmployeeId()));
                 RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(loginTable.getCompanyId()));
-                RequestBody mRequestBodyTypeStart = RequestBody.create(MediaType.parse("text/plain"), "2021-02-08"/*startDate*/);
-                RequestBody mRequestBodyTypeEnd = RequestBody.create(MediaType.parse("text/plain"), "2021-05-08"/*endDate*/);
+                RequestBody mRequestBodyTypeStart = RequestBody.create(MediaType.parse("text/plain"), startDate);
+                RequestBody mRequestBodyTypeEnd = RequestBody.create(MediaType.parse("text/plain"), endDate);
                 /*LogUtil.printLog("httpdashboard_data", String.valueOf(loginTable.getEmployeeId()) + " " + String.valueOf(loginTable.getCompanyId())
                         + " " + startDate + " " + endDate);*/
                 dashboardRequest.setAction(mRequestBodyType);

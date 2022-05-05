@@ -915,4 +915,53 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         }
     }
 
+    public void setRateUsCounter(Context context){
+        String startRateUs = SharedPref.getInstance(context).read(SharedPrefKey.RATE_US_COUNT, "0");
+        int count = Integer.parseInt(startRateUs)+1;
+        if(count>3){
+            showRateUsDialog(context);
+            SharedPref.getInstance(context).write(SharedPrefKey.RATE_US_COUNT,"0");
+        }
+        else {
+            SharedPref.getInstance(context).write(SharedPrefKey.RATE_US_COUNT, String.valueOf(count));
+        }
+    }
+    //show Receipt Details popup
+    public void showRateUsDialog(Context context) {
+        Dialog mDialog = new Dialog(context, R.style.ThemeDialogCustom);
+        mDialog.setContentView(R.layout.dialog_rate_us);
+        mDialog.setCanceledOnTouchOutside(true);
+        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
+        AppCompatButton addReceiptButton = mDialog.findViewById(R.id.addReceiptButton);
+        AppCompatButton addRejectButton = mDialog.findViewById(R.id.addRejectButton);
+        AppCompatTextView appcomptextSubTitle = mDialog.findViewById(R.id.appcomptextSubTitle);
+        AppCompatTextView tvAmountValue = mDialog.findViewById(R.id.tvAmountValue);
+        AppCompatTextView appcomptextTitle = mDialog.findViewById(R.id.appcomptextTitle);
+        TextInputLayout input_textComment = mDialog.findViewById(R.id.input_textComment);
+        input_textComment.setVisibility(View.GONE);
+        addReceiptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //mDialog.dismiss()
+                input_textComment.setVisibility(View.VISIBLE);
+                addRejectButton.setText(R.string.scr_lbl_not_now);
+                appcomptextTitle.setText(R.string.scr_lbl_thanks);
+                appcomptextSubTitle.setText("You can also write a review");
+            }
+        });
+
+        addRejectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+        mDialog.show();
+    }
 }

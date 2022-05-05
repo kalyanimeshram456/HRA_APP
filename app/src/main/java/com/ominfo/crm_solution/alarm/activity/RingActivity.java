@@ -101,6 +101,9 @@ public class RingActivity extends BaseActivity implements OnToggleAlarmListener 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reminder_alert);
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         ButterKnife.bind(this);
         getDeps().inject(this);
         mDb = BaseApplication.getInstance(this).getAppDatabase();

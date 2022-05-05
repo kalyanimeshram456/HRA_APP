@@ -543,7 +543,7 @@ public class QuotationFragment extends BaseFragment {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         //mSelectedColor = mDropdownList[position];
-                        AppUtils.hideKeyBoard(getActivity());
+                        AppUtils.hideKeyboard(getActivity());
                     }
                 });
             } else {
@@ -996,6 +996,7 @@ public class QuotationFragment extends BaseFragment {
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
                 imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
+                callQuotationdApi("0");
                 break;
 
             case R.id.resetButton:
@@ -1067,7 +1068,7 @@ public class QuotationFragment extends BaseFragment {
         Collections.sort(quotationList, new Comparator<QuotationData>() {
             @Override
             public int compare(QuotationData item, QuotationData t1) {
-                    return Long.compare(Long.parseLong(item.getTotalCharge()), Long.parseLong(t1.getTotalCharge()));
+                    return Double.compare(Double.parseDouble(item.getTotalCharge()), Double.parseDouble(t1.getTotalCharge()));
                    //return s1.compareToIgnoreCase(s2);
             }
         });

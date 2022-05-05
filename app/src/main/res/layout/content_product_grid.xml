@@ -250,7 +250,7 @@
                                 android:gravity="left">
 
                                 <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/tvCompanyName"
+                                    android:id="@+id/tvTProductCode"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentStart="true"
@@ -264,11 +264,12 @@
                                     android:textSize="@dimen/_12sp" />
 
                                 <androidx.appcompat.widget.AppCompatImageView
+                                    android:id="@+id/imgTProductCode"
                                     android:layout_width="@dimen/_12dp"
                                     android:layout_height="@dimen/_12dp"
                                     android:layout_centerVertical="true"
                                     android:layout_marginLeft="@dimen/_2dp"
-                                    android:layout_toRightOf="@+id/tvCompanyName"
+                                    android:layout_toRightOf="@+id/tvTProductCode"
                                     android:src="@drawable/ic_om_sort" />
                             </RelativeLayout>
 
@@ -282,7 +283,7 @@
                                 android:paddingLeft="@dimen/_24dp">
 
                                 <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/tvOverall"
+                                    android:id="@+id/tvTProdName"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/gilroy_bold"
@@ -295,12 +296,13 @@
                                     android:textSize="@dimen/_12sp" />
 
                                 <androidx.appcompat.widget.AppCompatImageView
+                                    android:id="@+id/imgTProdName"
                                     android:layout_width="@dimen/_12dp"
                                     android:layout_height="@dimen/_12dp"
                                     android:layout_alignParentTop="true"
                                     android:layout_marginLeft="@dimen/_2dp"
                                     android:layout_marginTop="@dimen/_3dp"
-                                    android:layout_toRightOf="@+id/tvOverall"
+                                    android:layout_toRightOf="@+id/tvTProdName"
                                     android:src="@drawable/ic_om_sort" />
                             </RelativeLayout>
 

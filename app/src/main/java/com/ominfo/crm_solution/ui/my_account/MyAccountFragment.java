@@ -1401,6 +1401,7 @@ private void setTermsAndPolicy(String webUrl){
                                 mDialogChangePass.dismiss();
                                 ((BaseActivity)mContext).showSuccessDialog(responseModel.getResult().getMessage(),
                                         true,getActivity());
+                                ((BaseActivity)mContext).setRateUsCounter(mContext);
                             }
                             else {
                                 mDialogChangePass.dismiss();

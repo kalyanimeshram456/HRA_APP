@@ -762,8 +762,8 @@ public class UploadVisitActivity extends BaseActivity {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
                 RequestBody mRequestBodyTypeAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_search_cust);
-                RequestBody mRequestBodyTypeEmpID = RequestBody.create(MediaType.parse("text/plain"), "134");//loginTable.getEmployeeId());//loginTable.getEmployeeId());//loginTable.getEmployeeId());
-                RequestBody mRequestBodyTypeCompID = RequestBody.create(MediaType.parse("text/plain"), "96");/*loginTable.getCompanyId());*///loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpID = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());//loginTable.getEmployeeId());//loginTable.getEmployeeId());
+                RequestBody mRequestBodyTypeCompID = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());///loginTable.getCompanyId());
                 RequestBody mRequestBodyTypeString = RequestBody.create(MediaType.parse("text/plain"),autoCompSearchView.getEditableText().toString().trim());
                 searchCustViewModel.hitSearchCustApi(mRequestBodyTypeAction, mRequestBodyTypeEmpID, mRequestBodyTypeCompID,
                         mRequestBodyTypeString);
@@ -893,7 +893,8 @@ public class UploadVisitActivity extends BaseActivity {
                     callSearchCustApi();
                 }
                 else {
-                    LogUtil.printToastMSG(mContext,"Search filed is empty.");
+                    //LogUtil.printToastMSG(mContext,"Search filed is empty.");
+                    callSearchCustApi();
                 }
                 break;
         }
@@ -1045,6 +1046,7 @@ public class UploadVisitActivity extends BaseActivity {
                                     String visit = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.VISIT_NO, "");
                                     SharedPref.getInstance(mContext).write(SharedPrefKey.VISIT_NO, "");
                                     showSuccessDialog("Visit Report Uploaded Successfully!", false, UploadVisitActivity.this);
+                                    setRateUsCounter(mContext);
                                 }
                                 else{
                                     LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());

@@ -80,6 +80,14 @@ public class RmTagAdapter extends RecyclerView.Adapter<RmTagAdapter.ViewHolder> 
         setDropdownRM(position,RMDropdown,holder.tvTitle);
         if(mListData.size()>0) {
             holder.setIsRecyclable(false);
+            holder.tvTitle.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean b) {
+                    if(b){
+                        holder.tvTitle.showDropDown();
+                    }
+                }
+            });
             if(mListData.get(position).getValue().equals("1")){
                 //holder.layClick.setBackground(mContext.getResources().getDrawable(R.drawable.layout_round_shape_corners_8_blue));
                 holder.layClick.setBackground(null);
