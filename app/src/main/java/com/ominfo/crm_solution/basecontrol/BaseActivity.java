@@ -4,6 +4,7 @@ import static com.ominfo.crm_solution.ui.attendance.StartAttendanceActivity.tvCu
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -50,6 +51,7 @@ import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
@@ -96,7 +98,10 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -664,6 +669,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         //LogUtil.printToastMSG(mContext,"counttt");
         if(val!=6){
         setNotifyCount();}
+        //showRateUsDialog(mContext);
         /*if(logoutId!=0) {
             LinearLayoutCompat imgLogout = findViewById(logoutId);
             imgLogout.setOnClickListener(new View.OnClickListener() {
@@ -916,14 +922,25 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
     }
 
     public void setRateUsCounter(Context context){
-        String startRateUs = SharedPref.getInstance(context).read(SharedPrefKey.RATE_US_COUNT, "0");
-        int count = Integer.parseInt(startRateUs)+1;
-        if(count>3){
-            showRateUsDialog(context);
-            SharedPref.getInstance(context).write(SharedPrefKey.RATE_US_COUNT,"0");
-        }
-        else {
-            SharedPref.getInstance(context).write(SharedPrefKey.RATE_US_COUNT, String.valueOf(count));
+        boolean boolRated = SharedPref.getInstance(context).read(SharedPrefKey.RATED, false);
+        String RatedDate = SharedPref.getInstance(context).read(SharedPrefKey.RATED_DATE,  AppUtils.getCurrentDateTime_());
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            Date date1 = sdf.parse(AppUtils.getCurrentDateTime_());
+            Date date2 = sdf.parse(RatedDate);
+            if(!boolRated && (date1.compareTo(date2) == 1)||(date1.compareTo(date2) == 0)) {
+                String startRateUs = SharedPref.getInstance(context).read(SharedPrefKey.RATE_US_COUNT, "0");
+                int count = Integer.parseInt(startRateUs) + 1;
+                if (count > 5) {
+                    showRateUsDialog(context);
+                    SharedPref.getInstance(context).write(SharedPrefKey.RATE_US_COUNT, "0");
+                    SharedPref.getInstance(context).write(SharedPrefKey.RATED_DATE, AppUtils.get2daysDate());
+                } else {
+                    SharedPref.getInstance(context).write(SharedPrefKey.RATE_US_COUNT, String.valueOf(count));
+                }
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
     }
     //show Receipt Details popup
@@ -933,23 +950,48 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         mDialog.setCanceledOnTouchOutside(true);
         AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
         AppCompatButton addReceiptButton = mDialog.findViewById(R.id.addReceiptButton);
+        AppCompatButton addNeverButton = mDialog.findViewById(R.id.addNeverButton);
         AppCompatButton addRejectButton = mDialog.findViewById(R.id.addRejectButton);
         AppCompatTextView appcomptextSubTitle = mDialog.findViewById(R.id.appcomptextSubTitle);
         AppCompatTextView tvAmountValue = mDialog.findViewById(R.id.tvAmountValue);
         AppCompatTextView appcomptextTitle = mDialog.findViewById(R.id.appcomptextTitle);
+        AppCompatImageView imgStar = mDialog.findViewById(R.id.imgStar);
         TextInputLayout input_textComment = mDialog.findViewById(R.id.input_textComment);
         input_textComment.setVisibility(View.GONE);
+        Glide.with(context)
+                .load(R.raw.start)
+                .into(imgStar);
         addReceiptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //mDialog.dismiss()
-                input_textComment.setVisibility(View.VISIBLE);
+                mDialog.dismiss();
+               /* input_textComment.setVisibility(View.VISIBLE);
                 addRejectButton.setText(R.string.scr_lbl_not_now);
                 appcomptextTitle.setText(R.string.scr_lbl_thanks);
-                appcomptextSubTitle.setText("You can also write a review");
+                appcomptextSubTitle.setText("You can also write a review");*/
+                SharedPref.getInstance(context).write(SharedPrefKey.RATED,true);
+                Uri uri =  Uri.parse("http://play.google.com/store/apps/details?id=" + "com.ominfo.crm_solution");
+                Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+                      // To count with Play market backstack, After pressing back button,
+                        // to taken back to our application, we need to add following flags to intent.
+                goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                        Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
+                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                try {
+                    startActivity(goToMarket);
+                } catch (ActivityNotFoundException e) {
+                    startActivity(new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("http://play.google.com/store/apps/details?id=" + "com.ominfo.crm_solution")));
+                }
             }
         });
-
+        addNeverButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+                SharedPref.getInstance(context).write(SharedPrefKey.RATED,true);
+            }
+        });
         addRejectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

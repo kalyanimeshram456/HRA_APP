@@ -71,14 +71,14 @@ public class TopCustomerReportAdapter extends RecyclerView.Adapter<TopCustomerRe
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(1,mListData.get(position));
+                //listItemSelectListener.onItemClick(1,mListData.get(position));
             }
         });
         holder.tvAmount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(1,mListData.get(position));
+                //listItemSelectListener.onItemClick(1,mListData.get(position));
             }
         });
         holder.tvCompanyName.setOnClickListener(new View.OnClickListener() {

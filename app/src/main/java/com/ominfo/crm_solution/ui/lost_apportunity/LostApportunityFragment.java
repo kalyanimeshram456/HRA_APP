@@ -494,7 +494,7 @@ public class LostApportunityFragment extends BaseFragment {
                     enquiryPageAdapter.updateList(mDataList);
                 }catch (Exception e){e.printStackTrace();}
                 try {
-                    //callQuotationdApi(String.valueOf(Integer.parseInt(mData.getPageNo()) - 1));
+                    callGetLostApportunityApi(String.valueOf(Integer.parseInt(mData.getPageNo()) - 1));
                 }catch (Exception e){e.printStackTrace();}
             }
         });

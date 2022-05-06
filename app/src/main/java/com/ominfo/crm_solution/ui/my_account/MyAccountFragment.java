@@ -1465,7 +1465,7 @@ private void setTermsAndPolicy(String webUrl){
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_LOGOUT)) {
                             LogoutResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LogoutResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                                //LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
                                 mDialogLogout.dismiss();
                                 getActivity().finishAffinity();
                                 launchScreen(getActivity(), LoginActivity.class);

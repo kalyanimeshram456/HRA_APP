@@ -1516,7 +1516,7 @@ public class ReportListFragment extends BaseFragment {
                                 showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),
                                         false,mDialogReport);
                                 callReportListApi("0");
-
+                                ((BaseActivity)mContext).setRateUsCounter(mContext);
                             }
                         }
                     }catch (Exception e){

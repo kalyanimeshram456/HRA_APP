@@ -1,8 +1,10 @@
 package com.ominfo.crm_solution.ui.top_customer;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -69,6 +71,7 @@ import com.ominfo.crm_solution.ui.login.model.LoginTable;
 import com.ominfo.crm_solution.ui.notifications.NotificationsActivity;
 import com.ominfo.crm_solution.ui.sale.adapter.CompanyTagAdapter;
 import com.ominfo.crm_solution.ui.sale.model.RmListModel;
+import com.ominfo.crm_solution.ui.sales_credit.activity.View360Activity;
 import com.ominfo.crm_solution.ui.sales_credit.model.GraphModel;
 import com.ominfo.crm_solution.ui.top_customer.adapter.TopCustomerReportAdapter;
 import com.ominfo.crm_solution.ui.top_customer.model.TopCustomerRequest;
@@ -686,6 +689,10 @@ public class TopCustomerFragment extends BaseFragment {
             public void onItemClick(int mDataTicket,Topcust getEnquiry) {
                 //For not killing pre fragment
                // showReceiptDetailsDialog();
+                Intent i = new Intent(getActivity(), View360Activity.class);
+                i.putExtra(Constants.TRANSACTION_ID, getEnquiry.getCustId());
+                startActivity(i);
+                ((Activity) getActivity()).overridePendingTransition(0, 0);
             }
         });
 

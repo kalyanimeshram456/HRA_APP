@@ -242,5 +242,7 @@
     <string name="scr_lbl_issue_type">Issue type</string>
     <string name="scr_lbl_priority">Priority</string>
     <string name="scr_lbl_select_issue_type">Select Issue Type</string>
+    <string name="scr_lbl_rate_us">Rate Us</string>
+    <string name="scr_lbl_never">Never</string>
 
 </resources>

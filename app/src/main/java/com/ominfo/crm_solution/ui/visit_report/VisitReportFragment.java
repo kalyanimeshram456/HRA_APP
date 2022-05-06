@@ -432,7 +432,9 @@ public class VisitReportFragment extends BaseFragment {
                         ((Activity) getActivity()).overridePendingTransition(0, 0);
                     }
                     if (mDataTicket == 1) {
-                        showVisitDetailsDialog();//getEnquiry);
+                        try {
+                            showVisitDetailsDialog(getEnquiry);//getEnquiry);
+                        }catch (Exception e){LogUtil.printToastMSG(mContext,"Something went wrong.");}
                     }
                 }
             });
@@ -842,14 +844,20 @@ public class VisitReportFragment extends BaseFragment {
     }
 
     //show Receipt Details popup
-    public void showVisitDetailsDialog() {
+    public void showVisitDetailsDialog(GetVisit getEnquiry) {
         Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialog.setContentView(R.layout.dialog_visit_details);
         mDialog.setCanceledOnTouchOutside(true);
         AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
         AppCompatButton closeButton = mDialog.findViewById(R.id.closeButton);
-
+        AppCompatTextView tvCompanyName = mDialog.findViewById(R.id.tvCompanyName);
+        AppCompatTextView tvStatus = mDialog.findViewById(R.id.tvStatus);
+        AppCompatTextView tvRMValue = mDialog.findViewById(R.id.tvRMValue);
+        AppCompatTextView tvStateValue = mDialog.findViewById(R.id.tvStateValue);
         //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
+        tvCompanyName.setText(getEnquiry.getCustName());
+        tvStatus.setText(getEnquiry.getResult());
+        tvRMValue.setText(getEnquiry.getRmId());
 
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override

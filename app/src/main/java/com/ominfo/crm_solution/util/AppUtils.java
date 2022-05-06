@@ -823,7 +823,13 @@ public class AppUtils {
         String formattedDate = df.format(c.getTime());
         return formattedDate;
     }
-
+    public static String get2daysDate() {
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DATE, +2);
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        String formattedDate = df.format(c.getTime());
+        return formattedDate;
+    }
     /**
      * Make dynamic url method
      **/

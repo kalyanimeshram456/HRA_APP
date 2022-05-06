@@ -48,6 +48,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.ominfo.crm_solution.MainActivity;
 import com.ominfo.crm_solution.R;
 import com.ominfo.crm_solution.interfaces.Constants;
+import com.ominfo.crm_solution.ui.SplashActivity;
 
 import java.util.concurrent.TimeUnit;
 
@@ -133,7 +134,7 @@ public class BackgroundAttentionService extends Service implements GoogleApiClie
     }
 
     private void StartForeground() {
-        Intent intent = new Intent(context, MainActivity.class);
+        Intent intent = new Intent(context, SplashActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent;// = PendingIntent.getActivity(this, 0 /* Request code */, intent, PendingIntent.FLAG_ONE_SHOT);
 

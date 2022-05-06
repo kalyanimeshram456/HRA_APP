@@ -73,14 +73,14 @@ public class VisitReportAdapter extends RecyclerView.Adapter<VisitReportAdapter.
                 listItemSelectListener.onItemClick(1,mListData.get(position));
             }
         });
-        holder.tvEnquiryStatus.setOnClickListener(new View.OnClickListener() {
+        holder.tvPlaceName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
                 listItemSelectListener.onItemClick(1,mListData.get(position));
             }
         });
-        holder.tvPlaceName.setOnClickListener(new View.OnClickListener() {
+        holder.tvCompany.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");

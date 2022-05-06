@@ -87,7 +87,8 @@
             android:fontFamily="@font/gilroy_semibold"
             android:gravity="start"
             android:inputType="textMultiLine"
-            android:text="CRM/2021/HTH"
+            android:text=""
+            android:hint="@string/scr_lbl_unavailable"
             android:textColor="@color/back_text_colour"
             android:textSize="@dimen/_14sp" />
 
@@ -131,7 +132,8 @@
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
                 android:inputType="textMultiLine"
-                android:text="BOMBAY ENTERPRISE"
+                android:text=""
+                android:hint="@string/scr_lbl_unavailable"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
@@ -175,7 +177,8 @@
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
                 android:inputType="textMultiLine"
-                android:text="9156846834"
+                android:text=""
+                android:hint="@string/scr_lbl_unavailable"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
@@ -219,7 +222,8 @@
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
                 android:inputType="textMultiLine"
-                android:text="CRM"
+                android:text=""
+                android:hint="@string/scr_lbl_unavailable"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
@@ -263,7 +267,8 @@
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
                 android:inputType="textMultiLine"
-                android:text="Internet"
+                android:text=""
+                android:hint="@string/scr_lbl_unavailable"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
@@ -307,7 +312,8 @@
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
                 android:inputType="textMultiLine"
-                android:text="Test"
+                android:text=""
+                android:hint="@string/scr_lbl_unavailable"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
@@ -351,7 +357,8 @@
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
                 android:inputType="textMultiLine"
-                android:text="Harsh Wagh"
+                android:text=""
+                android:hint="@string/scr_lbl_unavailable"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 

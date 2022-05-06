@@ -110,7 +110,7 @@ public class QuotationAdapter extends RecyclerView.Adapter<QuotationAdapter.View
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(1,mListData.get(position));
+                //listItemSelectListener.onItemClick(1,mListData.get(position));
             }
         });
         holder.tvCompanyName.setOnClickListener(new View.OnClickListener() {

@@ -76,7 +76,7 @@ public class EnquiryReportAdapter extends RecyclerView.Adapter<EnquiryReportAdap
                 listItemSelectListener.onItemClick(1,mListData.get(position));
             }
         });
-        holder.tvEnquiryStatus.setOnClickListener(new View.OnClickListener() {
+        holder.tvEnquiryNo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");

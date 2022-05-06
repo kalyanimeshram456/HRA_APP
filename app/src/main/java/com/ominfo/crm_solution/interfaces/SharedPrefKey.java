@@ -39,6 +39,8 @@ public interface SharedPrefKey {
     String ATTENDANCE_ID = "ATTENDANCE_ID";
     String ATTENDANCE_CHECKIN_TIME = "ATTENDANCE_CHECKIN_TIME";
     String RATE_US_COUNT = "RATE_US_COUNT";
+    String RATED = "RATED";
+    String RATED_DATE = "RATED_DATE";
     String IS_NOTIFY = "IS_NOTIFY";
     String IS_NOTIFY_COUNT = "IS_NOTIFY_COUNT";
 }

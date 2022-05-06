@@ -89,7 +89,7 @@ public class PdfPrintActivity extends BaseActivity {
         Intent intent = getIntent();
         if(intent!=null){
                 url = intent.getStringExtra(Constants.URL);
-                try{tranId= intent.getStringExtra(Constants.TRANSACTION_ID);}catch (Exception e){}
+                tranId= intent.getStringExtra(Constants.TRANSACTION_ID)==null?"":intent.getStringExtra(Constants.TRANSACTION_ID);
         }
         myWebView.getSettings().setLoadsImagesAutomatically(true);
         myWebView.getSettings().setJavaScriptEnabled(true);
