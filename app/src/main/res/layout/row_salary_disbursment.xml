@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="@dimen/_8dp"
+    app:cardElevation="@dimen/_0dp"
+    android:background="@color/bg_screen"
+    >
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_5dp"
+        android:layout_marginTop="@dimen/_1dp"
+        app:cardCornerRadius="@dimen/_8dp"
+        app:cardElevation="@dimen/_0dp"
+        android:background="@drawable/layout_round_shape_corners_15_white"
+        >
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+        <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_10dp"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:background="@android:color/transparent"
+                android:paddingVertical="@dimen/_8dp"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:id="@+id/layBirthPro"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1.5">
+
+                    <LinearLayout
+                        android:layout_width="@dimen/_40dp"
+                        android:layout_height="@dimen/_40dp"
+                        android:background="@android:color/transparent"
+                        android:orientation="horizontal">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/imgBirthPro"
+                            android:layout_width="@dimen/_40dp"
+                            android:layout_height="@dimen/_40dp"
+                            android:layout_gravity="left|center"
+                            android:clickable="true"
+                            android:gravity="left"
+                            android:onClick="onClick"
+                            android:src="@drawable/ic_user"
+                            android:visibility="visible"
+                            app:civ_border_color="@color/pink"
+                            app:civ_border_width="1dp" />
+
+
+                    </LinearLayout>
+                    <!-- android:indeterminateTintMode="src_atop"-->
+                    <ProgressBar
+                        android:id="@+id/progress_barBirth"
+                        android:layout_width="@dimen/_40dp"
+                        android:layout_height="@dimen/_40dp"
+                        android:indeterminate="true"
+                        android:indeterminateDrawable="@drawable/progress_bar_color" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:layout_weight="1.2"
+                    android:paddingTop="@dimen/_0dp"
+                    android:gravity="left|center_vertical"
+                    >
+
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvBirthName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/gilroy_semibold"
+                        android:text="User name"
+                        android:textAlignment="center"
+                        android:textColor="@color/black_heading"
+                        android:textSize="@dimen/_14sp" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvBirthValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tvBirthName"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/gilroy_regular"
+                        android:text="User designation"
+                        android:textAlignment="center"
+                        android:textColor="@color/gray"
+                        android:textSize="@dimen/_14sp" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|bottom"
+                    android:layout_weight="1.5"
+                    android:gravity="right|center_horizontal"
+                    android:paddingTop="@dimen/_0dp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:fontFamily="@font/gilroy_regular"
+                        android:text="03"
+                        android:gravity="bottom"
+                        android:textColor="@color/black_heading"
+                        android:textSize="@dimen/_13sp" />
+
+
+                </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|bottom"
+                android:layout_weight="1.5"
+                android:gravity="right|center_horizontal"
+                android:paddingTop="@dimen/_0dp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvSalary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/gilroy_regular"
+                    android:text="@string/scr_lbl_rs_0"
+                    android:textAlignment="center"
+                    android:textColor="@color/black_heading"
+                    android:textSize="@dimen/_13sp" />
+
+
+            </RelativeLayout>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>

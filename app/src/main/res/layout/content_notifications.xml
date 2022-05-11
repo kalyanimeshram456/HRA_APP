@@ -36,7 +36,7 @@
                     android:background="@drawable/layout_round_shape_corners"
                     android:orientation="vertical">
 
-                  <!--  <androidx.recyclerview.widget.RecyclerView
+                    <!--  <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvPuranaHisab"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

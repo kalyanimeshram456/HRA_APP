@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_below="@+id/toolbar_layout"
-    android:background="@color/white"
+    android:background="@color/bg_screen"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical">
@@ -27,8 +27,19 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="visible"
                 android:orientation="vertical">
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvEmployeeActive"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_marginTop="@dimen/_22dp"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="4 / 5 Employees active"
+                    android:textColor="@color/gray"
+                    android:textSize="@dimen/_14sp" />
 
                 <androidx.appcompat.widget.SearchView
                     android:id="@+id/searchView"
@@ -40,6 +51,7 @@
                     android:background="@drawable/layout_round_shape_corners_8"
                     android:layoutDirection="rtl"
                     app:defaultQueryHint=""
+                    android:visibility="gone"
                     app:queryHint="" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -50,6 +62,7 @@
                     android:layout_marginTop="@dimen/_22dp"
                     android:fontFamily="@font/gilroy_semibold"
                     android:text="Search"
+                    android:visibility="gone"
                     android:textColor="@color/light_grey"
                     android:textSize="@dimen/_16sp" />
 
@@ -57,9 +70,8 @@
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:layout_marginTop="@dimen/_65dp"
-                    android:background="@drawable/layout_round_shape_blue_border"
+                    android:layout_marginHorizontal="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_50dp"
                     android:orientation="vertical">
 
                     <include layout="@layout/content_empty_activity_layout" />
@@ -69,16 +81,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginHorizontal="@dimen/_16dp"
                         android:layout_marginTop="@dimen/_2dp"
-                        android:background="@color/white"
+                        android:background="@color/bg_screen"
                         android:focusable="false"
                         android:focusableInTouchMode="false"
                         android:nestedScrollingEnabled="false"
                         android:paddingBottom="@dimen/_16dp"
                         android:visibility="visible"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:listitem="@layout/row_search" />
+                        tools:listitem="@layout/row_employee" />
 
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
@@ -88,7 +99,19 @@
             </RelativeLayout>
 
         </androidx.core.widget.NestedScrollView>
-
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/imgAddEmployee"
+            android:layout_width="@dimen/_40dp"
+            android:layout_height="@dimen/_40dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/_30dp"
+            android:layout_marginBottom="@dimen/_50dp"
+            android:layout_gravity="right|bottom"
+            android:layout_centerInParent="true"
+            android:contentDescription="TODO"
+            android:foreground="@drawable/ic_add_dashboard"
+            app:fabSize="mini"
+            app:maxImageSize="@dimen/_16dp" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

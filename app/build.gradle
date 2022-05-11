@@ -7,7 +7,7 @@ android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "com.ominfo.crm_solution"//also change in rate us app
+        applicationId "com.ominfo.hra_app"//also change in rate us app
         minSdk 21
         targetSdk 31
         versionCode 4

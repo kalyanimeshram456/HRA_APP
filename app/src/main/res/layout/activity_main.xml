@@ -22,12 +22,11 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/coordinator"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_140dp"
+        android:layout_height="wrap_content"
         android:layout_weight="0"
         android:background="@color/white"
         android:layout_below="@+id/framecontainer"
         android:layout_alignParentBottom="true">
-
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/bottomappbar"
             android:layout_width="match_parent"
@@ -42,68 +41,10 @@
                 android:background="@android:color/transparent"
                 app:itemIconSize="@dimen/_16dp"
                 app:labelVisibilityMode="labeled"
+                android:animateLayoutChanges="true"
                 app:menu="@menu/menu_bottom_navigation" />
 
         </com.google.android.material.bottomappbar.BottomAppBar>
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/layOptions"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_40dp"
-            android:layout_gravity="bottom"
-            android:layout_marginHorizontal="@dimen/_60dp"
-            android:layout_marginBottom="@dimen/_90dp"
-            android:background="@drawable/layout_round_shape_corners_dash"
-            android:paddingVertical="@dimen/_10dp"
-            android:visibility="visible">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/imgReminder"
-                android:layout_width="@dimen/_20dp"
-                android:layout_height="@dimen/_20dp"
-                android:layout_weight="1"
-                android:src="@drawable/ic_add_reminder" />
-
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/imgVisit"
-                android:layout_width="@dimen/_20dp"
-                android:layout_height="@dimen/_20dp"
-                android:layout_weight="1"
-                android:src="@drawable/ic_add_visit" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/imgReceipt"
-                android:layout_width="@dimen/_20dp"
-                android:layout_height="@dimen/_20dp"
-                android:layout_weight="1"
-                android:visibility="gone"
-                android:src="@drawable/ic_add_receipt" />
-
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/imgEnquiry"
-                android:layout_width="@dimen/_20dp"
-                android:layout_height="@dimen/_20dp"
-                android:layout_weight="1"
-                android:visibility="visible"
-                android:src="@drawable/ic_add_enquiries" />
-
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnFab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:contentDescription="TODO"
-            app:fabCustomSize="@dimen/_50dp"
-            android:src="@drawable/ic_add_dashboard"
-            android:backgroundTintMode="src_atop"
-            app:backgroundTint="@null"
-            app:tint="@null"
-            app:layout_anchor="@id/bottomappbar" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

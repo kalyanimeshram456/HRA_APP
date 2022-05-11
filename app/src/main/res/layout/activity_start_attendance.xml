@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/attendance_bg"
-    tools:context=".ui.SplashActivity">
+    tools:context="com.ominfo.hra_app.ui.SplashActivity">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -139,7 +139,7 @@
     android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_12dp"
     >
-            <com.ominfo.crm_solution.ui.attendance.ripple_effect.RippleBackground
+            <com.ominfo.hra_app.ui.attendance.ripple_effect.RippleBackground
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_300dp"
                 android:id="@+id/content"
@@ -152,7 +152,7 @@
                 app:rb_scale="6">
 
 
-            </com.ominfo.crm_solution.ui.attendance.ripple_effect.RippleBackground>
+            </com.ominfo.hra_app.ui.attendance.ripple_effect.RippleBackground>
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_300dp"

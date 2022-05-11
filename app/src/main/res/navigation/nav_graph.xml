@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/alarmsListFragment"
-        android:name="com.ominfo.crm_solution.ui.reminders.ReminderFragment"
+        android:name="com.ominfo.hra_app.ui.reminders.ReminderFragment"
         android:label="fragment_allalarms"
         tools:layout="@layout/activity_reminder" >
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/createAlarmFragment"
-        android:name="com.ominfo.crm_solution.alarm.createalarm.CreateAlarmFragment"
+        android:name="com.ominfo.hra_app.alarm.createalarm.CreateAlarmFragment"
         android:label="CreateAlarmFragment" >
         <action
             android:id="@+id/action_createAlarmFragment_to_alarmsListFragment"

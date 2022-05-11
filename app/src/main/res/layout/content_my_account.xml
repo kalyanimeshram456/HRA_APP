@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_below="@+id/toolbar_layout"
-    android:background="@drawable/bg_my_account"
+    android:background="@color/bg_screen"
     android:focusable="false"
     android:focusableInTouchMode="false"
     android:orientation="vertical">
@@ -26,30 +26,35 @@
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 app:contentScrim="?attr/colorPrimary">
 
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/expandedImage"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_180dp"
+                    android:layout_height="@dimen/_140dp"
                     android:src="@drawable/bg_my_account_2"
-
                     android:scaleType="fitXY"
                     app:layout_collapseMode="parallax"
                     app:layout_collapseParallaxMultiplier="0.7"
                     />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_25dp"
+                        android:background="@color/bg_screen"/>
 
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/layTop"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_110dp"
-                    android:orientation="horizontal">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="left"
                         android:gravity="left"
+                        android:layout_marginTop="@dimen/_96dp"
                         android:layout_marginHorizontal="@dimen/_16dp"
                         android:layout_weight="1">
 
@@ -72,14 +77,14 @@
 
                                     <de.hdodenhof.circleimageview.CircleImageView
                                         android:id="@+id/imgEmp"
-                                        android:layout_width="55dp"
-                                        android:layout_height="55dp"
+                                        android:layout_width="@dimen/_60dp"
+                                        android:layout_height="@dimen/_60dp"
                                         android:clickable="true"
                                         android:onClick="onClick"
                                         android:src="@drawable/bg_profile_images"
                                         android:visibility="visible"
                                         android:scaleType="centerCrop"
-                                        app:civ_border_color="@android:color/transparent"
+                                        app:civ_border_color="@color/white"
                                         app:civ_border_width="1dp" />
 
                                 </LinearLayout>
@@ -108,7 +113,7 @@
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvEmpName"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_gravity="center_vertical"
@@ -119,12 +124,18 @@
                             android:imeOptions="actionDone"
                             android:inputType="text"
                             android:text="Harshal Wagh"
-                            android:textColor="@color/back_text_colour"
-                            android:textColorHint="@color/back_text_colour"
+                            android:textColor="@color/white"
+                            android:textColorHint="@color/white"
                             android:textSize="@dimen/_16dp" />
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="@dimen/_25dp"
+                            android:layout_height="@dimen/_25dp"
+                            android:layout_marginLeft="@dimen/_6dp"
+                            android:layout_toRightOf="@+id/tvEmpName"
+                            android:layout_gravity="center_vertical"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_edit_white"/>
                     </RelativeLayout>
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
 
 
                 <androidx.appcompat.widget.Toolbar
@@ -147,396 +158,322 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true"
-            android:background="@color/white"
+            android:layout_marginTop="@dimen/_0dp"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:background="@color/bg_screen"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/_16dp"
+                android:background="@drawable/layout_round_shape_corners"
                 android:orientation="vertical">
 
-
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_width="match_parent"
+                    android:id="@+id/appcomptext"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginTop="@dimen/_24dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:layout_toRightOf="@+id/frameLayout"
-                    android:fontFamily="@font/gilroy_bold"
-                    android:gravity="left"
-                    android:imeOptions="actionDone"
-                    android:inputType="text"
-                    android:text="ACCOUNT"
-                    android:textAllCaps="true"
-                    android:textColor="@color/back_text_colour"
-                    android:textColorHint="@color/back_text_colour"
+                    android:layout_gravity="left"
+                    android:layout_marginHorizontal="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="@string/scr_lbl_gst_number"
+                    android:textColor="@color/black_heading"
                     android:textSize="@dimen/_14sp" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvSalesList"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/input_text"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:layout_marginTop="@dimen/_2dp"
-                    android:background="@color/white"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
-                    android:nestedScrollingEnabled="false"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/row_account_details" />
+                    android:layout_marginHorizontal="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_6dp"
+                    app:boxCornerRadiusBottomEnd="@dimen/_10dp"
+                    app:boxCornerRadiusBottomStart="@dimen/_10dp"
+                    app:boxCornerRadiusTopEnd="@dimen/_10dp"
+                    app:boxCornerRadiusTopStart="@dimen/_10dp"
+                    app:endIconDrawable="@android:color/transparent"
+                    app:hintEnabled="false"
+                    app:hintTextAppearance="@style/Editext.Theme"
+                    app:placeholderTextAppearance="@style/Editext.Theme"
+                    app:startIconContentDescription="$">
+
+                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                        android:id="@+id/AutoComTextViewDesr"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/toggle_add_reminder_edt"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:fontFamily="@font/gilroy_semibold"
+                        android:hint="@string/scr_lbl_gst_number"
+                        android:imeOptions="actionDone"
+                        android:inputType="text"
+                        android:padding="@dimen/_10dp"
+                        android:textColor="@color/black_heading"
+                        android:textColorHint="@color/app_gray"
+                        android:textSize="@dimen/_14sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_width="match_parent"
+                    android:id="@+id/tvTitleGstNo"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginTop="@dimen/_25dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:layout_toRightOf="@+id/frameLayout"
-                    android:fontFamily="@font/gilroy_bold"
-                    android:gravity="left"
-                    android:imeOptions="actionDone"
-                    android:inputType="text"
-                    android:text="@string/scr_lbl_leaves"
-                    android:textAllCaps="true"
-                    android:textColor="@color/back_text_colour"
-                    android:textColorHint="@color/back_text_colour"
+                    android:layout_gravity="left"
+                    android:layout_marginHorizontal="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_16dp"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="@string/scr_lbl_address"
+                    android:textColor="@color/black_heading"
                     android:textSize="@dimen/_14sp" />
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/layApplyLeave"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/input_textGstNo"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_18dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:orientation="horizontal"
-                    >
+                    android:layout_marginHorizontal="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_6dp"
+                    app:boxCornerRadiusBottomEnd="@dimen/_10dp"
+                    app:boxCornerRadiusBottomStart="@dimen/_10dp"
+                    app:boxCornerRadiusTopEnd="@dimen/_10dp"
+                    app:boxCornerRadiusTopStart="@dimen/_10dp"
+                    app:endIconDrawable="@android:color/transparent"
+                    app:hintEnabled="false"
+                    app:hintTextAppearance="@style/Editext.Theme"
+                    app:placeholderTextAppearance="@style/Editext.Theme"
+                    app:startIconContentDescription="$">
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/imgApplyLeave"
-                        android:layout_width="@dimen/_16dp"
-                        android:layout_height="@dimen/_16dp"
-                        android:layout_gravity="center"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_leave_person"/>
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvApplyLeave"
+                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                        android:id="@+id/AutoComGstNo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:paddingLeft="@dimen/_15dp"
+                        android:background="@drawable/toggle_add_reminder_edt"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:gravity="left"
+                        android:hint="@string/scr_lbl_address"
                         android:imeOptions="actionDone"
-                        android:inputType="textMultiLine"
-                        android:text="@string/scr_lbl_apply_leave"
-                        android:textColor="@color/back_text_colour"
-                        android:textColorHint="@color/back_text_colour"
+                        android:inputType="text"
+                        android:padding="@dimen/_10dp"
+                        android:textColor="@color/black_heading"
+                        android:textColorHint="@color/app_gray"
                         android:textSize="@dimen/_14sp" />
 
+                </com.google.android.material.textfield.TextInputLayout>
 
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-                <View
-
-                    android:layout_width="match_parent"
-                    android:layout_height="0.8dp"
-                    android:layout_marginTop="@dimen/_18dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:background="@color/light_grey_30"/>
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/layLeaveApp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_18dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:orientation="horizontal"
-                    >
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/imgLeaveApp"
-                        android:layout_width="@dimen/_16dp"
-                        android:layout_height="@dimen/_16dp"
-                        android:layout_gravity="center"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_om_logout"/>
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvLeaveApp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:paddingLeft="@dimen/_15dp"
-                        android:fontFamily="@font/gilroy_semibold"
-                        android:gravity="left"
-                        android:imeOptions="actionDone"
-                        android:inputType="textMultiLine"
-                        android:text="@string/scr_lbl_leave_applications"
-                        android:textColor="@color/back_text_colour"
-                        android:textColorHint="@color/back_text_colour"
-                        android:textSize="@dimen/_14sp" />
-
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.8dp"
-                    android:layout_marginTop="@dimen/_18dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:background="@color/light_grey_30"/>
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_width="match_parent"
+                    android:id="@+id/tvEmailId"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginTop="@dimen/_25dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:layout_toRightOf="@+id/frameLayout"
-                    android:fontFamily="@font/gilroy_bold"
-                    android:gravity="left"
-                    android:imeOptions="actionDone"
-                    android:inputType="text"
-                    android:text="@string/scr_lbl_general"
-                    android:textAllCaps="true"
-                    android:textColor="@color/back_text_colour"
-                    android:textColorHint="@color/back_text_colour"
+                    android:layout_gravity="left"
+                    android:layout_marginHorizontal="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_16dp"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="@string/scr_lbl_mobile_number"
+                    android:textColor="@color/black_heading"
                     android:textSize="@dimen/_14sp" />
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/layChangePass"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/input_textEmailId"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_18dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:orientation="horizontal"
-                    >
+                    android:layout_marginHorizontal="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_6dp"
+                    app:boxCornerRadiusBottomEnd="@dimen/_10dp"
+                    app:boxCornerRadiusBottomStart="@dimen/_10dp"
+                    app:boxCornerRadiusTopEnd="@dimen/_10dp"
+                    app:boxCornerRadiusTopStart="@dimen/_10dp"
+                    app:endIconDrawable="@android:color/transparent"
+                    app:hintEnabled="false"
+                    app:hintTextAppearance="@style/Editext.Theme"
+                    app:placeholderTextAppearance="@style/Editext.Theme"
+                    app:startIconContentDescription="$">
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/imgChangePass"
-                        android:layout_width="@dimen/_16dp"
-                        android:layout_height="@dimen/_16dp"
-                        android:layout_gravity="center"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_change_password"/>
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvChangePass"
+                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                        android:id="@+id/AutoComEmailId"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:paddingLeft="@dimen/_15dp"
+                        android:background="@drawable/toggle_add_reminder_edt"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:gravity="left"
+                        android:hint="@string/scr_lbl_mobile_number"
                         android:imeOptions="actionDone"
-                        android:inputType="textMultiLine"
-                        android:text="@string/scr_lbl_change_password"
-                        android:textColor="@color/back_text_colour"
-                        android:textColorHint="@color/back_text_colour"
+                        android:inputType="text"
+                        android:padding="@dimen/_10dp"
+                        android:textColor="@color/black_heading"
+                        android:textColorHint="@color/app_gray"
                         android:textSize="@dimen/_14sp" />
 
+                </com.google.android.material.textfield.TextInputLayout>
 
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvDesi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginHorizontal="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_16dp"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="@string/scr_lbl_email_id"
+                    android:textColor="@color/black_heading"
+                    android:textSize="@dimen/_14sp" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.8dp"
-                    android:layout_marginTop="@dimen/_18dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:background="@color/light_grey_30"/>
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/layReport"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/input_textDesi"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_18dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:orientation="horizontal"
-                    >
+                    android:layout_marginHorizontal="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_6dp"
+                    app:boxCornerRadiusBottomEnd="@dimen/_10dp"
+                    app:boxCornerRadiusBottomStart="@dimen/_10dp"
+                    app:boxCornerRadiusTopEnd="@dimen/_10dp"
+                    app:boxCornerRadiusTopStart="@dimen/_10dp"
+                    app:endIconDrawable="@android:color/transparent"
+                    app:hintEnabled="false"
+                    app:hintTextAppearance="@style/Editext.Theme"
+                    app:placeholderTextAppearance="@style/Editext.Theme"
+                    app:startIconContentDescription="$">
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/imgReport"
-                        android:layout_width="@dimen/_17dp"
-                        android:layout_height="@dimen/_17dp"
-                        android:layout_gravity="center"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_report_a_problem"/>
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvReport"
+                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                        android:id="@+id/AutoComDesi"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:paddingLeft="@dimen/_15dp"
+                        android:background="@drawable/toggle_add_reminder_edt"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:gravity="left"
+                        android:hint="@string/scr_lbl_email_id"
                         android:imeOptions="actionDone"
-                        android:inputType="textMultiLine"
-                        android:text="@string/scr_lbl_report_a_problem"
-                        android:textColor="@color/back_text_colour"
-                        android:textColorHint="@color/back_text_colour"
+                        android:inputType="text"
+                        android:padding="@dimen/_10dp"
+                        android:textColor="@color/black_heading"
+                        android:textColorHint="@color/app_gray"
                         android:textSize="@dimen/_14sp" />
 
+                </com.google.android.material.textfield.TextInputLayout>
 
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvGender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginHorizontal="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_16dp"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="Staff strength"
+                    android:textColor="@color/black_heading"
+                    android:textSize="@dimen/_14sp" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.8dp"
-                    android:layout_marginTop="@dimen/_18dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:background="@color/light_grey_30"/>
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/layTerms"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/input_textSOE"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_18dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:orientation="horizontal"
-                    >
+                    android:layout_marginHorizontal="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_6dp"
+                    app:boxCornerRadiusBottomEnd="@dimen/_10dp"
+                    app:boxCornerRadiusBottomStart="@dimen/_10dp"
+                    app:boxCornerRadiusTopEnd="@dimen/_10dp"
+                    app:boxCornerRadiusTopStart="@dimen/_10dp"
+                    app:hintEnabled="false"
+                    app:hintTextAppearance="@style/Editext.Theme"
+                    app:placeholderTextAppearance="@style/Editext.Theme"
+                    app:startIconContentDescription="$">
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/imgTerms"
-                        android:layout_width="@dimen/_17dp"
-                        android:layout_height="@dimen/_17dp"
-                        android:layout_gravity="center"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_terms"/>
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvTerms"
+                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                        android:id="@+id/AutoComTextViewEnquiry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:paddingLeft="@dimen/_15dp"
+                        android:background="@drawable/toggle_add_reminder_edt"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:gravity="left"
+                        android:hint="Select"
                         android:imeOptions="actionDone"
-                        android:inputType="textMultiLine"
-                        android:text="@string/scr_lbl_terms_of_use"
-                        android:textColor="@color/back_text_colour"
-                        android:textColorHint="@color/back_text_colour"
+                        android:inputType="text"
+                        android:padding="@dimen/_10dp"
+                        android:text=""
+                        android:textColor="@color/black_heading"
+                        android:textColorHint="@color/app_gray"
                         android:textSize="@dimen/_14sp" />
 
+                </com.google.android.material.textfield.TextInputLayout>
 
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvAdminName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginHorizontal="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_16dp"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="@string/scr_lbl_username_prefix"
+                    android:textColor="@color/black_heading"
+                    android:textSize="@dimen/_14sp" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.8dp"
-                    android:layout_marginTop="@dimen/_18dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:background="@color/light_grey_30"/>
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/layPrivacy"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/input_textAdminName"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_18dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:orientation="horizontal"
-                    >
+                    android:layout_marginHorizontal="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_6dp"
+                    app:boxCornerRadiusBottomEnd="@dimen/_10dp"
+                    app:boxCornerRadiusBottomStart="@dimen/_10dp"
+                    app:boxCornerRadiusTopEnd="@dimen/_10dp"
+                    app:boxCornerRadiusTopStart="@dimen/_10dp"
+                    app:endIconDrawable="@android:color/transparent"
+                    app:hintEnabled="false"
+                    app:hintTextAppearance="@style/Editext.Theme"
+                    app:placeholderTextAppearance="@style/Editext.Theme"
+                    app:startIconContentDescription="$">
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/imgPrivacy"
-                        android:layout_width="@dimen/_16dp"
-                        android:layout_height="@dimen/_16dp"
-                        android:layout_gravity="center"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_privacy"/>
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvPrivacy"
+                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                        android:id="@+id/AutoComAdminName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:paddingLeft="@dimen/_15dp"
+                        android:background="@drawable/toggle_add_reminder_edt"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:enabled="false"
+                        android:focusableInTouchMode="true"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:gravity="left"
+                        android:hint="@string/scr_lbl_username_prefix"
                         android:imeOptions="actionDone"
-                        android:inputType="textMultiLine"
-                        android:text="@string/scr_lbl_privacy_policy"
-                        android:textColor="@color/back_text_colour"
-                        android:textColorHint="@color/back_text_colour"
+                        android:inputType="text"
+                        android:padding="@dimen/_10dp"
+                        android:textColor="@color/black_heading"
+                        android:textColorHint="@color/app_gray"
                         android:textSize="@dimen/_14sp" />
 
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-                <View
-
-                    android:layout_width="match_parent"
-                    android:layout_height="0.8dp"
-                    android:layout_marginTop="@dimen/_18dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:background="@color/light_grey_30"/>
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/layLogout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_18dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:orientation="horizontal"
-                    >
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/imgLogoutNew"
-                        android:layout_width="@dimen/_16dp"
-                        android:layout_height="@dimen/_16dp"
-                        android:layout_gravity="center"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_om_logout"/>
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvLogoutNew"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:paddingLeft="@dimen/_15dp"
-                        android:fontFamily="@font/gilroy_semibold"
-                        android:gravity="left"
-                        android:imeOptions="actionDone"
-                        android:inputType="textMultiLine"
-                        android:text="Logout"
-                        android:textColor="@color/back_text_colour"
-                        android:textColorHint="@color/back_text_colour"
-                        android:textSize="@dimen/_14sp" />
-
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.8dp"
-                    android:layout_marginTop="@dimen/_18dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:background="@color/light_grey_30"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/loginButton"
+                    android:id="@+id/btnSubmit"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_40dp"
+                    android:layout_height="@dimen/_45dp"
                     android:layout_alignParentBottom="true"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="@dimen/_25dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:layout_marginBottom="@dimen/_16dp"
+                    android:layout_marginHorizontal="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_16dp"
+                    android:layout_marginBottom="@dimen/_10dp"
                     android:background="@drawable/bg_button_round_corner_5"
                     android:fontFamily="@font/gilroy_semibold"
                     android:gravity="center"
-                    android:paddingTop="@dimen/_2dp"
-                    android:text="@string/scr_lbl_save"
-                    android:visibility="gone"
+                    android:paddingTop="@dimen/_1dp"
+                    android:text="@string/scr_lbl_submit"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_16sp" />
+                    android:textSize="@dimen/_14sp" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

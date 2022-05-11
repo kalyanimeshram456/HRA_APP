@@ -1,546 +1,500 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:id="@+id/swipeRefreshLayout"
-    android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeRefreshLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:layout_below="@+id/toolbar_layout"
-    android:focusable="true"
     android:layout_gravity="center"
+    android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_below="@+id/toolbar_layout"
-    android:focusable="false"
-    android:focusableInTouchMode="false"
-    android:background="@color/white"
-    android:orientation="vertical">
-
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/cl_mainlayout"
-        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        >
+        android:layout_below="@+id/toolbar_layout"
+        android:background="@drawable/img_bg_bashboard"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:orientation="vertical">
 
-        <include layout="@layout/content_collapse_dashboard_header" />
-
-        <androidx.core.widget.NestedScrollView
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/cl_mainlayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:layout_height="match_parent">
 
-            <RelativeLayout
+            <include layout="@layout/content_collapse_dashboard_header" />
+
+            <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="match_parent"
+                android:fillViewport="true"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
                 <RelativeLayout
-                    android:id="@+id/cardSelect"
                     android:layout_width="match_parent"
-                    android:layout_marginTop="@dimen/_0dp"
-                    android:layout_weight="1"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:layout_height="@dimen/_45dp"
-                    android:paddingHorizontal="@dimen/_16dp"
-                    android:imeOptions="actionDone"
-                    android:background="@drawable/layout_round_shape_corners_8"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                  <!--  &lt;!&ndash;TAG Text filed&ndash;&gt;
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/input_textState"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/layCardOne"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:hintEnabled="false"
-                        app:boxCornerRadiusTopEnd="@dimen/_0dp"
-                        app:boxCornerRadiusTopStart="@dimen/_0dp"
-                        app:boxCornerRadiusBottomEnd="@dimen/_0dp"
-                        app:boxCornerRadiusBottomStart="@dimen/_0dp"
-                        app:hintTextAppearance="@style/Editext.Theme"
-                        app:startIconContentDescription="$"
-                        android:backgroundTint="@android:color/transparent"
-                        android:background="@android:color/transparent"
-                        app:endIconDrawable="@android:color/transparent"
-                        app:placeholderTextAppearance="@style/Editext.Theme">
--->
+                        android:layout_marginHorizontal="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_10dp"
+                        android:orientation="vertical">
 
-                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                        android:id="@+id/tvHighlight"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:backgroundTint="@android:color/transparent"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:focusableInTouchMode="false"
-                        android:fontFamily="@font/gilroy_semibold"
-                        android:hint=""
-                        android:imeOptions="actionDone"
-                        android:inputType="text"
-                        android:textColor="@color/back_text_colour"
-                        android:textColorHint="@color/back_text_colour"
-                        android:textSize="@dimen/_14sp" />
-<!--
-                    </com.google.android.material.textfield.TextInputLayout>
--->
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_6dp"
+                            android:orientation="horizontal">
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/imgSearchLr"
-                        android:layout_width="@dimen/_30dp"
-                        android:layout_height="@dimen/_22dp"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_om_select" />
+                            <RelativeLayout
+                                android:id="@+id/llImageView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="5.5">
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="@dimen/_40dp"
+                                    android:background="@android:color/transparent"
+                                    android:orientation="horizontal">
+
+                                    <de.hdodenhof.circleimageview.CircleImageView
+                                        android:id="@+id/imgProfileDash"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="@dimen/_40dp"
+                                        android:layout_gravity="left|center"
+                                        android:clickable="true"
+                                        android:gravity="left"
+                                        android:onClick="onClick"
+                                        android:src="@drawable/ic_user"
+                                        android:visibility="visible"
+                                        app:civ_border_color="@color/white"
+                                        app:civ_border_width="1dp" />
+
+                                    <de.hdodenhof.circleimageview.CircleImageView
+                                        android:id="@+id/imgIndicator"
+                                        android:layout_width="@dimen/_10dp"
+                                        android:layout_height="@dimen/_10dp"
+                                        android:layout_alignParentRight="true"
+                                        android:layout_alignParentBottom="true"
+                                        android:layout_gravity="right|bottom"
+                                        android:layout_marginRight="@dimen/_6dp"
+                                        android:layout_marginBottom="@dimen/_4dp"
+                                        android:gravity="right|bottom"
+                                        android:src="@color/bright_green"
+                                        android:visibility="visible"
+                                        app:civ_border_color="@color/back_text_colour"
+                                        app:civ_border_width="0dp" />
+
+
+                                </RelativeLayout>
+                                <!-- android:indeterminateTintMode="src_atop"-->
+                                <ProgressBar
+                                    android:id="@+id/progress_bar"
+                                    android:layout_width="@dimen/_25dp"
+                                    android:layout_height="@dimen/_25dp"
+                                    android:layout_centerInParent="true"
+                                    android:layout_gravity="center"
+
+                                    android:indeterminate="true"
+                                    android:indeterminateDrawable="@drawable/progress_bar_color" />
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginLeft="@dimen/_10dp"
+                                android:layout_weight="1"
+                                android:gravity="left"
+                                android:paddingVertical="@dimen/_6dp">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvName"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/gilroy_semibold"
+                                    android:text="User Name"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_16sp" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvAdmin"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/tvName"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/gilroy_regular"
+                                    android:text="Admin"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_12sp" />
+                            </RelativeLayout>
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardHigh"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_10dp"
+                            android:layout_marginBottom="@dimen/_0dp"
+                            android:layout_weight="1"
+                            android:clipChildren="false"
+                            android:clipToPadding="false"
+                            android:elevation="@dimen/_0dp"
+                            app:cardCornerRadius="@dimen/_10dp"
+                            app:cardElevation="@dimen/_0dp">
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@color/white"
+                                android:orientation="vertical"
+                                android:paddingTop="@dimen/_8dp">
+
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="left"
+                                    android:layout_marginLeft="@dimen/_10dp"
+                                    android:layout_marginTop="@dimen/_2dp"
+                                    android:fontFamily="@font/gilroy_semibold"
+                                    android:text="@string/scr_lbl_highlights"
+                                    android:textColor="@color/black_heading"
+                                    android:textSize="@dimen/_16sp" />
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1.4dp"
+                                    android:layout_marginTop="@dimen/_6dp"
+                                    android:background="@color/light_grey_30" />
+
+                                <androidx.appcompat.widget.LinearLayoutCompat
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <RelativeLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_horizontal"
+                                        android:layout_weight="1"
+                                        android:gravity="center_horizontal"
+                                        android:paddingVertical="@dimen/_10dp">
+
+                                        <androidx.appcompat.widget.AppCompatTextView
+                                            android:id="@+id/tvAttendance"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_gravity="center"
+                                            android:fontFamily="@font/gilroy_semibold"
+                                            android:text="@string/scr_lbl_attendance"
+                                            android:textAlignment="center"
+                                            android:textColor="@color/pink"
+                                            android:textSize="@dimen/_14sp" />
+
+                                        <androidx.appcompat.widget.AppCompatTextView
+                                            android:id="@+id/tvAttendanceValue"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/tvAttendance"
+                                            android:layout_gravity="center"
+                                            android:fontFamily="@font/gilroy_semibold"
+                                            android:text="0% of this months"
+                                            android:textAlignment="center"
+                                            android:textColor="@color/black_heading"
+                                            android:textSize="@dimen/_12sp" />
+                                    </RelativeLayout>
+
+                                    <View
+                                        android:layout_width="1.4dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_marginVertical="@dimen/_10dp"
+                                        android:background="@color/light_grey_30" />
+
+                                    <RelativeLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_horizontal"
+                                        android:layout_weight="1"
+                                        android:gravity="center_horizontal"
+                                        android:paddingVertical="@dimen/_10dp">
+
+                                        <androidx.appcompat.widget.AppCompatTextView
+                                            android:id="@+id/tvLeave"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_gravity="center"
+                                            android:fontFamily="@font/gilroy_semibold"
+                                            android:text="No of leaves"
+                                            android:textAlignment="center"
+                                            android:textColor="@color/pink"
+                                            android:textSize="@dimen/_14sp" />
+
+                                        <androidx.appcompat.widget.AppCompatTextView
+                                            android:id="@+id/tvLeaveValue"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/tvLeave"
+                                            android:layout_gravity="center"
+                                            android:fontFamily="@font/gilroy_semibold"
+                                            android:text="03 of this months"
+                                            android:textAlignment="center"
+                                            android:textColor="@color/black_heading"
+                                            android:textSize="@dimen/_12sp" />
+                                    </RelativeLayout>
+                                </androidx.appcompat.widget.LinearLayoutCompat>
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+                        </androidx.cardview.widget.CardView>
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardCal"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_250dp"
+                            android:layout_marginTop="@dimen/_10dp"
+                            android:layout_marginBottom="@dimen/_0dp"
+                            android:layout_weight="1"
+                            android:clipChildren="false"
+                            android:clipToPadding="false"
+                            android:elevation="@dimen/_0dp"
+                            app:cardCornerRadius="@dimen/_10dp"
+                            app:cardElevation="@dimen/_0dp">
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@color/white"
+                                android:orientation="vertical"
+                                android:paddingTop="@dimen/_8dp">
+
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="left"
+                                    android:layout_marginLeft="@dimen/_10dp"
+                                    android:layout_marginTop="@dimen/_2dp"
+                                    android:fontFamily="@font/gilroy_semibold"
+                                    android:text="@string/scr_lbl_my_calender"
+                                    android:textColor="@color/color_main"
+                                    android:textSize="@dimen/_16sp" />
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+                        </androidx.cardview.widget.CardView>
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardSale"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_10dp"
+                            android:layout_marginBottom="@dimen/_0dp"
+                            android:layout_weight="1"
+                            android:clipChildren="false"
+                            android:clipToPadding="false"
+                            android:elevation="@dimen/_0dp"
+                            app:cardCornerRadius="@dimen/_10dp"
+                            app:cardElevation="@dimen/_0dp">
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@color/white"
+                                android:orientation="vertical"
+                                android:paddingVertical="@dimen/_8dp">
+
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="left"
+                                    android:layout_marginLeft="@dimen/_10dp"
+                                    android:layout_marginTop="@dimen/_2dp"
+                                    android:fontFamily="@font/gilroy_semibold"
+                                    android:text="Today's Birthday"
+                                    android:textColor="@color/black_heading"
+                                    android:textSize="@dimen/_16sp" />
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1.4dp"
+                                    android:layout_marginTop="@dimen/_6dp"
+                                    android:background="@color/light_grey_30" />
+
+                                <androidx.appcompat.widget.LinearLayoutCompat
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginHorizontal="@dimen/_10dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <RelativeLayout
+                                        android:id="@+id/layBirthPro"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical"
+                                        android:layout_weight="1.5">
+
+                                        <LinearLayout
+                                            android:layout_width="@dimen/_25dp"
+                                            android:layout_height="@dimen/_25dp"
+                                            android:background="@android:color/transparent"
+                                            android:orientation="horizontal">
+
+                                            <de.hdodenhof.circleimageview.CircleImageView
+                                                android:id="@+id/imgBirthPro"
+                                                android:layout_width="@dimen/_25dp"
+                                                android:layout_height="@dimen/_25dp"
+                                                android:layout_gravity="left|center"
+                                                android:clickable="true"
+                                                android:gravity="left"
+                                                android:onClick="onClick"
+                                                android:src="@drawable/ic_user"
+                                                android:visibility="visible"
+                                                app:civ_border_color="@color/pink"
+                                                app:civ_border_width="1dp" />
+
+
+                                        </LinearLayout>
+                                        <!-- android:indeterminateTintMode="src_atop"-->
+                                        <ProgressBar
+                                            android:id="@+id/progress_barBirth"
+                                            android:layout_width="@dimen/_25dp"
+                                            android:layout_height="@dimen/_25dp"
+                                            android:indeterminate="true"
+                                            android:indeterminateDrawable="@drawable/progress_bar_color" />
+
+                                    </RelativeLayout>
+
+                                    <RelativeLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="left|center_vertical"
+                                        android:layout_weight="1"
+                                        android:gravity="left|center_vertical"
+                                        android:paddingTop="@dimen/_10dp">
+
+
+                                        <androidx.appcompat.widget.AppCompatTextView
+                                            android:id="@+id/tvBirthName"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_gravity="center"
+                                            android:fontFamily="@font/gilroy_semibold"
+                                            android:text="User name"
+                                            android:textAlignment="center"
+                                            android:textColor="@color/black_heading"
+                                            android:textSize="@dimen/_14sp" />
+
+                                        <androidx.appcompat.widget.AppCompatTextView
+                                            android:id="@+id/tvBirthValue"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/tvBirthName"
+                                            android:layout_gravity="center"
+                                            android:fontFamily="@font/gilroy_regular"
+                                            android:text="User designation"
+                                            android:textAlignment="center"
+                                            android:textColor="@color/gray"
+                                            android:textSize="@dimen/_14sp" />
+
+                                        <androidx.appcompat.widget.AppCompatImageView
+                                            android:layout_width="@dimen/_25dp"
+                                            android:layout_height="@dimen/_25dp"
+                                            android:layout_alignParentRight="true"
+                                            android:layout_centerVertical="true"
+                                            android:layout_gravity="center"
+                                            android:layout_marginTop="@dimen/_16dp"
+                                            android:src="@drawable/ic_party" />
+
+                                    </RelativeLayout>
+
+
+                                    <RelativeLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_horizontal"
+                                        android:layout_weight="1"
+                                        android:gravity="center_horizontal"
+                                        android:paddingTop="@dimen/_10dp">
+
+                                        <androidx.appcompat.widget.AppCompatTextView
+                                            android:id="@+id/tvLeaveBirth"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_gravity="center"
+                                            android:fontFamily="@font/gilroy_semibold"
+                                            android:text="Date"
+                                            android:textAlignment="center"
+                                            android:textColor="@color/black_heading"
+                                            android:textSize="@dimen/_14sp" />
+
+                                        <androidx.appcompat.widget.AppCompatTextView
+                                            android:id="@+id/tvLeaveBirthValue"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/tvLeaveBirth"
+                                            android:layout_gravity="center"
+                                            android:fontFamily="@font/gilroy_semibold"
+                                            android:text="5th Feb 2022"
+                                            android:textAlignment="center"
+                                            android:textColor="@color/gray"
+                                            android:textSize="@dimen/_14sp" />
+                                    </RelativeLayout>
+                                </androidx.appcompat.widget.LinearLayoutCompat>
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+                        </androidx.cardview.widget.CardView>
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
                 </RelativeLayout>
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/layCardOne"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/cardSelect"
-                    android:layout_marginTop="@dimen/_10dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:orientation="horizontal"
-                    android:weightSum="4">
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardSale"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="5dp"
-                        android:layout_marginBottom="@dimen/_3dp"
-                        android:layout_weight="1"
-                        android:clipChildren="false"
-                        android:clipToPadding="false"
-                        android:elevation="@dimen/_12dp"
-                        app:cardCornerRadius="@dimen/_15dp"
-                        app:cardElevation="@dimen/_3dp"
-                        >
-
-                        <androidx.appcompat.widget.LinearLayoutCompat
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/gradient_green"
-                            android:orientation="vertical"
-                            android:paddingVertical="@dimen/_8dp"
-                            >
-
-                            <androidx.appcompat.widget.AppCompatImageView
-                                android:layout_width="@dimen/_22dp"
-                                android:layout_height="@dimen/_22dp"
-                                android:layout_centerVertical="true"
-                                android:layout_gravity="center"
-                                android:layout_weight="1"
-                                android:src="@drawable/ic_om_rs"
-                                />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:textAlignment="center"
-                                android:layout_marginTop="@dimen/_6dp"
-                                android:fontFamily="@font/gilroy_regular"
-                                android:text="@string/scr_lbl_sale"
-                                android:textColor="@color/pro_light_grey"
-                                android:textSize="@dimen/_12sp"
-                                />
-
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="0.6dp"
-                                android:layout_marginTop="@dimen/_14dp"
-                                android:layout_marginHorizontal="@dimen/_13dp"
-                                android:background="@color/pro_light_grey"/>
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/tvSale"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:textAlignment="center"
-                                android:layout_marginTop="@dimen/_3dp"
-                                android:fontFamily="@font/gilroy_semibold"
-                                android:text="0"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/_14sp"
-                                />
-
-                        </androidx.appcompat.widget.LinearLayoutCompat>
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardQuotation"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="5dp"
-                        android:layout_marginBottom="@dimen/_3dp"
-                        android:layout_weight="1"
-                        android:clipChildren="false"
-                        android:clipToPadding="false"
-                        android:elevation="@dimen/_12dp"
-                        app:cardCornerRadius="@dimen/_15dp"
-                        app:cardElevation="@dimen/_3dp"
-                        >
-
-                        <androidx.appcompat.widget.LinearLayoutCompat
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/gradient_blue"
-                            android:orientation="vertical"
-                            android:paddingVertical="@dimen/_8dp">
-
-                            <androidx.appcompat.widget.AppCompatImageView
-                                android:layout_width="@dimen/_22dp"
-                                android:layout_height="@dimen/_22dp"
-                                android:layout_centerVertical="true"
-                                android:layout_gravity="center"
-                                android:layout_weight="1"
-                                android:src="@drawable/ic_om_quotations" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_marginTop="@dimen/_6dp"
-                                android:fontFamily="@font/gilroy_regular"
-                                android:text="Quotations"
-                                android:textAlignment="center"
-                                android:textColor="@color/pro_light_grey"
-                                android:textSize="@dimen/_12sp" />
-
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="0.6dp"
-                                android:layout_marginHorizontal="@dimen/_13dp"
-                                android:layout_marginTop="@dimen/_14dp"
-                                android:background="@color/pro_light_grey" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/tvQuotationCount"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_marginTop="@dimen/_3dp"
-                                android:fontFamily="@font/gilroy_semibold"
-                                android:text="0"
-                                android:textAlignment="center"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/_14sp" />
-
-                        </androidx.appcompat.widget.LinearLayoutCompat>
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardLostOpportunity"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="5dp"
-                        android:layout_marginBottom="@dimen/_3dp"
-                        android:layout_weight="1"
-                        android:clipChildren="false"
-                        android:clipToPadding="false"
-                        android:elevation="@dimen/_12dp"
-                        app:cardCornerRadius="@dimen/_15dp"
-                        app:cardElevation="@dimen/_3dp"
-                        >
-
-                        <androidx.appcompat.widget.LinearLayoutCompat
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/gradient_red"
-                            android:orientation="vertical"
-                            android:paddingVertical="@dimen/_8dp"
-                            >
-
-                            <androidx.appcompat.widget.AppCompatImageView
-                                android:layout_width="@dimen/_22dp"
-                                android:layout_height="@dimen/_22dp"
-                                android:layout_centerVertical="true"
-                                android:layout_gravity="center"
-                                android:layout_weight="1"
-                                android:src="@drawable/ic_om_lost"
-                                />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:textAlignment="center"
-                                android:layout_marginTop="@dimen/_4dp"
-                                android:fontFamily="@font/gilroy_regular"
-                                android:text="Lost\nApportunity"
-                                android:textColor="@color/pro_light_grey"
-                                android:textSize="@dimen/_12sp"
-                                />
-
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="0.6dp"
-                                android:layout_marginTop="@dimen/_3dp"
-                                android:layout_marginHorizontal="@dimen/_13dp"
-                                android:background="@color/pro_light_grey"/>
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/tvLostApp"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:textAlignment="center"
-                                android:layout_marginTop="@dimen/_3dp"
-                                android:fontFamily="@font/gilroy_semibold"
-                                android:text="0"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/_14sp"
-                                />
-
-                        </androidx.appcompat.widget.LinearLayoutCompat>
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardEnquiry"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/_3dp"
-                        android:layout_weight="1"
-                        android:clipChildren="false"
-                        android:clipToPadding="false"
-                        android:elevation="@dimen/_12dp"
-                        app:cardCornerRadius="@dimen/_15dp"
-                        app:cardElevation="@dimen/_3dp"
-                        >
-
-                        <androidx.appcompat.widget.LinearLayoutCompat
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/gradient_yellow"
-                            android:orientation="vertical"
-                            android:paddingVertical="@dimen/_8dp"
-                            >
-
-                            <androidx.appcompat.widget.AppCompatImageView
-                                android:layout_width="@dimen/_22dp"
-                                android:layout_height="@dimen/_22dp"
-                                android:layout_centerVertical="true"
-                                android:layout_gravity="center"
-                                android:layout_weight="1"
-                                android:src="@drawable/ic_om_enquiry"
-                                />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:textAlignment="center"
-                                android:layout_marginTop="@dimen/_6dp"
-                                android:fontFamily="@font/gilroy_regular"
-                                android:text="Enquiries"
-                                android:textColor="@color/pro_light_grey"
-                                android:textSize="@dimen/_12sp"
-                                />
-
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="0.6dp"
-                                android:layout_marginTop="@dimen/_14dp"
-                                android:layout_marginHorizontal="@dimen/_13dp"
-                                android:background="@color/pro_light_grey"/>
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/tvEnquiryCount"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:textAlignment="center"
-                                android:layout_marginTop="@dimen/_3dp"
-                                android:fontFamily="@font/gilroy_semibold"
-                                android:text="0"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/_14sp"
-                                />
-
-                        </androidx.appcompat.widget.LinearLayoutCompat>
-                    </androidx.cardview.widget.CardView>
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/layVisitTimer"
-                    android:layout_below="@+id/layCardOne"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:visibility="visible"
-                    android:layout_marginTop="@dimen/_6dp"
-                    android:paddingHorizontal="@dimen/_10dp"
-                    android:paddingVertical="@dimen/_10dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:background="@drawable/bg_button_round_corner_16"
-                    >
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        >
-
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/tvVisitNo"
-                            android:layout_width="@dimen/_45dp"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentStart="true"
-                            android:fontFamily="@font/font_semibold"
-                            android:text="Visit No"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/_12sp" />
-
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/tvVisitNoColon"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_toRightOf="@+id/tvVisitNo"
-                            android:fontFamily="@font/font_semibold"
-                            android:text=" :  "
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/_12sp" />
+            </androidx.core.widget.NestedScrollView>
 
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/tvVisitNoValue"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_toRightOf="@+id/tvVisitNoColon"
-                            android:fontFamily="@font/gilroy_bold"
-                            android:text="0"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/_12sp" />
+            <com.ominfo.hra_app.ui.attendance.ripple_effect.RippleBackground
+                android:id="@+id/rippleEffect"
+                android:layout_width="@dimen/_140dp"
+                android:layout_height="@dimen/_120dp"
+                android:layout_alignParentRight="true"
+                android:layout_gravity="right|bottom"
+                android:background="@drawable/layout_ripple_round"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?selectableItemBackground"
+                android:visibility="visible"
+                app:rb_color="@color/blue_graph"
+                app:rb_duration="3000"
+                app:rb_radius="@dimen/_6dp"
+                app:rb_rippleAmount="6"
+                app:rb_scale="6"
+                app:rb_strokeWidth="@dimen/_10dp"
+                app:rb_type="fillRipple">
 
-                    </RelativeLayout>
-                    <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2
-"
-                        />
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.1"
-                        android:layout_gravity="right"
-                        android:gravity="right"
-                        >
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/add_attendance"
+                    android:layout_width="@dimen/_40dp"
+                    android:layout_height="@dimen/_40dp"
+                    android:layout_centerInParent="true"
+                    android:contentDescription="TODO"
+                    android:foreground="@drawable/attention_gradient_blue"
+                    app:fabSize="mini"
+                    app:maxImageSize="@dimen/_16dp" />
+            </com.ominfo.hra_app.ui.attendance.ripple_effect.RippleBackground>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/tvGadiNo"
-                            android:layout_width="@dimen/_50dp"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/font_semibold"
-                            android:text="Duration"
-                            android:layout_gravity="right"
-                            android:gravity="right"
-                            android:layout_marginRight="67dp"
-                            android:layout_alignParentRight="true"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/_12sp" />
-
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/tvGadiNoColon"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/font_semibold"
-                            android:text=" :  "
-                            android:layout_marginRight="@dimen/_50dp"
-                            android:layout_gravity="right"
-                            android:layout_alignParentRight="true"
-                            android:gravity="right"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/_12sp" />
-
-
-                        <Chronometer
-                            android:id="@+id/chronometer"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="0dp"
-                            android:fontFamily="@font/gilroy_bold"
-                            android:text="00:00:00"
-                            android:layout_gravity="right"
-                            android:layout_alignParentRight="true"
-                            android:gravity="right"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/_12sp" />
-                        <!---->
-
-                    </RelativeLayout>
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_below="@+id/layVisitTimer"
-                    android:background="@drawable/layout_round_shape_corners"
-                    android:orientation="vertical">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvDashboardList"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_10dp"
-                        android:layout_marginBottom="@dimen/_16dp"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        android:nestedScrollingEnabled="true"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:listitem="@layout/row_crm_dashboard" />
-
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-            </RelativeLayout>
-
-        </androidx.core.widget.NestedScrollView>
-
-
-        <com.ominfo.crm_solution.ui.attendance.ripple_effect.RippleBackground
-            android:layout_width="@dimen/_140dp"
-            android:layout_height="@dimen/_120dp"
-            android:id="@+id/rippleEffect"
-            app:rb_color="@color/blue_graph"
-            app:rb_radius="@dimen/_6dp"
-            app:rb_type="fillRipple"
-            app:rb_strokeWidth="@dimen/_10dp"
-            app:rb_rippleAmount="6"
-            app:rb_duration="3000"
-            android:visibility="gone"
-            android:clickable="true"
-            android:focusable="true"
-            android:layout_gravity="right|bottom"
-            android:foreground="?selectableItemBackground"
-            android:background="@drawable/layout_ripple_round"
-            android:layout_alignParentRight="true"
-            app:rb_scale="6">
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/add_attendance"
-                android:layout_width="@dimen/_40dp"
-                android:layout_height="@dimen/_40dp"
-                android:contentDescription="TODO"
-                android:layout_centerInParent="true"
-                app:fabSize="mini"
-                app:maxImageSize="@dimen/_16dp"
-                android:foreground="@drawable/attention_gradient_blue"
-                />
-        </com.ominfo.crm_solution.ui.attendance.ripple_effect.RippleBackground>
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-</androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

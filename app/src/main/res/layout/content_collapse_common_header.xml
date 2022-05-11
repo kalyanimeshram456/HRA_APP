@@ -7,7 +7,7 @@
     android:layout_height="@dimen/_90dp"
     android:fitsSystemWindows="true"
     app:elevation="0dp"
-    android:background="@color/white"
+    android:background="@color/color_main"
     android:theme="@style/AppTheme.White"
     >
 
@@ -69,11 +69,11 @@
                         android:layout_gravity="left|center"
                         android:gravity="left"
                         android:layout_marginRight="@dimen/_14dp"
-                        android:src="@drawable/ic_om_arrow_back"
+                        android:src="@drawable/ic_back"
                         android:visibility="visible" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvSearchView"
+                        android:id="@+id/tvTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
@@ -81,10 +81,11 @@
                         android:fontFamily="@font/gilroy_bold"
                         android:gravity="left"
                         android:hint=""
+                        android:text="Employees"
                         android:imeOptions="actionDone"
                         android:inputType="text"
-                        android:textColor="@color/back_text_colour"
-                        android:textColorHint="@color/back_text_colour"
+                        android:textColor="@color/white"
+                        android:textColorHint="@color/white"
                         android:textSize="@dimen/_18sp" />
 
                     <androidx.appcompat.widget.AppCompatTextView

@@ -59,7 +59,7 @@
         android:elevation="10dp"
         app:cardCornerRadius="@dimen/_15dp">
 
-        <com.ominfo.crm_solution.common.TouchImageView
+        <com.ominfo.hra_app.common.TouchImageView
             android:id="@+id/imgShowPhoto"
             android:layout_width="330dp"
             android:layout_height="540dp"

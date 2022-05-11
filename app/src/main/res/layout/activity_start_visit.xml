@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_start_visit"
-    tools:context=".ui.SplashActivity">
+    tools:context="com.ominfo.hra_app.ui.SplashActivity">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"

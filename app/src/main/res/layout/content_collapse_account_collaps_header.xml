@@ -34,7 +34,7 @@
                 android:layout_gravity="left|center"
                 android:gravity="left"
                 android:layout_marginRight="@dimen/_14dp"
-                android:src="@drawable/ic_om_arrow_back"
+                android:src="@drawable/ic_back"
                 android:visibility="visible" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -45,11 +45,11 @@
                 android:layout_gravity="center_vertical"
                 android:fontFamily="@font/gilroy_bold"
                 android:gravity="left"
-                android:hint="My Account"
+                android:hint="@string/scr_lbl_my_profile"
                 android:imeOptions="actionDone"
                 android:inputType="text"
-                android:textColor="@color/back_text_colour"
-                android:textColorHint="@color/back_text_colour"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
                 android:textSize="@dimen/_18sp" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -87,8 +87,8 @@
                 android:layout_marginHorizontal="@dimen/_20dp"
                 android:clickable="true"
                 android:onClick="onClick"
-                android:src="@drawable/ic_phone"
-                android:visibility="invisible" />
+                android:src="@drawable/ic_edit_all"
+                android:visibility="visible" />
 
 
             <androidx.appcompat.widget.AppCompatImageView

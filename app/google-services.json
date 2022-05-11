@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:258697984566:android:be863aa10a9adcd001f697",
         "android_client_info": {
-          "package_name": "com.ominfo.crm_solution"
+          "package_name": "com.ominfo.hra_app"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "258697984566-8l0gtis5gm72p6kc92kve498dbggd5sd.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.ominfo.crm_solution",
+            "package_name": "com.ominfo.hra_app",
             "certificate_hash": "a7aa23aff7be5f79153c3eeafff58e2ab53582db"
           }
         },

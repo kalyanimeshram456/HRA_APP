@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--driver app colours-->
-    <color name="color_main">#0062CC</color>
+    <color name="color_main">#1149dc</color>
     <color name="color_blue_icon">#007AFF</color>
     <color name="bg_white">#FFFFFF</color>
     <color name="back_text_colour">#282828</color>
@@ -16,6 +16,7 @@
     <color name="rippelColor">#0099CC</color>
     <color name="blue_graph">#ff33b5e5</color>
     <color name="status_bar_color">#0062CC</color><!--#E0E7FB-->
+    <color name="bright_green">#66ff00</color>
 
     <!--textfiled colours-->
     <color name="color_text_filed">#EEEFF1</color>
@@ -54,6 +55,7 @@
     <color name="Dark_Yellow_dis">#DFB00A</color>
     <color name="Light_Voilet">#D35CAC</color>
     <color name="Dark_Voilet">#CC0594</color>
+    <color name="pink">#ff3078</color>
 
     <color name="_FF5C47">#FF5C47</color>
 
@@ -76,7 +78,7 @@
     <color name="light_grey">#4D707070</color>
     <color name="light_grey_100">#FF707070</color>
     <color name="black_sub_heading">#060606</color>
-
+    <color name="bg_screen">#eef2fb</color>
     <color name="colorSemiTransparentWhite">#B2FFFFFF</color>
     <color name="fed02d">#fed02d</color>
     <color name="black_tv">#060606</color>

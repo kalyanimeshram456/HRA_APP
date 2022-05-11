@@ -6,20 +6,6 @@
     android:theme="@style/AppTheme.White"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!--<com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginEnd="@dimen/_45dp"
-        android:layout_marginBottom="@dimen/_70dp"
-        android:src="@drawable/ic_om_filter"
-        app:fabSize="normal"
-        android:visibility="gone"
-        app:fabCustomSize="@dimen/_45dp"
-        app:maxImageSize="@dimen/_18dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />-->
     <include layout="@layout/content_my_account"/>
     <include layout="@layout/layout_loader"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
