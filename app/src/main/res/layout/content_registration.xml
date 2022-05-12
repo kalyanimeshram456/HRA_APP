@@ -65,7 +65,7 @@
 
                     <!--TAG Text filed-->
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/input_text"
+                        android:id="@+id/input_textName"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
                         app:startIconContentDescription="$">
 
                         <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                            android:id="@+id/AutoComTextViewDesr"
+                            android:id="@+id/AutoComTextViewName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/toggle_add_reminder_edt"
@@ -92,7 +92,7 @@
                             android:fontFamily="@font/gilroy_semibold"
                             android:hint="@string/scr_lbl_enter_company_name"
                             android:imeOptions="actionDone"
-                            android:inputType="text"
+                            android:inputType="textPersonName"
                             android:padding="@dimen/_10dp"
                             android:textColor="@color/black_heading"
                             android:textColorHint="@color/app_gray"
@@ -142,6 +142,157 @@
                             android:hint="@string/scr_lbl_enter_gst_number"
                             android:imeOptions="actionDone"
                             android:inputType="text"
+                            android:padding="@dimen/_10dp"
+                            android:textColor="@color/black_heading"
+                            android:textColorHint="@color/app_gray"
+                            android:textSize="@dimen/_14sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvAddress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginHorizontal="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_16dp"
+                        android:fontFamily="@font/gilroy_semibold"
+                        android:text="@string/scr_lbl_address"
+                        android:textColor="@color/black_heading"
+                        android:textSize="@dimen/_14sp" />
+
+                    <!--TAG Text filed-->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/input_textAddress"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_6dp"
+                        app:boxCornerRadiusBottomEnd="@dimen/_10dp"
+                        app:boxCornerRadiusBottomStart="@dimen/_10dp"
+                        app:boxCornerRadiusTopEnd="@dimen/_10dp"
+                        app:boxCornerRadiusTopStart="@dimen/_10dp"
+                        app:endIconDrawable="@android:color/transparent"
+                        app:hintEnabled="false"
+                        app:hintTextAppearance="@style/Editext.Theme"
+                        app:placeholderTextAppearance="@style/Editext.Theme"
+                        app:startIconContentDescription="$">
+
+                        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                            android:id="@+id/AutoComAddress"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/toggle_add_reminder_edt"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:hint="@string/scr_lbl_enter_address"
+                            android:imeOptions="actionDone"
+                            android:inputType="textPostalAddress"
+                            android:padding="@dimen/_10dp"
+                            android:textColor="@color/black_heading"
+                            android:textColorHint="@color/app_gray"
+                            android:textSize="@dimen/_14sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvPincode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginHorizontal="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_16dp"
+                        android:fontFamily="@font/gilroy_semibold"
+                        android:text="@string/scr_lbl_pincode"
+                        android:textColor="@color/black_heading"
+                        android:textSize="@dimen/_14sp" />
+
+                    <!--TAG Text filed-->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/input_textPincode"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_6dp"
+                        app:boxCornerRadiusBottomEnd="@dimen/_10dp"
+                        app:boxCornerRadiusBottomStart="@dimen/_10dp"
+                        app:boxCornerRadiusTopEnd="@dimen/_10dp"
+                        app:boxCornerRadiusTopStart="@dimen/_10dp"
+                        app:endIconDrawable="@android:color/transparent"
+                        app:hintEnabled="false"
+                        app:hintTextAppearance="@style/Editext.Theme"
+                        app:placeholderTextAppearance="@style/Editext.Theme"
+                        app:startIconContentDescription="$">
+
+                        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                            android:id="@+id/AutoComPincode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/toggle_add_reminder_edt"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:hint="@string/scr_lbl_enter_pincode"
+                            android:imeOptions="actionDone"
+                            android:inputType="number"
+                            android:maxLength="6"
+                            android:padding="@dimen/_10dp"
+                            android:textColor="@color/black_heading"
+                            android:textColorHint="@color/app_gray"
+                            android:textSize="@dimen/_14sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvUsernamePrefix"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginHorizontal="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_16dp"
+                        android:fontFamily="@font/gilroy_semibold"
+                        android:text="@string/scr_lbl_username_prefix"
+                        android:textColor="@color/black_heading"
+                        android:textSize="@dimen/_14sp" />
+
+                    <!--TAG Text filed-->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/input_textUsernamePrefix"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_6dp"
+                        app:boxCornerRadiusBottomEnd="@dimen/_10dp"
+                        app:boxCornerRadiusBottomStart="@dimen/_10dp"
+                        app:boxCornerRadiusTopEnd="@dimen/_10dp"
+                        app:boxCornerRadiusTopStart="@dimen/_10dp"
+                        app:endIconDrawable="@android:color/transparent"
+                        app:hintEnabled="false"
+                        app:hintTextAppearance="@style/Editext.Theme"
+                        app:placeholderTextAppearance="@style/Editext.Theme"
+                        app:startIconContentDescription="$">
+
+                        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                            android:id="@+id/AutoComUsernamePrefix"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/toggle_add_reminder_edt"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:hint="@string/msg_enter_username_prefix"
+                            android:imeOptions="actionDone"
+                            android:inputType="text"
+                            android:maxLength="3"
                             android:padding="@dimen/_10dp"
                             android:textColor="@color/black_heading"
                             android:textColorHint="@color/app_gray"
@@ -202,7 +353,7 @@
                             android:fontFamily="@font/gilroy_semibold"
                             android:hint="abc@mail.com"
                             android:imeOptions="actionDone"
-                            android:inputType="text"
+                            android:inputType="textEmailAddress"
                             android:padding="@dimen/_10dp"
                             android:textColor="@color/black_heading"
                             android:textColorHint="@color/app_gray"
@@ -251,7 +402,7 @@
                             android:fontFamily="@font/gilroy_semibold"
                             android:hint="@string/msg_enter_admin_name"
                             android:imeOptions="actionDone"
-                            android:inputType="text"
+                            android:inputType="textPersonName"
                             android:padding="@dimen/_10dp"
                             android:textColor="@color/black_heading"
                             android:textColorHint="@color/app_gray"
@@ -299,7 +450,7 @@
                             android:fontFamily="@font/gilroy_semibold"
                             android:hint="@string/scr_lbl_enter_mobile_number"
                             android:imeOptions="actionDone"
-                            android:inputType="text"
+                            android:inputType="number"
                             android:padding="@dimen/_10dp"
                             android:textColor="@color/black_heading"
                             android:textColorHint="@color/app_gray"
@@ -347,7 +498,7 @@
                             android:fontFamily="@font/gilroy_semibold"
                             android:hint="@string/msg_enter_no_of_employees"
                             android:imeOptions="actionDone"
-                            android:inputType="text"
+                            android:inputType="number"
                             android:padding="@dimen/_10dp"
                             android:textColor="@color/black_heading"
                             android:textColorHint="@color/app_gray"
@@ -381,7 +532,7 @@
                             android:layout_marginTop="@dimen/_6dp"
                             android:layout_weight="1"
                             android:fontFamily="@font/gilroy_regular"
-                            android:text="Subscription charges will be\n ₹1000 / User / Year + GST"
+                            android:text="Subscription charges will be\n ₹0 / User / Year + GST"
                             android:textColor="@color/gray"
                             android:textSize="@dimen/_14sp" />
 
@@ -403,7 +554,7 @@
                                 android:layout_marginRight="8dp"
                                 android:fontFamily="@font/gilroy_semibold"
                                 android:paddingRight="@dimen/_30dp"
-                                android:text="₹11000"
+                                android:text="₹0"
                                 android:textColor="@color/black_heading"
                                 android:textSize="@dimen/_18sp" />
 

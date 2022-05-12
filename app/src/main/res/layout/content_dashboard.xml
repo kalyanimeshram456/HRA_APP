@@ -261,7 +261,7 @@
                         <androidx.cardview.widget.CardView
                             android:id="@+id/cardCal"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/_250dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/_10dp"
                             android:layout_marginBottom="@dimen/_0dp"
                             android:layout_weight="1"
@@ -289,6 +289,12 @@
                                     android:text="@string/scr_lbl_my_calender"
                                     android:textColor="@color/color_main"
                                     android:textSize="@dimen/_16sp" />
+
+                                <com.ominfo.hra_app.ui.dashboard.calender.SimpleCalendar
+                                    android:id="@+id/square_day"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    />
 
                             </androidx.appcompat.widget.LinearLayoutCompat>
                         </androidx.cardview.widget.CardView>

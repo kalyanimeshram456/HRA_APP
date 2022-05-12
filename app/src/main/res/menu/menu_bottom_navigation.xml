@@ -9,22 +9,22 @@
     <item
         android:id="@+id/Search"
         android:icon="@drawable/ic_om_search"
-        android:title="Search" />
+        android:title="Employees" />
 
     <item
         android:id="@+id/placeholder"
         android:icon="@drawable/ic_om_search"
-        android:title="hhh" />
+        android:title="Salary" />
 
     <item
         android:id="@+id/Profile"
         android:icon="@drawable/ic_dash_reminder"
-        android:title="Reminder" />
+        android:title="Leaves" />
 
     <item
         android:id="@+id/Settings"
         android:icon="@drawable/ic_om_acc"
-        android:title="My Account" />
+        android:title="My Profile" />
 
     <!--<item
         android:id="@+id/saly"

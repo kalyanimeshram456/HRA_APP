@@ -246,10 +246,10 @@
     <string name="scr_lbl_never">Never</string>
     <string name="msg_please_enter_following_details_to_register_successfully">Please enter following details to register successfully.</string>
     <string name="scr_lbl_enter_company_name">Enter company name</string>
-    <string name="scr_lbl_gst_number">GST Number</string>
+    <string name="scr_lbl_gst_number">GST Number (optional)</string>
     <string name="scr_lbl_enter_gst_number">Enter GST number</string>
     <string name="msg_enter_username_prefix">Enter username prefix</string>
-    <string name="msg_ex_if_prefix_is_eo_user_id_will_be_eo0001">Ex : If prefix is EO, User id will be EO0001</string>
+    <string name="msg_ex_if_prefix_is_eo_user_id_will_be_eo0001">Ex : If prefix is EOO, User id will be EOO001</string>
     <string name="scr_lbl_admin_name">Admin Name</string>
     <string name="msg_enter_admin_name">Enter admin name</string>
     <string name="scr_lbl_enter_mobile_number">Enter mobile number</string>
@@ -291,5 +291,15 @@
     <string name="scr_lbl_employees">Employees</string>
     <string name="scr_lbl_username_prefix">Username prefix</string>
     <string name="scr_lbl_my_profile">My Profile</string>
+    <string name="scr_lbl_enter_address">Enter address</string>
+    <string name="scr_lbl_enter_pincode">Enter pincode</string>
+    <string name="err_enter_company_name">Please enter company name.</string>
+    <string name="err_enter_address">Please enter address.</string>
+    <string name="err_enter_pincode">Please enter pincode.</string>
+    <string name="err_enter_username_prefix">Please enter username prefix</string>
+    <string name="err_enter_email_id">Please enter email id</string>
+    <string name="err_enter_admin_name">Please enter admin name.</string>
+    <string name="err_enter_mobile_no">Please enter mobile number.</string>
+    <string name="err_enter_emp_stregth">Please enter employee strength.</string>
 
 </resources>

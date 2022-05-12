@@ -115,13 +115,13 @@
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/imgCall"
-                        android:layout_width="@dimen/_20dp"
-                        android:layout_height="@dimen/_20dp"
+                        android:layout_width="@dimen/_40dp"
+                        android:layout_height="@dimen/_40dp"
                         android:layout_marginHorizontal="@dimen/_20dp"
                         android:clickable="true"
                         android:onClick="onClick"
-                        android:src="@drawable/ic_phone"
-                        android:visibility="invisible" />
+                        android:src="@drawable/ic_logout"
+                        android:visibility="visible" />
 
 
                     <androidx.appcompat.widget.AppCompatImageView

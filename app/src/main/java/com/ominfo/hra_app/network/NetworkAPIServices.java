@@ -2,6 +2,7 @@ package com.ominfo.hra_app.network;
 
 import com.google.gson.JsonElement;
 import com.ominfo.hra_app.ui.my_account.model.ProfileRequest;
+
 import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -99,6 +100,30 @@ public interface NetworkAPIServices {
 
     @Multipart
     @POST()
+    Observable<JsonElement> registration(@Url String url,
+                                         @Part("action") RequestBody uploadType,
+                                         @Part("name") RequestBody name,
+                                         @Part("registered_address") RequestBody registered_address,
+                                         @Part("pincode") RequestBody pincode,
+                                         @Part("contact_no") RequestBody contact_no,
+                                         @Part("email_id") RequestBody email_id,
+                                         @Part("staff_strength") RequestBody staff_strength,
+                                         @Part("user_prefix") RequestBody user_prefix);
+    @Multipart
+    @POST()
+    Observable<JsonElement> checkPrefix(@Url String url,
+                                         @Part("action") RequestBody uploadType,
+                                         @Part("user_prefix") RequestBody user_prefix);
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> subCharges(@Url String url,
+                                        @Part("action") RequestBody uploadType,
+                                        @Part("from_date") RequestBody from_date,
+                                        @Part("end_date") RequestBody end_date);
+
+    @Multipart
+    @POST()
     Observable<JsonElement> product(@Url String url,
                                     @Part("action") RequestBody uploadType,
                                     @Part("pageno") RequestBody pageno,
@@ -162,7 +187,6 @@ public interface NetworkAPIServices {
                                      @Part("EndDate") RequestBody EndDate,
                                      @Part("po_number") RequestBody po_number,
                                      @Part("pending_qty") RequestBody pending_qty);
-
 
 
     @Multipart

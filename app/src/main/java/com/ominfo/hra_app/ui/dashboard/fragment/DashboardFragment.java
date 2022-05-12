@@ -2,6 +2,7 @@ package com.ominfo.hra_app.ui.dashboard.fragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -26,6 +27,7 @@ import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -59,6 +61,7 @@ import com.ominfo.hra_app.ui.dashboard.model.DashboardRequest;
 import com.ominfo.hra_app.ui.dashboard.model.GetDashboardResponse;
 import com.ominfo.hra_app.ui.dashboard.model.GetDashboardViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.HighlightModel;
+import com.ominfo.hra_app.ui.login.LoginActivity;
 import com.ominfo.hra_app.ui.login.model.AttendanceDaysTable;
 import com.ominfo.hra_app.ui.login.model.LoginDays;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
@@ -106,8 +109,8 @@ public class DashboardFragment extends BaseFragment {
     AppCompatTextView tvNotifyCount;
    /* @BindView(R.id.imgProfileDash)
     CircleImageView imgProfileDash;*/
-    @BindView(R.id.imgBack)
-    LinearLayoutCompat imgBack;
+    @BindView(R.id.imgCall)
+    AppCompatImageView imgLogout;
     @BindView(R.id.imgNotify)
     AppCompatImageView imgNotify;
     @BindView(R.id.progress_bar)
@@ -476,11 +479,10 @@ public class DashboardFragment extends BaseFragment {
                                 },16000);*/
     private void setToolbar() {
         ((BaseActivity) mContext).initToolbar(0, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify, tvNotifyCount, 0, R.id.imgCall);
-        imgBack.setOnClickListener(new View.OnClickListener() {
+        imgLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment fragment = new DashboardFragment();
-                ((BaseActivity) mContext).moveFragment(mContext, fragment);
+                showLogoutDialog(mContext);
             }
         });
         imgNotify.setOnClickListener(new View.OnClickListener() {
@@ -491,7 +493,48 @@ public class DashboardFragment extends BaseFragment {
             }
         });
     }
+    public void showLogoutDialog(Context mContext) {
+        Dialog mDialogLogout = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialogLogout.setContentView(R.layout.dialog_logout);
+        mDialogLogout.setCanceledOnTouchOutside(true);
+        AppCompatImageView mClose = mDialogLogout.findViewById(R.id.imgCancel);
+        AppCompatButton okayButton = mDialogLogout.findViewById(R.id.uploadButton);
+        AppCompatButton cancelButton = mDialogLogout.findViewById(R.id.cancelButton);
 
+        okayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogLogout.dismiss();
+                getActivity().finishAffinity();
+                launchScreen(getActivity(), LoginActivity.class);
+                SharedPref.getInstance(mContext).write(SharedPrefKey.IS_LOGGED_IN, false);
+                try{
+                    mDb.getDbDAO().deleteLoginData();
+                    mDb.getDbDAO().deleteLocationData();
+                    mDb.getDbDAO().deleteAttendanceData();
+                    AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            //deleteReminderViewModel.DeleteReminder();
+                        }
+                    });
+                }catch (Exception e){e.printStackTrace();}
+            }
+        });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogLogout.dismiss();
+            }
+        });
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogLogout.dismiss();
+            }
+        });
+        mDialogLogout.show();
+    }
     /* Call Api For RM */
     private void callDashboardApi(String startDate, String endDate) {
         if (NetworkCheck.isInternetAvailable(mContext)) {

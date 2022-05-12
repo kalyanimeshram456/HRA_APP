@@ -24,6 +24,9 @@ import com.ominfo.hra_app.ui.notifications.model.DeleteNotificationViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LeaveSingleRecordViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LeaveStatusViewModel;
 import com.ominfo.hra_app.ui.notifications.model.NotificationViewModel;
+import com.ominfo.hra_app.ui.registration.model.CheckPrefixViewModel;
+import com.ominfo.hra_app.ui.registration.model.RegistrationViewModel;
+import com.ominfo.hra_app.ui.registration.model.SubscriptionViewModel;
 import com.ominfo.hra_app.ui.sales_credit.model.SalesCreditViewModel;
 import com.ominfo.hra_app.ui.sales_credit.model.View30ViewModel;
 import com.ominfo.hra_app.ui.search.model.SearchCrmViewModel;
@@ -134,6 +137,15 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
          }
          else  if (modelClass.isAssignableFrom(UpdateTicketViewModel.class)) {
              return (T) new UpdateTicketViewModel(service);
+         }
+         else  if (modelClass.isAssignableFrom(RegistrationViewModel.class)) {
+             return (T) new RegistrationViewModel(service);
+         }
+         else  if (modelClass.isAssignableFrom(CheckPrefixViewModel.class)) {
+             return (T) new CheckPrefixViewModel(service);
+         }
+         else  if (modelClass.isAssignableFrom(SubscriptionViewModel.class)) {
+             return (T) new SubscriptionViewModel(service);
          }
 
         throw new IllegalArgumentException("Unknown class name");

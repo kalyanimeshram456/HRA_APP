@@ -7,14 +7,15 @@ public class DynamicAPIPath {
     public static final String regenerateCallWithCode = "/profile-services/customers/regenerate-otp-dial";
     public static final String uploadPublicKey = "/shared/encryption-handler/device-key/upload";
     //http://123.252.197.10/elixiatms-om/modules/api/TMSVendor/index_omtrucking.php
-    public static final String BASE = "https://ominfo.in/crm/app_api.php";//"index_omtrucking.php"
+    public static final String BASE = "https://ominfo.in/o_hr/OHR_app_api.php";//"index_omtrucking.php"
     public static final String BASE_NODEJS = "http://ominfo.in:3000/";//"index_omtrucking.php"// ;
     public static final String POST_LOGIN = BASE+"?action=login";
+    public static final String POST_REGISTRATION= BASE+"?action=add_company";
     public static final String POST_LOGOUT = BASE+"?action=logout_mt_update";
     public static final String POST_PROFILE= BASE_NODEJS+"getEmployee_profile";
-    public static final String POST_PRODUCT=  BASE+"?action=get_product_records";
+    public static final String POST_CHECK_PREFIX=  BASE+"?action=check_userprefix";
     public static final String POST_SALES= BASE+"?action=get_all_product";
-    public static final String POST_QUOTATION= BASE+"?action=get_quotation_record";
+    public static final String POST_SUB_CHARGES= BASE+"?action=get_subs_price";
     public static final String POST_DISPATCH=  BASE+"?action=dispatchpendingdets";
     public static final String POST_SALES_CREDIT= BASE_NODEJS+"sales_unpaid";
     public static final String POST_REMINDER= BASE_NODEJS+"getreminder";
@@ -60,7 +61,7 @@ public class DynamicAPIPath {
 
     //action string
     public static final String POST_FETCH_KATA_CHITTI = "index_with_DRapp.php?action=getKantaChitthi";
-    public static final String action_get_rm = "rmget";
+    public static final String action_login = "login";
     public static final String action_get_tour = "tourget";
     public static final String action_logout = "logout_mt_update";
     public static final String action_get_leave_single = "get_record";
@@ -70,7 +71,7 @@ public class DynamicAPIPath {
     public static final String action_mark_attendance = "mark_attendance";
     public static final String action_update_attendance = "attendance_updated";
     public static final String action_save_enquiry = "enquirysave";
-    public static final String action_get_enquiry = "enquiryget";
+    public static final String action_get_subs_price = "get_subs_price";
     public static final String action_get_visit = "visitget";
     public static final String action_get_top_customer = "top_customer";
     public static final String action_update_leave_status = "apply_leave_updated";
@@ -97,7 +98,9 @@ public class DynamicAPIPath {
     public static final String action_get_ticket = "get_filterraised_record";
     public static final String action_update_ticket = "ticket_updated";
     public static final String action_get_sales = "get_all_product";
-    public static final String action_add_visit = "add_visit";
+    public static final String action_check_prefix = "check_userprefix";
+    public static final String action_register = "add_company";
+
 
     /**
      * Make dynamic url method

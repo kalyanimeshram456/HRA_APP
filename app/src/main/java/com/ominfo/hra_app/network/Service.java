@@ -10,6 +10,7 @@ import com.ominfo.hra_app.ui.my_account.model.LeaveApplicationRequest;
 import com.ominfo.hra_app.ui.my_account.model.ProfileRequest;
 import com.ominfo.hra_app.ui.my_account.model.RaiseTicketRequest;
 import com.ominfo.hra_app.ui.my_account.model.UpdateTicketRequest;
+import com.ominfo.hra_app.ui.registration.model.RegistrationRequest;
 import com.ominfo.hra_app.ui.sales_credit.model.GetView360Request;
 import com.ominfo.hra_app.ui.sales_credit.model.SalesCreditRequest;
 import com.ominfo.hra_app.ui.top_customer.model.TopCustomerRequest;
@@ -27,7 +28,20 @@ public class Service {
     public Service(NetworkAPIServices networkAPIServices) {
         this.networkAPIServices = networkAPIServices;
     }
-
+    public Observable<JsonElement> executeRegisterAPI(RegistrationRequest request) {
+        return networkAPIServices.registration(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_REGISTRATION),
+                request.getAction(),request.getName(),request.getAddress(),
+                request.getPincode(),request.getContactNo(),request.getEmailId(),
+                request.getStaffStrength(),request.getUserPrefix());
+    }
+    public Observable<JsonElement> executeCheckPrefixAPI(RequestBody action, RequestBody prefix) {
+        return networkAPIServices.checkPrefix(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_CHECK_PREFIX),
+                action,prefix);
+    }
+    public Observable<JsonElement> executeSubscriptionAPI(RequestBody action, RequestBody start, RequestBody end) {
+        return networkAPIServices.subCharges(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_SUB_CHARGES),
+                action,start,end);
+    }
     public Observable<JsonElement> executeLoginAPI(RequestBody mRequestBodyType,RequestBody mRequestBodyType1,RequestBody mRequestBodyType2,RequestBody mRequestBodyToken) {
         return networkAPIServices.login(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_LOGIN),mRequestBodyType,mRequestBodyType1,mRequestBodyType2,mRequestBodyToken);
     }

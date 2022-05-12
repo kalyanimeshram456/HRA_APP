@@ -818,7 +818,7 @@ public class AppUtils {
     public static String getTommarowdaysDate() {
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DATE, +1);
-        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = df.format(c.getTime());
         return formattedDate;
     }

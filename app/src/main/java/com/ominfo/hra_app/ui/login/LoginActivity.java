@@ -29,6 +29,7 @@ import com.ominfo.hra_app.basecontrol.BaseApplication;
 import com.ominfo.hra_app.database.AppDatabase;
 import com.ominfo.hra_app.interfaces.SharedPrefKey;
 import com.ominfo.hra_app.network.ApiResponse;
+import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.login.model.AttendanceDaysTable;
@@ -95,7 +96,7 @@ public class LoginActivity extends BaseActivity {
     }
     private void injectAPI() {
          mLoginViewModel = ViewModelProviders.of(LoginActivity.this, mViewModelFactory).get(LoginViewModel.class);
-         mLoginViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, "Login"));
+         mLoginViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.action_login));
     }
 
     /*
@@ -214,9 +215,7 @@ public class LoginActivity extends BaseActivity {
             LoginRequest mLoginRequest = new LoginRequest();
             mLoginRequest.setUsername(editTextEmail.getEditableText().toString().trim()); //6b07b768-926c-49b6-ac1c-89a9d03d4c3b
             mLoginRequest.setPassword(editTextPassword.getEditableText().toString().trim());
-            Gson gson = new Gson();
-            String bodyInStringFormat = gson.toJson(mLoginRequest);
-            RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), "login");
+            RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_login);
             RequestBody mRequestBodyTypeImage = RequestBody.create(MediaType.parse("text/plain"), editTextEmail.getEditableText().toString().trim());
             RequestBody mRequestBodyTypeImage1 = RequestBody.create(MediaType.parse("text/plain"), editTextPassword.getEditableText().toString().trim());
             RequestBody mRequestBodyTypeToken = RequestBody.create(MediaType.parse("text/plain"), recentToken);
@@ -229,13 +228,13 @@ public class LoginActivity extends BaseActivity {
     /*check validations on field*/
     private boolean isDetailsValid() {
         if (TextUtils.isEmpty(editTextEmail.getText().toString().trim())) {
-            setError(inputEmail, getString(R.string.val_msg_please_enter_email));
+            setError(0,inputEmail, getString(R.string.val_msg_please_enter_email));
             return false;
         } else if (TextUtils.isEmpty(editTextPassword.getText().toString().trim())) {
-            setError(inputPassword, getString(R.string.val_msg_please_enter_password));
+            setError(0,inputPassword, getString(R.string.val_msg_please_enter_password));
             return false;
         } else if(!getValidUser()){
-            setError(inputEmail, "Please Enter Valid Username.");
+            setError(0,inputEmail, "Please Enter Valid Username.");
             return false;
         }
         return true;
@@ -265,7 +264,7 @@ public class LoginActivity extends BaseActivity {
                 dismissLoader();
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
-                    if (tag.equalsIgnoreCase("Login")) {
+                    if (tag.equalsIgnoreCase(DynamicAPIPath.action_login)) {
                         LoginResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LoginResponse.class);
                         if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                             finish();

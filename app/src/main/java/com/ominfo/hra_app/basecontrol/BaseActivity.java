@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -31,6 +32,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -454,7 +456,12 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
 
 
     /*set error in input field if invalid*/
-    public void setError(TextInputLayout textInputLayout, String error) {
+    public void setError(int val,TextInputLayout textInputLayout, String error) {
+        if(val==1){
+            int colorInt = getResources().getColor(R.color.green);
+            ColorStateList csl = ColorStateList.valueOf(colorInt);
+           textInputLayout.setErrorTextColor(csl);
+        }
         textInputLayout.setError(error);
         textInputLayout.requestFocus();
         if (customAnimationUtil == null) {

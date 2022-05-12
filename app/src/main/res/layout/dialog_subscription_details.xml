@@ -79,15 +79,15 @@
 
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvEnquiryNo"
+            android:id="@+id/tvEmpNo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/tvCompanyColon"
             android:fontFamily="@font/gilroy_semibold"
             android:gravity="start"
+            android:hint="0 Employees"
             android:inputType="textMultiLine"
             android:text=""
-            android:hint="0 Employees"
             android:textColor="@color/back_text_colour"
             android:textSize="@dimen/_14sp" />
 
@@ -124,15 +124,15 @@
                 android:textSize="@dimen/_14sp" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvCustName"
+                android:id="@+id/tvCharge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/tvAmountColon"
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
+                android:hint="₹0 / user"
                 android:inputType="textMultiLine"
                 android:text=""
-                android:hint="₹0 / user"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
@@ -169,15 +169,15 @@
                 android:textSize="@dimen/_14sp" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvMobile"
+                android:id="@+id/tvGST"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/tvRMColon"
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
+                android:hint="@string/scr_lbl_rs_0"
                 android:inputType="textMultiLine"
                 android:text=""
-                android:hint="@string/scr_lbl_rs_0"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
@@ -223,15 +223,15 @@
                 android:textSize="@dimen/_14sp" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvPOI"
+                android:id="@+id/tvTotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/tvStateColon"
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
+                android:hint="@string/scr_lbl_rs_0"
                 android:inputType="textMultiLine"
                 android:text=""
-                android:hint="@string/scr_lbl_rs_0"
                 android:textColor="@color/color_main"
                 android:textSize="@dimen/_14sp" />
 
