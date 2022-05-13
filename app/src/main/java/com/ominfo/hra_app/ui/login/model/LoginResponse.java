@@ -11,19 +11,20 @@ import javax.annotation.Generated;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-@Entity(tableName = "attendance_data")
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
+@Entity(tableName = "attendance_data")
 public class LoginResponse {
-    @ColumnInfo(name = "result")
-    @Expose
-    @SerializedName("result")
-    private LoginResult mResult;
 
     @ColumnInfo(name = "details")
     @Expose
     @SerializedName("details")
-    private LoginTable details;
+    private LoginTable mDetails;
+
+    @ColumnInfo(name = "result")
+    @Expose
+    @SerializedName("result")
+    private LoginResult mResult;
 
     @PrimaryKey(autoGenerate = true)
     @NonNull
@@ -40,6 +41,15 @@ public class LoginResponse {
         this.id = id;
     }
 
+
+    public LoginTable getDetails() {
+        return mDetails;
+    }
+
+    public void setDetails(LoginTable details) {
+        mDetails = details;
+    }
+
     public LoginResult getResult() {
         return mResult;
     }
@@ -48,11 +58,4 @@ public class LoginResponse {
         mResult = result;
     }
 
-    public LoginTable getDetails() {
-        return details;
-    }
-
-    public void setDetails(LoginTable details) {
-        this.details = details;
-    }
 }

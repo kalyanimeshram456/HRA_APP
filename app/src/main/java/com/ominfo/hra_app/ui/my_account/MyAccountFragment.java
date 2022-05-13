@@ -51,8 +51,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.mikephil.charting.data.BarData;
@@ -119,7 +117,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -349,8 +346,8 @@ public class MyAccountFragment extends BaseFragment {
                 RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
                 RequestBody mRequestBodyDuration = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewDuration.getText().toString());
                 String startTimeStamp = "",endTimeStamp = "",
-                        startDateTimeStamp = AppUtils.changeDateHisab(tvDateValueFrom.getText().toString()),
-                        endDateTimeStamp = AppUtils.changeDateHisab(tvDateValueTo.getText().toString());
+                        startDateTimeStamp = AppUtils.changeToSlashToDash(tvDateValueFrom.getText().toString()),
+                        endDateTimeStamp = AppUtils.changeToSlashToDash(tvDateValueTo.getText().toString());
 
                 if(AutoComTextViewDuration.getText().toString().equals("Half Day"))
                 {

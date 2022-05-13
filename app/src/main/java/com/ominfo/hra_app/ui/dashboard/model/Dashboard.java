@@ -3,14 +3,14 @@ package com.ominfo.hra_app.ui.dashboard.model;
 
 import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
-import com.ominfo.hra_app.ui.login.model.LoginDays;
+import com.ominfo.hra_app.ui.login.model.DayData;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
 public class Dashboard {
 
     @SerializedName("emp_data")
-    private LoginDays loginDays;
+    private DayData loginDays;
     @SerializedName("enquiry_count")
     private String mEnquiryCount;
     @SerializedName("lost_opportunity_count")
@@ -32,11 +32,11 @@ public class Dashboard {
     @SerializedName("visit_report")
     private String mVisitReport;
 
-    public LoginDays getLoginDays() {
+    public DayData getLoginDays() {
         return loginDays;
     }
 
-    public void setLoginDays(LoginDays loginDays) {
+    public void setLoginDays(DayData loginDays) {
         this.loginDays = loginDays;
     }
 

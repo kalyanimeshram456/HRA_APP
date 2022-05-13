@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
@@ -18,7 +17,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
@@ -182,6 +180,8 @@ public class LoginActivity extends BaseActivity {
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         tvTitle.setText(getString(R.string.scr_lbl_login));
         setErrorMSG();
+        editTextEmail.setText("OIN3001");
+        editTextPassword.setText("1897");
         /*Window window = getWindow();
         View view = window.getDecorView();
         DarkStatusBar.setLightStatusBar(view,this);*/
@@ -202,7 +202,6 @@ public class LoginActivity extends BaseActivity {
                 if(isDetailsValid()) {
                     callLoginUserApi();
                 }
-                launchScreen(mContext, MainActivity.class);
                 break;
 
 
@@ -212,9 +211,9 @@ public class LoginActivity extends BaseActivity {
     /* Call Api For Login user and get user details */
     private void callLoginUserApi() {
         if (NetworkCheck.isInternetAvailable(LoginActivity.this)) {
-            LoginRequest mLoginRequest = new LoginRequest();
+            /*LoginRequest mLoginRequest = new LoginRequest();
             mLoginRequest.setUsername(editTextEmail.getEditableText().toString().trim()); //6b07b768-926c-49b6-ac1c-89a9d03d4c3b
-            mLoginRequest.setPassword(editTextPassword.getEditableText().toString().trim());
+            mLoginRequest.setPassword(editTextPassword.getEditableText().toString().trim());*/
             RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_login);
             RequestBody mRequestBodyTypeImage = RequestBody.create(MediaType.parse("text/plain"), editTextEmail.getEditableText().toString().trim());
             RequestBody mRequestBodyTypeImage1 = RequestBody.create(MediaType.parse("text/plain"), editTextPassword.getEditableText().toString().trim());
@@ -233,10 +232,10 @@ public class LoginActivity extends BaseActivity {
         } else if (TextUtils.isEmpty(editTextPassword.getText().toString().trim())) {
             setError(0,inputPassword, getString(R.string.val_msg_please_enter_password));
             return false;
-        } else if(!getValidUser()){
+        } /*else if(!getValidUser()){
             setError(0,inputEmail, "Please Enter Valid Username.");
             return false;
-        }
+        }*/
         return true;
     }
 

@@ -301,5 +301,12 @@
     <string name="err_enter_admin_name">Please enter admin name.</string>
     <string name="err_enter_mobile_no">Please enter mobile number.</string>
     <string name="err_enter_emp_stregth">Please enter employee strength.</string>
+    <string name="err_enter_name">Please enter name.</string>
+    <string name="err_enter_designation">Please enter designation.</string>
+    <string name="err_select_gender">Please select gender.</string>
+    <string name="err_enter_current_salary">Please enter current salary.</string>
+    <string name="err_enter_casual_leave">Please enter casual leaves.</string>
+    <string name="err_enter_sick_leave">Please enter sick leaves.</string>
+    <string name="err_enter_sick_leave">Please enter sick leaves.</string>
 
 </resources>

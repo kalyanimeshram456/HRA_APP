@@ -1,21 +1,21 @@
 
-package com.ominfo.hra_app.ui.search.model;
+package com.ominfo.hra_app.ui.employees.model;
 
 import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class SearchCrmResponse {
+public class AddEmployeeResponse {
 
     @SerializedName("result")
-    private SearchCrmResult mResult;
+    private AddEmployeeResult mResult;
 
-    public SearchCrmResult getResult() {
+    public AddEmployeeResult getResult() {
         return mResult;
     }
 
-    public void setResult(SearchCrmResult result) {
+    public void setResult(AddEmployeeResult result) {
         mResult = result;
     }
 

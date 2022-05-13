@@ -5,16 +5,13 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,10 +19,7 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,7 +35,6 @@ import com.ominfo.hra_app.basecontrol.BaseApplication;
 import com.ominfo.hra_app.basecontrol.BaseFragment;
 import com.ominfo.hra_app.database.AppDatabase;
 import com.ominfo.hra_app.interfaces.Constants;
-import com.ominfo.hra_app.interfaces.SharedPrefKey;
 import com.ominfo.hra_app.network.ApiResponse;
 import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
@@ -55,14 +48,10 @@ import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.sales_credit.activity.PdfPrintActivity;
 import com.ominfo.hra_app.ui.sales_credit.activity.View360Activity;
 import com.ominfo.hra_app.ui.sales_credit.model.GraphModel;
-import com.ominfo.hra_app.ui.search.AddEmployeeActivity;
-import com.ominfo.hra_app.ui.search.adapter.EmployeeAdapter;
-import com.ominfo.hra_app.ui.search.model.SearchCrmResponse;
-import com.ominfo.hra_app.ui.search.model.SearchCrmViewModel;
-import com.ominfo.hra_app.ui.search.model.Searchresult;
-import com.ominfo.hra_app.util.AppUtils;
+import com.ominfo.hra_app.ui.employees.model.SearchCrmResponse;
+import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
+import com.ominfo.hra_app.ui.employees.model.Searchresult;
 import com.ominfo.hra_app.util.LogUtil;
-import com.ominfo.hra_app.util.SharedPref;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -130,7 +119,7 @@ public class LeaveFragment extends BaseFragment {
     final Calendar myCalendar = Calendar.getInstance();
     @Inject
     ViewModelFactory mViewModelFactory;
-    private SearchCrmViewModel searchCrmViewModel;
+    private EmployeeListViewModel searchCrmViewModel;
     public LeaveFragment() {
         // Required empty public constructor
     }
@@ -197,15 +186,15 @@ public class LeaveFragment extends BaseFragment {
     }
 
     private void injectAPI() {
-        searchCrmViewModel = ViewModelProviders.of(this, mViewModelFactory).get(SearchCrmViewModel.class);
-        searchCrmViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_SEARCH_CRM));
+        searchCrmViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EmployeeListViewModel.class);
+        searchCrmViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_EMPLOYEES_LIST));
    }
-    /* Call Api For change password */
+   /* *//* Call Api For change password *//*
     private void callSearchCrmApi(String mSearchText) {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
-                RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_search);
+                RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_employee_list);
                 RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
                 RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
                 RequestBody mRequestBodySearch = RequestBody.create(MediaType.parse("text/plain"), mSearchText);
@@ -219,7 +208,7 @@ public class LeaveFragment extends BaseFragment {
         } else {
             LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
         }
-    }
+    }*/
     private void setGraphData(int initStatus) {
         if(initStatus!=3) {
             DAYS = new String[6];
@@ -536,7 +525,7 @@ public class LeaveFragment extends BaseFragment {
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
                     try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_SEARCH_CRM)) {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EMPLOYEES_LIST)) {
                             SearchCrmResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SearchCrmResponse.class);
                             if (responseModel != null/* && responseModel.getStatus()==1*/) {
                                 searchresultList = responseModel.getResult().getSearchresult();

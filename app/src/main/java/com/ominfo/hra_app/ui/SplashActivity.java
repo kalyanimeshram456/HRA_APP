@@ -57,7 +57,7 @@ public class SplashActivity extends AppCompatActivity {
                     if (iSLoggedIn){
                         launchScreen(MainActivity.class);
                     }else {
-                        launchScreen(RegistrationActivity.class);
+                        launchScreen(LoginActivity.class);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

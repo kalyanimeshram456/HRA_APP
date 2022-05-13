@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-@Database(entities = {AttendanceDaysTable.class,LocationPerHourTable.class,LoginResponse.class,LoginTable.class}, version = 1, exportSchema = false)
+@Database(entities = {AttendanceDaysTable.class,LocationPerHourTable.class, LoginResponse.class,LoginTable.class}, version = 1, exportSchema = false)
 @TypeConverters({JsonTypeConverter.class,DaysTypeConverter.class,ResultConverter.class, DetailsConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
     public abstract DBDAO getDbDAO();

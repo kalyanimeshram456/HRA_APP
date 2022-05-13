@@ -21,21 +21,15 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
-import com.ominfo.hra_app.MainActivity;
 import com.ominfo.hra_app.R;
 import com.ominfo.hra_app.basecontrol.BaseActivity;
 import com.ominfo.hra_app.basecontrol.BaseApplication;
 import com.ominfo.hra_app.database.AppDatabase;
-import com.ominfo.hra_app.interfaces.SharedPrefKey;
 import com.ominfo.hra_app.network.ApiResponse;
 import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.login.LoginActivity;
-import com.ominfo.hra_app.ui.login.model.AttendanceDaysTable;
-import com.ominfo.hra_app.ui.login.model.LoginRequest;
-import com.ominfo.hra_app.ui.login.model.LoginResponse;
-import com.ominfo.hra_app.ui.login.model.LoginViewModel;
 import com.ominfo.hra_app.ui.registration.model.CheckPrefixResponse;
 import com.ominfo.hra_app.ui.registration.model.CheckPrefixViewModel;
 import com.ominfo.hra_app.ui.registration.model.RegisterResponse;
@@ -45,9 +39,6 @@ import com.ominfo.hra_app.ui.registration.model.SubscriptionResponse;
 import com.ominfo.hra_app.ui.registration.model.SubscriptionViewModel;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
-import com.ominfo.hra_app.util.SharedPref;
-
-import java.math.BigInteger;
 
 import javax.inject.Inject;
 

@@ -1,27 +1,20 @@
 
-package com.ominfo.hra_app.ui.login.model;
+package com.ominfo.hra_app.ui.employees.model;
 
+import java.util.List;
 import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class LoginResult {
+public class SearchCrmResult {
 
-    @SerializedName("day_data")
-    private DayData mDayData;
     @SerializedName("message")
     private String mMessage;
+    @SerializedName("searchresult")
+    private List<Searchresult> mSearchresult;
     @SerializedName("status")
     private String mStatus;
-
-    public DayData getDayData() {
-        return mDayData;
-    }
-
-    public void setDayData(DayData dayData) {
-        mDayData = dayData;
-    }
 
     public String getMessage() {
         return mMessage;
@@ -29,6 +22,14 @@ public class LoginResult {
 
     public void setMessage(String message) {
         mMessage = message;
+    }
+
+    public List<Searchresult> getSearchresult() {
+        return mSearchresult;
+    }
+
+    public void setSearchresult(List<Searchresult> searchresult) {
+        mSearchresult = searchresult;
     }
 
     public String getStatus() {

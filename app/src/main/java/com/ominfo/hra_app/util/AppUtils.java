@@ -128,7 +128,7 @@ public class AppUtils {
         return (isTablet ? Constants.TABLET : Constants.PHONE).toUpperCase();
     }*/
 
-    public static String changeDateHisab(String Date1){
+    public static String changeToSlashToDash(String Date1){
         try {
             String dt = Date1;  // Start date
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyy");

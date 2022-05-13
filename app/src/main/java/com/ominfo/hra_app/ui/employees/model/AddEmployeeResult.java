@@ -1,26 +1,26 @@
 
-package com.ominfo.hra_app.ui.login.model;
+package com.ominfo.hra_app.ui.employees.model;
 
 import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class LoginResult {
+public class AddEmployeeResult {
 
-    @SerializedName("day_data")
-    private DayData mDayData;
+    @SerializedName("id")
+    private String mId;
     @SerializedName("message")
     private String mMessage;
     @SerializedName("status")
     private String mStatus;
 
-    public DayData getDayData() {
-        return mDayData;
+    public String getId() {
+        return mId;
     }
 
-    public void setDayData(DayData dayData) {
-        mDayData = dayData;
+    public void setId(String id) {
+        mId = id;
     }
 
     public String getMessage() {

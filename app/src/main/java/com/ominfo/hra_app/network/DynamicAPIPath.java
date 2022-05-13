@@ -11,7 +11,7 @@ public class DynamicAPIPath {
     public static final String BASE_NODEJS = "http://ominfo.in:3000/";//"index_omtrucking.php"// ;
     public static final String POST_LOGIN = BASE+"?action=login";
     public static final String POST_REGISTRATION= BASE+"?action=add_company";
-    public static final String POST_LOGOUT = BASE+"?action=logout_mt_update";
+    public static final String POST_LOGOUT = BASE+"?action=logout";
     public static final String POST_PROFILE= BASE_NODEJS+"getEmployee_profile";
     public static final String POST_CHECK_PREFIX=  BASE+"?action=check_userprefix";
     public static final String POST_SALES= BASE+"?action=get_all_product";
@@ -34,11 +34,11 @@ public class DynamicAPIPath {
     public static final String POST_PLANT= BASE+"?action=getBranchList";
     public static final String POST_GET_VEHICLE= BASE+"?action=getVehWiseLRs";
     public static final String POST_VEHICLE_DETAILS= BASE+"?action=getVehWiseLRTransaction";
-    public static final String POST_SEARCH_CRM= BASE+"?action=getcrmsearchresult";
+    public static final String POST_EMPLOYEES_LIST = BASE+"?action=get_employee_list";
     public static final String POST_GET_RM= BASE+"?action=rmget";
     public static final String POST_SEARCH_CUST= BASE+"?action=customerfind";
-    public static final String POST_SAVE_ENQUIRY= BASE+"?action=enquirysave";
-    public static final String POST_GET_ENQUIRY= BASE+"?action=enquiryget";
+    public static final String POST_ADD_EMPLOYEES= BASE+"?action=add_employee";
+    public static final String POST_DEACT_EMPLOYEE= BASE+"?action=deactivate_employee";
     public static final String POST_GET_VIEW360= BASE+"?action=custOverAllData";
     public static final String POST_GET_SALES_CREDIT= BASE+"?action=salescreditreport";
     public static final String POST_GET_LEAVE_APP= BASE+"?action=get_leave_records";
@@ -63,10 +63,10 @@ public class DynamicAPIPath {
     public static final String POST_FETCH_KATA_CHITTI = "index_with_DRapp.php?action=getKantaChitthi";
     public static final String action_login = "login";
     public static final String action_get_tour = "tourget";
-    public static final String action_logout = "logout_mt_update";
+    public static final String action_logout = "logout";
     public static final String action_get_leave_single = "get_record";
     public static final String action_location_per_hour = "emp_long_lati_tracking";
-    public static final String action_enquiry_status = "statusget";
+    public static final String action_add_employee = "add_employee";
     public static final String action_search_cust = "customerfind";
     public static final String action_mark_attendance = "mark_attendance";
     public static final String action_update_attendance = "attendance_updated";
@@ -75,7 +75,7 @@ public class DynamicAPIPath {
     public static final String action_get_visit = "visitget";
     public static final String action_get_top_customer = "top_customer";
     public static final String action_update_leave_status = "apply_leave_updated";
-    public static final String action_get_lost_apportunity = "getlostopportunity";
+    public static final String action_deactivate_employee = "deactivate_employee";
     public static final String action_get_edit_visit = "editVisit";
     public static final String action_get_leave_app = "get_leave_records";
     public static final String action_raise_ticket = "raise_ticket";
@@ -88,7 +88,7 @@ public class DynamicAPIPath {
     public static final String action_change_profile_img = "changecrmempprofilepic";
     public static final String action_change_pass = "changecrmemppassword";
     public static final String action_apply_leave = "apply_leave";
-    public static final String action_search = "getcrmsearchresult";
+    public static final String action_employee_list = "get_employee_list";
     public static final String action_notification = "getcrmempnotif";
     public static final String action_delete_notification = "marknotifread";
     public static final String GET_USER_LIST = "user";

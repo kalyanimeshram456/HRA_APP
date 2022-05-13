@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class LoginDays {
+public class DayData {
 
     @SerializedName("fri_day")
     private String mFriDay;
@@ -64,36 +64,6 @@ public class LoginDays {
     private String mWedStartTime;
     @SerializedName("wed_working")
     private String mWedWorking;
-    @SerializedName("branch_longitute")
-    private String branchLongitute;
-    @SerializedName("manager_id")
-    private String managerId;
-    @SerializedName("branch_latitude")
-    private String branchLatitude;
-
-    public String getBranchLongitute() {
-        return branchLongitute;
-    }
-
-    public void setBranchLongitute(String branchLongitute) {
-        this.branchLongitute = branchLongitute;
-    }
-
-    public String getManagerId() {
-        return managerId;
-    }
-
-    public void setManagerId(String managerId) {
-        this.managerId = managerId;
-    }
-
-    public String getBranchLatitude() {
-        return branchLatitude;
-    }
-
-    public void setBranchLatitude(String branchLatitude) {
-        this.branchLatitude = branchLatitude;
-    }
 
     public String getFriDay() {
         return mFriDay;

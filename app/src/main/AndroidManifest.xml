@@ -64,7 +64,7 @@
             android:theme="@style/AppTheme.FullScreen"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="com.ominfo.hra_app.ui.search.AddEmployeeActivity"
+            android:name="com.ominfo.hra_app.ui.employees.AddEmployeeActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen"

@@ -218,11 +218,14 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
         LoginTable loginTable = mDb.getDbDAO().getLoginData();
         if (loginTable != null) {
             tvCheckInName.setText("Hi " + loginTable.getName() + " ! \nPlease wait...");
-            Geocoder geocoder = new Geocoder(StartAttendanceActivity.this);
-
             try {
-                List<Address> addressList = geocoder.getFromLocation(Double.parseDouble(loginTable.getBranchLatitude()),
-                        Double.parseDouble(loginTable.getBranchLongitute()), 1);
+                Geocoder geocoder = new Geocoder(StartAttendanceActivity.this);
+                String lat = /*loginTable.getBranchLatitude()==null && loginTable.getBranchLatitude().equals("")
+                        ?*/"19.17320224056819"/*:loginTable.getBranchLatitude()*/;
+                String lng = /*loginTable.getBranchLongitute()==null && loginTable.getBranchLongitute().equals("")
+                        ?*/"72.95589962509885"/*:loginTable.getBranchLongitute()*/;
+                List<Address> addressList = geocoder.getFromLocation(Double.parseDouble(lat),
+                        Double.parseDouble(lng), 1);
                 if (addressList != null && addressList.size() > 0) {
                     Address address = addressList.get(0);
                     LatLng latLng1 = new LatLng(address.getLatitude(), address.getLongitude());

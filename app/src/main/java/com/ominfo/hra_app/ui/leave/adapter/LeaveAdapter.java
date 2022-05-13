@@ -13,7 +13,7 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.hra_app.R;
-import com.ominfo.hra_app.ui.search.model.Searchresult;
+import com.ominfo.hra_app.ui.employees.model.Searchresult;
 
 import java.util.List;
 

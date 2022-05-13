@@ -1,4 +1,4 @@
-package com.ominfo.hra_app.ui.search.adapter;
+package com.ominfo.hra_app.ui.employees.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,8 +13,7 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.hra_app.R;
-import com.ominfo.hra_app.ui.search.model.Searchresult;
-import com.ominfo.hra_app.util.LogUtil;
+import com.ominfo.hra_app.ui.employees.model.Searchresult;
 
 import java.util.List;
 

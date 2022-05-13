@@ -1,4 +1,4 @@
-package com.ominfo.hra_app.ui.search.model;
+package com.ominfo.hra_app.ui.employees.model;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -9,15 +9,14 @@ import com.ominfo.hra_app.network.Service;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.RequestBody;
 
-public class SearchCrmViewModel extends ViewModel {
+public class EmployeeListViewModel extends ViewModel {
     private final CompositeDisposable disposables = new CompositeDisposable();
     private final MutableLiveData<ApiResponse> responseLiveData = new MutableLiveData<>();
     private Service service;
 
 
-    public SearchCrmViewModel(Service service) {
+    public EmployeeListViewModel(Service service) {
         this.service = service;
     }
 
@@ -25,10 +24,8 @@ public class SearchCrmViewModel extends ViewModel {
         return responseLiveData;
     }
 
-    public void executeSearchCrmAPI(RequestBody mRequestBodyType, RequestBody mRequestBodyComId
-            , RequestBody mRequestBodyEmpId, RequestBody search) {
-        disposables.add(service.executeSearchCrmAPI(mRequestBodyType,mRequestBodyComId
-        ,mRequestBodyEmpId,search)
+    public void executeEmployeeListAPI(EmployeeListRequest employeeListRequest) {
+        disposables.add(service.executeEmployeeListAPI(employeeListRequest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe((d) -> responseLiveData.setValue(ApiResponse.loading()))

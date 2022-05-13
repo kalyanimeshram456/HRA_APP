@@ -1,16 +1,13 @@
 package com.ominfo.hra_app;
 
 import android.Manifest;
-import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -23,33 +20,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatEditText;
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
-import android.text.InputType;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -69,9 +50,6 @@ import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.textfield.TextInputLayout;
-import com.google.gson.Gson;
 import com.ominfo.hra_app.basecontrol.BaseActivity;
 import com.ominfo.hra_app.basecontrol.BaseApplication;
 import com.ominfo.hra_app.common.BackgroundLocationUpdateService;
@@ -79,12 +57,11 @@ import com.ominfo.hra_app.database.AppDatabase;
 import com.ominfo.hra_app.interfaces.Constants;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
-import com.ominfo.hra_app.ui.dashboard.fragment.ReminderFragment;
 import com.ominfo.hra_app.ui.dashboard.model.DashModel;
+import com.ominfo.hra_app.ui.employees.EmployeeFragment;
 import com.ominfo.hra_app.ui.leave.LeaveFragment;
 import com.ominfo.hra_app.ui.my_account.MyAccountFragment;
 import com.ominfo.hra_app.ui.salary.SalaryFragment;
-import com.ominfo.hra_app.ui.search.SearchFragment;
 import com.ominfo.hra_app.util.AppUtils;
 
 
@@ -93,17 +70,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import retrofit2.http.Part;
-import retrofit2.http.Url;
 
 public class MainActivity extends BaseActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -184,7 +155,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
                         temp = new DashboardFragment();
                         break;
                     case R.id.Search:
-                        temp = new SearchFragment();
+                        temp = new EmployeeFragment();
                         break;
                     case R.id.placeholder:
                         temp = new SalaryFragment();

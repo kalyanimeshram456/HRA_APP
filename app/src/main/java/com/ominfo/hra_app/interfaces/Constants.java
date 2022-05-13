@@ -39,7 +39,7 @@ public interface Constants {
 
     /*SCREEEN NAME */
     String DASHBOARD = "DASHBOARD";
-    String LOGIN = "LOGIN";
+    String add = "add";
     String REGISTRATION = "REGISTRATION";
     String SETTING = "Setting";
     String MY_PROFILE = "MY_PROFILE";

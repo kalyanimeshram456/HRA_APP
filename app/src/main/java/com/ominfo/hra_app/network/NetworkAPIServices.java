@@ -73,7 +73,7 @@ public interface NetworkAPIServices {
     @POST()
     Observable<JsonElement> updateAttendance(@Url String url,
                                              @Part("action") RequestBody uploadType,
-                                             @Part("start_time") RequestBody start_time,
+                                             /*@Part("start_time") RequestBody start_time,*/
                                              @Part("end_time") RequestBody end_time,
                                              @Part("id") RequestBody id,
                                              @Part("end_longitude") RequestBody end_longitude,
@@ -135,7 +135,7 @@ public interface NetworkAPIServices {
     @POST()
     Observable<JsonElement> logout(@Url String url,
                                    @Part("action") RequestBody uploadType,
-                                   @Part("emp_id") RequestBody emp_id);
+                                   @Part("token") RequestBody token);
 
 
     @POST()
@@ -325,11 +325,38 @@ public interface NetworkAPIServices {
 
     @Multipart
     @POST()
-    Observable<JsonElement> searchCrm(@Url String url,
-                                      @Part("action") RequestBody uploadType,
-                                      @Part("company_id") RequestBody uploadTypeEmployee,
-                                      @Part("employee_id") RequestBody companyId,
-                                      @Part("getresultdata") RequestBody pass
+    Observable<JsonElement> employeeList(@Url String url,
+                                         @Part("action") RequestBody uploadType
+    );
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> deactivateEmployee(@Url String url,
+                                         @Part("action") RequestBody uploadType,
+                                               @Part("updated_by") RequestBody updated_by,
+                                               @Part("action") RequestBody emp_id
+    );
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> addEmployee(@Url String url,
+                                         @Part("action") RequestBody uploadType,
+                                        @Part("emp_name") RequestBody emp_name,
+                                        @Part("emp_mob") RequestBody emp_mob,
+                                        @Part("emp_email") RequestBody emp_email,
+                                        @Part("emp_addr") RequestBody emp_addr,
+                                        @Part("emp_dob") RequestBody emp_dob,
+                                        @Part("emp_gender") RequestBody emp_gender,
+                                        @Part("emp_pincode") RequestBody emp_pincode,
+                                        @Part("emp_position") RequestBody emp_position,
+                                        @Part("created_by") RequestBody created_by,
+                                        @Part("company_ID") RequestBody company_ID,
+                                        @Part("token") RequestBody token,
+                                        @Part("salary") RequestBody salary,
+                                        @Part("other_leaves") RequestBody other_leaves,
+                                        @Part("casual_leaves") RequestBody casual_leaves,
+                                        @Part("sick_leaves") RequestBody sick_leaves,
+                                        @Part("joining_date") RequestBody joining_date
     );
 
     @Multipart

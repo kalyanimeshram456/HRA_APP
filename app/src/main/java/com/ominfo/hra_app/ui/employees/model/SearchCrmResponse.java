@@ -1,20 +1,21 @@
 
-package com.ominfo.hra_app.ui.login.model;
+package com.ominfo.hra_app.ui.employees.model;
 
 import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class LogoutResponse {
-    @SerializedName("result")
-    private LogoutResult mResult;
+public class SearchCrmResponse {
 
-    public LogoutResult getResult() {
+    @SerializedName("result")
+    private SearchCrmResult mResult;
+
+    public SearchCrmResult getResult() {
         return mResult;
     }
 
-    public void setResult(LogoutResult result) {
+    public void setResult(SearchCrmResult result) {
         mResult = result;
     }
 

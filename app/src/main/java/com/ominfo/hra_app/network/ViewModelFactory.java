@@ -8,6 +8,8 @@ import com.ominfo.hra_app.ui.attendance.model.LocationPerHourViewModel;
 import com.ominfo.hra_app.ui.attendance.model.MarkAttendanceViewModel;
 import com.ominfo.hra_app.ui.attendance.model.UpdateAttendanceViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.GetDashboardViewModel;
+import com.ominfo.hra_app.ui.employees.model.AddEmployeeViewModel;
+import com.ominfo.hra_app.ui.employees.model.DeactivateEmployeeViewModel;
 import com.ominfo.hra_app.ui.login.model.LoginViewModel;
 import com.ominfo.hra_app.ui.login.model.LogoutViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveViewModel;
@@ -29,7 +31,7 @@ import com.ominfo.hra_app.ui.registration.model.RegistrationViewModel;
 import com.ominfo.hra_app.ui.registration.model.SubscriptionViewModel;
 import com.ominfo.hra_app.ui.sales_credit.model.SalesCreditViewModel;
 import com.ominfo.hra_app.ui.sales_credit.model.View30ViewModel;
-import com.ominfo.hra_app.ui.search.model.SearchCrmViewModel;
+import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
 import com.ominfo.hra_app.ui.top_customer.model.TopCustomerViewModel;
 import com.ominfo.hra_app.ui.visit_report.model.AddVisitViewModel;
 import com.ominfo.hra_app.ui.visit_report.model.EditVisitViewModel;
@@ -81,8 +83,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
          else  if (modelClass.isAssignableFrom(ChangePasswordViewModel.class)) {
              return (T) new ChangePasswordViewModel(service);
          }
-         else  if (modelClass.isAssignableFrom(SearchCrmViewModel.class)) {
-             return (T) new SearchCrmViewModel(service);
+         else  if (modelClass.isAssignableFrom(EmployeeListViewModel.class)) {
+             return (T) new EmployeeListViewModel(service);
          }
          else  if (modelClass.isAssignableFrom(AddVisitViewModel.class)) {
              return (T) new AddVisitViewModel(service);
@@ -147,7 +149,15 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
          else  if (modelClass.isAssignableFrom(SubscriptionViewModel.class)) {
              return (T) new SubscriptionViewModel(service);
          }
-
+         else  if (modelClass.isAssignableFrom(AddEmployeeViewModel.class)) {
+             return (T) new AddEmployeeViewModel(service);
+         }
+         else  if (modelClass.isAssignableFrom(EmployeeListViewModel.class)) {
+             return (T) new EmployeeListViewModel(service);
+         }
+         else  if (modelClass.isAssignableFrom(DeactivateEmployeeViewModel.class)) {
+             return (T) new DeactivateEmployeeViewModel(service);
+         }
         throw new IllegalArgumentException("Unknown class name");
 
     }

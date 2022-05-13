@@ -1,4 +1,4 @@
-package com.ominfo.hra_app.ui.search;
+package com.ominfo.hra_app.ui.employees;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -16,7 +16,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -30,7 +29,6 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -53,15 +51,16 @@ import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.ui.dashboard.model.DashModel;
+import com.ominfo.hra_app.ui.employees.model.EmployeeListRequest;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.sales_credit.activity.PdfPrintActivity;
 import com.ominfo.hra_app.ui.sales_credit.activity.View360Activity;
 import com.ominfo.hra_app.ui.sales_credit.model.GraphModel;
-import com.ominfo.hra_app.ui.search.adapter.EmployeeAdapter;
-import com.ominfo.hra_app.ui.search.model.SearchCrmResponse;
-import com.ominfo.hra_app.ui.search.model.SearchCrmViewModel;
-import com.ominfo.hra_app.ui.search.model.Searchresult;
+import com.ominfo.hra_app.ui.employees.adapter.EmployeeAdapter;
+import com.ominfo.hra_app.ui.employees.model.SearchCrmResponse;
+import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
+import com.ominfo.hra_app.ui.employees.model.Searchresult;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
 
@@ -84,10 +83,10 @@ import okhttp3.RequestBody;
 
 /**
  * A simple {@link androidx.fragment.app.Fragment} subclass.
- * Use the {@link SearchFragment#newInstance} factory method to
+ * Use the {@link EmployeeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SearchFragment extends BaseFragment {
+public class EmployeeFragment extends BaseFragment {
 
     Context mContext;
     EmployeeAdapter searchAdapter;
@@ -136,13 +135,13 @@ public class SearchFragment extends BaseFragment {
     final Calendar myCalendar = Calendar.getInstance();
     @Inject
     ViewModelFactory mViewModelFactory;
-    private SearchCrmViewModel searchCrmViewModel;
-    public SearchFragment() {
+    private EmployeeListViewModel employeeListViewModel;
+    public EmployeeFragment() {
         // Required empty public constructor
     }
 
-    public static SearchFragment newInstance(String param1, String param2) {
-        SearchFragment fragment = new SearchFragment();
+    public static EmployeeFragment newInstance(String param1, String param2) {
+        EmployeeFragment fragment = new EmployeeFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -203,21 +202,20 @@ public class SearchFragment extends BaseFragment {
     }
 
     private void injectAPI() {
-        searchCrmViewModel = ViewModelProviders.of(this, mViewModelFactory).get(SearchCrmViewModel.class);
-        searchCrmViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_SEARCH_CRM));
+        employeeListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EmployeeListViewModel.class);
+        employeeListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_EMPLOYEES_LIST));
    }
     /* Call Api For change password */
     private void callSearchCrmApi(String mSearchText) {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
-                RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_search);
+                RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_employee_list);
                 RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
                 RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
                 RequestBody mRequestBodySearch = RequestBody.create(MediaType.parse("text/plain"), mSearchText);
-
-                searchCrmViewModel.executeSearchCrmAPI(mRequestBodyType,mRequestBodyTypeCompId,
-                        mRequestBodyTypeEmployee,mRequestBodySearch);
+                EmployeeListRequest request = new EmployeeListRequest();
+                employeeListViewModel.executeEmployeeListAPI(request);
             }
             else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
@@ -545,7 +543,9 @@ public class SearchFragment extends BaseFragment {
         int id = view.getId();
         switch (id) {
             case R.id.imgAddEmployee:
-                launchScreen(getActivity(),AddEmployeeActivity.class);
+                Intent add = new Intent(getContext(),AddEmployeeActivity.class);
+                add.putExtra(Constants.FROM_SCREEN,Constants.add);
+                startActivity(add);
                 break;
         }
     }
@@ -868,7 +868,7 @@ public class SearchFragment extends BaseFragment {
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
                     try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_SEARCH_CRM)) {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EMPLOYEES_LIST)) {
                             SearchCrmResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SearchCrmResponse.class);
                             if (responseModel != null/* && responseModel.getStatus()==1*/) {
                                 searchresultList = responseModel.getResult().getSearchresult();

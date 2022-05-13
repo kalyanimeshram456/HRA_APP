@@ -4,6 +4,8 @@ import com.ominfo.hra_app.ui.attendance.model.LocationPerHourRequest;
 import com.ominfo.hra_app.ui.attendance.model.MarkAttendanceRequest;
 import com.ominfo.hra_app.ui.attendance.model.UpdateAttendanceRequest;
 import com.ominfo.hra_app.ui.dashboard.model.DashboardRequest;
+import com.ominfo.hra_app.ui.employees.model.AddEmployeeRequest;
+import com.ominfo.hra_app.ui.employees.model.EmployeeListRequest;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveRequest;
 import com.ominfo.hra_app.ui.my_account.model.GetTicketRequest;
 import com.ominfo.hra_app.ui.my_account.model.LeaveApplicationRequest;
@@ -20,6 +22,7 @@ import com.ominfo.hra_app.ui.visit_report.model.PhpEditVisitRequest;
 
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
+import retrofit2.http.Part;
 
 public class Service {
 
@@ -75,14 +78,14 @@ public class Service {
         );
     }
     public Observable<JsonElement> executeMarkAttendanceAPI(MarkAttendanceRequest markAttendanceRequest) {
-        return networkAPIServices.markAttendance(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_APPLY_LEAVE),
+        return networkAPIServices.markAttendance(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_MARK_ATTENDANCE),
                 markAttendanceRequest.getAction(), markAttendanceRequest.getEmpId(), markAttendanceRequest.getDate(),
                 markAttendanceRequest.getStartTime(), markAttendanceRequest.getStartLatitude(), markAttendanceRequest.getStartLongitude()
         );
     }
     public Observable<JsonElement> executeUpdateAttendanceAPI(UpdateAttendanceRequest updateAttendanceRequest) {
         return networkAPIServices.updateAttendance(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_UPDATE_ATTENDANCE),
-                updateAttendanceRequest.getAction(), updateAttendanceRequest.getStartTime(), updateAttendanceRequest.getEndTime(),
+                updateAttendanceRequest.getAction()/*, updateAttendanceRequest.getStartTime()*/, updateAttendanceRequest.getEndTime(),
                 updateAttendanceRequest.getId(), updateAttendanceRequest.getEndLatitude(), updateAttendanceRequest.getEndLongitude()
         );
     }
@@ -192,18 +195,33 @@ public class Service {
         );
     }
 
-    public Observable<JsonElement> executeSearchCrmAPI(RequestBody action,
-                                                            RequestBody comId, RequestBody empId,
-                                                            RequestBody search) {
-        return networkAPIServices.searchCrm(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
-                DynamicAPIPath.POST_SEARCH_CRM),
-                action,
-                comId,
-                empId,
-                search
+    public Observable<JsonElement> executeEmployeeListAPI(EmployeeListRequest employeeListRequest) {
+        return networkAPIServices.employeeList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_EMPLOYEES_LIST),
+                employeeListRequest.getAction()
+        );
+    }
+    public Observable<JsonElement> executeDeactivateEmployeeAPI(RequestBody action,RequestBody updateby,RequestBody empId) {
+        return networkAPIServices.deactivateEmployee(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_EMPLOYEES_LIST),
+                action,updateby,empId
         );
     }
 
+    public Observable<JsonElement> executeAddEmployeeAPI(AddEmployeeRequest addEmployeeRequest) {
+        return networkAPIServices.addEmployee(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_ADD_EMPLOYEES),
+                addEmployeeRequest.getAction(), addEmployeeRequest.getEmpName(),
+                addEmployeeRequest.getEmpMob(), addEmployeeRequest.getEmpEmail(),
+                addEmployeeRequest.getEmpAddr(), addEmployeeRequest.getEmpDob(),
+                addEmployeeRequest.getEmpGender(), addEmployeeRequest.getEmpPincode(),
+                addEmployeeRequest.getEmpPosition(), addEmployeeRequest.getCreatedBy(),
+                addEmployeeRequest.getCompanyID(), addEmployeeRequest.getToken(),
+                addEmployeeRequest.getSalary(), addEmployeeRequest.getOtherLeaves(),
+                addEmployeeRequest.getCasualLeaves(), addEmployeeRequest.getSickLeaves()
+                ,addEmployeeRequest.getJoiningDate()
+        );
+    }
 
     public Observable<JsonElement> executeGetTopCustomerAPI(TopCustomerRequest topCustomerRequest) {
         return networkAPIServices.getTopCustomer(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_TOP_CUST),
@@ -290,7 +308,7 @@ public class Service {
     }
 
     public Observable<JsonElement> executeSearchAPI(String request) {
-        return networkAPIServices.search(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_SEARCH_CRM),request);
+        return networkAPIServices.search(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_EMPLOYEES_LIST),request);
     }
 
     public Observable<JsonElement> executeGetVehicleAPI(String request) {

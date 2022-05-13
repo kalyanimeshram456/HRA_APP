@@ -21,6 +21,11 @@ public class LoginTable {
     @SerializedName("base_url")
     private String mBaseUrl;
 
+    @ColumnInfo(name = "token")
+    @Expose
+    @SerializedName("token")
+    private String token;
+
     @ColumnInfo(name = "isadmin")
     @Expose
     @SerializedName("isadmin")
@@ -53,7 +58,6 @@ public class LoginTable {
     @SerializedName("ID")
     private int id;
 
-
     @ColumnInfo(name = "manager_id")
     @Expose
     @SerializedName("manager_id")
@@ -69,6 +73,13 @@ public class LoginTable {
     @SerializedName("branch_longitute")
     private String branchLongitute;
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public String getManagerId() {
         return managerId;

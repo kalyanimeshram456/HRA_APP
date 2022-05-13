@@ -18,7 +18,7 @@ public class AttendanceDaysTable {
     @ColumnInfo(name = "LoginDays")
     @Expose
     @SerializedName("LoginDays")
-    private LoginDays loginDays;
+    private DayData loginDays;
 
     @PrimaryKey(autoGenerate = true)
     @NonNull
@@ -35,11 +35,11 @@ public class AttendanceDaysTable {
         this.id = id;
     }
 
-    public LoginDays getLoginDays() {
+    public DayData getLoginDays() {
         return loginDays;
     }
 
-    public void setLoginDays(LoginDays loginDays) {
+    public void setLoginDays(DayData loginDays) {
         this.loginDays = loginDays;
     }
 }

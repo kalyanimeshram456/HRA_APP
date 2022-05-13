@@ -12,7 +12,7 @@
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/layout_round_shape_status_bar.xml" value="0.2046875" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/round_corner_shape_without_fill_thin_grey.xml" value="0.2046875" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/toggle_add_reminder_edt.xml" value="0.2046875" />
-        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/activity_add_employee.xml" value="0.16077898550724637" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/activity_add_employee.xml" value="0.25" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/activity_dashbooard.xml" value="0.14221014492753623" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/activity_leave.xml" value="0.16077898550724637" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/activity_login.xml" value="0.12545289855072464" />
@@ -46,7 +46,7 @@
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/dialog_add_enquiry.xml" value="0.12318840579710146" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/dialog_add_leave_form.xml" value="0.12318840579710146" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/dialog_add_reminder.xml" value="0.11096014492753623" />
-        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/dialog_deactive_account.xml" value="0.2" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/dialog_deactive_account.xml" value="0.25" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/dialog_doc_full_view.xml" value="0.14221014492753623" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/dialog_enquiry_details.xml" value="0.33" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/dialog_select_date.xml" value="0.14221014492753623" />

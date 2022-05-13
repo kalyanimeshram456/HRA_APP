@@ -12,29 +12,20 @@ import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Chronometer;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -60,11 +51,12 @@ import com.ominfo.hra_app.ui.dashboard.model.Dashboard;
 import com.ominfo.hra_app.ui.dashboard.model.DashboardRequest;
 import com.ominfo.hra_app.ui.dashboard.model.GetDashboardResponse;
 import com.ominfo.hra_app.ui.dashboard.model.GetDashboardViewModel;
-import com.ominfo.hra_app.ui.dashboard.model.HighlightModel;
 import com.ominfo.hra_app.ui.login.LoginActivity;
 import com.ominfo.hra_app.ui.login.model.AttendanceDaysTable;
-import com.ominfo.hra_app.ui.login.model.LoginDays;
+import com.ominfo.hra_app.ui.login.model.DayData;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
+import com.ominfo.hra_app.ui.login.model.LogoutResponse;
+import com.ominfo.hra_app.ui.login.model.LogoutViewModel;
 import com.ominfo.hra_app.ui.my_account.model.GetProfileImageViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ProfileImageResponse;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
@@ -93,7 +85,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 
@@ -144,7 +135,8 @@ public class DashboardFragment extends BaseFragment {
     FloatingActionButton add_attendance;
     @BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout mSwipeRefreshLayout;
-
+    Dialog mDialogLogout;
+    private LogoutViewModel logoutViewModel;
     public DashboardFragment() {
         // Required empty public constructor
     }
@@ -219,6 +211,9 @@ public class DashboardFragment extends BaseFragment {
 
         getProfileImageViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetProfileImageViewModel.class);
         getProfileImageViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_GET_PROFILE));
+
+        logoutViewModel = ViewModelProviders.of(this, mViewModelFactory).get(LogoutViewModel.class);
+        logoutViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.action_logout));
     }
 
     public static void setTimerMillis(Context context, long millis) {
@@ -312,7 +307,7 @@ public class DashboardFragment extends BaseFragment {
 
     }
 
-    private void setAttendanceFloatingButtons(LoginDays loginDays) {
+    private void setAttendanceFloatingButtons(DayData loginDays) {
         rippleEffect.stopRippleAnimation();
         add_attendance.setVisibility(View.GONE);
         rippleEffect.setVisibility(View.GONE);
@@ -493,8 +488,25 @@ public class DashboardFragment extends BaseFragment {
             }
         });
     }
+    /* Call Api For Logout */
+    private void callLogoutApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_logout);
+                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getToken());
+                logoutViewModel.hitLogoutApi(mRequestBodyAction,mRequestBodyTypeEmployee);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
     public void showLogoutDialog(Context mContext) {
-        Dialog mDialogLogout = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialogLogout = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialogLogout.setContentView(R.layout.dialog_logout);
         mDialogLogout.setCanceledOnTouchOutside(true);
         AppCompatImageView mClose = mDialogLogout.findViewById(R.id.imgCancel);
@@ -504,21 +516,7 @@ public class DashboardFragment extends BaseFragment {
         okayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDialogLogout.dismiss();
-                getActivity().finishAffinity();
-                launchScreen(getActivity(), LoginActivity.class);
-                SharedPref.getInstance(mContext).write(SharedPrefKey.IS_LOGGED_IN, false);
-                try{
-                    mDb.getDbDAO().deleteLoginData();
-                    mDb.getDbDAO().deleteLocationData();
-                    mDb.getDbDAO().deleteAttendanceData();
-                    AsyncTask.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            //deleteReminderViewModel.DeleteReminder();
-                        }
-                    });
-                }catch (Exception e){e.printStackTrace();}
+                callLogoutApi();
             }
         });
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -691,6 +689,35 @@ public class DashboardFragment extends BaseFragment {
                         }
                     } catch (Exception e) {
                         progressBar.setVisibility(View.GONE);
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.action_logout)) {
+                            LogoutResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LogoutResponse.class);
+                            //if (responseModel != null && responseModel.getResult().getStatus().equals("Success")) {
+                                //LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                                mDialogLogout.dismiss();
+                                getActivity().finishAffinity();
+                                launchScreen(getActivity(), LoginActivity.class);
+                                SharedPref.getInstance(mContext).write(SharedPrefKey.IS_LOGGED_IN, false);
+                                try{
+                                    mDb.getDbDAO().deleteLoginData();
+                                    mDb.getDbDAO().deleteLocationData();
+                                    mDb.getDbDAO().deleteAttendanceData();
+                                    AsyncTask.execute(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            //deleteReminderViewModel.DeleteReminder();
+                                        }
+                                    });
+                                }catch (Exception e){e.printStackTrace();}
+                                progressBar.setVisibility(View.GONE);
+                            /*}
+                            else{
+
+                            }*/
+                        }
+                    }catch (Exception e){
                         e.printStackTrace();
                     }
                 }
