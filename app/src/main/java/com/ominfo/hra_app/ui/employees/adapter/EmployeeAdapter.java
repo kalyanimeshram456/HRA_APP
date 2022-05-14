@@ -10,24 +10,30 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.hra_app.R;
-import com.ominfo.hra_app.ui.employees.model.Searchresult;
+import com.ominfo.hra_app.ui.employees.model.EmployeeList;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
+
 public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<Searchresult> mListData;
+    private List<EmployeeList> mListData;
     private Context mContext;
     private String mDate;
+    private static final int VIEW_TYPE_LOADING = 0;
+    private static final int VIEW_TYPE_NORMAL = 1;
+    private boolean isLoaderVisible = false;
 
     public EmployeeAdapter(Context mContext) {
         this.mContext = mContext;
     }
 
-    public EmployeeAdapter(Context context, List<Searchresult> listData, ListItemSelectListener itemClickListener) {
+    public EmployeeAdapter(Context context, List<EmployeeList> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -36,13 +42,40 @@ public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        switch (viewType) {
+            case VIEW_TYPE_NORMAL:
+                return new ViewHolder(
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.row_employee, parent, false));
+            case VIEW_TYPE_LOADING:
+                return new ProgressHolder(
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.item_loading, parent, false));
+            default:
+                return null;
+        }
+       /* LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View listItem = layoutInflater.inflate(R.layout.row_employee, parent, false);
 
-        return new ViewHolder(listItem);
+        return new ViewHolder(listItem);*/
     }
 
-    public void updateList(List<Searchresult> list){
+    public class ProgressHolder extends ViewHolder {
+        ProgressHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+        /*@Override
+        protected void clear() {
+        }*/
+    }
+    @Override
+    public int getItemViewType(int position) {
+        if (isLoaderVisible) {
+            return position == mListData.size() - 1 ? VIEW_TYPE_LOADING : VIEW_TYPE_NORMAL;
+        } else {
+            return VIEW_TYPE_NORMAL;
+        }
+    }
+    public void updateList(List<EmployeeList> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -53,62 +86,50 @@ public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.ViewHo
         if(mListData.size()>0) {
             //holder.layStatus.setVisibility(View.GONE);
             holder.setIsRecyclable(false);
-           /* holder.tvName.setText(mListData.get(position).getDocNo()+" ("+mListData.get(position).getType()+")");
-            holder.tvCity.setText(mListData.get(position).getCityName());*/
+            holder.tvName.setText(mListData.get(position).getEmpName());
+            holder.tvDesi.setText(mListData.get(position).getEmpPosition());
+            String status = mListData.get(position).getIsActive().equals("1")?"Active":"Inactive";
+            holder.tvStatus.setText(status);
+
+            holder.layCard.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listItemSelectListener.onItemClick(0,mListData.get(position));
+                }
+            });
         }
         else {
             holder.setIsRecyclable(true);
         }
 
-     /*   holder.tvCity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mListData.get(position).getType().equals("Customer")) {
-                    //LogUtil.printToastMSG(mContext,mListData.get(position).getType());
-                    listItemSelectListener.onItemClick(0,mListData.get(position));
-                }
-                else{
-                    if(mListData.get(position).getUrl()!=null &&
-                            !mListData.get(position).getUrl().equals("")) {
-                        //LogUtil.printToastMSG(mContext, mListData.get(position).getType());
-                        listItemSelectListener.onItemClick(1, mListData.get(position));
-                    }
-                    else{
-                        LogUtil.printToastMSG(mContext,"Url not available!");
-                    }
-                }
-            }
-        });
-        holder.tvName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mListData.get(position).getType().equals("Customer")) {
-                    //LogUtil.printToastMSG(mContext,mListData.get(position).getType());
-                    listItemSelectListener.onItemClick(0,mListData.get(position));
-                }
-                else{
-                    if(mListData.get(position).getUrl()!=null &&
-                            !mListData.get(position).getUrl().equals("")) {
-                        //LogUtil.printToastMSG(mContext, mListData.get(position).getType());
-                        listItemSelectListener.onItemClick(1, mListData.get(position));
-                    }
-                    else{
-                        LogUtil.printToastMSG(mContext,"Url not available!");
-                    }
-                }
-            }
-        });
-*/
-       /*
-        holder.imgClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.layStatus.setVisibility(View.GONE);
-            }
-        });*/
-
     }
 
+    public void addItems(List<EmployeeList> postItems) {
+        mListData.addAll(postItems);
+        notifyDataSetChanged();
+    }
+    public void addLoading() {
+        isLoaderVisible = true;
+        mListData.add(new EmployeeList());
+        notifyItemInserted(mListData.size() - 1);
+    }
+    public void removeLoading() {
+        isLoaderVisible = false;
+        int position = mListData.size() - 1;
+        EmployeeList item = getItem(position);
+        if (item != null) {
+            mListData.remove(position);
+            notifyItemRemoved(position);
+        }
+    }
+    public void clear() {
+        mListData.clear();
+        notifyDataSetChanged();
+    }
+
+    EmployeeList getItem(int position) {
+        return mListData.get(position);
+    }
 
     @Override
     public int getItemCount() {
@@ -116,20 +137,19 @@ public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.ViewHo
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        AppCompatTextView tvName,tvCity;
-        LinearLayoutCompat layClick;
-        AppCompatImageView imgExit,imgClose;
-        FrameLayout layStatus;
+        AppCompatTextView tvName,tvDesi,tvStatus;
+        CardView layCard;
 
         ViewHolder(View itemView) {
             super(itemView);
-            //tvName = itemView.findViewById(R.id.tvName);
-           // tvCity = itemView.findViewById(R.id.tvCity);
-            //layClick = itemView.findViewById(R.id.layClick);
+            tvName = itemView.findViewById(R.id.tvEmpName);
+            tvDesi = itemView.findViewById(R.id.tvDesi);
+            tvStatus = itemView.findViewById(R.id.tvStatus);
+            layCard = itemView.findViewById(R.id.layCard);
           }
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(int mData,Searchresult searchresult);
+        void onItemClick(int mData, EmployeeList searchresult);
     }
 }

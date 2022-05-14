@@ -38,6 +38,7 @@ public class DynamicAPIPath {
     public static final String POST_GET_RM= BASE+"?action=rmget";
     public static final String POST_SEARCH_CUST= BASE+"?action=customerfind";
     public static final String POST_ADD_EMPLOYEES= BASE+"?action=add_employee";
+    public static final String POST_EDIT_EMPLOYEES= BASE+"?action=edit_employee";
     public static final String POST_DEACT_EMPLOYEE= BASE+"?action=deactivate_employee";
     public static final String POST_GET_VIEW360= BASE+"?action=custOverAllData";
     public static final String POST_GET_SALES_CREDIT= BASE+"?action=salescreditreport";
@@ -67,7 +68,7 @@ public class DynamicAPIPath {
     public static final String action_get_leave_single = "get_record";
     public static final String action_location_per_hour = "emp_long_lati_tracking";
     public static final String action_add_employee = "add_employee";
-    public static final String action_search_cust = "customerfind";
+    public static final String action_edit_employee = "edit_employee";
     public static final String action_mark_attendance = "mark_attendance";
     public static final String action_update_attendance = "attendance_updated";
     public static final String action_save_enquiry = "enquirysave";

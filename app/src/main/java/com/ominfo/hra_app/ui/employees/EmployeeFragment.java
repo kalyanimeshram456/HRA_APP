@@ -1,27 +1,25 @@
 package com.ominfo.hra_app.ui.employees;
 
-import android.app.Activity;
+import static com.ominfo.hra_app.ui.employees.PaginationListener.PAGE_START;
+
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Environment;
-import android.view.KeyEvent;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
@@ -31,12 +29,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.model.GradientColor;
 import com.google.gson.Gson;
 import com.ominfo.hra_app.R;
@@ -51,26 +48,23 @@ import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.ui.dashboard.model.DashModel;
+import com.ominfo.hra_app.ui.employees.adapter.PostRecyclerAdapter;
+import com.ominfo.hra_app.ui.employees.model.EmployeeList;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListRequest;
+import com.ominfo.hra_app.ui.employees.model.EmployeeListResponse;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
-import com.ominfo.hra_app.ui.sales_credit.activity.PdfPrintActivity;
-import com.ominfo.hra_app.ui.sales_credit.activity.View360Activity;
 import com.ominfo.hra_app.ui.sales_credit.model.GraphModel;
 import com.ominfo.hra_app.ui.employees.adapter.EmployeeAdapter;
-import com.ominfo.hra_app.ui.employees.model.SearchCrmResponse;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
-import com.ominfo.hra_app.ui.employees.model.Searchresult;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -86,10 +80,11 @@ import okhttp3.RequestBody;
  * Use the {@link EmployeeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EmployeeFragment extends BaseFragment {
+public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener
+    {
 
     Context mContext;
-    EmployeeAdapter searchAdapter;
+    PostRecyclerAdapter employeeAdapter;
     //AddTagAdapter addTagAdapter;
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
@@ -117,7 +112,7 @@ public class EmployeeFragment extends BaseFragment {
            "10"*//*, "45","90", "95","50", "55","60", "65"*//*};*/
     int startPos = 0 , endPos = 0;
 
-    List<Searchresult> searchresultList = new ArrayList<>();
+    List<EmployeeList> employeeListArrayList = new ArrayList<>();
     List<DashModel> tagList = new ArrayList<>();
     List<GraphModel> graphModelsList = new ArrayList<>();
     @BindView(R.id.searchView)
@@ -132,10 +127,22 @@ public class EmployeeFragment extends BaseFragment {
     AppCompatImageView iv_emptyLayimage;
     @BindView(R.id.tvNotifyCount)
     AppCompatTextView tvNotifyCount;
+    @BindView(R.id.tvFilterCount)
+    AppCompatTextView tvFilterCount;
+
     final Calendar myCalendar = Calendar.getInstance();
     @Inject
     ViewModelFactory mViewModelFactory;
     private EmployeeListViewModel employeeListViewModel;
+    AppCompatAutoCompleteTextView AutoComFilterStatus,AutoComFilterName,AutoComFilterDesi;
+    @BindView(R.id.swipeRefresh)
+    SwipeRefreshLayout swipeRefresh;
+    private int currentPage = PAGE_START;
+    private boolean isLastPage = false;
+    private long totalPage = 0;
+    private boolean isLoading = false;
+    int itemCount = 0;
+
     public EmployeeFragment() {
         // Required empty public constructor
     }
@@ -159,7 +166,7 @@ public class EmployeeFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.activity_search, container, false);
+        View view = inflater.inflate(R.layout.activity_employee, container, false);
         ButterKnife.bind(this, view);
         return view;
     }
@@ -181,40 +188,136 @@ public class EmployeeFragment extends BaseFragment {
                 .load(R.drawable.img_bg_search)
                 .into(iv_emptyLayimage);
         tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
-        searchresultList.add(new Searchresult());searchresultList.add(new Searchresult());
-        searchresultList.add(new Searchresult());searchresultList.add(new Searchresult());
-        setAdapterForSearchList();
+        showFilterEmployeeDialog(1);
+        swipeRefresh.setOnRefreshListener(this);
+
+        rvSalesList.setHasFixedSize(true);
+        // use a linear layout manager
+        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
+        rvSalesList.setLayoutManager(layoutManager);
+
+        employeeAdapter = new PostRecyclerAdapter(mContext,new ArrayList<>(), new PostRecyclerAdapter.ListItemSelectListener() {
+            @Override
+            public void onItemClick(int mDataTicket,EmployeeList employeeList) {
+                Intent add = new Intent(getContext(),AddEmployeeActivity.class);
+                add.putExtra(Constants.FROM_SCREEN,Constants.edit);
+                Gson gson = new Gson();
+                String myJson = gson.toJson(employeeList);
+                add.putExtra(Constants.EMPLOYEE_OBJ, myJson);
+                startActivity(add);
+            }
+        });
+        rvSalesList.setAdapter(employeeAdapter);
+        callEmployeeListApi("0");
+
+        /**
+         * add scroll listener while user reach in bottom load more will call
+         */
+        rvSalesList.addOnScrollListener(new PaginationListener(layoutManager) {
+            @Override
+            protected void loadMoreItems() {
+                isLoading = true;
+                currentPage++;
+                callEmployeeListApi(String.valueOf(currentPage));
+            }
+
+            @Override
+            public boolean isLastPage() {
+                return isLastPage;
+            }
+
+            @Override
+            public boolean isLoading() {
+                return isLoading;
+            }
+        });
+        //callEmployeeListApi("0");
         tv_emptyLayTitle.setText("Search something...");
-        graphModelsList.removeAll(graphModelsList);
-        graphModelsList.add(new GraphModel("State C1", "Company Test 1", "5"));
-        graphModelsList.add(new GraphModel("State C2", "Company Test 2", "60"));
-        graphModelsList.add(new GraphModel("State C3", "Company Test 3", "15"));
-        graphModelsList.add(new GraphModel("State C4", "Company Test 4", "90"));
-        graphModelsList.add(new GraphModel("State C5", "Company Test 5", "25"));
-        graphModelsList.add(new GraphModel("State C6", "Company Test 6", "10"));
-        graphModelsList.add(new GraphModel("State C7", "Company Test 7", "45"));
-        graphModelsList.add(new GraphModel("State C8", "Company Test 8", "90"));
-        graphModelsList.add(new GraphModel("State C9", "Company Test 9", "95"));
-        graphModelsList.add(new GraphModel("State C10", "Company Test 10", "50"));
-        graphModelsList.add(new GraphModel("State C11", "Company Test 11", "55"));
-        graphModelsList.add(new GraphModel("State C12", "Company Test 12", "60"));
-        setGraphData(3);
+    }
+
+        private void doApiCall() {
+            final ArrayList<EmployeeList> items = new ArrayList<>();
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    for (int i = 0; i < employeeListArrayList.size(); i++) {
+                        items.add(employeeListArrayList.get(i));
+                    }
+                    // do this all stuff on Success of APIs response
+                    /**
+                     * manage progress view
+                     */
+                    if (currentPage != PAGE_START) employeeAdapter.removeLoading();
+                    employeeAdapter.addItems(items);
+                    swipeRefresh.setRefreshing(false);
+
+                    // check weather is last page or not
+                    if (currentPage < totalPage) {
+                        employeeAdapter.addLoading();
+                    } else {
+                        isLastPage = true;
+                    }
+                    isLoading = false;
+                }
+            }, 1500);
+        }
+
+
+        /**
+     * do api call here to fetch data from server
+     * In example i'm adding data manually
+     */
+
+    @Override
+    public void onRefresh() {
+        itemCount = 0;
+        currentPage = PAGE_START;
+        isLastPage = false;
+        employeeAdapter.clear();
+        callEmployeeListApi("0");
     }
 
     private void injectAPI() {
         employeeListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EmployeeListViewModel.class);
         employeeListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_EMPLOYEES_LIST));
    }
-    /* Call Api For change password */
-    private void callSearchCrmApi(String mSearchText) {
+    /* Call Api For employee list */
+    private void callEmployeeListApi(String pageNo) {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
-                RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_employee_list);
-                RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
-                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
-                RequestBody mRequestBodySearch = RequestBody.create(MediaType.parse("text/plain"), mSearchText);
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_employee_list);
+                RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
+                RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                RequestBody mRequestToken = RequestBody.create(MediaType.parse("text/plain"),  loginTable.getToken());
+                RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), pageNo);
+                RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
+                RequestBody mRequestfilter_emp_name = RequestBody.create(MediaType.parse("text/plain"), AutoComFilterName.getText().toString());
+                RequestBody mRequestfilter_emp_position = RequestBody.create(MediaType.parse("text/plain"),  AutoComFilterDesi.getText().toString());
+                String status = "";
+                if(AutoComFilterStatus.getText().toString().equals("All")){
+                    status = "";
+                }
+                else if(AutoComFilterStatus.getText().toString().equals("Active")){
+                    status = "1";
+                }
+                else{
+                    status = "0";
+                }
+                RequestBody filter_emp_isActive = RequestBody.create(MediaType.parse("text/plain"),  status);
+
                 EmployeeListRequest request = new EmployeeListRequest();
+                request.setAction(mRequestAction);
+                request.setCompanyId(mRequestComId);
+                request.setEmployee(mRequestEmployee);
+                request.setToken(mRequestToken);
+                request.setPageNumber(mRequestpage_number);
+                request.setPageSize(mRequestpage_size);
+                request.setFilterEmpName(mRequestfilter_emp_name);
+                request.setFilterEmpPosition(mRequestfilter_emp_position);
+                request.setFilterEmpIsActive(filter_emp_isActive);
+
                 employeeListViewModel.executeEmployeeListAPI(request);
             }
             else {
@@ -224,119 +327,46 @@ public class EmployeeFragment extends BaseFragment {
             LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
         }
     }
-    private void setGraphData(int initStatus) {
-        if(initStatus!=3) {
-            DAYS = new String[6];
-            DAYSY = new String[6];
-        }
-        if(initStatus==3){
-            DAYS = new String[graphModelsList.size()+1];
-            DAYSY = new String[graphModelsList.size()+1];
-        }
-        if(initStatus!=3) {
-            try {
-                endPos = startPos + 6;
-                if (endPos <= graphModelsList.size()) {
-                    //if(startPos<6) {
 
-                    for (int i = 0; i < graphModelsList.size(); i++) {
-                        if (graphModelsList.get(i).getxValue() != null) {
-                            DAYS[i] = graphModelsList.get(i).getxValue();
-                        }
-                        if (graphModelsList.get(i).getyValue() != null) {
-                            DAYSY[i] = graphModelsList.get(i).getyValue();
-                        }
-                    }
-                    try {
-                        //getGraph();
-                        //setAdapterForDashboardList();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    // }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if(initStatus==3){
-            for (int i = 0; i < graphModelsList.size(); i++) {
-                if(graphModelsList.get(i).getxValue()!=null) {
-                    DAYS[i] = graphModelsList.get(i).getxValue();
-                }
-                if(graphModelsList.get(i).getyValue()!=null) {
-                    DAYSY[i] = graphModelsList.get(i).getyValue();
-                }
-            }
-            try {
-                //getGraph();
-                //setAdapterForDashboardList();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    //set value to status dropdown
+    private void setDropdownStatus() {
+        List<String> mGenderDropdown = new ArrayList<>();
+        mGenderDropdown.add("All");
+        mGenderDropdown.add("Active");
+        mGenderDropdown.add("Inactive");
 
-        searchView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                searchView.setIconified(false);
-            }
-        });
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(getContext(), query, Toast.LENGTH_SHORT).show();
-                AppUtils.hideKeyboard(getActivity());
-                callSearchCrmApi(query);
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-               // Toast.makeText(getContext(), "query", Toast.LENGTH_SHORT).show();
-               // adapter.getFilter().filter(newText);
-            return false;
-        }
-    });
-        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+        try {
+            int pos = 0;
+            if (mGenderDropdown != null && mGenderDropdown.size() > 0) {
+                String[] mDropdownList = new String[mGenderDropdown.size()];
+                for (int i = 0; i < mGenderDropdown.size(); i++) {
+                    mDropdownList[i] = String.valueOf(mGenderDropdown.get(i));
+                }
+                //AutoComTextViewVehNo.setText(mDropdownList[pos]);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        mContext,
+                        R.layout.row_dropdown_item,
+                        mDropdownList);
+                //AutoComTextViewVehNo.setThreshold(1);
+                AutoComFilterStatus.setAdapter(adapter);
+                //mSelectedColor = mDropdownList[pos];
+                AutoComFilterStatus.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
-                    public void onFocusChange(View view, boolean b) {
-                        if (!b) {
-                            textViewSearch.setVisibility(View.VISIBLE);
-                        } else {
-                            textViewSearch.setVisibility(View.GONE);
-                        }
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        //mSelectedColor = mDropdownList[position];
+                        AppUtils.hideKeyBoard(getActivity());
                     }
                 });
+            } else {
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
     @Override
     public void onResume() {
         super.onResume();
-       /* Window window = getActivity().getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));*/
-        /*Window window = getActivity().getWindow();
-        View view = window.getDecorView();
-        BaseActivity.DarkStatusBar.setLightStatusBar(view,getActivity());*/
-
-        if(getView() == null){
-            return;
-        }
-        getView().setFocusableInTouchMode(true);
-        getView().requestFocus();
-        getView().setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-
-                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
-                    // handle back button's click listener
-                    textViewSearch.setVisibility(View.GONE);
-                    return true;
-                }
-                return false;
-            }
-        });
     }
 
     @Override
@@ -352,19 +382,24 @@ public class EmployeeFragment extends BaseFragment {
 
     }
 
-    //show Quotation popup
-    public void showQuotationDialog() {
+    //show Filter Employee popup
+    public void showFilterEmployeeDialog(int val) {
         Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_single_quotation);
+        mDialog.setContentView(R.layout.dialog_filter_employee);
         mDialog.setCanceledOnTouchOutside(true);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton downloadButton = mDialog.findViewById(R.id.downloadButton);
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-
-        downloadButton.setOnClickListener(new View.OnClickListener() {
+        RelativeLayout mClose = mDialog.findViewById(R.id.imgCancel);
+        AppCompatButton submitButton = mDialog.findViewById(R.id.submitButton);
+        AutoComFilterStatus = mDialog.findViewById(R.id.AutoComFilterStatus);
+        AutoComFilterName = mDialog.findViewById(R.id.AutoComFilterName);
+        AutoComFilterDesi = mDialog.findViewById(R.id.AutoComFilterDesi);
+        AutoComFilterStatus.setText("All");
+        setDropdownStatus();
+        submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDialog.dismiss();
+                callEmployeeListApi("0");
+                //doApiCall();
             }
         });
 
@@ -374,150 +409,67 @@ public class EmployeeFragment extends BaseFragment {
                 mDialog.dismiss();
             }
         });
-        mDialog.show();
-    }
-
-
-
-    private BarData getBarEntries() {
-
-        barEntriesArrayList = new ArrayList<>();
-        for (int i = 0; i < DAYSY.length; i++) {
-            Random r = new Random();
-            float x = i;
-            if(DAYSY[i]!=null) {
-                float y = Integer.parseInt(DAYSY[i]);
-                barEntriesArrayList.add(new BarEntry(x, y));
-            }
+        if(val==0) {
+            mDialog.show();
         }
-
-        MyBarDataSet set1 = new MyBarDataSet(barEntriesArrayList, "Test");
-        set1.setBarBorderColor(Color.YELLOW);
-        String dark_Red ="#A10616";
-        String light_Red = "#FB6571";
-        String Yellow = "#F9B747";
-        String pink = "#e12c2c";
-        String darkPink = "#DD3546";
-
-       /* list.add(new GradientColor(Color.parseColor("#F9B747"),
-                Color.parseColor("#A10616")));*/
-        /*list.add(new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(pink)));*/
-       /* list.add(new GradientColor(Color.parseColor(pink),
-                Color.parseColor(darkPink)));*/
-        list.add(new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(darkPink)));
-        list.add(new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(dark_Red)));
-
-        //set1.setColor(R.drawable.chart_fill);
-        set1.setGradientColors(list);
-        /*set1.setGradientColor(new int[]{new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(dark_Red)),
-                new GradientColor(Color.parseColor(Yellow),
-                        Color.parseColor(dark_Red)),
-                        new GradientColor(Color.parseColor(Yellow),
-                                Color.parseColor(dark_Red))});*/
-        //ArrayList<BarDataSet> dataSets = new ArrayList<>();
-        //dataSets.add(set1);
-
-       // BarData data = new BarData(xVals, dataSets);
-
-        //set1.setColor(getResources().getColor(R.color.deep_yellow));
-        set1.setDrawValues(false);
-        ArrayList<IBarDataSet> dataSets = new ArrayList<>();
-
-        set1.setHighlightEnabled(false);
-        set1.setDrawValues(true);
-
-        dataSets.add(set1);
-        // adding color to our bar data set.
-        BarData data = new BarData(dataSets);
-        return data;
     }
 
-    private void setAdapterForSearchList() {
-        if (searchresultList!=null && searchresultList.size() > 0) {
+ /*   private void setAdapterForEmployeeList() {
+        if (employeeListArrayList !=null && employeeListArrayList.size() > 0) {
             rvSalesList.setVisibility(View.VISIBLE);
             emptyLayout.setVisibility(View.GONE);
             } else {
-            rvSalesList.setVisibility(View.GONE);
-            emptyLayout.setVisibility(View.VISIBLE);
+            //rvSalesList.setVisibility(View.GONE);
+            //emptyLayout.setVisibility(View.VISIBLE);
             Glide.with(this)
                     .load(R.drawable.img_bg_search)
                     .into(iv_emptyLayimage);
             tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
         }
-        searchAdapter = new EmployeeAdapter(mContext, searchresultList, new EmployeeAdapter.ListItemSelectListener() {
+        employeeAdapter = new PostRecyclerAdapter(mContext, new ArrayList<>(), new PostRecyclerAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket,Searchresult searchresult) {
-                if(mDataTicket==0) {
-                    Intent i = new Intent(getActivity(), View360Activity.class);
-                    i.putExtra(Constants.TRANSACTION_ID, searchresult.getId());
-                    startActivity(i);
-                    ((Activity) getActivity()).overridePendingTransition(0, 0);
-                }
-                if(mDataTicket==1){
-                    //showQuotationDialog();
-                    //mDialog.dismiss();
-                    Intent i = new Intent(getActivity(), PdfPrintActivity.class);
-                    i.putExtra(Constants.URL, searchresult.getUrl());
-                    startActivity(i);
-                    ((Activity) getActivity()).overridePendingTransition(0, 0);
-                }
+            public void onItemClick(int mDataTicket,EmployeeList employeeList) {
+                Intent add = new Intent(getContext(),AddEmployeeActivity.class);
+                add.putExtra(Constants.FROM_SCREEN,Constants.edit);
+                Gson gson = new Gson();
+                String myJson = gson.toJson(employeeList);
+                add.putExtra(Constants.EMPLOYEE_OBJ, myJson);
+                startActivity(add);
             }
         });
         //RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecorator(mContext.getDrawable(R.drawable.separator_row_item));
         //rvSalesList.addItemDecoration(dividerItemDecoration);
         //rvSalesList.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false);
         rvSalesList.setHasFixedSize(true);
-        rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
-        rvSalesList.setAdapter(searchAdapter);
-        final boolean[] check = {false};
-
-    }
-
-    //show Receipt Details popup
-    public void showVisitDetailsDialog() {
-        Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.activity_reminder_alert);
-        mDialog.setCanceledOnTouchOutside(true);
-        //AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        //AppCompatButton closeButton = mDialog.findViewById(R.id.closeButton);
-
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-
-        /*closeButton.setOnClickListener(new View.OnClickListener() {
+        rvSalesList.setLayoutManager(layoutManager);
+        rvSalesList.setAdapter(employeeAdapter);
+        swipeRefresh.setOnRefreshListener(this);
+        // use a linear layout manager
+        //adapter = new PostRecyclerAdapter(new ArrayList<>());
+        //rvSalesList.setAdapter(adapter);
+        callEmployeeListApi("0");
+        *//**
+         * add scroll listener while user reach in bottom load more will call
+         *//*
+        rvSalesList.addOnScrollListener(new PaginationListener(layoutManager) {
             @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
+            protected void loadMoreItems() {
+                isLoading = true;
+                currentPage++;
+                callEmployeeListApi("0");
+            }
+            @Override
+            public boolean isLastPage() {
+                return isLastPage;
+            }
+            @Override
+            public boolean isLoading() {
+                return isLoading;
             }
         });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });*/
-        mDialog.show();
     }
-
-    private void deleteDir(){
-        File dir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), Constants.FILE_NAME);
-        //File oldFile = new File(myDir);
-        if (dir.isDirectory())
-        {
-            String[] children = dir.list();
-            for (int i = 0; i < children.length; i++)
-            {
-                new File(dir, children[i]).delete();
-            }
-        }
-    }
-
-
+*/
     private void setToolbar() {
         //set toolbar title
         tvToolbarTitle.setText(R.string.scr_lbl_employees);
@@ -538,7 +490,7 @@ public class EmployeeFragment extends BaseFragment {
     }
 
     //perform click actions
-    @OnClick({R.id.imgAddEmployee})
+    @OnClick({R.id.imgAddEmployee,R.id.imgReport})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
@@ -546,6 +498,9 @@ public class EmployeeFragment extends BaseFragment {
                 Intent add = new Intent(getContext(),AddEmployeeActivity.class);
                 add.putExtra(Constants.FROM_SCREEN,Constants.add);
                 startActivity(add);
+                break;
+            case R.id.imgReport:
+                showFilterEmployeeDialog(0);
                 break;
         }
     }
@@ -579,79 +534,6 @@ public class EmployeeFragment extends BaseFragment {
 
     }
 
-    public class MyBarDataSet extends BarDataSet {
-
-
-        public MyBarDataSet(List<BarEntry> yVals, String label) {
-            super(yVals, label);
-        }
-
-        @Override
-        public GradientColor getGradientColor(int index) {
-            if (Integer.parseInt(graphModelsList.get(index).getyValue()) < 75) // less than 95 green
-                return list.get(0);
-            else if (Integer.parseInt(graphModelsList.get(index).getyValue()) > 75
-            ) // less than 100 orange
-                return list.get(1);
-            else if(Integer.parseInt(graphModelsList.get(index).getyValue()) > 75
-                    && Integer.parseInt(graphModelsList.get(index).getyValue()) < 150) // less than 100 orange
-                return list.get(1);
-            else // greater or equal than 100 red
-                return list.get(0);
-        }
-
-
-    }
-
-
-
-    /*private void injectAPI() {
-        mGetVehicleViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetVehicleViewModel.class);
-        mGetVehicleViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_GET_VEHICLE));
-    }*/
-
-  /*  *//* Call Api For Vehicle List *//*
-    private void callVehicleListApi(String fromDate,String toDate) {
-        if (NetworkCheck.isInternetAvailable(mContext)) {
-            GetVehicleListRequest mRequest = new GetVehicleListRequest();
-            mRequest.setUserkey(mUserKey);//mUserKey); //6b07b768-926c-49b6-ac1c-89a9d03d4c3b
-            mRequest.setFromDate(fromDate);
-            mRequest.setToDate(toDate);
-            Gson gson = new Gson();
-            String bodyInStringFormat = gson.toJson(mRequest);
-            mGetVehicleViewModel.hitGetVehicleApi(bodyInStringFormat);
-        } else {
-            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
-        }
-    }*/
-
-
-
-  /*  private void setAdapterForVehicleList() {
-        if (vehicleModelList.size() > 0) {
-            mLrNumberAdapter = new LrNumberAdapter(mContext, vehicleModelList, new LrNumberAdapter.ListItemSelectListener() {
-                @Override
-                public void onItemClick(GetVehicleListResult mDataTicket) {
-                    Intent intent = new Intent(mContext,AddLrActivity.class);
-                    intent.putExtra(Constants.TRANSACTION_ID, mDataTicket.getTransactionID());
-                    intent.putExtra(Constants.FROM_SCREEN, Constants.LIST);
-                    startActivity(intent);
-                }
-            });
-            mRecylerViewLrNumber.setHasFixedSize(true);
-            mRecylerViewLrNumber.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
-            mRecylerViewLrNumber.setAdapter(mLrNumberAdapter);
-            mRecylerViewLrNumber.setVisibility(View.VISIBLE);
-            linearLayoutEmptyActivity.setVisibility(View.GONE);
-            imgEmptyImage.setBackground(getResources().getDrawable(R.drawable.ic_error_load));
-            tvEmptyLayTitle.setText(getString(R.string.scr_lbl_data_loading));
-        } else {
-            mRecylerViewLrNumber.setVisibility(View.GONE);
-            linearLayoutEmptyActivity.setVisibility(View.VISIBLE);
-            imgEmptyImage.setBackground(getResources().getDrawable(R.drawable.ic_error_load));
-            tvEmptyLayTitle.setText(R.string.scr_lbl_no_data_available);
-        }
-    }*/
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -660,219 +542,27 @@ public class EmployeeFragment extends BaseFragment {
     }
 
 
-  /*  //set date picker view
-    private void openDataPicker(AppCompatTextView datePickerField,int mFrom) {
-        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-                // TODO Auto-generated method stub
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                String myFormat="";
-                if(mFrom==0) {
-                    myFormat = "dd MMM yyyy"; //In which you need put here
-                }
-                else{
-                    myFormat = "dd/MM/yyyy"; //In which you need put here
-                }
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-                datePickerField.setText(sdf.format(myCalendar.getTime()));
-            }
-
-        };
-
-        new DatePickerDialog(this, date, myCalendar
-                .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-
-    }
-
-    //show truck details popup
-    public void showTruckDetailsDialog() {
-        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_truck_details);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-        RelativeLayout relRC = mDialog.findViewById(R.id.relRC);
-        RelativeLayout relPUC = mDialog.findViewById(R.id.relPUC);
-        RelativeLayout relIss = mDialog.findViewById(R.id.relIss);
-
-        relRC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        relPUC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        relIss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }
-
-    //show truck details popup
-    public void showFullImageDialog() {
-        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_doc_full_view);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }*/
-
-
-    /*//request camera and storage permission
-    private void requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (mContext.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-            ) {
-
-                requestPermissions(new String[]
-                                { Manifest.permission.CAMERA,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                },
-                        1000);
-
-            } else {
-                //createFolder();
-            }
-        } else {
-            //createFolder();
-        }
-    }
-*/
-
-    /*
-     * ACCESS_FINE_LOCATION permission result
-     * */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case 1000:
-                if (grantResults.length > 0 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                        grantResults[1] == PackageManager.PERMISSION_GRANTED
-                        &&
-                        grantResults[2] == PackageManager.PERMISSION_GRANTED
-                ) {
-                    //BaseApplication.getInstance().mService.requestLocationUpdates();
-                } else {
-                    //Toast.makeText(mContext, getString(R.string.somthing_went_wrong), Toast.LENGTH_SHORT).show();
-                }
-                break;
-
-        }
-    }
-
-        public class DividerItemDecorator extends RecyclerView.ItemDecoration {
-
-            private Drawable mDivider;
-            private final Rect mBounds = new Rect();
-
-            public DividerItemDecorator(Drawable divider) {
-                mDivider = divider;
-            }
-
-            @Override
-            public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
-                canvas.save();
-                final int left;
-                final int right;
-                if (parent.getClipToPadding()) {
-                    left = parent.getPaddingLeft();
-                    right = parent.getWidth() - parent.getPaddingRight();
-                    canvas.clipRect(left, parent.getPaddingTop(), right,
-                            parent.getHeight() - parent.getPaddingBottom());
-                } else {
-                    left = 0;
-                    right = parent.getWidth();
-                }
-
-                final int childCount = parent.getChildCount();
-                for (int i = 0; i < childCount - 1; i++) {
-                    final View child = parent.getChildAt(i);
-                    parent.getDecoratedBoundsWithMargins(child, mBounds);
-                    final int bottom = mBounds.bottom + Math.round(child.getTranslationY());
-                    final int top = bottom - mDivider.getIntrinsicHeight();
-                    mDivider.setBounds(left, top, right, bottom);
-                    mDivider.draw(canvas);
-                }
-                canvas.restore();
-            }
-
-            @Override
-            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-
-                if (parent.getChildAdapterPosition(view) == state.getItemCount() - 1) {
-                    outRect.setEmpty();
-                } else
-                    outRect.set(0, 0, 0, mDivider.getIntrinsicHeight());
-            }
-        }
-
     /*Api response */
     private void consumeResponse(ApiResponse apiResponse, String tag) {
         switch (apiResponse.status) {
-
             case LOADING:
-                    ((BaseActivity) mContext).showSmallProgressBar(mProgressBarHolder);
+                    //((BaseActivity) mContext).showSmallProgressBar(mProgressBarHolder);
                 break;
 
             case SUCCESS:
-                ((BaseActivity) mContext).dismissSmallProgressBar(mProgressBarHolder);
+                //((BaseActivity) mContext).dismissSmallProgressBar(mProgressBarHolder);
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EMPLOYEES_LIST)) {
-                            SearchCrmResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SearchCrmResponse.class);
-                            if (responseModel != null/* && responseModel.getStatus()==1*/) {
-                                searchresultList = responseModel.getResult().getSearchresult();
-                                setAdapterForSearchList();
+                            EmployeeListResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), EmployeeListResponse.class);
+                            totalPage = responseModel.getResult().getTotalrows();
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                if (employeeListArrayList != null) {
+                                    //employeeListArrayList= new ArrayList<>();
+                                }
+                                employeeListArrayList = responseModel.getResult().getList();
+                                doApiCall();
                             }
                         }
                     }catch (Exception e){

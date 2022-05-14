@@ -14,26 +14,29 @@ public class EmployeeListRequest {
     @SerializedName("action")
     private RequestBody action;
 
-    @SerializedName("name")
-    private RequestBody name;
+    @SerializedName("company_id")
+    private RequestBody companyId;
 
-    @SerializedName("registered_address")
-    private RequestBody address;
+    @SerializedName("employee")
+    private RequestBody employee;
 
-    @SerializedName("pincode")
-    private RequestBody pincode;
+    @SerializedName("token")
+    private RequestBody token;
 
-    @SerializedName("contact_no")
-    private RequestBody contactNo;
+    @SerializedName("page_number")
+    private RequestBody pageNumber;
 
-    @SerializedName("email_id")
-    private RequestBody emailId;
+    @SerializedName("page_size")
+    private RequestBody pageSize;
 
-    @SerializedName("staff_strength")
-    private RequestBody staffStrength;
+    @SerializedName("filter_emp_name")
+    private RequestBody filterEmpName;
 
-    @SerializedName("user_prefix")
-    private RequestBody userPrefix;
+    @SerializedName("filter_emp_position")
+    private RequestBody filterEmpPosition;
+
+    @SerializedName("filter_emp_isActive")
+    private RequestBody filterEmpIsActive;
 
     public RequestBody getAction() {
         return action;
@@ -43,59 +46,67 @@ public class EmployeeListRequest {
         this.action = action;
     }
 
-    public RequestBody getName() {
-        return name;
+    public RequestBody getCompanyId() {
+        return companyId;
     }
 
-    public void setName(RequestBody name) {
-        this.name = name;
+    public void setCompanyId(RequestBody companyId) {
+        this.companyId = companyId;
     }
 
-    public RequestBody getAddress() {
-        return address;
+    public RequestBody getEmployee() {
+        return employee;
     }
 
-    public void setAddress(RequestBody address) {
-        this.address = address;
+    public void setEmployee(RequestBody employee) {
+        this.employee = employee;
     }
 
-    public RequestBody getPincode() {
-        return pincode;
+    public RequestBody getToken() {
+        return token;
     }
 
-    public void setPincode(RequestBody pincode) {
-        this.pincode = pincode;
+    public void setToken(RequestBody token) {
+        this.token = token;
     }
 
-    public RequestBody getContactNo() {
-        return contactNo;
+    public RequestBody getPageNumber() {
+        return pageNumber;
     }
 
-    public void setContactNo(RequestBody contactNo) {
-        this.contactNo = contactNo;
+    public void setPageNumber(RequestBody pageNumber) {
+        this.pageNumber = pageNumber;
     }
 
-    public RequestBody getEmailId() {
-        return emailId;
+    public RequestBody getPageSize() {
+        return pageSize;
     }
 
-    public void setEmailId(RequestBody emailId) {
-        this.emailId = emailId;
+    public void setPageSize(RequestBody pageSize) {
+        this.pageSize = pageSize;
     }
 
-    public RequestBody getStaffStrength() {
-        return staffStrength;
+    public RequestBody getFilterEmpName() {
+        return filterEmpName;
     }
 
-    public void setStaffStrength(RequestBody staffStrength) {
-        this.staffStrength = staffStrength;
+    public void setFilterEmpName(RequestBody filterEmpName) {
+        this.filterEmpName = filterEmpName;
     }
 
-    public RequestBody getUserPrefix() {
-        return userPrefix;
+    public RequestBody getFilterEmpPosition() {
+        return filterEmpPosition;
     }
 
-    public void setUserPrefix(RequestBody userPrefix) {
-        this.userPrefix = userPrefix;
+    public void setFilterEmpPosition(RequestBody filterEmpPosition) {
+        this.filterEmpPosition = filterEmpPosition;
+    }
+
+    public RequestBody getFilterEmpIsActive() {
+        return filterEmpIsActive;
+    }
+
+    public void setFilterEmpIsActive(RequestBody filterEmpIsActive) {
+        this.filterEmpIsActive = filterEmpIsActive;
     }
 }

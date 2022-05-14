@@ -67,33 +67,30 @@
                     android:textSize="@dimen/_16sp" />
 
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginHorizontal="@dimen/_10dp"
-                    android:layout_marginTop="@dimen/_50dp"
-                    android:orientation="vertical">
 
-                    <include layout="@layout/content_empty_activity_layout" />
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginHorizontal="@dimen/_10dp"
+                            android:layout_marginTop="@dimen/_50dp"
+                            android:orientation="vertical">
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvSalesList"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_2dp"
-                        android:background="@color/bg_screen"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        android:nestedScrollingEnabled="false"
-                        android:paddingBottom="@dimen/_16dp"
-                        android:visibility="visible"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:listitem="@layout/row_employee" />
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvSalesList"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@color/bg_screen"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            android:nestedScrollingEnabled="true"
+                            android:paddingBottom="@dimen/_16dp"
+                            android:visibility="visible"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            tools:listitem="@layout/row_employee" />
+                       <include layout="@layout/content_empty_activity_layout" />
 
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
+                        </androidx.appcompat.widget.LinearLayoutCompat>
 
 
             </RelativeLayout>

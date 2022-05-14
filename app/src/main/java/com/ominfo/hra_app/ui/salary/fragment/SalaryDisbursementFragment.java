@@ -49,19 +49,16 @@ import com.ominfo.hra_app.database.AppDatabase;
 import com.ominfo.hra_app.interfaces.Constants;
 import com.ominfo.hra_app.network.ApiResponse;
 import com.ominfo.hra_app.network.DynamicAPIPath;
-import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.ui.dashboard.model.DashModel;
+import com.ominfo.hra_app.ui.employees.model.EmployeeList;
 import com.ominfo.hra_app.ui.leave.adapter.PastLeaveAdapter;
-import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.sales_credit.activity.PdfPrintActivity;
 import com.ominfo.hra_app.ui.sales_credit.activity.View360Activity;
 import com.ominfo.hra_app.ui.sales_credit.model.GraphModel;
-import com.ominfo.hra_app.ui.employees.model.SearchCrmResponse;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
-import com.ominfo.hra_app.ui.employees.model.Searchresult;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
 
@@ -77,8 +74,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
 //https://github.com/PhilJay/MPAndroidChart/wiki/Modifying-the-Viewport
 
 /**
@@ -117,7 +112,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
            "10"*//*, "45","90", "95","50", "55","60", "65"*//*};*/
     int startPos = 0 , endPos = 0;
 
-    List<Searchresult> searchresultList = new ArrayList<>();
+    List<EmployeeList> searchresultList = new ArrayList<>();
     List<DashModel> tagList = new ArrayList<>();
     List<GraphModel> graphModelsList = new ArrayList<>();
     @BindView(R.id.progressBarHolder)
@@ -192,8 +187,8 @@ public class SalaryDisbursementFragment extends BaseFragment {
                 .load(R.drawable.img_bg_search)
                 .into(iv_emptyLayimage);
         tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
-        searchresultList.add(new Searchresult());searchresultList.add(new Searchresult());
-        searchresultList.add(new Searchresult());searchresultList.add(new Searchresult());
+        searchresultList.add(new EmployeeList());searchresultList.add(new EmployeeList());
+        searchresultList.add(new EmployeeList());searchresultList.add(new EmployeeList());
         setAdapterForLeaveList();
         tv_emptyLayTitle.setText("Search something...");
         graphModelsList.removeAll(graphModelsList);
@@ -336,10 +331,10 @@ public class SalaryDisbursementFragment extends BaseFragment {
         }
         leaveAdapter = new PastLeaveAdapter(mContext, searchresultList, new PastLeaveAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket,Searchresult searchresult) {
+            public void onItemClick(int mDataTicket,EmployeeList searchresult) {
                 if(mDataTicket==0) {
                     Intent i = new Intent(getActivity(), View360Activity.class);
-                    i.putExtra(Constants.TRANSACTION_ID, searchresult.getId());
+                    //i.putExtra(Constants.TRANSACTION_ID, searchresult.getId());
                     startActivity(i);
                     ((Activity) getActivity()).overridePendingTransition(0, 0);
                 }
@@ -347,7 +342,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
                     //showQuotationDialog();
                     //mDialog.dismiss();
                     Intent i = new Intent(getActivity(), PdfPrintActivity.class);
-                    i.putExtra(Constants.URL, searchresult.getUrl());
+                    //i.putExtra(Constants.URL, searchresult.getUrl());
                     startActivity(i);
                     ((Activity) getActivity()).overridePendingTransition(0, 0);
                 }
@@ -960,11 +955,11 @@ public class SalaryDisbursementFragment extends BaseFragment {
                     LogUtil.printLog(tag, apiResponse.data.toString());
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EMPLOYEES_LIST)) {
-                            SearchCrmResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SearchCrmResponse.class);
-                            if (responseModel != null/* && responseModel.getStatus()==1*/) {
+                         /*   SearchCrmResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SearchCrmResponse.class);
+                            if (responseModel != null*//* && responseModel.getStatus()==1*//*) {
                                 searchresultList = responseModel.getResult().getSearchresult();
                                 setAdapterForLeaveList();
-                            }
+                            }*/
                         }
                     }catch (Exception e){
                         e.printStackTrace();

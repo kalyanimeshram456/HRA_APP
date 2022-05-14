@@ -5,6 +5,7 @@ import com.ominfo.hra_app.ui.attendance.model.MarkAttendanceRequest;
 import com.ominfo.hra_app.ui.attendance.model.UpdateAttendanceRequest;
 import com.ominfo.hra_app.ui.dashboard.model.DashboardRequest;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeRequest;
+import com.ominfo.hra_app.ui.employees.model.EditEmployeeRequest;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListRequest;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveRequest;
 import com.ominfo.hra_app.ui.my_account.model.GetTicketRequest;
@@ -198,12 +199,16 @@ public class Service {
     public Observable<JsonElement> executeEmployeeListAPI(EmployeeListRequest employeeListRequest) {
         return networkAPIServices.employeeList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_EMPLOYEES_LIST),
-                employeeListRequest.getAction()
+                employeeListRequest.getAction(),employeeListRequest.getCompanyId(),
+                employeeListRequest.getEmployee(),employeeListRequest.getToken(),
+                employeeListRequest.getPageNumber(),employeeListRequest.getPageSize(),
+                employeeListRequest.getFilterEmpName(),employeeListRequest.getFilterEmpPosition(),
+                employeeListRequest.getFilterEmpIsActive()
         );
     }
     public Observable<JsonElement> executeDeactivateEmployeeAPI(RequestBody action,RequestBody updateby,RequestBody empId) {
         return networkAPIServices.deactivateEmployee(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
-                DynamicAPIPath.POST_EMPLOYEES_LIST),
+                DynamicAPIPath.POST_DEACT_EMPLOYEE),
                 action,updateby,empId
         );
     }
@@ -220,6 +225,21 @@ public class Service {
                 addEmployeeRequest.getSalary(), addEmployeeRequest.getOtherLeaves(),
                 addEmployeeRequest.getCasualLeaves(), addEmployeeRequest.getSickLeaves()
                 ,addEmployeeRequest.getJoiningDate()
+        );
+    }
+
+    public Observable<JsonElement> executeEditEmployeeAPI(EditEmployeeRequest addEmployeeRequest) {
+        return networkAPIServices.editEmployee(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_EDIT_EMPLOYEES),
+                addEmployeeRequest.getAction(), addEmployeeRequest.getEmpName(),
+                addEmployeeRequest.getEmpMob(), addEmployeeRequest.getEmpEmail(),
+                addEmployeeRequest.getEmpAddr(), addEmployeeRequest.getEmpDob(),
+                addEmployeeRequest.getEmpGender(), addEmployeeRequest.getEmpPincode(),
+                addEmployeeRequest.getEmpPosition(), addEmployeeRequest.getUpdatedBy(),
+                addEmployeeRequest.getCompanyID(), addEmployeeRequest.getEmpId(),
+                addEmployeeRequest.getSalary(), addEmployeeRequest.getOtherLeaves(),
+                addEmployeeRequest.getCasualLeaves(), addEmployeeRequest.getSickLeaves()
+                ,addEmployeeRequest.getJoiningDate(),addEmployeeRequest.getToken()
         );
     }
 

@@ -326,7 +326,15 @@ public interface NetworkAPIServices {
     @Multipart
     @POST()
     Observable<JsonElement> employeeList(@Url String url,
-                                         @Part("action") RequestBody uploadType
+                                         @Part("action") RequestBody uploadType,
+                                         @Part("company_id") RequestBody company_id,
+                                         @Part("employee") RequestBody employee,
+                                         @Part("token") RequestBody token,
+                                         @Part("page_number") RequestBody page_number,
+                                         @Part("page_size") RequestBody page_size,
+                                         @Part("filter_emp_name") RequestBody filter_emp_name,
+                                         @Part("filter_emp_position") RequestBody filter_emp_position,
+                                         @Part("filter_emp_isActive") RequestBody filter_emp_isActive
     );
 
     @Multipart
@@ -334,7 +342,7 @@ public interface NetworkAPIServices {
     Observable<JsonElement> deactivateEmployee(@Url String url,
                                          @Part("action") RequestBody uploadType,
                                                @Part("updated_by") RequestBody updated_by,
-                                               @Part("action") RequestBody emp_id
+                                               @Part("emp_id") RequestBody emp_id
     );
 
     @Multipart
@@ -357,6 +365,29 @@ public interface NetworkAPIServices {
                                         @Part("casual_leaves") RequestBody casual_leaves,
                                         @Part("sick_leaves") RequestBody sick_leaves,
                                         @Part("joining_date") RequestBody joining_date
+    );
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> editEmployee(@Url String url,
+                                        @Part("action") RequestBody uploadType,
+                                        @Part("emp_name") RequestBody emp_name,
+                                        @Part("emp_mob") RequestBody emp_mob,
+                                        @Part("emp_email") RequestBody emp_email,
+                                        @Part("emp_addr") RequestBody emp_addr,
+                                        @Part("emp_dob") RequestBody emp_dob,
+                                        @Part("emp_gender") RequestBody emp_gender,
+                                        @Part("emp_pincode") RequestBody emp_pincode,
+                                        @Part("emp_position") RequestBody emp_position,
+                                        @Part("updated_by") RequestBody updated_by,
+                                        @Part("company_ID") RequestBody company_ID,
+                                        @Part("emp_id") RequestBody emp_id,
+                                        @Part("salary") RequestBody salary,
+                                        @Part("other_leaves") RequestBody other_leaves,
+                                        @Part("casual_leaves") RequestBody casual_leaves,
+                                        @Part("sick_leaves") RequestBody sick_leaves,
+                                        @Part("joining_date") RequestBody joining_date,
+                                         @Part("token") RequestBody token
     );
 
     @Multipart

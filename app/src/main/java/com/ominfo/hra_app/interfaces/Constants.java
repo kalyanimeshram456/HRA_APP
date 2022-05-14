@@ -25,7 +25,7 @@ public interface Constants {
     String FROM_TAB_CHANGE = "from_tab_change";
     String FROM_SCREEN = "FROM_SCREEN";
     String LIST = "LIST";
-    String ADD = "ADD";
+    String EMPLOYEE_OBJ = "EMPLOYEE_OBJ";
     String TRANSACTION_ID = "TRANSACTION_ID";
     String URL = "URL";
     String SEARCH = "SEARCH";
@@ -33,14 +33,14 @@ public interface Constants {
     String TITLE = "title";
     String MESSAGE = "MESSAGE";
 
-    String PAG_SIZE = "7";
+    String PAG_SIZE = "10";
     String MIN_PAG_SIZE = "4";
     String KEY_OBJECT = "KEY_Object";
 
     /*SCREEEN NAME */
     String DASHBOARD = "DASHBOARD";
     String add = "add";
-    String REGISTRATION = "REGISTRATION";
+    String edit = "edit";
     String SETTING = "Setting";
     String MY_PROFILE = "MY_PROFILE";
     String KEY_TITLE = "title";

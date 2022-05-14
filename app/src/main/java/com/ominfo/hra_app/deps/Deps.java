@@ -34,9 +34,11 @@ public interface Deps
 
     void inject(LeaveFragment leaveFragment);
 
+    void inject(SalaryFragment salaryFragment);
+
     void inject(SalaryDisbursementFragment salaryDisbursementFragment);
 
-    void inject(SalaryFragment salaryFragment);
+    void inject(EmployeeFragment employeeFragment);
 
     void inject(PastLeaveFragment pastLeaveFragment);
 
@@ -55,8 +57,6 @@ public interface Deps
     void inject(SalesCreditFragment salesCreditFragment);
 
     void inject(NotificationsActivity notificationsActivity);
-
-    void inject(EmployeeFragment searchFragment);
 
     void inject(MyAccountFragment myAccountFragment);
 

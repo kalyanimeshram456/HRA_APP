@@ -6,16 +6,16 @@ import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class SearchCrmResponse {
+public class EmployeeListResponse {
 
     @SerializedName("result")
-    private SearchCrmResult mResult;
+    private EmployeeListResult mResult;
 
-    public SearchCrmResult getResult() {
+    public EmployeeListResult getResult() {
         return mResult;
     }
 
-    public void setResult(SearchCrmResult result) {
+    public void setResult(EmployeeListResult result) {
         mResult = result;
     }
 

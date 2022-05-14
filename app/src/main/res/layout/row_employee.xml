@@ -9,6 +9,7 @@
     android:background="@color/bg_screen"
     >
     <androidx.cardview.widget.CardView
+        android:id="@+id/layCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/_5dp"
@@ -76,27 +77,26 @@
 
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvBirthName"
+                        android:id="@+id/tvEmpName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
+                        android:layout_gravity="left"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="User name"
-                        android:textAlignment="center"
+                        android:hint="@string/scr_lbl_unavailable"
                         android:textColor="@color/black_heading"
                         android:textSize="@dimen/_14sp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvBirthValue"
+                        android:id="@+id/tvDesi"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/tvBirthName"
+                        android:layout_below="@+id/tvEmpName"
                         android:layout_gravity="center"
                         android:fontFamily="@font/gilroy_regular"
                         android:text="User designation"
                         android:textAlignment="center"
                         android:textColor="@color/gray"
-                        android:textSize="@dimen/_14sp" />
+                        android:textSize="@dimen/_13sp" />
 
                 </RelativeLayout>
 
@@ -109,15 +109,15 @@
                     android:paddingTop="@dimen/_0dp">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvLeaveBirth"
+                        android:id="@+id/tvStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="@string/scr_lbl_inactive"
+                        android:hint="@string/scr_lbl_unavailable"
                         android:textAlignment="center"
                         android:textColor="@color/pink"
-                        android:textSize="@dimen/_14sp" />
+                        android:textSize="@dimen/_13sp" />
 
                 </RelativeLayout>
             </androidx.appcompat.widget.LinearLayoutCompat>

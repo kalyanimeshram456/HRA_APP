@@ -114,7 +114,7 @@
     <string name="scr_lbl_reminder_status">Reminder Status</string>
     <string name="scr_lbl_add_receipt">Add Receipt</string>
     <string name="scr_lbl_filter">Filters</string>
-    <string name="scr_lb_filter_by">FILTER BY</string>
+    <string name="scr_lb_filter_by">Filter by</string>
     <string name="scr_lbl_rm">RM</string>
     <string name="scr_lbl_quotations">Quotations</string>
     <string name="scr_lbl_enquiries">Enquiries</string>
@@ -307,6 +307,6 @@
     <string name="err_enter_current_salary">Please enter current salary.</string>
     <string name="err_enter_casual_leave">Please enter casual leaves.</string>
     <string name="err_enter_sick_leave">Please enter sick leaves.</string>
-    <string name="err_enter_sick_leave">Please enter sick leaves.</string>
+    <string name="err_enter_other_leave">Please enter other leaves.</string>
 
 </resources>

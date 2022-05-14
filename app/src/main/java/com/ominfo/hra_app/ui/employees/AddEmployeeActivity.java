@@ -39,6 +39,10 @@ import com.ominfo.hra_app.ui.employees.model.AddEmployeeResponse;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeViewModel;
 import com.ominfo.hra_app.ui.employees.model.DeactivateEmployeeResponse;
 import com.ominfo.hra_app.ui.employees.model.DeactivateEmployeeViewModel;
+import com.ominfo.hra_app.ui.employees.model.EditEmployeeRequest;
+import com.ominfo.hra_app.ui.employees.model.EditEmployeeResponse;
+import com.ominfo.hra_app.ui.employees.model.EditEmployeeViewModel;
+import com.ominfo.hra_app.ui.employees.model.EmployeeList;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.visit_report.model.VisitNoResponse;
 import com.ominfo.hra_app.util.AppUtils;
@@ -75,7 +79,7 @@ public class AddEmployeeActivity extends BaseActivity {
     ViewModelFactory mViewModelFactory;
     private AddEmployeeViewModel addEmployeeViewModel;
     private DeactivateEmployeeViewModel deactivateEmployeeViewModel;
-    //private UpdateAttendanceViewModel updateAttendanceViewModel;
+    private EditEmployeeViewModel editEmployeeViewModel;
     private AppDatabase mDb;
     @BindView(R.id.progressBarHolder)
     FrameLayout mProgressBarHolder;
@@ -137,10 +141,10 @@ public class AddEmployeeActivity extends BaseActivity {
     @BindView(R.id.AutoComOtherLeave)
     AppCompatAutoCompleteTextView AutoComOtherLeave;
     Dialog mDialogDeactivate,mDialogDiscard;
-    String from = "add";
+    String from = "add", empId= "0";
     @BindView(R.id.btnDeactivate)
     AppCompatButton btnDeactivate;
-
+    EmployeeList employeeList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,6 +166,7 @@ public class AddEmployeeActivity extends BaseActivity {
         // initialise tha layout
         setToolbar();
         getIntentData();
+        tvMissing.setVisibility(View.GONE);
         setDropdownGender();
     }
 
@@ -175,11 +180,32 @@ public class AddEmployeeActivity extends BaseActivity {
         if(intent!=null){
             from = intent.getStringExtra(Constants.FROM_SCREEN);
             if(from.equals(Constants.add)){
+                tvTitle.setText(R.string.scr_lbl_add_employees);
                 btnDeactivate.setVisibility(View.GONE);
             }
-            else {
+            else if(from.equals(Constants.edit)){
+                tvTitle.setText(R.string.scr_lbl_manage_employee);
                 btnDeactivate.setVisibility(View.VISIBLE);
+                Gson gson = new Gson();
+                employeeList = gson.fromJson(getIntent().getStringExtra(Constants.EMPLOYEE_OBJ), EmployeeList.class);
+                AutoComName.setText(employeeList.getEmpName());
+                AutoComEmailId.setText(employeeList.getEmpEmail());
+                AutoComMobile.setText(employeeList.getEmpMob());
+                AutoComDesi.setText(employeeList.getEmpPosition());
+                AutoComGender.setText(employeeList.getEmpGender());
+                tvDateValue.setText(employeeList.getEmpDob());
+                AutoComAddress.setText(employeeList.getEmpAddr());
+                AutoComPincode.setText(employeeList.getEmpPincode());
+                AutoComCurrSalary.setText(employeeList.getSalary());
+                tvJoiningDate.setText(employeeList.getJoiningDate());
+                AutoComCasualLeave.setText(employeeList.getCasualLeaves());
+                AutoComSickLeave.setText(employeeList.getSickLeaves());
+                AutoComOtherLeave.setText(employeeList.getOtherLeaves());
+                empId = employeeList.getEmpId();
             }
+        }
+        else{
+            tvTitle.setText(R.string.scr_lbl_manage_employee);
         }
     }
 
@@ -189,6 +215,9 @@ public class AddEmployeeActivity extends BaseActivity {
 
         deactivateEmployeeViewModel = ViewModelProviders.of(this, mViewModelFactory).get(DeactivateEmployeeViewModel.class);
         deactivateEmployeeViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_deactivate_employee));
+
+        editEmployeeViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EditEmployeeViewModel.class);
+        editEmployeeViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_edit_employee));
     }
 
     /* Call Api For add employee */
@@ -244,14 +273,69 @@ public class AddEmployeeActivity extends BaseActivity {
         }
     }
 
+    /* Call Api For edit employee */
+    private void callEditEmployeeApi() {
+        if (NetworkCheck.isInternetAvailable(this)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyTypeAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_edit_employee);
+                RequestBody mRequestBodyTypeEmpName = RequestBody.create(MediaType.parse("text/plain"),AutoComName.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpMob = RequestBody.create(MediaType.parse("text/plain"), AutoComMobile.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpEmail = RequestBody.create(MediaType.parse("text/plain"), AutoComEmailId.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpAddr = RequestBody.create(MediaType.parse("text/plain"), AutoComAddress.getText().toString().trim());//loginTable.getCompanyId());
+                String dob = AppUtils.changeToSlashToDash(tvDateValue.getText().toString().trim());
+                RequestBody mRequestBodyTypeEmpDob = RequestBody.create(MediaType.parse("text/plain"), dob);//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpGender = RequestBody.create(MediaType.parse("text/plain"), AutoComGender.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpPincode = RequestBody.create(MediaType.parse("text/plain"), AutoComPincode.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpPos = RequestBody.create(MediaType.parse("text/plain"), AutoComDesi.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeupdated_by = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeemp_id = RequestBody.create(MediaType.parse("text/plain"), empId);//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeSalary = RequestBody.create(MediaType.parse("text/plain"), AutoComCurrSalary.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodyOtherLeave = RequestBody.create(MediaType.parse("text/plain"), AutoComOtherLeave.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodyCasualLeave = RequestBody.create(MediaType.parse("text/plain"), AutoComCasualLeave.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodySickLeave = RequestBody.create(MediaType.parse("text/plain"), AutoComSickLeave.getText().toString().trim());//loginTable.getCompanyId());
+                String join = AppUtils.changeToSlashToDash(tvJoiningDate.getText().toString().trim());
+                RequestBody mRequestBodyJoiningDate = RequestBody.create(MediaType.parse("text/plain"),join);//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeToken = RequestBody.create(MediaType.parse("text/plain"), loginTable.getToken());//loginTable.getCompanyId());
+
+                EditEmployeeRequest request = new EditEmployeeRequest();
+                request.setAction(mRequestBodyTypeAction);
+                request.setEmpName(mRequestBodyTypeEmpName);
+                request.setEmpMob(mRequestBodyTypeEmpMob);
+                request.setEmpEmail(mRequestBodyTypeEmpEmail);
+                request.setEmpAddr(mRequestBodyTypeEmpAddr);
+                request.setEmpDob(mRequestBodyTypeEmpDob);
+                request.setEmpGender(mRequestBodyTypeEmpGender);
+                request.setEmpPincode(mRequestBodyTypeEmpPincode);
+                request.setEmpPosition(mRequestBodyTypeEmpPos);
+                request.setUpdatedBy(mRequestBodyTypeupdated_by);
+                request.setCompanyID(mRequestBodyTypeComId);
+                request.setEmpId(mRequestBodyTypeemp_id);
+                request.setSalary(mRequestBodyTypeSalary);
+                request.setOtherLeaves(mRequestBodyOtherLeave);
+                request.setCasualLeaves(mRequestBodyCasualLeave);
+                request.setSickLeaves(mRequestBodySickLeave);
+                request.setJoiningDate(mRequestBodyJoiningDate);
+                request.setToken(mRequestBodyTypeToken);
+                editEmployeeViewModel.hitEditEmployeeAPI(request);
+            }
+            else {
+                LogUtil.printToastMSG(this, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(this, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
     /* Call Api For deactivate employee */
     private void callDeactivateEmployeeApi() {
         if (NetworkCheck.isInternetAvailable(this)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
                 RequestBody mRequestBodyTypeAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_deactivate_employee);
-                RequestBody mRequestBodyUpdatedBy = RequestBody.create(MediaType.parse("text/plain"),loginTable.getToken());//loginTable.getCompanyId());
-                RequestBody mRequestBodyEmpId = RequestBody.create(MediaType.parse("text/plain"), "0");//loginTable.getCompanyId());
+                RequestBody mRequestBodyUpdatedBy = RequestBody.create(MediaType.parse("text/plain"),empId);//loginTable.getCompanyId());
+                RequestBody mRequestBodyEmpId = RequestBody.create(MediaType.parse("text/plain"), empId);//loginTable.getCompanyId());
 
                 deactivateEmployeeViewModel.executeDeactivateEmployeeAPI(mRequestBodyTypeAction,
                         mRequestBodyUpdatedBy,mRequestBodyEmpId);
@@ -266,7 +350,7 @@ public class AddEmployeeActivity extends BaseActivity {
 
     private void setToolbar() {
         //set toolbar title
-        tvTitle.setText(R.string.scr_lbl_manage_employee);
+
         //initToolbar(1, mContext, R.id.imgBack, R.id.imgReport, R.id.imgReport, 0, R.id.imgCall);
     }
 
@@ -279,7 +363,14 @@ public class AddEmployeeActivity extends BaseActivity {
         switch (id) {
             case R.id.btnSubmit:
                 if(isDetailsValid()) {
-                    callAddEmployeeApi();
+                    if(from.equals(Constants.add)) {
+                        callAddEmployeeApi();
+                    }else if(from.equals(Constants.edit)) {
+                        callEditEmployeeApi();
+                    }
+                }
+                else{
+                    tvMissing.setVisibility(View.VISIBLE);
                 }
                 break;
             case R.id.layCalender:
@@ -429,10 +520,9 @@ public class AddEmployeeActivity extends BaseActivity {
             setError(0, input_textSickLeave, getString(R.string.err_enter_sick_leave));
             return false;
         } else if (TextUtils.isEmpty(AutoComOtherLeave.getText().toString().trim())) {
-            setError(0, input_textOtherLeave, getString(R.string.err_enter_sick_leave));
+            setError(0, input_textOtherLeave, getString(R.string.err_enter_other_leave));
             return false;
         }
-        tvMissing.setVisibility(View.GONE);
         return true;
     }
 
@@ -486,9 +576,21 @@ public class AddEmployeeActivity extends BaseActivity {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.action_add_employee)) {
                             AddEmployeeResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), AddEmployeeResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                showSuccessDialog("Employee edited successfully !",false,this);
-                                finish();
+                                showSuccessDialog("Employee Added successfully !",false,AddEmployeeActivity.this);
                                   }
+                            else {
+                                LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.action_edit_employee)) {
+                            EditEmployeeResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), EditEmployeeResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                showSuccessDialog("Employee Edited successfully !",false,AddEmployeeActivity.this);
+                            }
                             else {
                                 LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                             }
@@ -501,7 +603,7 @@ public class AddEmployeeActivity extends BaseActivity {
                             DeactivateEmployeeResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), DeactivateEmployeeResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 mDialogDeactivate.dismiss();
-                                showSuccessDialog("Account deactived successfully.",false,this);
+                                showSuccessDialog("Account deactived successfully.",false,AddEmployeeActivity.this);
                             }
                             else {
                                 LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());

@@ -13,13 +13,13 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.hra_app.R;
-import com.ominfo.hra_app.ui.employees.model.Searchresult;
+import com.ominfo.hra_app.ui.employees.model.EmployeeList;
 
 import java.util.List;
 
 public class SalaryDisbursementAdapter extends RecyclerView.Adapter<SalaryDisbursementAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<Searchresult> mListData;
+    private List<EmployeeList> mListData;
     private Context mContext;
     private String mDate;
 
@@ -27,7 +27,7 @@ public class SalaryDisbursementAdapter extends RecyclerView.Adapter<SalaryDisbur
         this.mContext = mContext;
     }
 
-    public SalaryDisbursementAdapter(Context context, List<Searchresult> listData, ListItemSelectListener itemClickListener) {
+    public SalaryDisbursementAdapter(Context context, List<EmployeeList> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -42,7 +42,7 @@ public class SalaryDisbursementAdapter extends RecyclerView.Adapter<SalaryDisbur
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<Searchresult> list){
+    public void updateList(List<EmployeeList> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -130,6 +130,6 @@ public class SalaryDisbursementAdapter extends RecyclerView.Adapter<SalaryDisbur
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(int mData,Searchresult searchresult);
+        void onItemClick(int mData, EmployeeList searchresult);
     }
 }
