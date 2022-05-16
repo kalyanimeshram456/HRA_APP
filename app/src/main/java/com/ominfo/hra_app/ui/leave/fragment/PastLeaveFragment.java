@@ -47,11 +47,18 @@ import com.ominfo.hra_app.database.AppDatabase;
 import com.ominfo.hra_app.interfaces.Constants;
 import com.ominfo.hra_app.network.ApiResponse;
 import com.ominfo.hra_app.network.DynamicAPIPath;
+import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.ui.dashboard.model.DashModel;
 import com.ominfo.hra_app.ui.employees.model.EmployeeList;
 import com.ominfo.hra_app.ui.leave.adapter.PastLeaveAdapter;
+import com.ominfo.hra_app.ui.leave.model.PastLeaveListRequest;
+import com.ominfo.hra_app.ui.leave.model.PastLeaveListViewModel;
+import com.ominfo.hra_app.ui.login.model.LoginTable;
+import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveRequest;
+import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveResponse;
+import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveViewModel;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.sales_credit.activity.PdfPrintActivity;
 import com.ominfo.hra_app.ui.sales_credit.activity.View360Activity;
@@ -72,6 +79,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 //https://github.com/PhilJay/MPAndroidChart/wiki/Modifying-the-Viewport
 
 /**
@@ -124,7 +133,7 @@ public class PastLeaveFragment extends BaseFragment {
     final Calendar myCalendar = Calendar.getInstance();
     @Inject
     ViewModelFactory mViewModelFactory;
-    private EmployeeListViewModel searchCrmViewModel;
+    private PastLeaveListViewModel pastLeaveListViewModel;
 
     private Dialog mDialogChangePass;
     LinearLayoutCompat layoutLeaveTime;
@@ -139,6 +148,7 @@ public class PastLeaveFragment extends BaseFragment {
     AppCompatAutoCompleteTextView tvAutoLeaveStatus;
     AppCompatAutoCompleteTextView AutoComTextViewDuration;
     AppCompatAutoCompleteTextView AutoComTextViewLeaveType;
+    private ApplyLeaveViewModel applyLeaveViewModel;
 
     public PastLeaveFragment() {
         // Required empty public constructor
@@ -188,81 +198,16 @@ public class PastLeaveFragment extends BaseFragment {
         searchresultList.add(new EmployeeList());searchresultList.add(new EmployeeList());
         searchresultList.add(new EmployeeList());searchresultList.add(new EmployeeList());
         setAdapterForLeaveList();
-        tv_emptyLayTitle.setText("Search something...");
-        graphModelsList.removeAll(graphModelsList);
-        graphModelsList.add(new GraphModel("State C1", "Company Test 1", "5"));
-        graphModelsList.add(new GraphModel("State C2", "Company Test 2", "60"));
-        graphModelsList.add(new GraphModel("State C3", "Company Test 3", "15"));
-        graphModelsList.add(new GraphModel("State C4", "Company Test 4", "90"));
-        graphModelsList.add(new GraphModel("State C5", "Company Test 5", "25"));
-        graphModelsList.add(new GraphModel("State C6", "Company Test 6", "10"));
-        graphModelsList.add(new GraphModel("State C7", "Company Test 7", "45"));
-        graphModelsList.add(new GraphModel("State C8", "Company Test 8", "90"));
-        graphModelsList.add(new GraphModel("State C9", "Company Test 9", "95"));
-        graphModelsList.add(new GraphModel("State C10", "Company Test 10", "50"));
-        graphModelsList.add(new GraphModel("State C11", "Company Test 11", "55"));
-        graphModelsList.add(new GraphModel("State C12", "Company Test 12", "60"));
-        setGraphData(3);
     }
 
     private void injectAPI() {
-        searchCrmViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EmployeeListViewModel.class);
-        searchCrmViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_EMPLOYEES_LIST));
-   }
+        pastLeaveListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(PastLeaveListViewModel.class);
+        pastLeaveListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_PAST_LEAVE));
 
-    private void setGraphData(int initStatus) {
-        if(initStatus!=3) {
-            DAYS = new String[6];
-            DAYSY = new String[6];
-        }
-        if(initStatus==3){
-            DAYS = new String[graphModelsList.size()+1];
-            DAYSY = new String[graphModelsList.size()+1];
-        }
-        if(initStatus!=3) {
-            try {
-                endPos = startPos + 6;
-                if (endPos <= graphModelsList.size()) {
-                    //if(startPos<6) {
-
-                    for (int i = 0; i < graphModelsList.size(); i++) {
-                        if (graphModelsList.get(i).getxValue() != null) {
-                            DAYS[i] = graphModelsList.get(i).getxValue();
-                        }
-                        if (graphModelsList.get(i).getyValue() != null) {
-                            DAYSY[i] = graphModelsList.get(i).getyValue();
-                        }
-                    }
-                    try {
-                        //getGraph();
-                        //setAdapterForDashboardList();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    // }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if(initStatus==3){
-            for (int i = 0; i < graphModelsList.size(); i++) {
-                if(graphModelsList.get(i).getxValue()!=null) {
-                    DAYS[i] = graphModelsList.get(i).getxValue();
-                }
-                if(graphModelsList.get(i).getyValue()!=null) {
-                    DAYSY[i] = graphModelsList.get(i).getyValue();
-                }
-            }
-            try {
-                //getGraph();
-                //setAdapterForDashboardList();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
+        applyLeaveViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ApplyLeaveViewModel.class);
+        applyLeaveViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_APPLY_LEAVE));
     }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -520,14 +465,111 @@ public class PastLeaveFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 mDialogChangePass.dismiss();
-                /*if(isAttendanceDetailsValid(AutoComTextViewDuration,input_textDuration,AutoComTextViewLeaveType,input_textType
+                if(isAttendanceDetailsValid(AutoComTextViewDuration,input_textDuration,AutoComTextViewLeaveType,input_textType
                 )){
-                   // callApplyLeaveApi();
-                }*/
+                   callApplyLeaveApi();
+                }
 
             }
         });
         mDialogChangePass.show();
+    }
+    /* Call Api For Apply Leave */
+    private void callApplyLeaveApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_apply_leave);
+                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
+                RequestBody mRequestBodyDuration = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewDuration.getText().toString());
+                String startTimeStamp = "",endTimeStamp = "",
+                        startDateTimeStamp = AppUtils.changeToSlashToDash(tvDateValueFrom.getText().toString()),
+                        endDateTimeStamp = AppUtils.changeToSlashToDash(tvDateValueTo.getText().toString());
+
+                if(AutoComTextViewDuration.getText().toString().equals("Half Day"))
+                {
+                    startTimeStamp = AppUtils.convert12to24ForAttention(tvTimeValueFrom.getText().toString());
+                    endTimeStamp = AppUtils.convert12to24ForAttention(tvTimeValueTo.getText().toString());
+                } else  if(AutoComTextViewDuration.getText().toString().equals("Full Day"))
+                {
+                    startTimeStamp = "00:00:00";endTimeStamp = "23:59:00";
+                }else {
+                    startTimeStamp = "00:00:00";endTimeStamp = "23:59:00";
+                }
+
+                RequestBody mRequestBodyStartTime = RequestBody.create(MediaType.parse("text/plain"), startDateTimeStamp+" "+startTimeStamp);
+                RequestBody mRequestBodyEndTime = RequestBody.create(MediaType.parse("text/plain"), endDateTimeStamp+" "+endTimeStamp);
+                RequestBody mRequestBodyLeaveType = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewLeaveType.getText().toString());
+                RequestBody mRequestBodyComment = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewComment.getText().toString());
+                // RequestBody mRequestBodyLeaveStatus = RequestBody.create(MediaType.parse("text/plain") , "approved");
+                ///RequestBody mRequestBodyUpdatedBy = RequestBody.create(MediaType.parse("text/plain"),"12"  /*loginTable.getManagerId()*/);
+
+                ApplyLeaveRequest applyLeaveRequest = new ApplyLeaveRequest();
+                applyLeaveRequest.setAction(mRequestBodyAction);
+                applyLeaveRequest.setEmpId(mRequestBodyTypeEmpId);
+                applyLeaveRequest.setDuration(mRequestBodyDuration);
+                applyLeaveRequest.setStartTime(mRequestBodyStartTime);
+                applyLeaveRequest.setEndTime(mRequestBodyEndTime);
+                applyLeaveRequest.setLeaveType(mRequestBodyLeaveType);
+                applyLeaveRequest.setComment(mRequestBodyComment);
+                // applyLeaveRequest.setLeaveStatus(mRequestBodyLeaveStatus);
+                //applyLeaveRequest.setUpdatedBy(mRequestBodyUpdatedBy);
+                applyLeaveViewModel.hitApplyLeaveApi(applyLeaveRequest);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    /* Call Api For past Leave */
+    private void callGetPastLeaveApi(String pageNo) {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_apply_leave);
+                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
+                RequestBody mRequestBodyMonth = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewDuration.getText().toString());
+                RequestBody mRequestPageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);
+                RequestBody mRequestPageSize = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
+
+                PastLeaveListRequest request = new PastLeaveListRequest();
+                request.setAction(mRequestBodyAction);
+                request.setEmpId(mRequestBodyTypeEmpId);
+                request.setMonth(mRequestBodyMonth);
+                request.setPageNo(mRequestPageNo);
+                request.setPageSize(mRequestPageSize);
+
+                pastLeaveListViewModel.hitPastLeaveListAPI(request);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    /*check validations on field*/
+    private boolean isAttendanceDetailsValid(AppCompatAutoCompleteTextView duration,
+                                             TextInputLayout input_textDuration,
+                                             AppCompatAutoCompleteTextView type,
+                                             TextInputLayout input_textType
+    ) {
+        setError(input_textDuration,"");setError(input_textType, "");
+        //setError(AutoComConfirmPass, "");
+        if (TextUtils.isEmpty(duration.getText().toString().trim())) {
+            setError(input_textDuration, "Select Duration");
+            LogUtil.printToastMSG(mContext,"Select Duration");
+            return false;
+        } else if (TextUtils.isEmpty(type.getText().toString().trim())) {
+            setError(input_textType, "Select Leave Type");
+            LogUtil.printToastMSG(mContext,"Select Leave Type");
+            return false;
+        }
+        return true;
     }
     //set value to Search dropdown
     private void setDropdownLeaveDuration(AppCompatAutoCompleteTextView mListDropdownView) {
@@ -947,14 +989,23 @@ public class PastLeaveFragment extends BaseFragment {
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
                     try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EMPLOYEES_LIST)) {
-                           /* SearchCrmResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SearchCrmResponse.class);
-                            if (responseModel != null*//* && responseModel.getStatus()==1*//*) {
-                                searchresultList = responseModel.getResult().getSearchresult();
-                                setAdapterForLeaveList();
-                            }*/
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_APPLY_LEAVE)) {
+                            ApplyLeaveResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ApplyLeaveResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                mDialogChangePass.dismiss();
+                                ((BaseActivity)mContext).showSuccessDialog(responseModel.getResult().getMessage(),
+                                        true,getActivity());
+                                //((BaseActivity)mContext).setRateUsCounter(mContext);
+                            }
+                            else {
+                                mDialogChangePass.dismiss();
+                                ((BaseActivity)mContext).showSuccessDialog(responseModel.getResult().getMessage(),
+                                        true,getActivity());
+                            }
                         }
                     }catch (Exception e){
+                        ((BaseActivity)mContext).showSuccessDialog("Leave application upload failed.",
+                                true,getActivity());
                         e.printStackTrace();
                     }
                 }

@@ -96,6 +96,20 @@
 
     </style>
 
+    <style name="BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="itemBackground">@drawable/layout_round_shape_corners_voilet</item>
+        <item name="itemIconTint">@drawable/layout_round_shape_corners_voilet</item>
+        <item name="itemTextColor">@drawable/layout_round_shape_corners_voilet</item>
+        <item name="itemTextAppearanceActive">@style/TextAppearance.BottomNavigation.Overline</item>
+        <item name="itemTextAppearanceInactive">@style/TextAppearance.BottomNavigation.Overline</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="paddingStart">32dp</item>
+        <item name="paddingEnd">32dp</item>
+    </style>
+
+    <style name="TextAppearance.BottomNavigation.Overline" parent="TextAppearance.MaterialComponents.Overline">
+        <item name="android:textSize">8sp</item>
+    </style>
 
 
     <style name="Button_shape">

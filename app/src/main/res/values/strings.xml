@@ -281,7 +281,7 @@
     <string name="scr_lbl_other_leave">Other leave</string>
     <string name="scr_lbl_deactivate_account">Deactivate account</string>
     <string name="msg_are_you_sure_you_want_to_deactive_this_account">Are you sure you want to deactive this account ?</string>
-    <string name="scr_lbl_past_leaves">Past leaves</string>
+    <string name="scr_lbl_past_leaves">Past Leaves</string>
     <string name="scr_lbl_add_employees">Add Employees</string>
     <string name="scr_lbl_month">Month</string>
     <string name="scr_lbl_add_leave">Add leave</string>
@@ -308,5 +308,6 @@
     <string name="err_enter_casual_leave">Please enter casual leaves.</string>
     <string name="err_enter_sick_leave">Please enter sick leaves.</string>
     <string name="err_enter_other_leave">Please enter other leaves.</string>
+    <string name="scr_lbl_select_leave_type">Select leave type</string>
 
 </resources>

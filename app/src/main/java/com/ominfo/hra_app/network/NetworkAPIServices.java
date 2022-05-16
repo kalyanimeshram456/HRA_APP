@@ -73,7 +73,7 @@ public interface NetworkAPIServices {
     @POST()
     Observable<JsonElement> updateAttendance(@Url String url,
                                              @Part("action") RequestBody uploadType,
-                                             /*@Part("start_time") RequestBody start_time,*/
+            /*@Part("start_time") RequestBody start_time,*/
                                              @Part("end_time") RequestBody end_time,
                                              @Part("id") RequestBody id,
                                              @Part("end_longitude") RequestBody end_longitude,
@@ -109,18 +109,19 @@ public interface NetworkAPIServices {
                                          @Part("email_id") RequestBody email_id,
                                          @Part("staff_strength") RequestBody staff_strength,
                                          @Part("user_prefix") RequestBody user_prefix);
+
     @Multipart
     @POST()
     Observable<JsonElement> checkPrefix(@Url String url,
-                                         @Part("action") RequestBody uploadType,
-                                         @Part("user_prefix") RequestBody user_prefix);
+                                        @Part("action") RequestBody uploadType,
+                                        @Part("user_prefix") RequestBody user_prefix);
 
     @Multipart
     @POST()
     Observable<JsonElement> subCharges(@Url String url,
-                                        @Part("action") RequestBody uploadType,
-                                        @Part("from_date") RequestBody from_date,
-                                        @Part("end_date") RequestBody end_date);
+                                       @Part("action") RequestBody uploadType,
+                                       @Part("from_date") RequestBody from_date,
+                                       @Part("end_date") RequestBody end_date);
 
     @Multipart
     @POST()
@@ -339,8 +340,41 @@ public interface NetworkAPIServices {
 
     @Multipart
     @POST()
+    Observable<JsonElement> acceptRejectList(@Url String url,
+                                             @Part("action") RequestBody uploadType,
+                                             @Part("emp_id") RequestBody emp_id,
+                                             @Part("leave_type") RequestBody leave_type,
+                                             @Part("from_date") RequestBody from_date,
+                                             @Part("end_date") RequestBody end_date,
+                                             @Part("pageno") RequestBody pageno,
+                                             @Part("pagesize") RequestBody pagesize,
+                                             @Part("searched_emp") RequestBody searched_emp
+    );
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> getPastLeaveList(@Url String url,
+                                             @Part("action") RequestBody uploadType,
+                                             @Part("emp_id") RequestBody emp_id,
+                                             @Part("month") RequestBody leave_type,
+                                             @Part("pageno") RequestBody pageno,
+                                             @Part("pagesize") RequestBody pagesize
+    );
+
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> leaveStatus(@Url String url,
+                                             @Part("action") RequestBody uploadType,
+                                             @Part("id") RequestBody emp_id,
+                                             @Part("leave_status") RequestBody leave_type,
+                                             @Part("updated_by") RequestBody updated_by
+    );
+
+    @Multipart
+    @POST()
     Observable<JsonElement> deactivateEmployee(@Url String url,
-                                         @Part("action") RequestBody uploadType,
+                                               @Part("action") RequestBody uploadType,
                                                @Part("updated_by") RequestBody updated_by,
                                                @Part("emp_id") RequestBody emp_id
     );
@@ -348,7 +382,7 @@ public interface NetworkAPIServices {
     @Multipart
     @POST()
     Observable<JsonElement> addEmployee(@Url String url,
-                                         @Part("action") RequestBody uploadType,
+                                        @Part("action") RequestBody uploadType,
                                         @Part("emp_name") RequestBody emp_name,
                                         @Part("emp_mob") RequestBody emp_mob,
                                         @Part("emp_email") RequestBody emp_email,
@@ -370,23 +404,23 @@ public interface NetworkAPIServices {
     @Multipart
     @POST()
     Observable<JsonElement> editEmployee(@Url String url,
-                                        @Part("action") RequestBody uploadType,
-                                        @Part("emp_name") RequestBody emp_name,
-                                        @Part("emp_mob") RequestBody emp_mob,
-                                        @Part("emp_email") RequestBody emp_email,
-                                        @Part("emp_addr") RequestBody emp_addr,
-                                        @Part("emp_dob") RequestBody emp_dob,
-                                        @Part("emp_gender") RequestBody emp_gender,
-                                        @Part("emp_pincode") RequestBody emp_pincode,
-                                        @Part("emp_position") RequestBody emp_position,
-                                        @Part("updated_by") RequestBody updated_by,
-                                        @Part("company_ID") RequestBody company_ID,
-                                        @Part("emp_id") RequestBody emp_id,
-                                        @Part("salary") RequestBody salary,
-                                        @Part("other_leaves") RequestBody other_leaves,
-                                        @Part("casual_leaves") RequestBody casual_leaves,
-                                        @Part("sick_leaves") RequestBody sick_leaves,
-                                        @Part("joining_date") RequestBody joining_date,
+                                         @Part("action") RequestBody uploadType,
+                                         @Part("emp_name") RequestBody emp_name,
+                                         @Part("emp_mob") RequestBody emp_mob,
+                                         @Part("emp_email") RequestBody emp_email,
+                                         @Part("emp_addr") RequestBody emp_addr,
+                                         @Part("emp_dob") RequestBody emp_dob,
+                                         @Part("emp_gender") RequestBody emp_gender,
+                                         @Part("emp_pincode") RequestBody emp_pincode,
+                                         @Part("emp_position") RequestBody emp_position,
+                                         @Part("updated_by") RequestBody updated_by,
+                                         @Part("company_ID") RequestBody company_ID,
+                                         @Part("emp_id") RequestBody emp_id,
+                                         @Part("salary") RequestBody salary,
+                                         @Part("other_leaves") RequestBody other_leaves,
+                                         @Part("casual_leaves") RequestBody casual_leaves,
+                                         @Part("sick_leaves") RequestBody sick_leaves,
+                                         @Part("joining_date") RequestBody joining_date,
                                          @Part("token") RequestBody token
     );
 

@@ -16,9 +16,9 @@ public class DynamicAPIPath {
     public static final String POST_CHECK_PREFIX=  BASE+"?action=check_userprefix";
     public static final String POST_SALES= BASE+"?action=get_all_product";
     public static final String POST_SUB_CHARGES= BASE+"?action=get_subs_price";
-    public static final String POST_DISPATCH=  BASE+"?action=dispatchpendingdets";
-    public static final String POST_SALES_CREDIT= BASE_NODEJS+"sales_unpaid";
-    public static final String POST_REMINDER= BASE_NODEJS+"getreminder";
+    public static final String POST_ACCEPT_REJECT_LIST=  BASE+"?action=get_leave_records";
+    public static final String POST_LEAVE_STATUS= BASE+"?action=apply_leave_updated";
+    public static final String POST_GET_PAST_LEAVE= BASE+"?action=get_record";
     public static final String POST_EMP_LIST= BASE_NODEJS+"getemployee_list";
     public static final String POST_ADD_REMINDER= BASE_NODEJS+"addreminder";
     public static final String POST_UPDATE_REMINDER= BASE_NODEJS+"updatereminder";
@@ -43,7 +43,6 @@ public class DynamicAPIPath {
     public static final String POST_GET_VIEW360= BASE+"?action=custOverAllData";
     public static final String POST_GET_SALES_CREDIT= BASE+"?action=salescreditreport";
     public static final String POST_GET_LEAVE_APP= BASE+"?action=get_leave_records";
-    public static final String POST_GET_LEAVE_STATUS= BASE+"?action=apply_leave_updated";
     public static final String POST_GET_LEAVE_SINGLE= BASE+"?action=get_record";
     public static final String POST_ENQUIRY_STATUS= BASE+"?action=statusget";
     public static final String POST_GET_TOUR= BASE+"?action=tourget";
@@ -71,11 +70,10 @@ public class DynamicAPIPath {
     public static final String action_edit_employee = "edit_employee";
     public static final String action_mark_attendance = "mark_attendance";
     public static final String action_update_attendance = "attendance_updated";
-    public static final String action_save_enquiry = "enquirysave";
+    public static final String action_get_past_leave = "get_record";
     public static final String action_get_subs_price = "get_subs_price";
     public static final String action_get_visit = "visitget";
     public static final String action_get_top_customer = "top_customer";
-    public static final String action_update_leave_status = "apply_leave_updated";
     public static final String action_deactivate_employee = "deactivate_employee";
     public static final String action_get_edit_visit = "editVisit";
     public static final String action_get_leave_app = "get_leave_records";
@@ -93,8 +91,8 @@ public class DynamicAPIPath {
     public static final String action_notification = "getcrmempnotif";
     public static final String action_delete_notification = "marknotifread";
     public static final String GET_USER_LIST = "user";
-    public static final String action_products = "get_product_records";
-    public static final String action_get_ticket_no = "getnewticketno";
+    public static final String action_accept_reject_List = "get_leave_records";
+    public static final String action_apply_leave_updated = "apply_leave_updated";
     public static final String action_receipt = "get_receipt_records";
     public static final String action_get_ticket = "get_filterraised_record";
     public static final String action_update_ticket = "ticket_updated";

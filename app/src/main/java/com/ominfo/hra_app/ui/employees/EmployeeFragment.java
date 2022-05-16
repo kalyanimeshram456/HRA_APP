@@ -237,10 +237,10 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
 
         private void doApiCall() {
             final ArrayList<EmployeeList> items = new ArrayList<>();
-            new Handler().postDelayed(new Runnable() {
+           /* new Handler().postDelayed(new Runnable() {
 
                 @Override
-                public void run() {
+                public void run() {*/
                     for (int i = 0; i < employeeListArrayList.size(); i++) {
                         items.add(employeeListArrayList.get(i));
                     }
@@ -259,8 +259,8 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
                         isLastPage = true;
                     }
                     isLoading = false;
-                }
-            }, 1500);
+              //  }
+           // }, 0);
         }
 
 
@@ -414,62 +414,6 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
         }
     }
 
- /*   private void setAdapterForEmployeeList() {
-        if (employeeListArrayList !=null && employeeListArrayList.size() > 0) {
-            rvSalesList.setVisibility(View.VISIBLE);
-            emptyLayout.setVisibility(View.GONE);
-            } else {
-            //rvSalesList.setVisibility(View.GONE);
-            //emptyLayout.setVisibility(View.VISIBLE);
-            Glide.with(this)
-                    .load(R.drawable.img_bg_search)
-                    .into(iv_emptyLayimage);
-            tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
-        }
-        employeeAdapter = new PostRecyclerAdapter(mContext, new ArrayList<>(), new PostRecyclerAdapter.ListItemSelectListener() {
-            @Override
-            public void onItemClick(int mDataTicket,EmployeeList employeeList) {
-                Intent add = new Intent(getContext(),AddEmployeeActivity.class);
-                add.putExtra(Constants.FROM_SCREEN,Constants.edit);
-                Gson gson = new Gson();
-                String myJson = gson.toJson(employeeList);
-                add.putExtra(Constants.EMPLOYEE_OBJ, myJson);
-                startActivity(add);
-            }
-        });
-        //RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecorator(mContext.getDrawable(R.drawable.separator_row_item));
-        //rvSalesList.addItemDecoration(dividerItemDecoration);
-        //rvSalesList.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
-        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false);
-        rvSalesList.setHasFixedSize(true);
-        rvSalesList.setLayoutManager(layoutManager);
-        rvSalesList.setAdapter(employeeAdapter);
-        swipeRefresh.setOnRefreshListener(this);
-        // use a linear layout manager
-        //adapter = new PostRecyclerAdapter(new ArrayList<>());
-        //rvSalesList.setAdapter(adapter);
-        callEmployeeListApi("0");
-        *//**
-         * add scroll listener while user reach in bottom load more will call
-         *//*
-        rvSalesList.addOnScrollListener(new PaginationListener(layoutManager) {
-            @Override
-            protected void loadMoreItems() {
-                isLoading = true;
-                currentPage++;
-                callEmployeeListApi("0");
-            }
-            @Override
-            public boolean isLastPage() {
-                return isLastPage;
-            }
-            @Override
-            public boolean isLoading() {
-                return isLoading;
-            }
-        });
-    }
-*/
     private void setToolbar() {
         //set toolbar title
         tvToolbarTitle.setText(R.string.scr_lbl_employees);

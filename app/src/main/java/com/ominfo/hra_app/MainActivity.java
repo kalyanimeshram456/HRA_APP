@@ -38,6 +38,7 @@ import android.widget.FrameLayout;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -75,6 +76,8 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public class MainActivity extends BaseActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -84,8 +87,8 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
     AppCompatEditText etDescr;    BottomNavigationView bottomNavigationView;
 
     String mRmId = "";
-    @BindView(R.id.coordinator)
-    CoordinatorLayout coordinator;
+  /*  @BindView(R.id.coordinator)
+    CoordinatorLayout coordinator;*/
     private boolean status = false;
     Context mContext;
     List<DashModel> tagList = new ArrayList<>();
@@ -103,8 +106,9 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
     ViewModelFactory mViewModelFactory;
 
     Dialog mDialog;
-    @BindView(R.id.progressBarHolder)
-    FrameLayout mProgressBarHolder;
+   /* @BindView(R.id.progressBarHolder)
+    FrameLayout mProgressBarHolder;*/
+    MeowBottomNavigation meowBottomNavigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,15 +133,51 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
             getLocation();
         }
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
+        meowBottomNavigation = findViewById(R.id.bottomNavigation);
+        meowBottomNavigation.add(new MeowBottomNavigation.Model(1, R.drawable.ic_home_white));
+        meowBottomNavigation.add(new MeowBottomNavigation.Model(2, R.drawable.ic_employee_white));
+        meowBottomNavigation.add(new MeowBottomNavigation.Model(3, R.drawable.ic_leaves_white));
+        meowBottomNavigation.add(new MeowBottomNavigation.Model(4, R.drawable.ic_salary_white));
+        meowBottomNavigation.add(new MeowBottomNavigation.Model(5, R.drawable.ic_account));
+        meowBottomNavigation.setCount(1,"8");
+        meowBottomNavigation.show(1,true);
+        getSupportFragmentManager().beginTransaction().replace(R.id.framecontainer, new DashboardFragment()).commit();
 
-        ViewGroup.LayoutParams params = coordinator.getLayoutParams();
+        meowBottomNavigation.setOnClickMenuListener(new Function1<MeowBottomNavigation.Model, Unit>() {
+            @Override
+            public Unit invoke(MeowBottomNavigation.Model model) {
+                Fragment temp = null;
+
+                switch (model.getId()) {
+                    case 1:
+                        temp = new DashboardFragment();
+                        break;
+                    case 2:
+                        temp = new EmployeeFragment();
+                        break;
+                    case 3:
+                        temp = new LeaveFragment();
+                        break;
+                    case 4:
+                        temp = new SalaryFragment();
+                        break;
+                    case 5:
+                        temp = new MyAccountFragment();
+                }
+
+                getSupportFragmentManager().beginTransaction().add(R.id.framecontainer, temp).addToBackStack(null).commit();
+
+                return null;
+            }
+        });
+      /*  ViewGroup.LayoutParams params = coordinator.getLayoutParams();
         int marginInDp = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, 95, getResources()
                         .getDisplayMetrics());
         params.height = marginInDp;
         params.width = ViewGroup.LayoutParams.MATCH_PARENT;
-        coordinator.setLayoutParams(params);
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomnavigationbar);
+        coordinator.setLayoutParams(params);*/
+        /*bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomnavigationbar);
 
         bottomNavigationView.setBackground(null);
 
@@ -172,7 +212,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
                 getSupportFragmentManager().beginTransaction().add(R.id.framecontainer, temp).addToBackStack(null).commit();
                 return true;
             }
-        });
+        });*/
     }
 
     private void initToolbar() {
@@ -189,13 +229,13 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
     protected void onResume() {
         super.onResume();
 
-        ViewGroup.LayoutParams params = coordinator.getLayoutParams();
+       /* ViewGroup.LayoutParams params = coordinator.getLayoutParams();
         int marginInDp = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, 95, getResources()
                         .getDisplayMetrics());
         params.height = marginInDp;
         params.width = ViewGroup.LayoutParams.MATCH_PARENT;
-        coordinator.setLayoutParams(params);
+        coordinator.setLayoutParams(params);*/
     }
 
     private void getLocation() {

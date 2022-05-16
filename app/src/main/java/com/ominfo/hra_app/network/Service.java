@@ -7,6 +7,9 @@ import com.ominfo.hra_app.ui.dashboard.model.DashboardRequest;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeRequest;
 import com.ominfo.hra_app.ui.employees.model.EditEmployeeRequest;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListRequest;
+import com.ominfo.hra_app.ui.leave.model.AcceptRejectListRequest;
+import com.ominfo.hra_app.ui.leave.model.LeaveStatusRequest;
+import com.ominfo.hra_app.ui.leave.model.PastLeaveListRequest;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveRequest;
 import com.ominfo.hra_app.ui.my_account.model.GetTicketRequest;
 import com.ominfo.hra_app.ui.my_account.model.LeaveApplicationRequest;
@@ -206,6 +209,30 @@ public class Service {
                 employeeListRequest.getFilterEmpIsActive()
         );
     }
+    public Observable<JsonElement> executePastLeaveListAPI(PastLeaveListRequest request) {
+        return networkAPIServices.getPastLeaveList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_GET_PAST_LEAVE),
+                request.getAction(),request.getEmpId(),
+                request.getMonth(),request.getPageNo(),request.getPageSize()
+        );
+    }
+
+    public Observable<JsonElement> executeAcceptRejectListAPI(AcceptRejectListRequest request) {
+        return networkAPIServices.acceptRejectList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_ACCEPT_REJECT_LIST),
+                request.getAction(),request.getEmpId(),
+                request.getLeaveType(),request.getFromDate(),
+                request.getEndDate(),request.getPageNo(),request.getPageSize()
+                ,request.getSearchedEmp()
+        );
+    }
+    public Observable<JsonElement> executeLeaveStatusAPI(LeaveStatusRequest request) {
+        return networkAPIServices.leaveStatus(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_LEAVE_STATUS),
+                request.getAction(),request.getId(),
+                request.getLeaveStatus(),request.getUpdatedBy()
+        );
+    }
     public Observable<JsonElement> executeDeactivateEmployeeAPI(RequestBody action,RequestBody updateby,RequestBody empId) {
         return networkAPIServices.deactivateEmployee(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_DEACT_EMPLOYEE),
@@ -290,7 +317,7 @@ public class Service {
     }
     public Observable<JsonElement> executeLeaveStatusAPI(RequestBody action, RequestBody id,RequestBody leave_status,
                                                          RequestBody updated_by) {
-        return networkAPIServices.getLeaveStatusUpdate(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_LEAVE_STATUS),
+        return networkAPIServices.getLeaveStatusUpdate(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_LEAVE_STATUS),
                 action,id,leave_status,updated_by);
     }
     public Observable<JsonElement> executeGetVisitAPI(GetVisitRequest getVisitRequest) {

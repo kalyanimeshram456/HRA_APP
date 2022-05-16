@@ -193,7 +193,7 @@ public class NotificationsActivity extends BaseActivity {
         leaveSingleRecordViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_LEAVE_SINGLE));
 
         leaveStatusViewModel = ViewModelProviders.of(NotificationsActivity.this, mViewModelFactory).get(LeaveStatusViewModel.class);
-        leaveStatusViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_LEAVE_STATUS));
+        leaveStatusViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_LEAVE_STATUS));
     }
 
     /* Call Api Notification */
@@ -234,7 +234,7 @@ public class NotificationsActivity extends BaseActivity {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
-                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_update_leave_status);
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_apply_leave_updated);
                 RequestBody mRequestBodyTypeId = RequestBody.create(MediaType.parse("text/plain"),notID);
                 RequestBody mRequestBodyStatus = RequestBody.create(MediaType.parse("text/plain"), status);
                 RequestBody mRequestBodyby = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
@@ -477,7 +477,7 @@ public class NotificationsActivity extends BaseActivity {
                         e.printStackTrace();
                     }
                     try{
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_LEAVE_STATUS)) {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_LEAVE_STATUS)) {
                              UpdateLeaveStatusResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), UpdateLeaveStatusResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 mDialogChangePass.dismiss();

@@ -9,6 +9,7 @@
     android:background="@color/bg_screen"
     >
     <androidx.cardview.widget.CardView
+        android:id="@+id/layCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/_5dp"
@@ -81,7 +82,7 @@
 
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvBirthName"
+                        android:id="@+id/tvEmpName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -92,16 +93,16 @@
                         android:textSize="@dimen/_14sp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvBirthValue"
+                        android:id="@+id/tvDesi"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/tvBirthName"
+                        android:layout_below="@+id/tvEmpName"
                         android:layout_gravity="center"
                         android:fontFamily="@font/gilroy_regular"
                         android:text="User designation"
                         android:textAlignment="center"
                         android:textColor="@color/gray"
-                        android:textSize="@dimen/_14sp" />
+                        android:textSize="@dimen/_13sp" />
 
                 </RelativeLayout>
 
@@ -153,6 +154,7 @@
                 android:orientation="horizontal">
 
                 <RelativeLayout
+                    android:id="@+id/layAccept"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -190,6 +192,7 @@
                     android:background="@color/light_grey_30" />
 
                 <RelativeLayout
+                    android:id="@+id/layReject"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -226,6 +229,7 @@
                     android:background="@color/light_grey_30" />
 
                 <RelativeLayout
+                    android:id="@+id/layPastLeave"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"

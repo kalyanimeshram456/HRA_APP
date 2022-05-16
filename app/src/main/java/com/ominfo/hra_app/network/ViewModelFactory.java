@@ -11,6 +11,8 @@ import com.ominfo.hra_app.ui.dashboard.model.GetDashboardViewModel;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeViewModel;
 import com.ominfo.hra_app.ui.employees.model.DeactivateEmployeeViewModel;
 import com.ominfo.hra_app.ui.employees.model.EditEmployeeViewModel;
+import com.ominfo.hra_app.ui.leave.model.AcceptRejectLeaveListViewModel;
+import com.ominfo.hra_app.ui.leave.model.PastLeaveListViewModel;
 import com.ominfo.hra_app.ui.login.model.LoginViewModel;
 import com.ominfo.hra_app.ui.login.model.LogoutViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveViewModel;
@@ -160,7 +162,13 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
              return (T) new DeactivateEmployeeViewModel(service);
          }else  if (modelClass.isAssignableFrom(EditEmployeeViewModel.class)) {
                  return (T) new EditEmployeeViewModel(service);
-             }
+         }else  if (modelClass.isAssignableFrom(AcceptRejectLeaveListViewModel.class)) {
+             return (T) new AcceptRejectLeaveListViewModel(service);
+         }else  if (modelClass.isAssignableFrom(com.ominfo.hra_app.ui.leave.model.LeaveStatusViewModel.class)) {
+             return (T) new com.ominfo.hra_app.ui.leave.model.LeaveStatusViewModel(service);
+         }else  if (modelClass.isAssignableFrom(PastLeaveListViewModel.class)) {
+             return (T) new PastLeaveListViewModel(service);
+         }
 
         throw new IllegalArgumentException("Unknown class name");
 
