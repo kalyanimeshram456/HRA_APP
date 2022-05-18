@@ -179,7 +179,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
                             android:fontFamily="@font/gilroy_semibold"
-                            android:paddingLeft="@dimen/_150dp"
+                            android:paddingLeft="@dimen/_120dp"
                             android:text="Leaves"
                             android:textColor="@color/color_main"
                             android:textSize="@dimen/_14sp" />
@@ -189,6 +189,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
+                            android:layout_marginRight="@dimen/_25dp"
                             android:fontFamily="@font/gilroy_semibold"
                             android:text="@string/scr_lbl_salary"
                             android:textColor="@color/color_main"

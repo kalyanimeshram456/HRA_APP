@@ -12,6 +12,7 @@ import com.ominfo.hra_app.ui.employees.model.AddEmployeeViewModel;
 import com.ominfo.hra_app.ui.employees.model.DeactivateEmployeeViewModel;
 import com.ominfo.hra_app.ui.employees.model.EditEmployeeViewModel;
 import com.ominfo.hra_app.ui.leave.model.AcceptRejectLeaveListViewModel;
+import com.ominfo.hra_app.ui.leave.model.LeaveCountViewModel;
 import com.ominfo.hra_app.ui.leave.model.PastLeaveListViewModel;
 import com.ominfo.hra_app.ui.login.model.LoginViewModel;
 import com.ominfo.hra_app.ui.login.model.LogoutViewModel;
@@ -168,6 +169,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
              return (T) new com.ominfo.hra_app.ui.leave.model.LeaveStatusViewModel(service);
          }else  if (modelClass.isAssignableFrom(PastLeaveListViewModel.class)) {
              return (T) new PastLeaveListViewModel(service);
+         }else  if (modelClass.isAssignableFrom(LeaveCountViewModel.class)) {
+             return (T) new LeaveCountViewModel(service);
          }
 
         throw new IllegalArgumentException("Unknown class name");

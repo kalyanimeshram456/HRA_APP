@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:id="@+id/layClick"
+        android:paddingHorizontal="@dimen/_10dp"
+        android:paddingVertical="@dimen/_12dp"
+       android:gravity="center"
+    android:background="@color/white"
+        android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvDocType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/gilroy_regular"
+        android:gravity="center_vertical"
+        android:imeOptions="actionDone"
+        android:inputType="textMultiLine"
+        android:text=""
+        android:layout_marginTop="@dimen/_5dp"
+        android:hint="Day"
+        android:layout_weight="1.4"
+        android:layout_gravity="center"
+        android:textColor="@color/back_text_colour"
+        android:textColorHint="@color/back_text_colour"
+        android:textSize="@dimen/_12sp" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/tvInvoiceNum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center|left"
+            android:layout_gravity="center|left"
+            android:layout_weight="1.2"
+            android:text=""
+            android:layout_marginTop="@dimen/_5dp"
+            android:layout_marginLeft="@dimen/_5dp"
+            android:layout_marginRight="@dimen/_16dp"
+            android:backgroundTint="@color/color_main"
+            />
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/layoutLeaveStartTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.1"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/appcomptextLeaveTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:fontFamily="@font/gilroy_semibold"
+            android:text="Start Time"
+            android:textColor="@color/back_text_colour"
+            android:textSize="@dimen/_12sp" />
+
+        <RelativeLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:layout_gravity="center_vertical"
+            android:layout_height="wrap_content"
+            >
+
+            <RelativeLayout
+                android:id="@+id/layFromTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_round_shape_corners"
+                android:clickable="true"
+                android:descendantFocusability="blocksDescendants"
+                android:orientation="horizontal"
+                android:paddingHorizontal="@dimen/_8dp"
+                android:paddingVertical="@dimen/_10dp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvTimeValueFrom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:gravity="left"
+                    android:hint="--:--"
+                    android:textColor="@color/back_text_colour"
+                    android:textSize="@dimen/_12sp" />
+
+                <ImageView
+                    android:id="@+id/imgFromTime"
+                    android:layout_width="@dimen/_15dp"
+                    android:layout_height="@dimen/_15dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginLeft="@dimen/_6dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/add_time_layout" />
+
+            </RelativeLayout>
+        </RelativeLayout>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_3dp"
+        android:layout_centerInParent="true"
+        android:layout_marginHorizontal="@dimen/_6dp"
+        android:layout_toRightOf="@+id/tvMinAmount"
+        android:layout_weight="1.4"
+        android:layout_marginTop="@dimen/_5dp"
+        android:layout_gravity="center"
+        android:background="@color/back_text_colour" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/layoutEndTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.1"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/appcomptextStartLeaveTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:fontFamily="@font/gilroy_semibold"
+            android:text="End Time"
+            android:textColor="@color/back_text_colour"
+            android:textSize="@dimen/_12sp" />
+
+        <RelativeLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+
+            <RelativeLayout
+                android:id="@+id/layTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_round_shape_corners"
+                android:clickable="true"
+                android:descendantFocusability="blocksDescendants"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:paddingHorizontal="@dimen/_8dp"
+                android:paddingVertical="@dimen/_10dp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvTimeValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:hint="--:--"
+                    android:textColor="@color/back_text_colour"
+                    android:textSize="@dimen/_12sp" />
+
+                <ImageView
+                    android:id="@+id/imgTime"
+                    android:layout_width="@dimen/_15dp"
+                    android:layout_height="@dimen/_15dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginLeft="@dimen/_6dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/add_time_layout" />
+
+            </RelativeLayout>
+        </RelativeLayout>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>

@@ -1,11 +1,9 @@
 package com.ominfo.hra_app.ui.salary.fragment;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -52,12 +50,10 @@ import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.ui.dashboard.model.DashModel;
 import com.ominfo.hra_app.ui.employees.model.EmployeeList;
+import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.salary.adapter.SalaryDisbursementAdapter;
-import com.ominfo.hra_app.ui.sales_credit.activity.PdfPrintActivity;
-import com.ominfo.hra_app.ui.sales_credit.activity.View360Activity;
 import com.ominfo.hra_app.ui.sales_credit.model.GraphModel;
-import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
 
@@ -77,10 +73,10 @@ import butterknife.OnClick;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link SalaryDisbursementFragment#newInstance} factory method to
+ * Use the {@link SalarySheetFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SalaryDisbursementFragment extends BaseFragment {
+public class SalarySheetFragment extends BaseFragment {
 
     Context mContext;
     SalaryDisbursementAdapter salaryDisbursementAdapter;
@@ -96,21 +92,6 @@ public class SalaryDisbursementFragment extends BaseFragment {
     @BindView(R.id.tv_emptyLayTitle)
     AppCompatTextView tv_emptyLayTitle;
     private AppDatabase mDb;
-    BarData barData;
-    List<GradientColor> list = new ArrayList<>();
-    // variable for our bar data set.
-    BarDataSet barDataSet;
-
-    // array list for storing entries.
-    ArrayList barEntriesArrayList;
-    //private static final String[] DATA_BAR_GRAPH = new String[6];//{"","09:00",
-    private String[] DAYS = new String[100];/*{"C1", "C2", "C3", "C4", "C5", "C6", *//*"C7", "C8", "C9"
-            , "C10", "C11", "C12"*//*};*/
-
-    private String[] DAYSY = new String[100];/*{"5", "60", "15", "70", "25",
-           "10"*//*, "45","90", "95","50", "55","60", "65"*//*};*/
-    int startPos = 0 , endPos = 0;
-
     List<EmployeeList> searchresultList = new ArrayList<>();
     List<DashModel> tagList = new ArrayList<>();
     List<GraphModel> graphModelsList = new ArrayList<>();
@@ -141,12 +122,12 @@ public class SalaryDisbursementFragment extends BaseFragment {
     AppCompatAutoCompleteTextView AutoComTextViewDuration;
     AppCompatAutoCompleteTextView AutoComTextViewLeaveType;
 
-    public SalaryDisbursementFragment() {
+    public SalarySheetFragment() {
         // Required empty public constructor
     }
 
-    public static SalaryDisbursementFragment newInstance(String param1, String param2) {
-        SalaryDisbursementFragment fragment = new SalaryDisbursementFragment();
+    public static SalarySheetFragment newInstance(String param1, String param2) {
+        SalarySheetFragment fragment = new SalarySheetFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -164,7 +145,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.activity_salary_disbursment, container, false);
+        View view = inflater.inflate(R.layout.activity_salary_sheet, container, false);
         ButterKnife.bind(this, view);
         return view;
     }
@@ -190,20 +171,6 @@ public class SalaryDisbursementFragment extends BaseFragment {
         searchresultList.add(new EmployeeList());searchresultList.add(new EmployeeList());
         setAdapterForLeaveList();
         tv_emptyLayTitle.setText("Search something...");
-        graphModelsList.removeAll(graphModelsList);
-        graphModelsList.add(new GraphModel("State C1", "Company Test 1", "5"));
-        graphModelsList.add(new GraphModel("State C2", "Company Test 2", "60"));
-        graphModelsList.add(new GraphModel("State C3", "Company Test 3", "15"));
-        graphModelsList.add(new GraphModel("State C4", "Company Test 4", "90"));
-        graphModelsList.add(new GraphModel("State C5", "Company Test 5", "25"));
-        graphModelsList.add(new GraphModel("State C6", "Company Test 6", "10"));
-        graphModelsList.add(new GraphModel("State C7", "Company Test 7", "45"));
-        graphModelsList.add(new GraphModel("State C8", "Company Test 8", "90"));
-        graphModelsList.add(new GraphModel("State C9", "Company Test 9", "95"));
-        graphModelsList.add(new GraphModel("State C10", "Company Test 10", "50"));
-        graphModelsList.add(new GraphModel("State C11", "Company Test 11", "55"));
-        graphModelsList.add(new GraphModel("State C12", "Company Test 12", "60"));
-        setGraphData(3);
     }
 
     private void injectAPI() {
@@ -211,59 +178,6 @@ public class SalaryDisbursementFragment extends BaseFragment {
         searchCrmViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_EMPLOYEES_LIST));
    }
 
-    private void setGraphData(int initStatus) {
-        if(initStatus!=3) {
-            DAYS = new String[6];
-            DAYSY = new String[6];
-        }
-        if(initStatus==3){
-            DAYS = new String[graphModelsList.size()+1];
-            DAYSY = new String[graphModelsList.size()+1];
-        }
-        if(initStatus!=3) {
-            try {
-                endPos = startPos + 6;
-                if (endPos <= graphModelsList.size()) {
-                    //if(startPos<6) {
-
-                    for (int i = 0; i < graphModelsList.size(); i++) {
-                        if (graphModelsList.get(i).getxValue() != null) {
-                            DAYS[i] = graphModelsList.get(i).getxValue();
-                        }
-                        if (graphModelsList.get(i).getyValue() != null) {
-                            DAYSY[i] = graphModelsList.get(i).getyValue();
-                        }
-                    }
-                    try {
-                        //getGraph();
-                        //setAdapterForDashboardList();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    // }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if(initStatus==3){
-            for (int i = 0; i < graphModelsList.size(); i++) {
-                if(graphModelsList.get(i).getxValue()!=null) {
-                    DAYS[i] = graphModelsList.get(i).getxValue();
-                }
-                if(graphModelsList.get(i).getyValue()!=null) {
-                    DAYSY[i] = graphModelsList.get(i).getyValue();
-                }
-            }
-            try {
-                //getGraph();
-                //setAdapterForDashboardList();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
     @Override
     public void onResume() {
         super.onResume();
@@ -331,13 +245,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
         salaryDisbursementAdapter = new SalaryDisbursementAdapter(mContext, searchresultList, new SalaryDisbursementAdapter.ListItemSelectListener() {
             @Override
             public void onItemClick(int mDataTicket,EmployeeList searchresult) {
-              if(mDataTicket==1){
-                  showSalaryDisbursmentDialog();
-              }
-              else{
-                  SalarySheetFragment sheetFragment = new SalarySheetFragment();
-                  moveFromFragment(sheetFragment,getActivity());
-              }
+                showSalaryDisbursmentDialog();
             }
         });
         //RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecorator(mContext.getDrawable(R.drawable.separator_row_item));
@@ -393,7 +301,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
 
     private void setToolbar() {
         //set toolbar title
-        tvToolbarTitle.setText(R.string.scr_lbl_past_leaves);
+        tvToolbarTitle.setText(R.string.scr_lbl_salary_disbursement);
         ((BaseActivity)mContext).initToolbar(5, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.imgBack, R.id.imgCall);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -410,13 +318,13 @@ public class SalaryDisbursementFragment extends BaseFragment {
         });
     }
 
-    //perform click actions
+    /*//perform click actions
     @OnClick({R.id.btnSubmit})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
             case R.id.btnSubmit:
-                SalaryDisbursementFragment myFrag = new SalaryDisbursementFragment();
+                SalarySheetFragment myFrag = new SalarySheetFragment();
                 FragmentManager manager = getActivity().getSupportFragmentManager();
                 FragmentTransaction trans = manager.beginTransaction();
                 trans.remove(myFrag);
@@ -424,7 +332,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
                 manager.popBackStack();
                 break;
         }
-    }
+    }*/
     //show leave form popup
     public void showLeaveFormDialog() {
         mDialogChangePass = new Dialog(mContext, R.style.ThemeDialogCustom);

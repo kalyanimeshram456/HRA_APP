@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.hra_app.R;
@@ -60,52 +61,18 @@ public class SalaryDisbursementAdapter extends RecyclerView.Adapter<SalaryDisbur
             holder.setIsRecyclable(true);
         }
 
-     /*   holder.tvCity.setOnClickListener(new View.OnClickListener() {
+        holder.cardClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mListData.get(position).getType().equals("Customer")) {
-                    //LogUtil.printToastMSG(mContext,mListData.get(position).getType());
-                    listItemSelectListener.onItemClick(0,mListData.get(position));
-                }
-                else{
-                    if(mListData.get(position).getUrl()!=null &&
-                            !mListData.get(position).getUrl().equals("")) {
-                        //LogUtil.printToastMSG(mContext, mListData.get(position).getType());
-                        listItemSelectListener.onItemClick(1, mListData.get(position));
-                    }
-                    else{
-                        LogUtil.printToastMSG(mContext,"Url not available!");
-                    }
-                }
+                listItemSelectListener.onItemClick(0, mListData.get(position));
             }
         });
-        holder.tvName.setOnClickListener(new View.OnClickListener() {
+        holder.imgEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mListData.get(position).getType().equals("Customer")) {
-                    //LogUtil.printToastMSG(mContext,mListData.get(position).getType());
-                    listItemSelectListener.onItemClick(0,mListData.get(position));
-                }
-                else{
-                    if(mListData.get(position).getUrl()!=null &&
-                            !mListData.get(position).getUrl().equals("")) {
-                        //LogUtil.printToastMSG(mContext, mListData.get(position).getType());
-                        listItemSelectListener.onItemClick(1, mListData.get(position));
-                    }
-                    else{
-                        LogUtil.printToastMSG(mContext,"Url not available!");
-                    }
-                }
+                listItemSelectListener.onItemClick(1, mListData.get(position));
             }
         });
-*/
-       /*
-        holder.imgClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.layStatus.setVisibility(View.GONE);
-            }
-        });*/
 
     }
 
@@ -118,14 +85,14 @@ public class SalaryDisbursementAdapter extends RecyclerView.Adapter<SalaryDisbur
     public class ViewHolder extends RecyclerView.ViewHolder {
         AppCompatTextView tvName,tvCity;
         LinearLayoutCompat layClick;
-        AppCompatImageView imgExit,imgClose;
-        FrameLayout layStatus;
+        AppCompatImageView imgEdit,imgClose;
+        CardView cardClick;
 
         ViewHolder(View itemView) {
             super(itemView);
-            //tvName = itemView.findViewById(R.id.tvName);
+            imgEdit = itemView.findViewById(R.id.imgEdit);
            // tvCity = itemView.findViewById(R.id.tvCity);
-            //layClick = itemView.findViewById(R.id.layClick);
+            cardClick = itemView.findViewById(R.id.cardClick);
           }
     }
 

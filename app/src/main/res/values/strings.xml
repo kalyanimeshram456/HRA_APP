@@ -309,5 +309,15 @@
     <string name="err_enter_sick_leave">Please enter sick leaves.</string>
     <string name="err_enter_other_leave">Please enter other leaves.</string>
     <string name="scr_lbl_select_leave_type">Select leave type</string>
+    <string name="scr_lbl_date">Date</string>
+    <string name="src_lbl_office_location">Office Location</string>
+    <string name="scr_lbl_next">Next</string>
+    <string name="scr_lbl_back">Back</string>
+    <string name="scr_lbl_salary_disbursment">Salary Disbursement</string>
+    <string name="scr_lbl_salary_disbursement">Salary Disbursement</string>
+    <string name="scr_lbl_yearly_plan">Yearly plan</string>
+    <string name="scr_lbl_trial_plan">Trial plan</string>
+    <string name="scr_lbl_coupon_code">Coupon code</string>
+    <string name="msg_enter_coupon_code">Enter coupon code</string>
 
 </resources>

@@ -19,7 +19,7 @@
             android:layout_alignParentEnd="true"
             android:layout_weight="1"
             android:fontFamily="@font/gilroy_regular"
-            android:hint="@string/scr_lbl_dashboard"
+            android:hint="@string/scr_lbl_unavailable"
             android:imeOptions="actionDone"
             android:inputType="text"
             android:paddingVertical="@dimen/_5dp"

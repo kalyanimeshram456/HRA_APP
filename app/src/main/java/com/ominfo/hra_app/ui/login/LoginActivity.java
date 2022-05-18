@@ -180,8 +180,8 @@ public class LoginActivity extends BaseActivity {
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         tvTitle.setText(getString(R.string.scr_lbl_login));
         setErrorMSG();
-        editTextEmail.setText("OIN3001");
-        editTextPassword.setText("1897");
+        editTextEmail.setText("KAL025");
+        editTextPassword.setText("3486");
         /*Window window = getWindow();
         View view = window.getDecorView();
         DarkStatusBar.setLightStatusBar(view,this);*/

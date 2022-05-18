@@ -16,6 +16,7 @@ import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.registration.RegistrationActivity;
 import com.ominfo.hra_app.ui.salary.SalaryFragment;
 import com.ominfo.hra_app.ui.salary.fragment.SalaryDisbursementFragment;
+import com.ominfo.hra_app.ui.salary.fragment.SalarySheetFragment;
 import com.ominfo.hra_app.ui.sales_credit.activity.View360Activity;
 import com.ominfo.hra_app.ui.sales_credit.fragment.SalesCreditFragment;
 import com.ominfo.hra_app.ui.employees.AddEmployeeActivity;
@@ -33,6 +34,8 @@ public interface Deps
     void inject(BaseActivity baseActivity);
 
     void inject(LeaveFragment leaveFragment);
+
+    void inject(SalarySheetFragment salarySheetFragment);
 
     void inject(SalaryFragment salaryFragment);
 

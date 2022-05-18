@@ -1,15 +1,14 @@
 package com.ominfo.hra_app.ui.leave.fragment;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +29,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -52,18 +52,20 @@ import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.ui.dashboard.model.DashModel;
 import com.ominfo.hra_app.ui.employees.model.EmployeeList;
-import com.ominfo.hra_app.ui.leave.adapter.PastLeaveAdapter;
+import com.ominfo.hra_app.ui.leave.adapter.PastLeaveListAdapter;
+import com.ominfo.hra_app.ui.leave.model.PastLeave;
 import com.ominfo.hra_app.ui.leave.model.PastLeaveListRequest;
+import com.ominfo.hra_app.ui.leave.model.PastLeaveListResponse;
 import com.ominfo.hra_app.ui.leave.model.PastLeaveListViewModel;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveRequest;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveResponse;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveViewModel;
+import com.ominfo.hra_app.ui.my_account.model.LeaveApplicationRequest;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
-import com.ominfo.hra_app.ui.sales_credit.activity.PdfPrintActivity;
-import com.ominfo.hra_app.ui.sales_credit.activity.View360Activity;
+import com.ominfo.hra_app.ui.sales_credit.adapter.EnquiryPageAdapter;
+import com.ominfo.hra_app.ui.sales_credit.model.EnquiryPagermodel;
 import com.ominfo.hra_app.ui.sales_credit.model.GraphModel;
-import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
 
@@ -81,8 +83,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-//https://github.com/PhilJay/MPAndroidChart/wiki/Modifying-the-Viewport
-
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link PastLeaveFragment#newInstance} factory method to
@@ -91,7 +91,7 @@ import okhttp3.RequestBody;
 public class PastLeaveFragment extends BaseFragment {
 
     Context mContext;
-    PastLeaveAdapter leaveAdapter;
+    PastLeaveListAdapter leaveAdapter;
     //AddTagAdapter addTagAdapter;
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
@@ -104,24 +104,7 @@ public class PastLeaveFragment extends BaseFragment {
     @BindView(R.id.tv_emptyLayTitle)
     AppCompatTextView tv_emptyLayTitle;
     private AppDatabase mDb;
-    BarData barData;
-    List<GradientColor> list = new ArrayList<>();
-    // variable for our bar data set.
-    BarDataSet barDataSet;
-
-    // array list for storing entries.
-    ArrayList barEntriesArrayList;
-    //private static final String[] DATA_BAR_GRAPH = new String[6];//{"","09:00",
-    private String[] DAYS = new String[100];/*{"C1", "C2", "C3", "C4", "C5", "C6", *//*"C7", "C8", "C9"
-            , "C10", "C11", "C12"*//*};*/
-
-    private String[] DAYSY = new String[100];/*{"5", "60", "15", "70", "25",
-           "10"*//*, "45","90", "95","50", "55","60", "65"*//*};*/
-    int startPos = 0 , endPos = 0;
-
-    List<EmployeeList> searchresultList = new ArrayList<>();
-    List<DashModel> tagList = new ArrayList<>();
-    List<GraphModel> graphModelsList = new ArrayList<>();
+    List<PastLeave> pastLeaveList = new ArrayList<>();
     @BindView(R.id.progressBarHolder)
     FrameLayout mProgressBarHolder;
     @BindView(R.id.empty_layoutActivity)
@@ -134,13 +117,24 @@ public class PastLeaveFragment extends BaseFragment {
     @Inject
     ViewModelFactory mViewModelFactory;
     private PastLeaveListViewModel pastLeaveListViewModel;
-
+    List<EnquiryPagermodel> enquiryPageList = new ArrayList<>();
+    @BindView(R.id.rvEnquiryPager)
+    RecyclerView rvEnquiryPager;
+    @BindView(R.id.nextPage)
+    AppCompatImageView nextPage;
+    @BindView(R.id.prePage)
+    AppCompatImageView prePage;
+    long totalPage = 0;
+    EnquiryPageAdapter enquiryPageAdapter;
     private Dialog mDialogChangePass;
     LinearLayoutCompat layoutLeaveTime;
     AppCompatTextView appcomptextLeaveTime;
     View viewToDate;
     RelativeLayout layToDate;
     int cam = 0,noOFDays = 0;
+    private String pagerClicked = "No";
+    @BindView(R.id.tvPage)
+    AppCompatTextView tvPage;
     AppCompatTextView appcomptextNoOfDays;
     AppCompatTextView tvDateValueFrom;
     AppCompatTextView tvDateValueTo,tvTimeValueFrom,tvTimeValueTo ;
@@ -149,6 +143,10 @@ public class PastLeaveFragment extends BaseFragment {
     AppCompatAutoCompleteTextView AutoComTextViewDuration;
     AppCompatAutoCompleteTextView AutoComTextViewLeaveType;
     private ApplyLeaveViewModel applyLeaveViewModel;
+    @BindView(R.id.layList)
+    LinearLayoutCompat layList;
+    @BindView(R.id.layPagination)
+    RelativeLayout layPagination;
 
     public PastLeaveFragment() {
         // Required empty public constructor
@@ -185,8 +183,6 @@ public class PastLeaveFragment extends BaseFragment {
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         injectAPI();
         init();
-        //fromDate.setPaintFlags(fromDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
-        //toDate.setPaintFlags(toDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
     }
 
     private void init(){
@@ -195,9 +191,11 @@ public class PastLeaveFragment extends BaseFragment {
                 .load(R.drawable.img_bg_search)
                 .into(iv_emptyLayimage);
         tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
-        searchresultList.add(new EmployeeList());searchresultList.add(new EmployeeList());
-        searchresultList.add(new EmployeeList());searchresultList.add(new EmployeeList());
+        layList.setVisibility(View.VISIBLE);
+        layPagination.setVisibility(View.VISIBLE);
+        setEnquiryPagerList(1);
         setAdapterForLeaveList();
+        callGetPastLeaveApi("0");
     }
 
     private void injectAPI() {
@@ -208,30 +206,93 @@ public class PastLeaveFragment extends BaseFragment {
         applyLeaveViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_APPLY_LEAVE));
     }
 
+    private void setPagerEnquiryList(long pageNo){
+        for(int i=0;i<pageNo;i++) {
+            if (pagerClicked.equals("No")) {
+                if (i == 0) {
+                    rvEnquiryPager.scrollToPosition(i+1);
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 1));
+                } else {
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 0));
+                }
+            } else {
+                if (i == Integer.parseInt(pagerClicked)) {
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 1));
+                } else {
+                    enquiryPageList.add(new EnquiryPagermodel(String.valueOf(i + 1), 0));
+                }
+            }
+        }
+    }
+
+    private void setEnquiryPagerList(long pageNo) {
+        enquiryPageList.clear();
+        if(pageNo==0) {
+            pageNo = 1;
+        }
+        setPagerEnquiryList(pageNo);
+        if (enquiryPageList.size() > 0) {
+            rvEnquiryPager.setVisibility(View.VISIBLE);
+        } else {
+            rvEnquiryPager.setVisibility(View.GONE);
+        }
+
+        rvEnquiryPager.setHasFixedSize(true);
+        //rvEnquiryPager.setLayoutManager(new GridLayoutManager(mContext, 3));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false);
+        rvEnquiryPager.setLayoutManager(layoutManager);
+        rvEnquiryPager.setItemAnimator(new DefaultItemAnimator());
+        rvEnquiryPager.setAdapter(enquiryPageAdapter);
+        try{
+            rvEnquiryPager.scrollToPosition(Integer.parseInt(pagerClicked));}catch (Exception e){e.printStackTrace();}
+        final boolean[] check = {false};
+        prePage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //try{
+                /*LogUtil.printToastMSG(mContext,"prev");
+                int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+                rvEnquiryPager.scrollToPosition(firstVisiblePosition-1);
+                //int firstVisiblePositionNew = layoutManager.findFirstVisibleItemPosition();
+                enquiryPageAdapter.updatePageList(firstVisiblePosition-1);
+                }catch (Exception e){e.printStackTrace();*/
+                //}catch (Exception e){e.printStackTrace();}
+            }
+        });
+        nextPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    /*LogUtil.printToastMSG(mContext,"next");
+                    int firstVisiblePositionLast = layoutManager.findLastVisibleItemPosition();
+                    int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+                    rvEnquiryPager.scrollToPosition(firstVisiblePositionLast-1);
+                    //int firstVisiblePositionNew = layoutManager.findFirstVisibleItemPosition();
+                    enquiryPageAdapter.updatePageList(firstVisiblePosition + 1);*/
+                }catch (Exception e){e.printStackTrace();}
+            }
+        });
+    }
+
+    private void resetApiData(){
+        pastLeaveList.clear();
+        setEnquiryPagerList(0);
+        setAdapterForLeaveList();
+        tvPage.setText("Showing " + String.valueOf(0) + " to " +
+                String.valueOf(0) + " of " + String.valueOf(0) + "\nEntries");
+        try {
+            callGetPastLeaveApi("0");
+        }catch (Exception e){e.printStackTrace();}
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-       /* Window window = getActivity().getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));*/
-        /*Window window = getActivity().getWindow();
-        View view = window.getDecorView();
-        BaseActivity.DarkStatusBar.setLightStatusBar(view,getActivity());*/
-
     }
 
     @Override
     public void onPause() {
         super.onPause();
-       /* Window window = getActivity().getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));*/
-        /*Window window = getActivity().getWindow();
-        View view = window.getDecorView();
-        BaseActivity.DarkStatusBar.setLightStatusBar(view,getActivity());*/
-
     }
 
     //show Quotation popup
@@ -261,7 +322,7 @@ public class PastLeaveFragment extends BaseFragment {
 
 
     private void setAdapterForLeaveList() {
-        if (searchresultList!=null && searchresultList.size() > 0) {
+        if (pastLeaveList !=null && pastLeaveList.size() > 0) {
             rvSalesList.setVisibility(View.VISIBLE);
             emptyLayout.setVisibility(View.GONE);
             } else {
@@ -272,23 +333,10 @@ public class PastLeaveFragment extends BaseFragment {
                     .into(iv_emptyLayimage);
             tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
         }
-        leaveAdapter = new PastLeaveAdapter(mContext, searchresultList, new PastLeaveAdapter.ListItemSelectListener() {
+        leaveAdapter = new PastLeaveListAdapter(mContext, pastLeaveList, new PastLeaveListAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket,EmployeeList searchresult) {
-                if(mDataTicket==0) {
-                    Intent i = new Intent(getActivity(), View360Activity.class);
-                    //i.putExtra(Constants.TRANSACTION_ID, searchresult.getId());
-                    startActivity(i);
-                    ((Activity) getActivity()).overridePendingTransition(0, 0);
-                }
-                if(mDataTicket==1){
-                    //showQuotationDialog();
-                    //mDialog.dismiss();
-                    Intent i = new Intent(getActivity(), PdfPrintActivity.class);
-                    //i.putExtra(Constants.URL, searchresult.getUrl());
-                    startActivity(i);
-                    ((Activity) getActivity()).overridePendingTransition(0, 0);
-                }
+            public void onItemClick(int mDataTicket,PastLeave searchresult) {
+
             }
         });
         //RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecorator(mContext.getDrawable(R.drawable.separator_row_item));
@@ -300,47 +348,6 @@ public class PastLeaveFragment extends BaseFragment {
         final boolean[] check = {false};
 
     }
-
-    //show Receipt Details popup
-    public void showVisitDetailsDialog() {
-        Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.activity_reminder_alert);
-        mDialog.setCanceledOnTouchOutside(true);
-        //AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        //AppCompatButton closeButton = mDialog.findViewById(R.id.closeButton);
-
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-
-        /*closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });*/
-        mDialog.show();
-    }
-
-    private void deleteDir(){
-        File dir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), Constants.FILE_NAME);
-        //File oldFile = new File(myDir);
-        if (dir.isDirectory())
-        {
-            String[] children = dir.list();
-            for (int i = 0; i < children.length; i++)
-            {
-                new File(dir, children[i]).delete();
-            }
-        }
-    }
-
 
     private void setToolbar() {
         //set toolbar title
@@ -529,9 +536,13 @@ public class PastLeaveFragment extends BaseFragment {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
-                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_apply_leave);
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_past_leave);
                 RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
-                RequestBody mRequestBodyMonth = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewDuration.getText().toString());
+                Calendar instance = Calendar.getInstance();
+                int currentMonth = instance.get(Calendar.MONTH);
+                int month=currentMonth+1;
+                String monthNumber  =  String.valueOf(month).length()==1?"0"+month : String.valueOf(month);
+                RequestBody mRequestBodyMonth = RequestBody.create(MediaType.parse("text/plain"), monthNumber);
                 RequestBody mRequestPageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);
                 RequestBody mRequestPageSize = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
 
@@ -770,209 +781,10 @@ public class PastLeaveFragment extends BaseFragment {
     }
 
 
-
-    /*private void injectAPI() {
-        mGetVehicleViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetVehicleViewModel.class);
-        mGetVehicleViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_GET_VEHICLE));
-    }*/
-
-  /*  *//* Call Api For Vehicle List *//*
-    private void callVehicleListApi(String fromDate,String toDate) {
-        if (NetworkCheck.isInternetAvailable(mContext)) {
-            GetVehicleListRequest mRequest = new GetVehicleListRequest();
-            mRequest.setUserkey(mUserKey);//mUserKey); //6b07b768-926c-49b6-ac1c-89a9d03d4c3b
-            mRequest.setFromDate(fromDate);
-            mRequest.setToDate(toDate);
-            Gson gson = new Gson();
-            String bodyInStringFormat = gson.toJson(mRequest);
-            mGetVehicleViewModel.hitGetVehicleApi(bodyInStringFormat);
-        } else {
-            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
-        }
-    }*/
-
-
-
-  /*  private void setAdapterForVehicleList() {
-        if (vehicleModelList.size() > 0) {
-            mLrNumberAdapter = new LrNumberAdapter(mContext, vehicleModelList, new LrNumberAdapter.ListItemSelectListener() {
-                @Override
-                public void onItemClick(GetVehicleListResult mDataTicket) {
-                    Intent intent = new Intent(mContext,AddLrActivity.class);
-                    intent.putExtra(Constants.TRANSACTION_ID, mDataTicket.getTransactionID());
-                    intent.putExtra(Constants.FROM_SCREEN, Constants.LIST);
-                    startActivity(intent);
-                }
-            });
-            mRecylerViewLrNumber.setHasFixedSize(true);
-            mRecylerViewLrNumber.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
-            mRecylerViewLrNumber.setAdapter(mLrNumberAdapter);
-            mRecylerViewLrNumber.setVisibility(View.VISIBLE);
-            linearLayoutEmptyActivity.setVisibility(View.GONE);
-            imgEmptyImage.setBackground(getResources().getDrawable(R.drawable.ic_error_load));
-            tvEmptyLayTitle.setText(getString(R.string.scr_lbl_data_loading));
-        } else {
-            mRecylerViewLrNumber.setVisibility(View.GONE);
-            linearLayoutEmptyActivity.setVisibility(View.VISIBLE);
-            imgEmptyImage.setBackground(getResources().getDrawable(R.drawable.ic_error_load));
-            tvEmptyLayTitle.setText(R.string.scr_lbl_no_data_available);
-        }
-    }*/
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mContext = context;
-    }
-
-
-  /*  //set date picker view
-    private void openDataPicker(AppCompatTextView datePickerField,int mFrom) {
-        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-                // TODO Auto-generated method stub
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                String myFormat="";
-                if(mFrom==0) {
-                    myFormat = "dd MMM yyyy"; //In which you need put here
-                }
-                else{
-                    myFormat = "dd/MM/yyyy"; //In which you need put here
-                }
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-                datePickerField.setText(sdf.format(myCalendar.getTime()));
-            }
-
-        };
-
-        new DatePickerDialog(this, date, myCalendar
-                .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-
-    }
-
-    //show truck details popup
-    public void showTruckDetailsDialog() {
-        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_truck_details);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-        RelativeLayout relRC = mDialog.findViewById(R.id.relRC);
-        RelativeLayout relPUC = mDialog.findViewById(R.id.relPUC);
-        RelativeLayout relIss = mDialog.findViewById(R.id.relIss);
-
-        relRC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        relPUC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        relIss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }
-
-    //show truck details popup
-    public void showFullImageDialog() {
-        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_doc_full_view);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }*/
-
-
-    /*//request camera and storage permission
-    private void requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (mContext.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-            ) {
-
-                requestPermissions(new String[]
-                                { Manifest.permission.CAMERA,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                },
-                        1000);
-
-            } else {
-                //createFolder();
-            }
-        } else {
-            //createFolder();
-        }
-    }
-*/
-
-    /*
-     * ACCESS_FINE_LOCATION permission result
-     * */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case 1000:
-                if (grantResults.length > 0 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                        grantResults[1] == PackageManager.PERMISSION_GRANTED
-                        &&
-                        grantResults[2] == PackageManager.PERMISSION_GRANTED
-                ) {
-                    //BaseApplication.getInstance().mService.requestLocationUpdates();
-                } else {
-                    //Toast.makeText(mContext, getString(R.string.somthing_went_wrong), Toast.LENGTH_SHORT).show();
-                }
-                break;
-
-        }
     }
 
 
@@ -1008,11 +820,54 @@ public class PastLeaveFragment extends BaseFragment {
                                 true,getActivity());
                         e.printStackTrace();
                     }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_PAST_LEAVE)) {
+                            PastLeaveListResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), PastLeaveListResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                pastLeaveList.clear();
+                                try {
+                                    if (responseModel.getResult().getLeave() != null && responseModel.getResult().getLeave().size()>0) {
+                                        pastLeaveList = responseModel.getResult().getLeave();
+                                        totalPage = responseModel.getResult().getTotalpages();
+                                        if(responseModel.getResult().getNextpage()==1) {
+                                            tvPage.setText("Showing " + String.valueOf(responseModel.getResult().getNextpage()) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1) + pastLeaveList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries"));
+                                        }
+                                        else {
+                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getResult().getNextpage()-1)*7)+1) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1)*7)+ pastLeaveList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries");
+                                        }
+                                    }
+                                    else{
+                                        totalPage = 0;
+                                        pastLeaveList.clear();
+                                    }
+                                }catch(Exception e){
+                                    totalPage = 0;
+                                    pastLeaveList.clear();
+                                    e.printStackTrace();
+
+                                }
+                                setEnquiryPagerList(totalPage);
+                                setAdapterForLeaveList();
+                            }
+                        }
+                    }catch (Exception e){
+                        ((BaseActivity)mContext).showSuccessDialog("Leave application upload failed.",
+                                true,getActivity());
+                        e.printStackTrace();
+                    }
                 }
                 break;
             case ERROR:
                 ((BaseActivity) mContext).dismissSmallProgressBar(mProgressBarHolder);
                 LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+                if(tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_PAST_LEAVE)){
+                    totalPage = 0;
+                    pastLeaveList.clear();
+                    setEnquiryPagerList(totalPage);
+                    setAdapterForLeaveList();
+                }
                 break;
         }
     }

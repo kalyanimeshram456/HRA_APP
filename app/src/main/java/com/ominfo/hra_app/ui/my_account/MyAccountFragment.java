@@ -51,6 +51,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.mikephil.charting.data.BarData;
@@ -76,6 +77,7 @@ import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.ui.dashboard.model.DashModel;
+import com.ominfo.hra_app.ui.employees.adapter.EmployeeTimeAdapter;
 import com.ominfo.hra_app.ui.login.LoginActivity;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.login.model.LogoutResponse;
@@ -95,6 +97,7 @@ import com.ominfo.hra_app.ui.my_account.model.ProfileRequest;
 import com.ominfo.hra_app.ui.my_account.model.ProfileResponse;
 import com.ominfo.hra_app.ui.my_account.model.ProfileViewModel;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
+import com.ominfo.hra_app.ui.notifications.model.NotificationResult;
 import com.ominfo.hra_app.ui.sales_credit.activity.PdfPrintActivity;
 import com.ominfo.hra_app.ui.sales_credit.model.GraphModel;
 import com.ominfo.hra_app.util.AppUtils;
@@ -117,6 +120,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -136,7 +140,14 @@ public class MyAccountFragment extends BaseFragment {
     Toolbar mToolbar;
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout mCollapsingToolbar;
-
+    @BindView(R.id.btnNext)
+    AppCompatButton btnNext;
+    @BindView(R.id.btnSubmit)
+    AppCompatButton btnSubmit;
+    @BindView(R.id.layNext)
+    LinearLayoutCompat layNext;
+    @BindView(R.id.laySubmit)
+    LinearLayoutCompat laySubmit;
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
     @BindView(R.id.app_bar_layout)
@@ -205,6 +216,10 @@ public class MyAccountFragment extends BaseFragment {
     AppCompatAutoCompleteTextView AutoComTextViewDuration;
     AppCompatAutoCompleteTextView AutoComTextViewLeaveType;
     Dialog mDialogLogout;
+    EmployeeTimeAdapter employeeTimeAdapter;
+    List<NotificationResult> timingList = new ArrayList<>();
+    @BindView(R.id.rvSalesList)
+    RecyclerView rvSalesList;
     public MyAccountFragment() {
         // Required empty public constructor
     }
@@ -240,21 +255,6 @@ public class MyAccountFragment extends BaseFragment {
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         injectAPI();
         init();
-        //fromDate.setPaintFlags(fromDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
-        //toDate.setPaintFlags(toDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
-       /* app_bar_layout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if(verticalOffset == 0 || verticalOffset <= mToolbar.getHeight() *//*&& !mToolbar.getTitle().equals(mCollapsedTitle)*//*){
-                    mCollapsingToolbar.setTitle("mCollapsedTitle");
-                    LogUtil.printToastMSG(mContext,"Lets 1");
-                }
-                if(verticalOffset >= mToolbar.getHeight()){
-                    LogUtil.printToastMSG(mContext,"Lets 3");
-                }
-
-            }
-        });*/
         app_bar_layout.addOnOffsetChangedListener(new   AppBarLayout.OnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
@@ -295,6 +295,27 @@ public class MyAccountFragment extends BaseFragment {
 
         logoutViewModel = ViewModelProviders.of(this, mViewModelFactory).get(LogoutViewModel.class);
         logoutViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_LOGOUT));
+    }
+    private void setAdapterForTimingList() {
+        timingList.add(new NotificationResult("","",""));
+        timingList.add(new NotificationResult("","",""));
+        timingList.add(new NotificationResult("","",""));
+        timingList.add(new NotificationResult("","",""));
+        timingList.add(new NotificationResult("","",""));
+        timingList.add(new NotificationResult("","",""));
+        timingList.add(new NotificationResult("","",""));
+
+        if (timingList!=null && timingList.size() > 0) {
+            employeeTimeAdapter = new EmployeeTimeAdapter(mContext, timingList, new EmployeeTimeAdapter.ListItemSelectListener() {
+                @Override
+                public void onItemClick(NotificationResult mDataTicket, List<NotificationResult> notificationResultListAdapter, boolean status) {
+                }
+            });
+            rvSalesList.setHasFixedSize(true);
+            rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
+            rvSalesList.setAdapter(employeeTimeAdapter);
+            rvSalesList.setVisibility(View.VISIBLE);
+        }
     }
 
     /* Call Api For change password */
@@ -388,6 +409,8 @@ public class MyAccountFragment extends BaseFragment {
     }
 
     private void init(){
+        setAdapterForTimingList();
+        laySubmit.setVisibility(View.GONE);
         Window window = getActivity().getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -449,6 +472,31 @@ public class MyAccountFragment extends BaseFragment {
         intent.setAction(Intent.ACTION_GET_CONTENT);//
         startActivityForResult(Intent.createChooser(intent, "Select File"), SELECT_FILE);
     }
+
+    //perform click actions
+    @OnClick({R.id.imgAdd,R.id.btnNext,R.id.btnSubmit,R.id.btnBack})
+    public void onClick(View view) {
+        int id = view.getId();
+        switch (id) {
+            case R.id.imgAdd:
+                showChooseCameraDialog();
+                break;
+            case R.id.btnNext:
+                layNext.setVisibility(View.GONE);
+                laySubmit.setVisibility(View.VISIBLE);
+                break;
+            case R.id.btnSubmit:
+                layNext.setVisibility(View.VISIBLE);
+                laySubmit.setVisibility(View.GONE);
+                break;
+            case R.id.btnBack:
+                layNext.setVisibility(View.VISIBLE);
+                laySubmit.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+
     private void showChooseCameraDialog() {
         Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialog.setContentView(R.layout.dialog_select_image);
@@ -1269,7 +1317,7 @@ private void setTermsAndPolicy(String webUrl){
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_CHANGE_PROFILE)) {
                             ChangeProfileImageResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ChangeProfileImageResponse.class);
                             if (responseModel != null/* && responseModel.getStatus()==1*/) {
-                                AppUtils.loadImageURL(mContext,"https://ominfo.in/crm/"+responseModel.getResult().getProfileurl(),imgEmp,progressBar);
+                                AppUtils.loadImageURL(mContext,"https://ominfo.in/o_hr/"+responseModel.getResult().getProfileurl(),imgEmp,progressBar);
                                 //LogUtil.printLog("url_test","https://ominfo.in/crm/"+responseModel.getResult().getProfileurl());
                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
                             }

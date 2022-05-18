@@ -5,9 +5,9 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_below="@+id/toolbar_layout"
-    android:background="@color/white"
-    android:focusable="false"
-    android:focusableInTouchMode="false"
+    android:background="@color/bg_screen"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:orientation="vertical">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -27,165 +27,26 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/_35dp"
+                android:visibility="visible"
                 android:orientation="vertical">
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/layTop"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/_50dp"
-                        android:layout_marginTop="@dimen/_0dp"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:layout_weight="1">
-
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:id="@+id/imgSales"
-                            android:layout_width="@dimen/_50dp"
-                            android:layout_height="@dimen/_50dp"
-                            android:layout_gravity="right"
-                            android:layout_marginHorizontal="@dimen/_16dp"
-                            android:background="@drawable/layout_round_shape_corners_green"
-                            android:padding="@dimen/_10dp"
-                            android:src="@drawable/ic_om_visit"
-                            android:visibility="visible" />
-
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/tvSearchView"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="bottom"
-                            android:layout_marginTop="@dimen/_6dp"
-                            android:layout_toRightOf="@+id/imgSales"
-                            android:fontFamily="@font/gilroy_semibold"
-                            android:gravity="left|center"
-                            android:imeOptions="actionDone"
-                            android:inputType="text"
-                            android:text="@string/scr_lbl_visit_report"
-                            android:textColor="@color/back_text_colour"
-                            android:textColorHint="@color/back_text_colour"
-                            android:textSize="@dimen/_16sp" />
-
-                        <androidx.appcompat.widget.LinearLayoutCompat
-                            android:layout_width="match_parent"
-                            android:layout_height="@dimen/_30dp"
-                            android:layout_below="@+id/tvSearchView"
-                            android:layout_centerInParent="true"
-                            android:layout_marginBottom="@dimen/_6dp"
-                            android:gravity="bottom"
-                            android:orientation="horizontal">
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/tvTotalCount"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_marginLeft="82dp"
-                                android:layout_weight="1.2"
-                                android:fontFamily="@font/gilroy_semibold"
-                                android:gravity="center|left"
-                                android:imeOptions="actionDone"
-                                android:inputType="text"
-                                android:text="0"
-                                android:textColor="@color/back_text_colour"
-                                android:textColorHint="@color/back_text_colour"
-                                android:textSize="@dimen/_13sp" />
-
-                            <androidx.appcompat.widget.LinearLayoutCompat
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="bottom"
-                                android:layout_marginRight="@dimen/_16dp"
-                                android:layout_marginBottom="@dimen/_2dp"
-                                android:layout_weight="1"
-                                android:orientation="horizontal"
-                                android:visibility="visible">
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/fromDate"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_centerVertical="true"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1"
-                                    android:clickable="true"
-                                    android:fontFamily="@font/gilroy_semibold"
-                                    android:gravity="right"
-                                    android:hint=""
-                                    android:imeOptions="actionDone"
-                                    android:inputType="text"
-                                    android:paddingRight="@dimen/_3dp"
-                                    android:text=""
-                                    android:textColor="@color/back_text_colour"
-                                    android:textColorHint="@color/back_text_colour"
-                                    android:textSize="@dimen/_14sp" />
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/toDateDash"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_centerVertical="true"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.7"
-                                    android:fontFamily="@font/gilroy_semibold"
-                                    android:gravity="center"
-                                    android:imeOptions="actionDone"
-                                    android:inputType="text"
-                                    android:text="-"
-                                    android:textColor="@color/back_text_colour"
-                                    android:textColorHint="@color/back_text_colour"
-                                    android:textSize="@dimen/_14sp" />
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/toDate"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_centerVertical="true"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1"
-                                    android:clickable="true"
-                                    android:fontFamily="@font/gilroy_semibold"
-                                    android:gravity="left"
-                                    android:imeOptions="actionDone"
-                                    android:inputType="text"
-                                    android:paddingLeft="@dimen/_3dp"
-                                    android:text=""
-                                    android:textColor="@color/back_text_colour"
-                                    android:textColorHint="@color/back_text_colour"
-                                    android:textSize="@dimen/_14sp" />
-
-                            </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-                        </androidx.appcompat.widget.LinearLayoutCompat>
-
-                    </RelativeLayout>
-
-
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/layBorder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/layTop"
+                    android:layout_below="@+id/searchView"
                     android:layout_marginHorizontal="@dimen/_16dp"
-                    android:layout_marginTop="@dimen/_16dp"
+                    android:layout_marginTop="@dimen/_20dp"
                     android:background="@drawable/layout_round_shape_blue_border"
                     android:orientation="vertical"
-
                     android:paddingBottom="@dimen/_10dp">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_14dp">
+                        android:layout_marginTop="@dimen/_14dp"
+                        android:visibility="gone">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="match_parent"
@@ -234,11 +95,130 @@
                     </RelativeLayout>
 
                     <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/_10dp"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="center_vertical"
+                        android:background="@android:color/transparent"
+                        android:paddingVertical="@dimen/_10dp"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            android:id="@+id/layBirthPro"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="5">
+
+                            <LinearLayout
+                                android:layout_width="@dimen/_40dp"
+                                android:layout_height="@dimen/_40dp"
+                                android:background="@android:color/transparent"
+                                android:orientation="horizontal">
+
+                                <de.hdodenhof.circleimageview.CircleImageView
+                                    android:id="@+id/imgBirthPro"
+                                    android:layout_width="@dimen/_40dp"
+                                    android:layout_height="@dimen/_40dp"
+                                    android:layout_gravity="left|center"
+                                    android:clickable="true"
+                                    android:gravity="left"
+                                    android:onClick="onClick"
+                                    android:src="@drawable/ic_user"
+                                    android:visibility="visible"
+                                    app:civ_border_color="@color/pink"
+                                    app:civ_border_width="1dp" />
+
+
+                            </LinearLayout>
+                            <!-- android:indeterminateTintMode="src_atop"-->
+                            <ProgressBar
+                                android:id="@+id/progress_barBirth"
+                                android:layout_width="@dimen/_40dp"
+                                android:layout_height="@dimen/_40dp"
+                                android:indeterminate="true"
+                                android:indeterminateDrawable="@drawable/progress_bar_color" />
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left|center_vertical"
+                            android:layout_weight="0.8"
+                            android:paddingTop="@dimen/_0dp"
+                            android:gravity="left|center_vertical"
+                            >
+
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvEmpName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/gilroy_semibold"
+                                android:text="User name"
+                                android:textAlignment="center"
+                                android:textColor="@color/black_heading"
+                                android:textSize="@dimen/_14sp" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvDesi"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/tvEmpName"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/gilroy_regular"
+                                android:text="User designation"
+                                android:textAlignment="center"
+                                android:textColor="@color/gray"
+                                android:textSize="@dimen/_13sp" />
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="right|center_horizontal"
+                            android:layout_weight="1"
+                            android:visibility="gone"
+                            android:gravity="right|center_horizontal"
+                            android:paddingTop="@dimen/_0dp">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvDate"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/gilroy_regular"
+                                android:text="dd MMM - dd MMM"
+                                android:textAlignment="center"
+                                android:textColor="@color/black_heading"
+                                android:textSize="@dimen/_13sp" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvDateValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/tvDate"
+                                android:layout_alignParentRight="true"
+                                android:layout_gravity="right"
+                                android:fontFamily="@font/gilroy_regular"
+                                android:text="03 Days"
+                                android:textColor="@color/gray"
+                                android:textSize="@dimen/_13sp" />
+
+                        </RelativeLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:id="@+id/layList"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/_10dp"
-                        android:layout_marginTop="@dimen/_6dp"
+                        android:layout_marginTop="@dimen/_0dp"
                         android:background="@drawable/layout_round_shape_grey_border_small"
                         android:orientation="vertical"
                         android:visibility="visible">
@@ -264,7 +244,7 @@
                                     android:gravity="left"
                                     android:imeOptions="actionDone"
                                     android:inputType="text"
-                                    android:text="@string/scr_lbl_company_name_new"
+                                    android:text="@string/scr_lbl_month"
                                     android:textColor="@color/back_text_colour"
                                     android:textColorHint="@color/back_text_colour"
                                     android:textSize="@dimen/_12sp" />
@@ -276,17 +256,18 @@
                                     android:layout_centerVertical="true"
                                     android:layout_marginLeft="@dimen/_2dp"
                                     android:layout_toRightOf="@+id/tvCompanyName"
-                                    android:src="@drawable/ic_om_sort" />
+                                    android:src="@drawable/ic_om_sort"
+                                    android:visibility="gone" />
                             </RelativeLayout>
 
                             <RelativeLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
                                 android:gravity="center_vertical"
                                 android:inputType="text"
-                                android:paddingTop="@dimen/_10dp"
-                                android:layout_centerInParent="true"
-                                android:paddingLeft="@dimen/_24dp">
+                                android:paddingLeft="@dimen/_0dp"
+                                android:paddingTop="@dimen/_10dp">
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:id="@+id/tvPlace"
@@ -296,7 +277,7 @@
                                     android:imeOptions="actionDone"
                                     android:inputType="textMultiLine"
                                     android:maxLines="2"
-                                    android:text="@string/scr_lbl_place"
+                                    android:text="Leaves"
                                     android:textColor="@color/back_text_colour"
                                     android:textColorHint="@color/back_text_colour"
                                     android:textSize="@dimen/_12sp" />
@@ -309,7 +290,8 @@
                                     android:layout_marginLeft="@dimen/_2dp"
                                     android:layout_marginTop="@dimen/_3dp"
                                     android:layout_toRightOf="@+id/tvPlace"
-                                    android:src="@drawable/ic_om_sort" />
+                                    android:src="@drawable/ic_om_sort"
+                                    android:visibility="gone" />
                             </RelativeLayout>
 
 
@@ -329,7 +311,7 @@
                                     android:gravity="right|center"
                                     android:imeOptions="actionDone"
                                     android:inputType="textMultiLine"
-                                    android:text="@string/scr_lbl_result"
+                                    android:text="@string/scr_lbl_amount"
                                     android:textColor="@color/back_text_colour"
                                     android:textColorHint="@color/back_text_colour"
                                     android:textSize="@dimen/_12sp" />
@@ -343,7 +325,7 @@
                                     android:layout_marginTop="@dimen/_3dp"
                                     android:layout_toRightOf="@+id/tvStatus"
                                     android:src="@drawable/ic_om_sort"
-                                    android:visibility="visible" />
+                                    android:visibility="gone" />
                             </RelativeLayout>
 
 
@@ -358,11 +340,11 @@
                             android:layout_gravity="center"
                             android:layout_marginTop="@dimen/_6dp"
                             android:focusable="false"
-                            android:paddingBottom="@dimen/_1dp"
                             android:focusableInTouchMode="false"
                             android:nestedScrollingEnabled="true"
+                            android:paddingBottom="@dimen/_1dp"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                            tools:listitem="@layout/row_sales_credit_table" />
+                            tools:listitem="@layout/row_past_leaves" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -440,52 +422,40 @@
 
                     </RelativeLayout>
 
-                    <include layout="@layout/content_visit_filter" />
-
-
-                    <!--Ui component for our bar chart-->
-                    <com.github.mikephil.charting.charts.PieChart
-                        android:id="@+id/idBarChart"
-                        android:layout_width="match_parent"
-                        android:layout_height="220dp"
-                        android:layout_below="@+id/laySelect"
-                        android:layout_marginHorizontal="@dimen/_5dp"
-                        android:layout_marginTop="@dimen/_10dp"
-                        android:visibility="gone" />
-
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
+
                 <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_height="wrap_content"
-                    android:layout_width="fill_parent"
-                    android:gravity = "center_horizontal"
-                    android:layout_below="@id/layBorder"
-                    android:id="@+id/loginButtonLayout"
-                    android:paddingTop="@dimen/_16dp"
-                    android:weightSum="1.0">
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/submitButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/searchView"
+                    android:layout_marginHorizontal="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_6dp"
+                    android:visibility="gone"
+                    android:orientation="vertical">
+
+                    <include layout="@layout/content_empty_activity_layout" />
+
+                    <androidx.recyclerview.widget.RecyclerView
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/_40dp"
-                        android:layout_alignParentBottom="true"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginHorizontal="@dimen/_16dp"
-                        android:layout_marginBottom="@dimen/_30dp"
-                        android:background="@drawable/bg_button_round_corner_5"
-                        android:fontFamily="@font/gilroy_semibold"
-                        android:gravity="center"
-                        android:paddingTop="@dimen/_2dp"
-                        android:text="Submit"
-                        android:visibility="gone"
-                        android:textColor="@color/white"
-                        android:layout_weight="0.7"
-                        android:textSize="@dimen/_16sp" />
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/_2dp"
+                        android:background="@color/white"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:nestedScrollingEnabled="false"
+                        android:paddingBottom="@dimen/_16dp"
+                        android:visibility="visible"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:listitem="@layout/row_past_leaves" />
+
+
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
             </RelativeLayout>
 
         </androidx.core.widget.NestedScrollView>
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

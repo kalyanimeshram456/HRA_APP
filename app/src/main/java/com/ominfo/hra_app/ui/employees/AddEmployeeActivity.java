@@ -19,6 +19,8 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.material.textfield.TextInputLayout;
@@ -34,6 +36,7 @@ import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.model.DashModel;
+import com.ominfo.hra_app.ui.employees.adapter.EmployeeTimeAdapter;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeRequest;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeResponse;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeViewModel;
@@ -44,6 +47,8 @@ import com.ominfo.hra_app.ui.employees.model.EditEmployeeResponse;
 import com.ominfo.hra_app.ui.employees.model.EditEmployeeViewModel;
 import com.ominfo.hra_app.ui.employees.model.EmployeeList;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
+import com.ominfo.hra_app.ui.notifications.adapter.NotificationsAdapter;
+import com.ominfo.hra_app.ui.notifications.model.NotificationResult;
 import com.ominfo.hra_app.ui.visit_report.model.VisitNoResponse;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
@@ -120,6 +125,8 @@ public class AddEmployeeActivity extends BaseActivity {
     AppCompatAutoCompleteTextView AutoComAddress;
     @BindView(R.id.input_textPincode)
     TextInputLayout input_textPincode;
+    @BindView(R.id.rvSalesList)
+    RecyclerView rvSalesList;
     @BindView(R.id.AutoComPincode)
     AppCompatAutoCompleteTextView AutoComPincode;
     @BindView(R.id.input_textCurrSalary)
@@ -145,6 +152,8 @@ public class AddEmployeeActivity extends BaseActivity {
     @BindView(R.id.btnDeactivate)
     AppCompatButton btnDeactivate;
     EmployeeList employeeList;
+    EmployeeTimeAdapter employeeTimeAdapter;
+    List<NotificationResult> timingList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,6 +177,7 @@ public class AddEmployeeActivity extends BaseActivity {
         getIntentData();
         tvMissing.setVisibility(View.GONE);
         setDropdownGender();
+        setAdapterForTimingList();
     }
 
     @Override
@@ -218,6 +228,28 @@ public class AddEmployeeActivity extends BaseActivity {
 
         editEmployeeViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EditEmployeeViewModel.class);
         editEmployeeViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_edit_employee));
+    }
+
+    private void setAdapterForTimingList() {
+        timingList.add(new NotificationResult("","",""));
+        timingList.add(new NotificationResult("","",""));
+        timingList.add(new NotificationResult("","",""));
+        timingList.add(new NotificationResult("","",""));
+        timingList.add(new NotificationResult("","",""));
+        timingList.add(new NotificationResult("","",""));
+        timingList.add(new NotificationResult("","",""));
+
+        if (timingList!=null && timingList.size() > 0) {
+            employeeTimeAdapter = new EmployeeTimeAdapter(mContext, timingList, new EmployeeTimeAdapter.ListItemSelectListener() {
+                @Override
+                public void onItemClick(NotificationResult mDataTicket, List<NotificationResult> notificationResultListAdapter, boolean status) {
+                }
+            });
+            rvSalesList.setHasFixedSize(true);
+            rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
+            rvSalesList.setAdapter(employeeTimeAdapter);
+            rvSalesList.setVisibility(View.VISIBLE);
+        }
     }
 
     /* Call Api For add employee */

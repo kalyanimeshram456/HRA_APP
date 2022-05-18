@@ -36,7 +36,7 @@ public class QuotationsAdapter extends RecyclerView.Adapter<QuotationsAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View listItem = layoutInflater.inflate(R.layout.row_sales_credit_invoice_table, parent, false);
+        View listItem = layoutInflater.inflate(R.layout.row_employee_time_schedule, parent, false);
 
         return new ViewHolder(listItem);
     }
@@ -54,7 +54,7 @@ public class QuotationsAdapter extends RecyclerView.Adapter<QuotationsAdapter.Vi
                 holder.tvDate.setText(mListData.get(position).getDocdate());
                 holder.tvInvoiceNum.setText(mListData.get(position).getDocnumber());
                 holder.tvQuotedNo.setText(mContext.getString(R.string.scr_lbl_rs)+""+mListData.get(position).getAmount());
-                holder.tvBilledAmt.setText(mListData.get(position).getDocstatus());
+               // holder.tvBilledAmt.setText(mListData.get(position).getDocstatus());
             }
 
             if (position % 2 != 0) {
@@ -90,7 +90,7 @@ public class QuotationsAdapter extends RecyclerView.Adapter<QuotationsAdapter.Vi
             tvInvoiceNum = itemView.findViewById(R.id.tvInvoiceNum);
             tvDate = itemView.findViewById(R.id.tvDate);
             tvQuotedNo = itemView.findViewById(R.id.tvQuotedNo);
-            tvBilledAmt = itemView.findViewById(R.id.tvBilledAmt);
+            //tvBilledAmt = itemView.findViewById(R.id.tvBilledAmt);
         }
     }
 

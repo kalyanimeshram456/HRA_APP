@@ -157,4 +157,5 @@ dependencies {
     //implementation 'com.android.support:design:26.1.0'
     implementation 'com.etebarian:meow-bottom-navigation:1.2.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.10"
+    implementation 'com.github.simformsolutions:SSCustomBottomNavigation:1.0'
 }

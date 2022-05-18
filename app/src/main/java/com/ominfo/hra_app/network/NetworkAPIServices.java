@@ -300,6 +300,14 @@ public interface NetworkAPIServices {
 
     @Multipart
     @POST()
+    Observable<JsonElement> getLeaveCount(@Url String url,
+                                            @Part("action") RequestBody uploadType,
+                                            @Part("emp_id") RequestBody emp_id
+    );
+
+
+    @Multipart
+    @POST()
     Observable<JsonElement> deleteNotification(@Url String url,
                                                @Part("action") RequestBody uploadType,
                                                @Part("company_id") RequestBody uploadTypeEmployee,

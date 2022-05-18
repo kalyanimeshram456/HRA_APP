@@ -157,17 +157,293 @@
                     android:textSize="@dimen/_12sp" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/layBorder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/searchView"
+                    android:layout_marginHorizontal="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_16dp"
+                    android:background="@drawable/layout_round_shape_blue_border"
+                    android:orientation="vertical"
+
+                    android:paddingBottom="@dimen/_10dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_14dp"
+                        android:visibility="gone">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom"
+                            android:layout_marginLeft="@dimen/_16dp"
+                            android:layout_marginBottom="@dimen/_2dp"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:gravity="left|bottom"
+                            android:imeOptions="actionDone"
+                            android:inputType="text"
+                            android:text="@string/scr_lbl_report"
+                            android:textColor="@color/back_text_colour"
+                            android:textColorHint="@color/back_text_colour"
+                            android:textSize="@dimen/_15sp" />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/imgFilter"
+                            android:layout_width="@dimen/_18dp"
+                            android:layout_height="@dimen/_18dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_gravity="right"
+                            android:layout_marginRight="55dp"
+                            android:visibility="visible" />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/imgGraph"
+                            android:layout_width="@dimen/_18dp"
+                            android:layout_height="@dimen/_18dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_gravity="right"
+                            android:layout_marginRight="55dp"
+                            android:visibility="gone" />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/imgTable"
+                            android:layout_width="@dimen/_18dp"
+                            android:layout_height="@dimen/_18dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_gravity="right"
+                            android:layout_marginHorizontal="@dimen/_16dp"
+                            android:visibility="visible" />
+
+                    </RelativeLayout>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/layList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_16dp"
+                        android:background="@drawable/layout_round_shape_grey_border_small"
+                        android:orientation="vertical"
+                        android:visibility="visible">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="@dimen/_10dp">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_marginTop="@dimen/_10dp"
+                                android:gravity="left">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvCompanyName"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:fontFamily="@font/gilroy_bold"
+                                    android:gravity="left"
+                                    android:imeOptions="actionDone"
+                                    android:inputType="text"
+                                    android:text="@string/scr_lbl_date"
+                                    android:textColor="@color/back_text_colour"
+                                    android:textColorHint="@color/back_text_colour"
+                                    android:textSize="@dimen/_12sp" />
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:id="@+id/imgCompanySort"
+                                    android:layout_width="@dimen/_12dp"
+                                    android:layout_height="@dimen/_12dp"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginLeft="@dimen/_2dp"
+                                    android:layout_toRightOf="@+id/tvCompanyName"
+                                    android:src="@drawable/ic_om_sort"
+                                    android:visibility="gone" />
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:gravity="center_vertical"
+                                android:inputType="text"
+                                android:paddingLeft="@dimen/_0dp"
+                                android:paddingTop="@dimen/_10dp">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvPlace"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/gilroy_bold"
+                                    android:imeOptions="actionDone"
+                                    android:inputType="textMultiLine"
+                                    android:maxLines="2"
+                                    android:text="@string/scr_lbl_status"
+                                    android:textColor="@color/back_text_colour"
+                                    android:textColorHint="@color/back_text_colour"
+                                    android:textSize="@dimen/_12sp" />
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:id="@+id/imgPlace"
+                                    android:layout_width="@dimen/_12dp"
+                                    android:layout_height="@dimen/_12dp"
+                                    android:layout_alignParentTop="true"
+                                    android:layout_marginLeft="@dimen/_2dp"
+                                    android:layout_marginTop="@dimen/_3dp"
+                                    android:layout_toRightOf="@+id/tvPlace"
+                                    android:src="@drawable/ic_om_sort"
+                                    android:visibility="gone" />
+                            </RelativeLayout>
+
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginTop="@dimen/_10dp"
+                                android:gravity="right">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvStatus"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:fontFamily="@font/gilroy_bold"
+                                    android:gravity="right|center"
+                                    android:imeOptions="actionDone"
+                                    android:inputType="textMultiLine"
+                                    android:text="@string/scr_lbl_leave_type"
+                                    android:textColor="@color/back_text_colour"
+                                    android:textColorHint="@color/back_text_colour"
+                                    android:textSize="@dimen/_12sp" />
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:id="@+id/imgStatus"
+                                    android:layout_width="@dimen/_12dp"
+                                    android:layout_height="@dimen/_12dp"
+                                    android:layout_alignParentTop="true"
+                                    android:layout_marginLeft="@dimen/_2dp"
+                                    android:layout_marginTop="@dimen/_3dp"
+                                    android:layout_toRightOf="@+id/tvStatus"
+                                    android:src="@drawable/ic_om_sort"
+                                    android:visibility="gone" />
+                            </RelativeLayout>
+
+
+                        </RelativeLayout>
+
+                        <include layout="@layout/content_empty_enquiry_layout" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvSalesList"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/_6dp"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            android:nestedScrollingEnabled="true"
+                            android:paddingBottom="@dimen/_1dp"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            tools:listitem="@layout/row_past_leaves" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <RelativeLayout
+                        android:id="@+id/layPagination"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_10dp"
+                        android:visibility="visible">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvPage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_gravity="left"
+                            android:layout_marginLeft="@dimen/_10dp"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:text="Showing 0 to 0 of 0 \nEntries"
+                            android:textColor="@color/gray"
+                            android:textSize="@dimen/_12sp" />
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="@dimen/_150dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_gravity="right"
+                            android:layout_marginRight="@dimen/_10dp"
+                            android:background="@drawable/layout_round_shap_grey_grey_6"
+                            android:orientation="horizontal"
+                            android:paddingVertical="@dimen/_2dp">
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/prePage"
+                                android:layout_width="@dimen/_12dp"
+                                android:layout_height="@dimen/_16dp"
+                                android:layout_alignParentEnd="true"
+                                android:layout_gravity="center"
+                                android:layout_weight="1.2"
+                                android:src="@drawable/ic_om_left"
+                                android:visibility="visible" />
+
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvEnquiryPager"
+                                android:layout_width="@dimen/_80dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="top"
+                                android:layout_marginHorizontal="@dimen/_0dp"
+                                android:layout_marginTop="@dimen/_0dp"
+                                android:layout_toRightOf="@+id/tvOverdue"
+                                android:layout_weight="3.5"
+                                android:focusable="false"
+                                android:focusableInTouchMode="false"
+                                android:nestedScrollingEnabled="true"
+                                android:padding="@dimen/_1dp"
+                                android:visibility="visible"
+                                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                                app:spanCount="3"
+                                tools:listitem="@layout/row_pager_enquiry" />
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/nextPage"
+                                android:layout_width="@dimen/_12dp"
+                                android:layout_height="@dimen/_16dp"
+                                android:layout_alignParentEnd="true"
+                                android:layout_gravity="center"
+                                android:layout_weight="1.2"
+                                android:src="@drawable/ic_om_right"
+                                android:visibility="visible" />
+
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                    </RelativeLayout>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_below="@+id/searchView"
                     android:layout_marginHorizontal="@dimen/_10dp"
                     android:layout_marginTop="@dimen/_6dp"
+                    android:visibility="gone"
                     android:orientation="vertical">
 
                     <include layout="@layout/content_empty_activity_layout" />
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvSalesList"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"

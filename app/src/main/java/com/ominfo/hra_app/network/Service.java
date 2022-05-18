@@ -26,7 +26,6 @@ import com.ominfo.hra_app.ui.visit_report.model.PhpEditVisitRequest;
 
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
-import retrofit2.http.Part;
 
 public class Service {
 
@@ -162,6 +161,14 @@ public class Service {
         );
     }
 
+    public Observable<JsonElement> executeLeaveCountAPI(RequestBody action, RequestBody empId) {
+        return networkAPIServices.getLeaveCount(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_LEAVE_COUNT),
+                action,
+                empId
+        );
+    }
+
     public Observable<JsonElement> executeDeleteNotificationAPI(RequestBody action,
                                                           RequestBody comId,
                                                           RequestBody empId,
@@ -179,7 +186,7 @@ public class Service {
                                                                 RequestBody comId, RequestBody empId,
                                                                 RequestBody image) {
         return networkAPIServices.changeProfileImage(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
-                DynamicAPIPath.POST_GET_PROFILE),
+                DynamicAPIPath.POST_CHANGE_PROFILE),
                 action,
                 comId,
                 empId,image
@@ -280,7 +287,7 @@ public class Service {
     }
 
     public Observable<JsonElement> executeGetView360API(GetView360Request getView360Request) {
-        return networkAPIServices.getView360(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_VIEW360),
+        return networkAPIServices.getView360(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_LEAVE_COUNT),
                 getView360Request.getAction(),
                 getView360Request.getCompanyId(),
                 getView360Request.getEmployee(), getView360Request.getCustId(),

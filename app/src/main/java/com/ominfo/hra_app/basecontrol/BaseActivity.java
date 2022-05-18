@@ -1,5 +1,6 @@
 package com.ominfo.hra_app.basecontrol;
 
+import static com.ominfo.hra_app.MainActivity.ssCustomBottomNavigation;
 import static com.ominfo.hra_app.ui.attendance.StartAttendanceActivity.tvCurrLocation;
 
 import android.app.Activity;
@@ -78,6 +79,8 @@ import com.ominfo.hra_app.ui.attendance.model.LocationPerHourResponse;
 import com.ominfo.hra_app.ui.attendance.model.LocationPerHourTable;
 import com.ominfo.hra_app.ui.attendance.model.LocationPerHourViewModel;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
+import com.ominfo.hra_app.ui.leave.model.LeaveCountResponse;
+import com.ominfo.hra_app.ui.leave.model.LeaveCountViewModel;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.notifications.model.NotificationResponse;
@@ -126,7 +129,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
     @Inject
     ViewModelFactory mViewModelFactory;
     private NotificationViewModel notificationViewModel;
-    private LocationPerHourViewModel locationPerHourViewModel;
+    private LeaveCountViewModel leaveCountViewModel;
     Location location;
     public Context context;
     AlphaAnimation inAnimation;
@@ -159,12 +162,11 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
     }
     private void injectAPI() {
         notificationViewModel = ViewModelProviders.of(BaseActivity.this, mViewModelFactory).get(NotificationViewModel.class);
-        notificationViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_NOTIFICATION));
+        notificationViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_NOTIFICATION));
 
-        locationPerHourViewModel = ViewModelProviders.of(BaseActivity.this, mViewModelFactory).get(LocationPerHourViewModel.class);
-        locationPerHourViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_LOCATION_PER_HOUR));
+        leaveCountViewModel = ViewModelProviders.of(BaseActivity.this, mViewModelFactory).get(LeaveCountViewModel.class);
+        leaveCountViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_LEAVE_COUNT));
     }
-
     /**
      * Receiver for broadcasts sent by {@link }.
      */
@@ -225,7 +227,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                                 locationPerHourRequest.setLongitude(mRequestBodyLong);
                                 locationPerHourRequest.setStartTime(mRequestBodyStartTime);
                                 locationPerHourRequest.setRequestedToken(mReqToken);
-                                locationPerHourViewModel.hitLocationPerHourApi(locationPerHourRequest);
+                                //locationPerHourViewModel.hitLocationPerHourApi(locationPerHourRequest);
                             } else {
                                 LogUtil.printToastMSG(context, "Something is wrong.");
                             }
@@ -793,6 +795,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         imgNotifyCount.setVisibility(View.INVISIBLE);
         isNotify=true;
         callNotificationApi();
+        callLeaveCountApi();
     }
     /* Call Api Notification */
     private void callNotificationApi() {
@@ -804,6 +807,19 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                 RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
                 notificationViewModel.hitNotificationApi(mRequestBodyType,mRequestBodyTypeCompId
                         ,mRequestBodyTypeEmployee);
+            }
+        } else {
+            LogUtil.printToastMSG(BaseActivity.this, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+    /* Call Api Notification */
+    private void callLeaveCountApi() {
+        if (NetworkCheck.isInternetAvailable(BaseActivity.this)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if (loginTable != null) {
+                RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_leave_count);
+                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                leaveCountViewModel.hitLeaveCountApi(mRequestBodyType,mRequestBodyTypeEmployee);
             }
         } else {
             LogUtil.printToastMSG(BaseActivity.this, getString(R.string.err_msg_connection_was_refused));
@@ -861,6 +877,27 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                                     }
                                     SharedPref.getInstance(this).write(SharedPrefKey.IS_NOTIFY_COUNT, String.valueOf(responseModel.getResult().getNotifdata().size()));
                                     imgNotifyCount.setText(String.valueOf(responseModel.getResult().getNotifdata().size()));
+                                }catch (Exception e){
+                                    LogUtil.printToastMSG(this,e.getMessage());
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }catch (Exception e){e.printStackTrace();}
+                    try{
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_LEAVE_COUNT)) {
+                            LeaveCountResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LeaveCountResponse.class);
+                            if (responseModel != null/* && responseModel.getResult().getStatus().equals("success")*/) {
+                                try {
+                                    isNotify = false;
+                                    if(responseModel.getResult().getLevCountEmp()!=null &&
+                                            !responseModel.getResult().getLevCountEmp().equals("0") &&
+                                            !responseModel.getResult().getLevCountEmp().equals("")){
+                                        ssCustomBottomNavigation.setCount(3,responseModel.getResult().getLevCountEmp());
+                                    }
+                                    else{
+                                        ssCustomBottomNavigation.clearCount(3);
+                                    }
                                 }catch (Exception e){
                                     LogUtil.printToastMSG(this,e.getMessage());
                                     e.printStackTrace();

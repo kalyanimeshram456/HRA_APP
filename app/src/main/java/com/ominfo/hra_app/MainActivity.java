@@ -64,6 +64,7 @@ import com.ominfo.hra_app.ui.leave.LeaveFragment;
 import com.ominfo.hra_app.ui.my_account.MyAccountFragment;
 import com.ominfo.hra_app.ui.salary.SalaryFragment;
 import com.ominfo.hra_app.util.AppUtils;
+import com.simform.custombottomnavigation.SSCustomBottomNavigation;
 
 
 import java.text.SimpleDateFormat;
@@ -109,6 +110,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
    /* @BindView(R.id.progressBarHolder)
     FrameLayout mProgressBarHolder;*/
     MeowBottomNavigation meowBottomNavigation;
+    public static SSCustomBottomNavigation ssCustomBottomNavigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,22 +136,24 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
         }
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         meowBottomNavigation = findViewById(R.id.bottomNavigation);
-        meowBottomNavigation.add(new MeowBottomNavigation.Model(1, R.drawable.ic_home_white));
-        meowBottomNavigation.add(new MeowBottomNavigation.Model(2, R.drawable.ic_employee_white));
-        meowBottomNavigation.add(new MeowBottomNavigation.Model(3, R.drawable.ic_leaves_white));
-        meowBottomNavigation.add(new MeowBottomNavigation.Model(4, R.drawable.ic_salary_white));
-        meowBottomNavigation.add(new MeowBottomNavigation.Model(5, R.drawable.ic_account));
-        meowBottomNavigation.setCount(1,"8");
-        meowBottomNavigation.show(1,true);
+        ssCustomBottomNavigation = findViewById(R.id.bottomNavigationN);
+        ssCustomBottomNavigation.setSelectedIconColor(R.color.deep_yellow);
+
+        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(1, R.drawable.ic_home_white,"Home"));
+        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(2, R.drawable.ic_employee_white,"Employee"));
+        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(3, R.drawable.ic_leaves_white,"Leave"));
+        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(4, R.drawable.ic_salary_white,"Salary"));
+        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(5, R.drawable.ic_account,"Profile"));
+        ssCustomBottomNavigation.show(1,true);
         getSupportFragmentManager().beginTransaction().replace(R.id.framecontainer, new DashboardFragment()).commit();
 
-        meowBottomNavigation.setOnClickMenuListener(new Function1<MeowBottomNavigation.Model, Unit>() {
+        ssCustomBottomNavigation.setOnClickMenuListener(new Function1<SSCustomBottomNavigation.Model, Unit>() {
             @Override
-            public Unit invoke(MeowBottomNavigation.Model model) {
+            public Unit invoke(SSCustomBottomNavigation.Model model) {
                 Fragment temp = null;
-
                 switch (model.getId()) {
                     case 1:
+                        ssCustomBottomNavigation.setSelectedIconColor(R.color.deep_yellow);
                         temp = new DashboardFragment();
                         break;
                     case 2:

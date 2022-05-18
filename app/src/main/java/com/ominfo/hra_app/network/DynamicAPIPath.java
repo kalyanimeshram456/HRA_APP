@@ -29,7 +29,7 @@ public class DynamicAPIPath {
     public static final String POST_NOTIFICATION = BASE+"?action=getcrmempnotif";
     public static final String POST_DEL_NOTIFICATION = BASE+"?action=marknotifread";
     public static final String POST_LOST_APPORTUNITY= BASE+"?getlostopportunity";
-    public static final String POST_CHANGE_PROFILE = BASE+"?action=changecrmempprofilepic";
+    public static final String POST_CHANGE_PROFILE = BASE+"?action=updatecrmempprofilepic";
     public static final String POST_CHANGE_PASS = BASE+"?action=changecrmemppassword";
     public static final String POST_PLANT= BASE+"?action=getBranchList";
     public static final String POST_GET_VEHICLE= BASE+"?action=getVehWiseLRs";
@@ -40,7 +40,7 @@ public class DynamicAPIPath {
     public static final String POST_ADD_EMPLOYEES= BASE+"?action=add_employee";
     public static final String POST_EDIT_EMPLOYEES= BASE+"?action=edit_employee";
     public static final String POST_DEACT_EMPLOYEE= BASE+"?action=deactivate_employee";
-    public static final String POST_GET_VIEW360= BASE+"?action=custOverAllData";
+    public static final String POST_LEAVE_COUNT = BASE+"?action=get_leave_count";
     public static final String POST_GET_SALES_CREDIT= BASE+"?action=salescreditreport";
     public static final String POST_GET_LEAVE_APP= BASE+"?action=get_leave_records";
     public static final String POST_GET_LEAVE_SINGLE= BASE+"?action=get_record";
@@ -84,7 +84,7 @@ public class DynamicAPIPath {
     public static final String action_get_dispatch_pend = "dispatchpendingdets";
     public static final String action_dashboard = "getDashboard";
     public static final String action_get_profile_img = "getcrmempprofilepic";
-    public static final String action_change_profile_img = "changecrmempprofilepic";
+    public static final String action_change_profile_img = "updatecrmempprofilepic";
     public static final String action_change_pass = "changecrmemppassword";
     public static final String action_apply_leave = "apply_leave";
     public static final String action_employee_list = "get_employee_list";
@@ -93,7 +93,7 @@ public class DynamicAPIPath {
     public static final String GET_USER_LIST = "user";
     public static final String action_accept_reject_List = "get_leave_records";
     public static final String action_apply_leave_updated = "apply_leave_updated";
-    public static final String action_receipt = "get_receipt_records";
+    public static final String action_leave_count = "get_leave_count";
     public static final String action_get_ticket = "get_filterraised_record";
     public static final String action_update_ticket = "ticket_updated";
     public static final String action_get_sales = "get_all_product";

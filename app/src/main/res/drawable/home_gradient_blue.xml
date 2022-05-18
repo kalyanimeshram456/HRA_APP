@@ -16,8 +16,8 @@
         android:left="0dp"
         android:right="0dp"
         android:gravity="center"
-        android:height="@dimen/_17dp"
-        android:width="@dimen/_17dp">
+        android:height="@dimen/_40dp"
+        android:width="@dimen/_40dp">
        <bitmap android:src="@drawable/ic_home_white" />
     </item>
 

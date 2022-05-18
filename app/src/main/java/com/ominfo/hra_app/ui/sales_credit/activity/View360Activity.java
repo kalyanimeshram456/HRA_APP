@@ -171,7 +171,7 @@ public class View360Activity extends BaseActivity {
     }
     private void injectAPI() {
         view30ViewModel = ViewModelProviders.of(this, mViewModelFactory).get(View30ViewModel.class);
-        view30ViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_VIEW360));
+        view30ViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_LEAVE_COUNT));
     }
     /* Call Api For View 360 */
     private void callGetView360Api(String pageNo) {
@@ -602,7 +602,7 @@ public class View360Activity extends BaseActivity {
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
                     try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_VIEW360)) {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_LEAVE_COUNT)) {
                             GetView360Response responseModel = new Gson().fromJson(apiResponse.data.toString(), GetView360Response.class);
                             if (responseModel != null/* && responseModel.getResult().getStatus().equals("success")*/) {
                                 customerData = responseModel.getResult().getCustomerData();
