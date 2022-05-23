@@ -21,20 +21,19 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.AppCompatEditText;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
-import android.widget.FrameLayout;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -88,8 +87,6 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
     AppCompatEditText etDescr;    BottomNavigationView bottomNavigationView;
 
     String mRmId = "";
-  /*  @BindView(R.id.coordinator)
-    CoordinatorLayout coordinator;*/
     private boolean status = false;
     Context mContext;
     List<DashModel> tagList = new ArrayList<>();
@@ -107,8 +104,6 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
     ViewModelFactory mViewModelFactory;
 
     Dialog mDialog;
-   /* @BindView(R.id.progressBarHolder)
-    FrameLayout mProgressBarHolder;*/
     MeowBottomNavigation meowBottomNavigation;
     public static SSCustomBottomNavigation ssCustomBottomNavigation;
 
@@ -135,16 +130,15 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
             getLocation();
         }
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
-        meowBottomNavigation = findViewById(R.id.bottomNavigation);
         ssCustomBottomNavigation = findViewById(R.id.bottomNavigationN);
-        ssCustomBottomNavigation.setSelectedIconColor(R.color.deep_yellow);
 
-        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(1, R.drawable.ic_home_white,"Home"));
+        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(1, R.drawable.ic_home_grad,"Home"));
         ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(2, R.drawable.ic_employee_white,"Employee"));
-        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(3, R.drawable.ic_leaves_white,"Leave"));
+        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(3, R.drawable.ic_leave_white,"Leave"));
         ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(4, R.drawable.ic_salary_white,"Salary"));
-        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(5, R.drawable.ic_account,"Profile"));
+        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(5, R.drawable.ic_account_white,"Profile"));
         ssCustomBottomNavigation.show(1,true);
+
         getSupportFragmentManager().beginTransaction().replace(R.id.framecontainer, new DashboardFragment()).commit();
 
         ssCustomBottomNavigation.setOnClickMenuListener(new Function1<SSCustomBottomNavigation.Model, Unit>() {
@@ -153,7 +147,6 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
                 Fragment temp = null;
                 switch (model.getId()) {
                     case 1:
-                        ssCustomBottomNavigation.setSelectedIconColor(R.color.deep_yellow);
                         temp = new DashboardFragment();
                         break;
                     case 2:

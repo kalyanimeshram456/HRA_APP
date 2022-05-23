@@ -1,5 +1,7 @@
 package com.ominfo.hra_app.ui.dashboard.calender;
 
+import static com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment.calenderHolidayLeave;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
@@ -16,37 +18,39 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.AppCompatImageView;
 
 import com.ominfo.hra_app.R;
+import com.ominfo.hra_app.util.LogUtil;
 
 import java.util.Calendar;
 
 public class SimpleCalendar extends LinearLayout {
 
-    private static final String CUSTOM_GREY = "#a0a0a0";
-    private static final String[] ENG_MONTH_NAMES = {"January", "February", "March", "April",
+    public static final String CUSTOM_GREY = "#a0a0a0";
+    public static final String[] ENG_MONTH_NAMES = {"January", "February", "March", "April",
             "May", "June", "July", "August",
             "September", "October", "November", "December"};
 
-    private Button selectedDayButton;
-    private Button[] days;
-    LinearLayout weekOneLayout;
-    LinearLayout weekTwoLayout;
-    LinearLayout weekThreeLayout;
-    LinearLayout weekFourLayout;
-    LinearLayout weekFiveLayout;
-    LinearLayout weekSixLayout;
-    private LinearLayout[] weeks;
+    public static Button selectedDayButton;
+    public static Button[] days;
+    public static LinearLayout weekOneLayout;
+    public static LinearLayout weekTwoLayout;
+    public static LinearLayout weekThreeLayout;
+    public static LinearLayout weekFourLayout;
+    public static LinearLayout weekFiveLayout;
+    public static LinearLayout weekSixLayout;
+    public static LinearLayout[] weeks;
 
-    private int currentDateDay, chosenDateDay, currentDateMonth,
+    public static int currentDateDay, chosenDateDay, currentDateMonth,
             chosenDateMonth, currentDateYear, chosenDateYear,
             pickedDateDay, pickedDateMonth, pickedDateYear;
-    int userMonth, userYear;
-    private DayClickListener mListener;
+    public static int userMonth, userYear;
+    public static DayClickListener mListener;
 
-    private Calendar calendar;
-    LinearLayout.LayoutParams defaultButtonParams;
-    private LinearLayout.LayoutParams userButtonParams;
+    public static Calendar calendar;
+    public static LinearLayout.LayoutParams defaultButtonParams;
+    public static LinearLayout.LayoutParams userButtonParams;
 
     public SimpleCalendar(Context context) {
         super(context);
@@ -71,8 +75,8 @@ public class SimpleCalendar extends LinearLayout {
     }
 
     @SuppressLint("SetTextI18n")
-    private void init(Context context) {
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
+    public void init(Context context) {
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 
         View view = LayoutInflater.from(context).inflate(R.layout.calender_layout, this, true);
         calendar = Calendar.getInstance();
@@ -85,6 +89,8 @@ public class SimpleCalendar extends LinearLayout {
         weekSixLayout = view.findViewById(R.id.calendar_week_6);
         TextView currentDate = view.findViewById(R.id.current_date);
         TextView currentMonth = view.findViewById(R.id.current_month);
+        AppCompatImageView pre = view.findViewById(R.id.prePage);
+        AppCompatImageView next = view.findViewById(R.id.nextPage);
 
         currentDateDay = chosenDateDay = calendar.get(Calendar.DAY_OF_MONTH);
 
@@ -109,10 +115,103 @@ public class SimpleCalendar extends LinearLayout {
         addDaysinCalendar(defaultButtonParams, context, metrics);
 
         initCalendarWithDate(chosenDateYear, chosenDateMonth, chosenDateDay);
+        pre.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentDateDay =01;
+                        currentDateMonth = 06;
+                                currentDateYear = 2022;
+                LogUtil.printToastMSG(context,"yoo");
+                DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+                calendar = Calendar.getInstance();
+
+                weekOneLayout = view.findViewById(R.id.calendar_week_1);
+                weekTwoLayout = view.findViewById(R.id.calendar_week_2);
+                weekThreeLayout = view.findViewById(R.id.calendar_week_3);
+                weekFourLayout = view.findViewById(R.id.calendar_week_4);
+                weekFiveLayout = view.findViewById(R.id.calendar_week_5);
+                weekSixLayout = view.findViewById(R.id.calendar_week_6);
+                TextView currentDate = view.findViewById(R.id.current_date);
+                TextView currentMonth = view.findViewById(R.id.current_month);
+                AppCompatImageView pre = view.findViewById(R.id.prePage);
+                AppCompatImageView next = view.findViewById(R.id.nextPage);
+
+                currentDateDay = chosenDateDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+                if (userMonth != 0 && userYear != 0) {
+                    currentDateMonth = chosenDateMonth = userMonth;
+                    currentDateYear = chosenDateYear = userYear;
+                } else {
+                    currentDateMonth = chosenDateMonth = calendar.get(Calendar.MONTH);
+                    currentDateYear = chosenDateYear = calendar.get(Calendar.YEAR);
+                }
+                float myTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,6f, getResources().getDisplayMetrics());
+                currentDate.setTextSize(myTextSize); currentMonth.setTextSize(myTextSize);
+                currentDate.setText("" + currentDateDay);
+                currentMonth.setText(ENG_MONTH_NAMES[currentDateMonth]);
+
+                initializeDaysWeeks();
+                if (userButtonParams != null) {
+                    defaultButtonParams = userButtonParams;
+                } else {
+                    defaultButtonParams = getdaysLayoutParams();
+                }
+                addDaysinCalendar(defaultButtonParams, context, metrics);
+
+                initCalendarWithDate(chosenDateYear, chosenDateMonth, chosenDateDay);
+            }
+        });
+        next.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentDateDay = 01;
+                        currentDateMonth =04;
+                                currentDateYear =2022;
+                LogUtil.printToastMSG(context,"yoo uu");
+                DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+                calendar = Calendar.getInstance();
+
+                weekOneLayout = view.findViewById(R.id.calendar_week_1);
+                weekTwoLayout = view.findViewById(R.id.calendar_week_2);
+                weekThreeLayout = view.findViewById(R.id.calendar_week_3);
+                weekFourLayout = view.findViewById(R.id.calendar_week_4);
+                weekFiveLayout = view.findViewById(R.id.calendar_week_5);
+                weekSixLayout = view.findViewById(R.id.calendar_week_6);
+                TextView currentDate = view.findViewById(R.id.current_date);
+                TextView currentMonth = view.findViewById(R.id.current_month);
+                AppCompatImageView pre = view.findViewById(R.id.prePage);
+                AppCompatImageView next = view.findViewById(R.id.nextPage);
+
+                currentDateDay = chosenDateDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+                if (userMonth != 0 && userYear != 0) {
+                    currentDateMonth = chosenDateMonth = userMonth;
+                    currentDateYear = chosenDateYear = userYear;
+                } else {
+                    currentDateMonth = chosenDateMonth = calendar.get(Calendar.MONTH);
+                    currentDateYear = chosenDateYear = calendar.get(Calendar.YEAR);
+                }
+                float myTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,6f, getResources().getDisplayMetrics());
+                currentDate.setTextSize(myTextSize); currentMonth.setTextSize(myTextSize);
+                currentDate.setText("" + currentDateDay);
+                currentMonth.setText(ENG_MONTH_NAMES[currentDateMonth]);
+
+                initializeDaysWeeks();
+                if (userButtonParams != null) {
+                    defaultButtonParams = userButtonParams;
+                } else {
+                    defaultButtonParams = getdaysLayoutParams();
+                }
+                addDaysinCalendar(defaultButtonParams, context, metrics);
+
+                initCalendarWithDate(chosenDateYear, chosenDateMonth, chosenDateDay);
+            }
+        });
+
 
     }
 
-    private void initializeDaysWeeks() {
+    public static void initializeDaysWeeks() {
         weeks = new LinearLayout[6];
         days = new Button[6 * 7];
         weeks[0] = weekOneLayout;
@@ -123,6 +222,16 @@ public class SimpleCalendar extends LinearLayout {
         weeks[5] = weekSixLayout;
     }
 
+    private void setHolidays(int dayNumber,int i){
+        for(int k=0;k<calenderHolidayLeave.size();k++) {
+            String[] str=calenderHolidayLeave.get(k).getDate().split("-");
+            int strVal = Integer.parseInt(str[2]);
+            if (dayNumber == strVal) {
+                days[i].setBackgroundColor(getResources().getColor(R.color.deep_yellow));
+                days[i].setTextColor(Color.WHITE);
+            }
+        }
+    }
     private void initCalendarWithDate(int year, int month, int day) {
         if (calendar == null)
             calendar = Calendar.getInstance();
@@ -147,7 +256,7 @@ public class SimpleCalendar extends LinearLayout {
             daysLeftInFirstWeek = firstDayOfCurrentMonth;
             indexOfDayAfterLastDayOfMonth = daysLeftInFirstWeek + daysInCurrentMonth;
             for (int i = firstDayOfCurrentMonth; i < firstDayOfCurrentMonth + daysInCurrentMonth; ++i) {
-                float myTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,4.5f, getResources().getDisplayMetrics());
+                float myTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,4f, getResources().getDisplayMetrics());
                 days[i].setTextSize(myTextSize);
                 if (currentDateMonth == chosenDateMonth
                         && currentDateYear == chosenDateYear
@@ -168,7 +277,7 @@ public class SimpleCalendar extends LinearLayout {
                 days[i].setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        onDayClick(v);
+                        //onDayClick(v);
                     }
                 });
                 ++dayNumber;
@@ -177,8 +286,9 @@ public class SimpleCalendar extends LinearLayout {
             daysLeftInFirstWeek = 8;
             indexOfDayAfterLastDayOfMonth = daysLeftInFirstWeek + daysInCurrentMonth;
             for (int i = 8; i < 8 + daysInCurrentMonth; ++i) {
-                float myTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,4.5f, getResources().getDisplayMetrics());
+                float myTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,4f, getResources().getDisplayMetrics());
                 days[i].setTextSize(myTextSize);
+
                 if (currentDateMonth == chosenDateMonth
                         && currentDateYear == chosenDateYear
                         && dayNumber == currentDateDay) {
@@ -195,10 +305,14 @@ public class SimpleCalendar extends LinearLayout {
                 dateArr[2] = chosenDateYear;
                 days[i].setTag(dateArr);
                 days[i].setText(String.valueOf(dayNumber));
+
+                //String[] test = days[i].getText().toString().split("-");
+
+                setHolidays(dayNumber,i);
                 days[i].setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        onDayClick(v);
+                        //onDayClick(v);
                     }
                 });
                 ++dayNumber;
@@ -213,7 +327,7 @@ public class SimpleCalendar extends LinearLayout {
 
         for (int i = daysLeftInFirstWeek - 1; i >= 0; --i) {
             int[] dateArr = new int[3];
-            float myTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,4.5f, getResources().getDisplayMetrics());
+            float myTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,4f, getResources().getDisplayMetrics());
             days[i].setTextSize(myTextSize);
             if (chosenDateMonth > 0) {
                 if (currentDateMonth != chosenDateMonth - 1
@@ -242,7 +356,7 @@ public class SimpleCalendar extends LinearLayout {
             days[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onDayClick(v);
+                    //onDayClick(v);
                 }
             });
         }
@@ -250,7 +364,7 @@ public class SimpleCalendar extends LinearLayout {
         int nextMonthDaysCounter = 1;
         for (int i = indexOfDayAfterLastDayOfMonth; i < days.length; ++i) {
             int[] dateArr = new int[3];
-            float myTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,4.5f, getResources().getDisplayMetrics());
+            float myTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,4f, getResources().getDisplayMetrics());
             days[i].setTextSize(myTextSize);
             if (chosenDateMonth < 11) {
                 if (currentDateMonth == chosenDateMonth + 1
@@ -284,7 +398,7 @@ public class SimpleCalendar extends LinearLayout {
             days[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onDayClick(v);
+                    //onDayClick(v);
                 }
             });
         }
@@ -331,7 +445,7 @@ public class SimpleCalendar extends LinearLayout {
         }
     }
 
-    private void addDaysinCalendar(LayoutParams buttonParams, Context context,
+    public static void addDaysinCalendar(LayoutParams buttonParams, Context context,
                                    DisplayMetrics metrics) {
         int engDaysArrayCounter = 0;
 

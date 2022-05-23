@@ -1,20 +1,20 @@
 {
   "project_info": {
-    "project_number": "258697984566",
-    "project_id": "turanthbiz",
-    "storage_bucket": "turanthbiz.appspot.com"
+    "project_number": "572524579127",
+    "project_id": "turanthhr",
+    "storage_bucket": "turanthhr.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:258697984566:android:be863aa10a9adcd001f697",
+        "mobilesdk_app_id": "1:572524579127:android:744e808675a2f2d10472b2",
         "android_client_info": {
           "package_name": "com.ominfo.hra_app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "258697984566-8l0gtis5gm72p6kc92kve498dbggd5sd.apps.googleusercontent.com",
+          "client_id": "572524579127-qte7a2h3qtud550u2uum0vaekgmmvv2q.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.ominfo.hra_app",
@@ -22,20 +22,20 @@
           }
         },
         {
-          "client_id": "258697984566-8i6o1lrok77n69g4m33b74u10jitpgtd.apps.googleusercontent.com",
+          "client_id": "572524579127-oi16vndb1v5iajgsmpkuophcp7nis57u.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAxIKc_5HaARW2q_lDBvEklXqZ6Ma6LEas"
+          "current_key": "AIzaSyAqm4o0HHu3oS1XJkU7hHJn1RDUGAvLepE"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "258697984566-8i6o1lrok77n69g4m33b74u10jitpgtd.apps.googleusercontent.com",
+              "client_id": "572524579127-oi16vndb1v5iajgsmpkuophcp7nis57u.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

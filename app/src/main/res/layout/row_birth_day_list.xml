@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/layClick"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1.4dp"
+        android:layout_marginTop="@dimen/_6dp"
+        android:background="@color/light_grey_30" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_10dp"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:id="@+id/layBirthPro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1.5">
+
+            <LinearLayout
+                android:layout_width="@dimen/_25dp"
+                android:layout_height="@dimen/_25dp"
+                android:background="@android:color/transparent"
+                android:orientation="horizontal">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/imgBirthPro"
+                    android:layout_width="@dimen/_25dp"
+                    android:layout_height="@dimen/_25dp"
+                    android:layout_gravity="left|center"
+                    android:clickable="true"
+                    android:gravity="left"
+                    android:onClick="onClick"
+                    android:src="@drawable/ic_user"
+                    android:visibility="visible"
+                    app:civ_border_color="@color/pink"
+                    app:civ_border_width="1dp" />
+
+
+            </LinearLayout>
+            <!-- android:indeterminateTintMode="src_atop"-->
+            <ProgressBar
+                android:id="@+id/progress_barBirth"
+                android:layout_width="@dimen/_25dp"
+                android:layout_height="@dimen/_25dp"
+                android:indeterminate="true"
+                android:indeterminateDrawable="@drawable/progress_bar_color" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center_vertical"
+            android:layout_weight="1"
+            android:gravity="left|center_vertical"
+            android:paddingTop="@dimen/_10dp">
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvBirthName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/gilroy_semibold"
+                android:text="User name"
+                android:textAlignment="center"
+                android:textColor="@color/black_heading"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvBirthValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvBirthName"
+                android:layout_gravity="center"
+                android:fontFamily="@font/gilroy_regular"
+                android:text="User designation"
+                android:textAlignment="center"
+                android:textColor="@color/gray"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="@dimen/_22dp"
+                android:layout_height="@dimen/_20dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_16dp"
+                android:src="@drawable/ic_party" />
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:paddingTop="@dimen/_10dp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvLeaveBirth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/gilroy_semibold"
+                android:text="Date"
+                android:textAlignment="center"
+                android:textColor="@color/black_heading"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvLeaveBirthValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvLeaveBirth"
+                android:layout_gravity="center"
+                android:fontFamily="@font/gilroy_semibold"
+                android:text="5th Feb 2022"
+                android:textAlignment="center"
+                android:textColor="@color/gray"
+                android:textSize="@dimen/_14sp" />
+        </RelativeLayout>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

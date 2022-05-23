@@ -26,6 +26,7 @@ import com.ominfo.hra_app.ui.visit_report.model.PhpEditVisitRequest;
 
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
+import retrofit2.http.Part;
 
 public class Service {
 
@@ -42,6 +43,10 @@ public class Service {
     }
     public Observable<JsonElement> executeCheckPrefixAPI(RequestBody action, RequestBody prefix) {
         return networkAPIServices.checkPrefix(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_CHECK_PREFIX),
+                action,prefix);
+    }
+    public Observable<JsonElement> executeApplyCouponAPI(RequestBody action, RequestBody prefix) {
+        return networkAPIServices.applyCoupon(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_CHECK_COUPON),
                 action,prefix);
     }
     public Observable<JsonElement> executeSubscriptionAPI(RequestBody action, RequestBody start, RequestBody end) {
@@ -63,10 +68,19 @@ public class Service {
                 applyLeaveRequest.getComment()/*, applyLeaveRequest.getLeaveStatus(), applyLeaveRequest.getUpdatedBy()*/
                 );
     }
+
+    public Observable<JsonElement> executeGetCompanyAPI(RequestBody action,RequestBody comId,
+                                                        RequestBody pageNo,RequestBody pageS) {
+        return networkAPIServices.getCompany(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_COMPANY),
+                action,comId,pageNo,pageS
+        );
+    }
+
     public Observable<JsonElement> executeGetTicketNoAPI(RequestBody action) {
-        return networkAPIServices.getTicketNo(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_TICKET_NO),
+        return networkAPIServices.getTicketNo(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_COMPANY),
                 action);
     }
+
     public Observable<JsonElement> executeRaiseTicketAPI(RaiseTicketRequest request) {
         return networkAPIServices.raiseTicket(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_RAISE_TICKET),
                 request.getAction(), request.getCustId(), request.getSubject(),
@@ -130,17 +144,19 @@ public class Service {
         return networkAPIServices.getRM(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_RM),mRequestBodyType,mRequestBodyType1,mRequestBodyType2);
     }
 
-    public Observable<JsonElement> executeDashboardAPI(DashboardRequest dashboardRequest) {
-        return networkAPIServices.getDashboard(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
-                DynamicAPIPath.POST_GET_DASHBOARD),
-                dashboardRequest.getAction(),
-                dashboardRequest.getEmployee(),
-                dashboardRequest.getCompanyId(),
-                dashboardRequest.getStartDate(),
-                dashboardRequest.getEndDate()
+    public Observable<JsonElement> executeGetBirthDayListAPI(RequestBody action,RequestBody mon) {
+        return networkAPIServices.getBirthDayList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_BIRTH_DAY_LIST),
+                action,mon
                );
     }
-
+    public Observable<JsonElement> executeCalenderHolidaysListAPI(RequestBody action,RequestBody cId,RequestBody from
+            ,RequestBody to) {
+        return networkAPIServices.calenderHolidays(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_CALENDER_HOLIDAY),
+                action,cId,from,to
+        );
+    }
     public Observable<JsonElement> executeGetProfileImageAPI(RequestBody action,
                                                              RequestBody comId, RequestBody empId) {
         return networkAPIServices.getProfileImage(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
@@ -216,6 +232,22 @@ public class Service {
                 employeeListRequest.getFilterEmpIsActive()
         );
     }
+    public Observable<JsonElement> executeAllSalaryListAPI(RequestBody action,
+             RequestBody isAd, RequestBody comId, RequestBody empId,RequestBody pageNo, RequestBody pageS) {
+        return networkAPIServices.salaryAllList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_SALARY_ALL_LIST),
+                action,isAd,comId,empId,
+                pageNo,pageS
+        );
+    }
+    public Observable<JsonElement> executeSalarySheetAPI(RequestBody action,
+                                                          RequestBody empId,RequestBody pageNo, RequestBody pageS) {
+        return networkAPIServices.salarySheet(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_SALARY_ALL_LIST),
+                action,empId,
+                pageNo,pageS
+        );
+    }
     public Observable<JsonElement> executePastLeaveListAPI(PastLeaveListRequest request) {
         return networkAPIServices.getPastLeaveList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_GET_PAST_LEAVE),
@@ -246,7 +278,6 @@ public class Service {
                 action,updateby,empId
         );
     }
-
     public Observable<JsonElement> executeAddEmployeeAPI(AddEmployeeRequest addEmployeeRequest) {
         return networkAPIServices.addEmployee(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_ADD_EMPLOYEES),
@@ -258,10 +289,21 @@ public class Service {
                 addEmployeeRequest.getCompanyID(), addEmployeeRequest.getToken(),
                 addEmployeeRequest.getSalary(), addEmployeeRequest.getOtherLeaves(),
                 addEmployeeRequest.getCasualLeaves(), addEmployeeRequest.getSickLeaves()
-                ,addEmployeeRequest.getJoiningDate()
+                ,addEmployeeRequest.getJoiningDate() ,addEmployeeRequest.getOfficeAddress()
+                ,addEmployeeRequest.getOfficeLongitude() ,addEmployeeRequest.getOfficeLatitude()
+                ,addEmployeeRequest.getMonWorking() ,addEmployeeRequest.getTueWorking()
+                ,addEmployeeRequest.getWedWorking() ,addEmployeeRequest.getThursWorking()
+                ,addEmployeeRequest.getFri_working() ,addEmployeeRequest.getSatWorking()
+                ,addEmployeeRequest.getSunWorking() ,addEmployeeRequest.getMonStartTime()
+                ,addEmployeeRequest.getTueStartTime() ,addEmployeeRequest.getWedStartTime()
+                ,addEmployeeRequest.getThursStartTime() ,addEmployeeRequest.getFri_start_time()
+                ,addEmployeeRequest.getSatStartTime() ,addEmployeeRequest.getSunStartTime()
+                ,addEmployeeRequest.getMonEndTime() ,addEmployeeRequest.getTueEndTime()
+                ,addEmployeeRequest.getWedEndTime() ,addEmployeeRequest.getThursEndTime()
+                ,addEmployeeRequest.getFri_end_time() ,addEmployeeRequest.getSatEndTime()
+                 ,addEmployeeRequest.getSunEndTime()
         );
     }
-
     public Observable<JsonElement> executeEditEmployeeAPI(EditEmployeeRequest addEmployeeRequest) {
         return networkAPIServices.editEmployee(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_EDIT_EMPLOYEES),
@@ -274,6 +316,19 @@ public class Service {
                 addEmployeeRequest.getSalary(), addEmployeeRequest.getOtherLeaves(),
                 addEmployeeRequest.getCasualLeaves(), addEmployeeRequest.getSickLeaves()
                 ,addEmployeeRequest.getJoiningDate(),addEmployeeRequest.getToken()
+                        ,addEmployeeRequest.getOfficeAddress()
+                        ,addEmployeeRequest.getOfficeLongitude() ,addEmployeeRequest.getOfficeLatitude()
+                        ,addEmployeeRequest.getMonWorking() ,addEmployeeRequest.getTueWorking()
+                        ,addEmployeeRequest.getWedWorking() ,addEmployeeRequest.getThursWorking()
+                        ,addEmployeeRequest.getFri_working() ,addEmployeeRequest.getSatWorking()
+                        ,addEmployeeRequest.getSunWorking() ,addEmployeeRequest.getMonStartTime()
+                        ,addEmployeeRequest.getTueStartTime() ,addEmployeeRequest.getWedStartTime()
+                        ,addEmployeeRequest.getThursStartTime() ,addEmployeeRequest.getFri_start_time()
+                        ,addEmployeeRequest.getSatStartTime() ,addEmployeeRequest.getSunStartTime()
+                        ,addEmployeeRequest.getMonEndTime() ,addEmployeeRequest.getTueEndTime()
+                        ,addEmployeeRequest.getWedEndTime() ,addEmployeeRequest.getThursEndTime()
+                        ,addEmployeeRequest.getFri_end_time() ,addEmployeeRequest.getSatEndTime()
+                        ,addEmployeeRequest.getSunEndTime()
         );
     }
 

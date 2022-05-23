@@ -9,5 +9,9 @@
         android:topRightRadius="@dimen/_6dp" />
 
     <stroke android:width="@dimen/_1dp"
-        android:color="@color/light_yellow"/>
+        android:color="@color/bg_screen"/>
+    <padding android:right="@dimen/_10dp"
+        android:left="@dimen/_10dp"
+        android:top="@dimen/_2dp"
+        android:bottom="@dimen/_2dp"/>
 </shape>

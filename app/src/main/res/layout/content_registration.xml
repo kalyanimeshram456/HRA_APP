@@ -584,11 +584,13 @@
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/_10dp"
                         android:gravity="top"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:paddingBottom="@dimen/_20dp">
 
                         <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/input_textOfficeLocation"
+                            android:id="@+id/input_textCoupon"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_45dp"
@@ -606,7 +608,7 @@
                             app:startIconContentDescription="$">
 
                             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                                android:id="@+id/AutoComOfficeLocation"
+                                android:id="@+id/AutoComCoupon"
                                 android:layout_width="match_parent"
                                 android:layout_height="@dimen/_45dp"
                                 android:background="@drawable/toggle_add_reminder_edt"
@@ -625,7 +627,7 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <androidx.appcompat.widget.AppCompatButton
-                            android:id="@+id/addRejectButton"
+                            android:id="@+id/applyButton"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_42dp"
                             android:layout_gravity="center"
@@ -649,7 +651,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="left"
                         android:layout_marginHorizontal="@dimen/_10dp"
-                        android:layout_marginTop="@dimen/_16dp"
+                        android:layout_marginTop="@dimen/_6dp"
                         android:fontFamily="@font/gilroy_semibold"
                         android:text="Subscription Charges :"
                         android:textColor="@color/black_heading"

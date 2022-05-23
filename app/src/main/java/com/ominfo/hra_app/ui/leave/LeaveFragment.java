@@ -2,13 +2,10 @@ package com.ominfo.hra_app.ui.leave;
 
 import static com.ominfo.hra_app.ui.employees.PaginationListener.PAGE_START;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,10 +41,7 @@ import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
-import com.ominfo.hra_app.ui.employees.AddEmployeeActivity;
 import com.ominfo.hra_app.ui.employees.PaginationListener;
-import com.ominfo.hra_app.ui.employees.adapter.PostRecyclerAdapter;
-import com.ominfo.hra_app.ui.employees.model.EmployeeList;
 import com.ominfo.hra_app.ui.leave.adapter.AcceptRejectLeaveAdapter;
 import com.ominfo.hra_app.ui.leave.fragment.PastLeaveFragment;
 import com.ominfo.hra_app.ui.leave.model.AcceptRejectLeave;
@@ -59,12 +53,9 @@ import com.ominfo.hra_app.ui.leave.model.LeaveStatusResponse;
 import com.ominfo.hra_app.ui.leave.model.LeaveStatusViewModel;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
-import com.ominfo.hra_app.ui.sales_credit.activity.PdfPrintActivity;
-import com.ominfo.hra_app.ui.sales_credit.activity.View360Activity;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;

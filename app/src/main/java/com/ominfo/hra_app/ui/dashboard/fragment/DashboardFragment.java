@@ -1,5 +1,15 @@
 package com.ominfo.hra_app.ui.dashboard.fragment;
 
+import static com.ominfo.hra_app.ui.dashboard.calender.SimpleCalendar.ENG_MONTH_NAMES;
+import static com.ominfo.hra_app.ui.dashboard.calender.SimpleCalendar.chosenDateDay;
+import static com.ominfo.hra_app.ui.dashboard.calender.SimpleCalendar.chosenDateMonth;
+import static com.ominfo.hra_app.ui.dashboard.calender.SimpleCalendar.chosenDateYear;
+import static com.ominfo.hra_app.ui.dashboard.calender.SimpleCalendar.currentDateDay;
+import static com.ominfo.hra_app.ui.dashboard.calender.SimpleCalendar.currentDateMonth;
+import static com.ominfo.hra_app.ui.dashboard.calender.SimpleCalendar.userButtonParams;
+import static com.ominfo.hra_app.ui.dashboard.calender.SimpleCalendar.userMonth;
+import static com.ominfo.hra_app.ui.dashboard.calender.SimpleCalendar.userYear;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -12,12 +22,15 @@ import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +39,8 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -45,12 +60,16 @@ import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.attendance.StartAttendanceActivity;
 import com.ominfo.hra_app.ui.attendance.model.AttendanceList;
 import com.ominfo.hra_app.ui.attendance.ripple_effect.RippleBackground;
-import com.ominfo.hra_app.ui.dashboard.adapter.CrmAdapter;
+import com.ominfo.hra_app.ui.dashboard.adapter.TodayBirthDayAdapter;
+import com.ominfo.hra_app.ui.dashboard.calender.SimpleCalendar;
+import com.ominfo.hra_app.ui.dashboard.model.BirthDayDobdatum;
+import com.ominfo.hra_app.ui.dashboard.model.CalenderHolidayLeave;
+import com.ominfo.hra_app.ui.dashboard.model.CalenderHolidayResponse;
+import com.ominfo.hra_app.ui.dashboard.model.CalenderHolidaysListViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.DashModel;
-import com.ominfo.hra_app.ui.dashboard.model.Dashboard;
 import com.ominfo.hra_app.ui.dashboard.model.DashboardRequest;
-import com.ominfo.hra_app.ui.dashboard.model.GetDashboardResponse;
-import com.ominfo.hra_app.ui.dashboard.model.GetDashboardViewModel;
+import com.ominfo.hra_app.ui.dashboard.model.GetBirthDayListViewModel;
+import com.ominfo.hra_app.ui.dashboard.model.GetBirthDayResponse;
 import com.ominfo.hra_app.ui.login.LoginActivity;
 import com.ominfo.hra_app.ui.login.model.AttendanceDaysTable;
 import com.ominfo.hra_app.ui.login.model.DayData;
@@ -60,6 +79,8 @@ import com.ominfo.hra_app.ui.login.model.LogoutViewModel;
 import com.ominfo.hra_app.ui.my_account.model.GetProfileImageViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ProfileImageResponse;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
+import com.ominfo.hra_app.ui.notifications.adapter.NotificationsAdapter;
+import com.ominfo.hra_app.ui.notifications.model.NotificationResult;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
 import com.ominfo.hra_app.util.SharedPref;
@@ -98,19 +119,28 @@ public class DashboardFragment extends BaseFragment {
     private Context mContext;
     @BindView(R.id.tvNotifyCount)
     AppCompatTextView tvNotifyCount;
-   /* @BindView(R.id.imgProfileDash)
-    CircleImageView imgProfileDash;*/
+    @BindView(R.id.rvTodaysBirthdayList)
+    RecyclerView rvTodaysBirthdayList;
+    @BindView(R.id.rvUpcomingBirthDayList)
+    RecyclerView rvUpcomingBirthDayList;
     @BindView(R.id.imgCall)
     AppCompatImageView imgLogout;
     @BindView(R.id.imgNotify)
     AppCompatImageView imgNotify;
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
-
+    @BindView(R.id.tvTodaysTitle)
+    AppCompatTextView tvTodaysTitle;
+    @BindView(R.id.tvUpcomingTitle)
+    AppCompatTextView tvUpcomingTitle;
+    @BindView(R.id.square_day)
+    SimpleCalendar square_day;
     final Calendar myCalendar = Calendar.getInstance();
+    public static List<CalenderHolidayLeave> calenderHolidayLeave = new ArrayList<>();
     private AppDatabase mDb;
-    CrmAdapter mCrmAdapter;
-    List<DashModel> dashboardList = new ArrayList<>();
+    TodayBirthDayAdapter todayBirthDayAdapter;
+    List<BirthDayDobdatum> birthDayDobdatumList = new ArrayList<>();
+    List<BirthDayDobdatum> upcomingBirthDayDobdatumList = new ArrayList<>();
     @Inject
     ViewModelFactory mViewModelFactory;
     private GetProfileImageViewModel getProfileImageViewModel;
@@ -118,8 +148,8 @@ public class DashboardFragment extends BaseFragment {
     final static String CONNECTIVITY_ACTION = "android.net.conn.CONNECTIVITY_CHANGE";
     IntentFilter intentFilter;
     //MyReceiver receiver;
-    private GetDashboardViewModel getDashboardViewModel;
-    //private GetVehicleViewModel mGetVehicleViewModel;
+    private GetBirthDayListViewModel getBirthDayListViewModel;
+    private CalenderHolidaysListViewModel calenderHolidaysListViewModel;
     //private AppDatabase mDb;
     String mUrl = "", mFinalURL = "";
     boolean mSearchStatus = false, mScrolledStatus = false;
@@ -201,13 +231,17 @@ public class DashboardFragment extends BaseFragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        callDashboardApi(AppUtils.getDashCurrentDateTime_(), AppUtils.getDashCurrentDateTime_());
+        callDashboardApi("6");
+        callCalenderHolidaysApi("","");
         //tvHighlight.setText("Today's Highlights");
     }
 
     private void injectAPI() {
-        getDashboardViewModel = ViewModelProviders.of(getActivity(), mViewModelFactory).get(GetDashboardViewModel.class);
-        getDashboardViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_GET_DASHBOARD));
+        getBirthDayListViewModel = ViewModelProviders.of(getActivity(), mViewModelFactory).get(GetBirthDayListViewModel.class);
+        getBirthDayListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_BIRTH_DAY_LIST));
+
+        calenderHolidaysListViewModel = ViewModelProviders.of(getActivity(), mViewModelFactory).get(CalenderHolidaysListViewModel.class);
+        calenderHolidaysListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_CALENDER_HOLIDAY));
 
         getProfileImageViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetProfileImageViewModel.class);
         getProfileImageViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_GET_PROFILE));
@@ -259,17 +293,10 @@ public class DashboardFragment extends BaseFragment {
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         //requestPermission();
         setToolbar();
+        setAdapterForBirthDayList();
+        setAdapterForUpcomingBirthDayList();
         //set ripple effect
         //rippleEffect.setBackgroundColor(mContext.getResources().getColor(R.color.deep_yellow));
-        dashboardList.removeAll(dashboardList);
-        dashboardList.add(new DashModel("Sales Credit", "₹0", mContext.getDrawable(R.drawable.ic_om_sales_credit)));
-        dashboardList.add(new DashModel("Receipt", "₹0", mContext.getDrawable(R.drawable.ic_om_receipt)));
-        dashboardList.add(new DashModel("Top Customer", "Top Customer", mContext.getDrawable(R.drawable.ic_om_rating)));
-        dashboardList.add(new DashModel("Total Quotation Amount", "₹0", mContext.getDrawable(R.drawable.ic_om_total_quotation)));
-        dashboardList.add(new DashModel("Dispatch Pending", "0", mContext.getDrawable(R.drawable.ic_om_dispatch_pending)));
-        dashboardList.add(new DashModel("Enquiry Report", "0", mContext.getDrawable(R.drawable.ic_om_enquiry_report)));
-        dashboardList.add(new DashModel("Visit Report", "0", mContext.getDrawable(R.drawable.ic_om_visit_report)));
-        dashboardList.add(new DashModel("Products", "", mContext.getDrawable(R.drawable.ic_om_product)));
         callProfileImageApi();
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -277,7 +304,7 @@ public class DashboardFragment extends BaseFragment {
                 if (NetworkCheck.isInternetAvailable(mContext)) {
                     swipeStatus = true;
                     setToolbar();
-                    callDashboardApi(AppUtils.getDashCurrentDateTime_(), AppUtils.getDashCurrentDateTime_());
+                    callDashboardApi("6");
                 } else {
                     swipeStatus = false;
                     LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
@@ -461,17 +488,46 @@ public class DashboardFragment extends BaseFragment {
         }
     }
 
-    /* final Handler handlerRed=new Handler();
-                                handlerRed.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        rippleEffect.stopRippleAnimation();
-                                        rippleEffect.startRippleAnimation(3,mContext);
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                            add_attendance.setForeground(mContext.getDrawable(R.drawable.attention_gradient_red));
-                                        }
-                                    }
-                                },16000);*/
+
+    private void setAdapterForBirthDayList() {
+        if (birthDayDobdatumList!=null && birthDayDobdatumList.size() > 0) {
+            todayBirthDayAdapter = new TodayBirthDayAdapter(mContext, birthDayDobdatumList, new TodayBirthDayAdapter.ListItemSelectListener() {
+                @Override
+                public void onItemClick(DashModel mData) {
+
+                }
+            });
+            rvTodaysBirthdayList.setHasFixedSize(true);
+            rvTodaysBirthdayList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
+            rvTodaysBirthdayList.setAdapter(todayBirthDayAdapter);
+            rvTodaysBirthdayList.setVisibility(View.VISIBLE);
+            tvTodaysTitle.setText(getString(R.string.scr_lbl_today_s_birthday));
+        } else {
+            rvTodaysBirthdayList.setVisibility(View.GONE);
+            tvTodaysTitle.setText("No birthdays today.");
+        }
+    }
+
+    private void setAdapterForUpcomingBirthDayList() {
+        if (upcomingBirthDayDobdatumList!=null && upcomingBirthDayDobdatumList.size() > 0) {
+            todayBirthDayAdapter = new TodayBirthDayAdapter(mContext, upcomingBirthDayDobdatumList, new TodayBirthDayAdapter.ListItemSelectListener() {
+                @Override
+                public void onItemClick(DashModel mData) {
+
+                }
+            });
+            rvUpcomingBirthDayList.setHasFixedSize(true);
+            rvUpcomingBirthDayList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
+            rvUpcomingBirthDayList.setAdapter(todayBirthDayAdapter);
+            rvUpcomingBirthDayList.setVisibility(View.VISIBLE);
+            tvUpcomingTitle.setText(getString(R.string.scr_lbl_upcoming_birthdays));
+
+        } else {
+            rvUpcomingBirthDayList.setVisibility(View.GONE);
+            tvUpcomingTitle.setText("No Upcoming birthdays this month.");
+        }
+    }
+
     private void setToolbar() {
         ((BaseActivity) mContext).initToolbar(0, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify, tvNotifyCount, 0, R.id.imgCall);
         imgLogout.setOnClickListener(new View.OnClickListener() {
@@ -534,24 +590,15 @@ public class DashboardFragment extends BaseFragment {
         mDialogLogout.show();
     }
     /* Call Api For RM */
-    private void callDashboardApi(String startDate, String endDate) {
+    private void callDashboardApi(String mon) {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if (loginTable != null) {
                 DashboardRequest dashboardRequest = new DashboardRequest();
-                RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_dashboard);
-                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(loginTable.getEmployeeId()));
-                RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(loginTable.getCompanyId()));
-                RequestBody mRequestBodyTypeStart = RequestBody.create(MediaType.parse("text/plain"), startDate);
-                RequestBody mRequestBodyTypeEnd = RequestBody.create(MediaType.parse("text/plain"), endDate);
-                /*LogUtil.printLog("httpdashboard_data", String.valueOf(loginTable.getEmployeeId()) + " " + String.valueOf(loginTable.getCompanyId())
-                        + " " + startDate + " " + endDate);*/
-                dashboardRequest.setAction(mRequestBodyType);
-                dashboardRequest.setEmployee(mRequestBodyTypeEmployee);
-                dashboardRequest.setCompanyId(mRequestBodyTypeCompId);
-                dashboardRequest.setStartDate(mRequestBodyTypeStart);
-                dashboardRequest.setEndDate(mRequestBodyTypeEnd);
-                getDashboardViewModel.hitGetDashboardApi(dashboardRequest);
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_birth_day);
+                RequestBody mRequestMon = RequestBody.create(MediaType.parse("text/plain"), mon);
+
+                getBirthDayListViewModel.hitGetBirthDayListApi(mRequestAction,mRequestMon);
             } else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
             }
@@ -569,6 +616,37 @@ public class DashboardFragment extends BaseFragment {
             }
         }
     }
+
+    /* Call Api For calender holidays */
+    private void callCalenderHolidaysApi(String from,String to) {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if (loginTable != null) {
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_company_holiday);
+                RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
+                RequestBody mRequestFrom = RequestBody.create(MediaType.parse("text/plain"), "2022-05-10");
+                RequestBody mRequestTo = RequestBody.create(MediaType.parse("text/plain"), "2022-05-30");
+
+                calenderHolidaysListViewModel.hitCalenderHolidaysListApi(mRequestAction,mRequestComId,
+                        mRequestFrom,mRequestTo);
+            } else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+            try {
+                AttendanceDaysTable loginAttendance = mDb.getDbDAO().getTestAttendanceData();
+                if (loginAttendance != null) {
+                    setAttendanceFloatingButtons(loginAttendance.getLoginDays());
+                } else {
+                    LogUtil.printToastMSG(mContext, "Something went wrong ,Please re-login.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     /* Call Api For Profile Image */
     private void callProfileImageApi() {
@@ -653,21 +731,25 @@ public class DashboardFragment extends BaseFragment {
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
                     try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_DASHBOARD)) {
-                            GetDashboardResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetDashboardResponse.class);
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_BIRTH_DAY_LIST)) {
+                            GetBirthDayResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetBirthDayResponse.class);
                             if (responseModel != null /*&& responseModel.getResult().getStatus().equals("success")*/) {
-                                dashboardList.clear();
-                                tvNotifyCount.setText(checkIFNull(String.valueOf(responseModel.getDashboard().getNotificationCount())));
-                                Dashboard dashboard = responseModel.getDashboard();
-                                dashboardList.add(new DashModel("Sales Credit", "₹" + iSNull(String.valueOf(dashboard.getSalesCredit()), 1), mContext.getDrawable(R.drawable.ic_om_sales_credit)));
-                                dashboardList.add(new DashModel("Receipt", "₹" + iSNull(dashboard.getReceiptAmount(), 1), mContext.getDrawable(R.drawable.ic_om_receipt)));
-                                dashboardList.add(new DashModel("Top Customer", "Top Customer", mContext.getDrawable(R.drawable.ic_om_rating)));
-                                dashboardList.add(new DashModel("Total Quotation Amount", "₹" + iSNull(dashboard.getQuotationAmount(), 1), mContext.getDrawable(R.drawable.ic_om_total_quotation)));
-                                dashboardList.add(new DashModel("Dispatch Pending", "" + iSNull(dashboard.getPendingDispatchCount(), 1), mContext.getDrawable(R.drawable.ic_om_dispatch_pending)));
-                                dashboardList.add(new DashModel("Enquiry Report", "" + iSNull(dashboard.getEnquiryCount(), 1), mContext.getDrawable(R.drawable.ic_om_enquiry_report)));
-                                dashboardList.add(new DashModel("Visit Report", "" + iSNull(dashboard.getVisitReport(), 1), mContext.getDrawable(R.drawable.ic_om_visit_report)));
-                                dashboardList.add(new DashModel("Products", "", mContext.getDrawable(R.drawable.ic_om_product)));
-                                updateAttendanceData(responseModel);
+                                try{birthDayDobdatumList.clear();
+                                    upcomingBirthDayDobdatumList.clear();}catch (Exception e){}
+                                if(responseModel.getResult().getDobdata()!=null && responseModel.getResult().getDobdata().size()>0) {
+                                    String today = AppUtils.getCurrentDateInyyyymmdd();
+                                    for (int i = 0; i < responseModel.getResult().getDobdata().size(); i++) {
+                                        if(today.equals(responseModel.getResult().getDobdata().get(i).getDob())){
+                                            birthDayDobdatumList.add(responseModel.getResult().getDobdata().get(i)) ;
+                                        }
+                                        else{
+                                            upcomingBirthDayDobdatumList.add(responseModel.getResult().getDobdata().get(i)) ;
+                                        }
+                                    }
+                                }
+                                setAdapterForBirthDayList();//"2022-06-10"
+                                setAdapterForUpcomingBirthDayList();
+
                             } else {
                                 LogUtil.printToastMSG(getActivity(), responseModel.getResult().getMessage());
                             }
@@ -685,6 +767,23 @@ public class DashboardFragment extends BaseFragment {
                                 //LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
                             } else {
                                 progressBar.setVisibility(View.GONE);
+                            }
+                        }
+                    } catch (Exception e) {
+                        progressBar.setVisibility(View.GONE);
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_CALENDER_HOLIDAY)) {
+                            CalenderHolidayResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), CalenderHolidayResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                calenderHolidayLeave.removeAll(calenderHolidayLeave);
+                                calenderHolidayLeave = responseModel.getResult().getLeave();
+                                //square_day.invalidate();
+                                //square_day.init(mContext);
+                               LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                            } else {
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
                             }
                         }
                     } catch (Exception e) {
@@ -732,7 +831,7 @@ public class DashboardFragment extends BaseFragment {
         }
     }
 
-    private void updateAttendanceData(GetDashboardResponse responseModel) {
+    /*private void updateAttendanceData(GetDashboardResponse responseModel) {
         try {
             mDb.getDbDAO().deleteAttendanceData();
 
@@ -750,7 +849,7 @@ public class DashboardFragment extends BaseFragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     private void downloadImageFromUrl(String url, String lr, File file, int pos) {
         @SuppressLint("StaticFieldLeak")

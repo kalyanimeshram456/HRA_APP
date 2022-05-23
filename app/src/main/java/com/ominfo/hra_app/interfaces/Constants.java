@@ -34,7 +34,7 @@ public interface Constants {
     String MESSAGE = "MESSAGE";
 
     String PAG_SIZE = "10";
-    String MIN_PAG_SIZE = "4";
+    String MIN_PAG_SIZE = "6";
     String KEY_OBJECT = "KEY_Object";
 
     /*SCREEEN NAME */

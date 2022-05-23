@@ -480,6 +480,7 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <androidx.appcompat.widget.LinearLayoutCompat
+                            android:id="@+id/layAddLocation"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_50dp"
                             android:layout_marginTop="@dimen/_6dp"

@@ -47,7 +47,7 @@ import okhttp3.RequestBody;
 
 public class LoginActivity extends BaseActivity {
     private static final String TAG = "PushNotification";
-    private static final String CHANNEL_ID = "109";
+    private static final String CHANNEL_ID = "209";
     String recentToken = "";
     @BindView(R.id.input_password)
     TextInputLayout inputPassword;

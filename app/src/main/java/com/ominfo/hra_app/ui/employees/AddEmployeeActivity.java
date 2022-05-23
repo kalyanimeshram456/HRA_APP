@@ -5,7 +5,11 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.location.LocationManager;
+import android.media.ExifInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -47,13 +51,19 @@ import com.ominfo.hra_app.ui.employees.model.EditEmployeeResponse;
 import com.ominfo.hra_app.ui.employees.model.EditEmployeeViewModel;
 import com.ominfo.hra_app.ui.employees.model.EmployeeList;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
+import com.ominfo.hra_app.ui.my_account.model.GetCompanyList;
+import com.ominfo.hra_app.ui.my_account.model.GetCompanyResponse;
+import com.ominfo.hra_app.ui.my_account.model.GetCompanyViewModel;
+import com.ominfo.hra_app.ui.my_account.model.WorkTimingList;
 import com.ominfo.hra_app.ui.notifications.adapter.NotificationsAdapter;
 import com.ominfo.hra_app.ui.notifications.model.NotificationResult;
+import com.ominfo.hra_app.ui.visit_report.activity.AddLocationActivity;
 import com.ominfo.hra_app.ui.visit_report.model.VisitNoResponse;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
 import com.ominfo.hra_app.util.SharedPref;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -85,6 +95,8 @@ public class AddEmployeeActivity extends BaseActivity {
     private AddEmployeeViewModel addEmployeeViewModel;
     private DeactivateEmployeeViewModel deactivateEmployeeViewModel;
     private EditEmployeeViewModel editEmployeeViewModel;
+    private GetCompanyViewModel getCompanyViewModel;
+
     private AppDatabase mDb;
     @BindView(R.id.progressBarHolder)
     FrameLayout mProgressBarHolder;
@@ -147,13 +159,15 @@ public class AddEmployeeActivity extends BaseActivity {
     TextInputLayout input_textOtherLeave;
     @BindView(R.id.AutoComOtherLeave)
     AppCompatAutoCompleteTextView AutoComOtherLeave;
+    @BindView(R.id.AutoComOfficeLocation)
+    AppCompatAutoCompleteTextView AutoComOfficeLocation;
     Dialog mDialogDeactivate,mDialogDiscard;
-    String from = "add", empId= "0";
+    String from = "add", empId= "0",officeLat= "",officeLong="";
     @BindView(R.id.btnDeactivate)
     AppCompatButton btnDeactivate;
     EmployeeList employeeList;
     EmployeeTimeAdapter employeeTimeAdapter;
-    List<NotificationResult> timingList = new ArrayList<>();
+    List<WorkTimingList> timingList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,10 +188,17 @@ public class AddEmployeeActivity extends BaseActivity {
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         // initialise tha layout
         setToolbar();
+        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_mon),getString(R.string.scr_lbl_yes),"09:30:00","18:30:00"));
+        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_tue),getString(R.string.scr_lbl_yes),"09:30:00","18:30:00"));
+        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_wed),getString(R.string.scr_lbl_yes),"09:30:00","18:30:00"));
+        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_thur),getString(R.string.scr_lbl_yes),"09:30:00","18:30:00"));
+        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_fri),getString(R.string.scr_lbl_yes),"09:30:00","18:30:00"));
+        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_sat),getString(R.string.scr_lbl_yes),"09:30:00","18:30:00"));
+        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_sun),getString(R.string.scr_lbl_yes),"09:30:00","18:30:00"));
+        setAdapterForTimingList();
         getIntentData();
         tvMissing.setVisibility(View.GONE);
         setDropdownGender();
-        setAdapterForTimingList();
     }
 
     @Override
@@ -192,6 +213,7 @@ public class AddEmployeeActivity extends BaseActivity {
             if(from.equals(Constants.add)){
                 tvTitle.setText(R.string.scr_lbl_add_employees);
                 btnDeactivate.setVisibility(View.GONE);
+                callCompanyListApi();
             }
             else if(from.equals(Constants.edit)){
                 tvTitle.setText(R.string.scr_lbl_manage_employee);
@@ -212,6 +234,25 @@ public class AddEmployeeActivity extends BaseActivity {
                 AutoComSickLeave.setText(employeeList.getSickLeaves());
                 AutoComOtherLeave.setText(employeeList.getOtherLeaves());
                 empId = employeeList.getEmpId();
+                AutoComOfficeLocation.setText(employeeList.getOfficeAddress());
+                officeLat = employeeList.getOfficeLatitude();
+                officeLong = employeeList.getOfficeLongitude();
+                try{ timingList.clear();}catch (Exception e){}
+                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_mon), employeeList.getMonWorking()==null?"no":employeeList.getMonWorking(),
+                        employeeList.getMonStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getMonStartTime(), employeeList.getMonEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getMonEndTime()));
+                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_tue), employeeList.getTueWorking()==null?"no":employeeList.getTueWorking(),
+                        employeeList.getTueStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getTueStartTime(), employeeList.getTueEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getTueEndTime()));
+                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_wed), employeeList.getWedWorking()==null?"no":employeeList.getWedWorking(),
+                        employeeList.getWedStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getWedStartTime(), employeeList.getWedEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getWedEndTime()));
+                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_thur), employeeList.getThrusWorking()==null?"no":employeeList.getThrusWorking(),
+                        employeeList.getThrusStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getThrusStartTime(), employeeList.getThrusEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getThrusEndTime()));
+                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_fri), employeeList.getFriWorking()==null?"no":employeeList.getFriWorking(),
+                        employeeList.getFriStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getFriStartTime(), employeeList.getFriEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getFriEndTime()));
+                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sat), employeeList.getSatWorking()==null?"no":employeeList.getSatWorking(),
+                        employeeList.getSatStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getSatStartTime(), employeeList.getSatEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getSatEndTime()));
+                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun), employeeList.getSunWorking()==null?"no":employeeList.getSunWorking(),
+                        employeeList.getSunStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getSunStartTime(), employeeList.getSunEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getSunEndTime()));
+                setAdapterForTimingList();
             }
         }
         else{
@@ -228,21 +269,39 @@ public class AddEmployeeActivity extends BaseActivity {
 
         editEmployeeViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EditEmployeeViewModel.class);
         editEmployeeViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_edit_employee));
+
+        getCompanyViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetCompanyViewModel.class);
+        getCompanyViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_COMPANY));
+    }
+
+    /* Call Api For employee list */
+    private void callCompanyListApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_company_details);
+                RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
+                RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), "0");
+                RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
+
+                getCompanyViewModel.hitGetCompanyApi(mRequestAction,mRequestComId,
+                        mRequestpage_number,mRequestpage_size);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
     }
 
     private void setAdapterForTimingList() {
-        timingList.add(new NotificationResult("","",""));
-        timingList.add(new NotificationResult("","",""));
-        timingList.add(new NotificationResult("","",""));
-        timingList.add(new NotificationResult("","",""));
-        timingList.add(new NotificationResult("","",""));
-        timingList.add(new NotificationResult("","",""));
-        timingList.add(new NotificationResult("","",""));
-
-        if (timingList!=null && timingList.size() > 0) {
-            employeeTimeAdapter = new EmployeeTimeAdapter(mContext, timingList, new EmployeeTimeAdapter.ListItemSelectListener() {
+            if (timingList!=null && timingList.size() > 0) {
+            employeeTimeAdapter = new EmployeeTimeAdapter(true,mContext, timingList, new EmployeeTimeAdapter.ListItemSelectListener() {
                 @Override
-                public void onItemClick(NotificationResult mDataTicket, List<NotificationResult> notificationResultListAdapter, boolean status) {
+                public void onItemClick(WorkTimingList mDataTicket, List<WorkTimingList> workTimingListList, boolean status) {
+                    timingList = workTimingListList;
+                    //employeeTimeAdapter.updateList(timingList);
                 }
             });
             rvSalesList.setHasFixedSize(true);
@@ -276,6 +335,30 @@ public class AddEmployeeActivity extends BaseActivity {
                 RequestBody mRequestBodySickLeave = RequestBody.create(MediaType.parse("text/plain"), AutoComSickLeave.getText().toString().trim());//loginTable.getCompanyId());
                 String join = AppUtils.changeToSlashToDash(tvJoiningDate.getText().toString().trim());
                 RequestBody mRequestBodyJoiningDate = RequestBody.create(MediaType.parse("text/plain"),join);//loginTable.getCompanyId());
+                RequestBody mRequestAddr = RequestBody.create(MediaType.parse("text/plain"),AutoComOfficeLocation.getText().toString());//loginTable.getCompanyId());
+                RequestBody mRequestLat = RequestBody.create(MediaType.parse("text/plain"),officeLat);//loginTable.getCompanyId());
+                RequestBody mRequestLong = RequestBody.create(MediaType.parse("text/plain"),officeLong);//loginTable.getCompanyId());
+                RequestBody mRequestMon = RequestBody.create(MediaType.parse("text/plain"),timingList.get(0).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestTue = RequestBody.create(MediaType.parse("text/plain"),timingList.get(1).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestWed = RequestBody.create(MediaType.parse("text/plain"),timingList.get(2).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestThur = RequestBody.create(MediaType.parse("text/plain"),timingList.get(3).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestFri = RequestBody.create(MediaType.parse("text/plain"),timingList.get(4).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestSat = RequestBody.create(MediaType.parse("text/plain"),timingList.get(5).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestSun = RequestBody.create(MediaType.parse("text/plain"),timingList.get(6).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestMonStart = RequestBody.create(MediaType.parse("text/plain"),timingList.get(0).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestTueStart = RequestBody.create(MediaType.parse("text/plain"),timingList.get(1).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestWedStart = RequestBody.create(MediaType.parse("text/plain"),timingList.get(2).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestThurStart = RequestBody.create(MediaType.parse("text/plain"),timingList.get(3).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestFriStart = RequestBody.create(MediaType.parse("text/plain"),timingList.get(4).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestSatStart = RequestBody.create(MediaType.parse("text/plain"),timingList.get(5).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestSunStart = RequestBody.create(MediaType.parse("text/plain"),timingList.get(6).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestMonEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(0).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestTueEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(1).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestWedEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(2).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestThurEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(3).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestFriEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(4).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestSatEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(5).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestSunEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(6).getMonEndTime());//loginTable.getCompanyId());
 
                 AddEmployeeRequest request = new AddEmployeeRequest();
                 request.setAction(mRequestBodyTypeAction);
@@ -295,6 +378,30 @@ public class AddEmployeeActivity extends BaseActivity {
                 request.setCasualLeaves(mRequestBodyCasualLeave);
                 request.setSickLeaves(mRequestBodySickLeave);
                 request.setJoiningDate(mRequestBodyJoiningDate);
+                request.setOfficeAddress(mRequestAddr);
+                request.setOfficeLatitude(mRequestLat);
+                request.setOfficeLongitude(mRequestLong);
+                request.setMonWorking(mRequestMon);
+                request.setTueWorking(mRequestTue);
+                request.setWedWorking(mRequestWed);
+                request.setThursWorking(mRequestThur);
+                request.setFri_working(mRequestFri);
+                request.setSatWorking(mRequestSat);
+                request.setSunWorking(mRequestSun);
+                request.setMonStartTime(mRequestMonStart);
+                request.setTueStartTime(mRequestTueStart);
+                request.setWedStartTime(mRequestWedStart);
+                request.setThursStartTime(mRequestThurStart);
+                request.setFri_start_time(mRequestFriStart);
+                request.setSatStartTime(mRequestSatStart);
+                request.setSunStartTime(mRequestSunStart);
+                request.setMonEndTime(mRequestMonEnd);
+                request.setTueEndTime(mRequestTueEnd);
+                request.setWedEndTime(mRequestWedEnd);
+                request.setThursEndTime(mRequestThurEnd);
+                request.setFri_end_time(mRequestFriEnd);
+                request.setSatEndTime(mRequestSatEnd);
+                request.setSunEndTime(mRequestSunEnd);
                 addEmployeeViewModel.executeAddEmployeeAPI(request);
             }
             else {
@@ -330,6 +437,30 @@ public class AddEmployeeActivity extends BaseActivity {
                 String join = AppUtils.changeToSlashToDash(tvJoiningDate.getText().toString().trim());
                 RequestBody mRequestBodyJoiningDate = RequestBody.create(MediaType.parse("text/plain"),join);//loginTable.getCompanyId());
                 RequestBody mRequestBodyTypeToken = RequestBody.create(MediaType.parse("text/plain"), loginTable.getToken());//loginTable.getCompanyId());
+                RequestBody mRequestAddr = RequestBody.create(MediaType.parse("text/plain"),AutoComOfficeLocation.getText().toString());//loginTable.getCompanyId());
+                RequestBody mRequestLat = RequestBody.create(MediaType.parse("text/plain"),officeLat);//loginTable.getCompanyId());
+                RequestBody mRequestLong = RequestBody.create(MediaType.parse("text/plain"),officeLong);//loginTable.getCompanyId());
+                RequestBody mRequestMon = RequestBody.create(MediaType.parse("text/plain"),timingList.get(0).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestTue = RequestBody.create(MediaType.parse("text/plain"),timingList.get(1).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestWed = RequestBody.create(MediaType.parse("text/plain"),timingList.get(2).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestThur = RequestBody.create(MediaType.parse("text/plain"),timingList.get(3).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestFri = RequestBody.create(MediaType.parse("text/plain"),timingList.get(4).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestSat = RequestBody.create(MediaType.parse("text/plain"),timingList.get(5).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestSun = RequestBody.create(MediaType.parse("text/plain"),timingList.get(6).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestMonStart = RequestBody.create(MediaType.parse("text/plain"),timingList.get(0).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestTueStart = RequestBody.create(MediaType.parse("text/plain"),timingList.get(1).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestWedStart = RequestBody.create(MediaType.parse("text/plain"),timingList.get(2).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestThurStart = RequestBody.create(MediaType.parse("text/plain"),timingList.get(3).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestFriStart = RequestBody.create(MediaType.parse("text/plain"),timingList.get(4).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestSatStart = RequestBody.create(MediaType.parse("text/plain"),timingList.get(5).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestSunStart = RequestBody.create(MediaType.parse("text/plain"),timingList.get(6).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestMonEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(0).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestTueEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(1).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestWedEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(2).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestThurEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(3).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestFriEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(4).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestSatEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(5).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestSunEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(6).getMonEndTime());//loginTable.getCompanyId());
 
                 EditEmployeeRequest request = new EditEmployeeRequest();
                 request.setAction(mRequestBodyTypeAction);
@@ -350,6 +481,30 @@ public class AddEmployeeActivity extends BaseActivity {
                 request.setSickLeaves(mRequestBodySickLeave);
                 request.setJoiningDate(mRequestBodyJoiningDate);
                 request.setToken(mRequestBodyTypeToken);
+                request.setOfficeAddress(mRequestAddr);
+                request.setOfficeLatitude(mRequestLat);
+                request.setOfficeLongitude(mRequestLong);
+                request.setMonWorking(mRequestMon);
+                request.setTueWorking(mRequestTue);
+                request.setWedWorking(mRequestWed);
+                request.setThursWorking(mRequestThur);
+                request.setFri_working(mRequestFri);
+                request.setSatWorking(mRequestSat);
+                request.setSunWorking(mRequestSun);
+                request.setMonStartTime(mRequestMonStart);
+                request.setTueStartTime(mRequestTueStart);
+                request.setWedStartTime(mRequestWedStart);
+                request.setThursStartTime(mRequestThurStart);
+                request.setFri_start_time(mRequestFriStart);
+                request.setSatStartTime(mRequestSatStart);
+                request.setSunStartTime(mRequestSunStart);
+                request.setMonEndTime(mRequestMonEnd);
+                request.setTueEndTime(mRequestTueEnd);
+                request.setWedEndTime(mRequestWedEnd);
+                request.setThursEndTime(mRequestThurEnd);
+                request.setFri_end_time(mRequestFriEnd);
+                request.setSatEndTime(mRequestSatEnd);
+                request.setSunEndTime(mRequestSunEnd);
                 editEmployeeViewModel.hitEditEmployeeAPI(request);
             }
             else {
@@ -389,7 +544,7 @@ public class AddEmployeeActivity extends BaseActivity {
 
     //perform click actions
     @OnClick({R.id.btnSubmit,R.id.btnCancel,R.id.btnDeactivate,R.id.layCalender,
-            R.id.imgToDate,R.id.layJoiningDate, R.id.imgJoiningDate})
+            R.id.imgToDate,R.id.layJoiningDate, R.id.imgJoiningDate,R.id.layAddLocation})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
@@ -417,8 +572,43 @@ public class AddEmployeeActivity extends BaseActivity {
             case R.id.btnDeactivate:
                 showDeactivateAccountDialog(this);
                 break;
+            case R.id.layAddLocation:
+                int LAUNCH_SECOND_ACTIVITY = 1000;
+                Intent i = new Intent(this, AddLocationActivity.class);
+                startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
+                //launchScreen(mContext,AddLocationActivity.class);
+                break;
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1000) {
+            if(resultCode == Activity.RESULT_OK){
+                String locationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ENTERED_VISIT_LAT, "0.0");
+                String locationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ENTERED_VISIT_LNG, "0.0");
+                String startlocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.START_VISIT_LAT, "0.0");
+                String startlocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.START_VISIT_LNG, "0.0");
+                String endlocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.END_VISIT_LAT, "0.0");
+                String endlocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.END_VISIT_LNG, "0.0");
+                String location = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.LOCATION_ENTERED_TXT, "Not Available");
+                String result=data.getStringExtra("result");
+                //String str = "<b>"+result+"</b>";
+                AutoComOfficeLocation.setText(location);
+                officeLat = locationLat;
+                officeLong = locationLng;
+                //tvAddLocation.setText(location);
+                /*double km = distance(Double.parseDouble(locationLat),Double.parseDouble(startlocationLat),
+                        Double.parseDouble(locationLng),Double.parseDouble(startlocationLng));*/
+                //LogUtil.printToastMSG(mContext,km+" K.M.");
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Write your code if there's no result
+            }
+        }
+    }
+
     //set value to gender dropdown
     private void setDropdownGender() {
         List<String> mGenderDropdown = new ArrayList<>();
@@ -642,6 +832,36 @@ public class AddEmployeeActivity extends BaseActivity {
                             }
                         }
                     } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_COMPANY)) {
+                            GetCompanyResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetCompanyResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                GetCompanyList employeeList = responseModel.getResult().getList().get(0);
+                                AutoComOfficeLocation.setText(employeeList.getOfficeAddress());
+                                officeLat = employeeList.getOfficeLatitude();
+                                officeLong = employeeList.getOfficeLongitude();
+                                try{ timingList.clear();}catch (Exception e){}
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_mon), employeeList.getMonWorking()==null?"no":employeeList.getMonWorking(),
+                                        employeeList.getMonStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getMonStartTime(), employeeList.getMonEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getMonEndTime()));
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_tue), employeeList.getTueWorking()==null?"no":employeeList.getTueWorking(),
+                                        employeeList.getTueStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getTueStartTime(), employeeList.getTueEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getTueEndTime()));
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_wed), employeeList.getWedWorking()==null?"no":employeeList.getWedWorking(),
+                                        employeeList.getWedStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getWedStartTime(), employeeList.getWedEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getWedEndTime()));
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_thur), employeeList.getThursWorking()==null?"no":employeeList.getThursWorking(),
+                                        employeeList.getThursStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getThursStartTime(), employeeList.getThursEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getThursEndTime()));
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_fri), employeeList.getFriWorking()==null?"no":employeeList.getFriWorking(),
+                                        employeeList.getFriStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getFriStartTime(), employeeList.getFriEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getFriEndTime()));
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sat), employeeList.getSatWorking()==null?"no":employeeList.getSatWorking(),
+                                        employeeList.getSatStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getSatStartTime(), employeeList.getSatEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getSatEndTime()));
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun), employeeList.getSunWorking()==null?"no":employeeList.getSunWorking(),
+                                        employeeList.getSunStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getSunStartTime(), employeeList.getSunEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getSunEndTime()));
+                                setAdapterForTimingList();
+                            }
+                        }
+                    }catch (Exception e){
                         e.printStackTrace();
                     }
                 }

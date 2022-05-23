@@ -44,6 +44,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -55,10 +56,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.model.GradientColor;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.textfield.TextInputLayout;
@@ -78,6 +75,10 @@ import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.ui.dashboard.model.DashModel;
 import com.ominfo.hra_app.ui.employees.adapter.EmployeeTimeAdapter;
+import com.ominfo.hra_app.ui.employees.model.EmployeeList;
+import com.ominfo.hra_app.ui.employees.model.EmployeeListRequest;
+import com.ominfo.hra_app.ui.employees.model.EmployeeListResponse;
+import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
 import com.ominfo.hra_app.ui.login.LoginActivity;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.login.model.LogoutResponse;
@@ -91,13 +92,16 @@ import com.ominfo.hra_app.ui.my_account.model.ChangePasswordResponse;
 import com.ominfo.hra_app.ui.my_account.model.ChangePasswordViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ChangeProfileImageResponse;
 import com.ominfo.hra_app.ui.my_account.model.ChangeProfileImageViewModel;
+import com.ominfo.hra_app.ui.my_account.model.GetCompanyList;
+import com.ominfo.hra_app.ui.my_account.model.GetCompanyResponse;
+import com.ominfo.hra_app.ui.my_account.model.GetCompanyViewModel;
 import com.ominfo.hra_app.ui.my_account.model.GetProfileImageViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ProfileImageResponse;
 import com.ominfo.hra_app.ui.my_account.model.ProfileRequest;
 import com.ominfo.hra_app.ui.my_account.model.ProfileResponse;
 import com.ominfo.hra_app.ui.my_account.model.ProfileViewModel;
+import com.ominfo.hra_app.ui.my_account.model.WorkTimingList;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
-import com.ominfo.hra_app.ui.notifications.model.NotificationResult;
 import com.ominfo.hra_app.ui.sales_credit.activity.PdfPrintActivity;
 import com.ominfo.hra_app.ui.sales_credit.model.GraphModel;
 import com.ominfo.hra_app.util.AppUtils;
@@ -114,7 +118,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -144,10 +147,20 @@ public class MyAccountFragment extends BaseFragment {
     AppCompatButton btnNext;
     @BindView(R.id.btnSubmit)
     AppCompatButton btnSubmit;
-    @BindView(R.id.layNext)
-    LinearLayoutCompat layNext;
+    @BindView(R.id.layAdmin)
+    LinearLayoutCompat layAdmin;
+    @BindView(R.id.layCalender)
+    RelativeLayout layCalender;
+    @BindView(R.id.btnBack)
+    AppCompatButton btnBack;
+    @BindView(R.id.btnEBack)
+    AppCompatButton btnEBack;
+    @BindView(R.id.layUser)
+    LinearLayoutCompat layUser;
     @BindView(R.id.laySubmit)
     LinearLayoutCompat laySubmit;
+    @BindView(R.id.btnESubmit)
+    AppCompatButton btnESubmit;
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
     @BindView(R.id.app_bar_layout)
@@ -161,19 +174,6 @@ public class MyAccountFragment extends BaseFragment {
     AppCompatImageView imgNotify;
     BarData barData;
     private boolean isUpload = false;
-    List<GradientColor> list = new ArrayList<>();
-    // variable for our bar data set.
-    BarDataSet barDataSet;
-
-    // array list for storing entries.
-    ArrayList barEntriesArrayList;
-    //private static final String[] DATA_BAR_GRAPH = new String[6];//{"","09:00",
-    private String[] DAYS = new String[100];/*{"C1", "C2", "C3", "C4", "C5", "C6", *//*"C7", "C8", "C9"
-            , "C10", "C11", "C12"*//*};*/
-
-    private String[] DAYSY = new String[100];/*{"5", "60", "15", "70", "25",
-           "10"*//*, "45","90", "95","50", "55","60", "65"*//*};*/
-    int startPos = 0 , endPos = 0;
 
     List<DashModel> dashboardList = new ArrayList<>();
     List<DashModel> tagList = new ArrayList<>();
@@ -186,12 +186,15 @@ public class MyAccountFragment extends BaseFragment {
     private ApplyLeaveViewModel applyLeaveViewModel;
     private ChangeProfileImageViewModel changeProfileImageViewModel;
     private LogoutViewModel logoutViewModel;
+    private EmployeeListViewModel employeeListViewModel;
+    private GetCompanyViewModel getCompanyViewModel;
+
     final Calendar myCalendar = Calendar.getInstance();
     private AppDatabase mDb;
     @BindView(R.id.progressBarHolder)
     FrameLayout mProgressBarHolder;
     @BindView(R.id.tvEmpName)
-    AppCompatTextView tvEmpName;
+    AppCompatAutoCompleteTextView tvEmpName;
     @BindView(R.id.imgEmp)
     CircleImageView imgEmp;
     @BindView(R.id.imgAdd)
@@ -201,7 +204,7 @@ public class MyAccountFragment extends BaseFragment {
     int cam = 0,noOFDays = 0;
     private int SELECT_FILE = 1;
     private static final int REQUEST_CAMERA = 0;
-    private String base64Path = "";
+    private String base64Path = "",isAdmin="0";
     private Dialog mDialogChangePass;
     @BindView(R.id.tvNotifyCount)
     AppCompatTextView tvNotifyCount;
@@ -217,9 +220,42 @@ public class MyAccountFragment extends BaseFragment {
     AppCompatAutoCompleteTextView AutoComTextViewLeaveType;
     Dialog mDialogLogout;
     EmployeeTimeAdapter employeeTimeAdapter;
-    List<NotificationResult> timingList = new ArrayList<>();
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
+    @BindView(R.id.AutoComtEEmail)
+    AppCompatAutoCompleteTextView AutoComtEEmail;
+    @BindView(R.id.AutoComEMobile)
+    AppCompatAutoCompleteTextView AutoComEMobile;
+    @BindView(R.id.AutoComGstNo)
+    AppCompatAutoCompleteTextView AutoComGstNo;
+    @BindView(R.id.AutoComMobile)
+    AppCompatAutoCompleteTextView AutoComMobile;
+    @BindView(R.id.AutoComEmailId)
+    AppCompatAutoCompleteTextView AutoComEmailId;
+    @BindView(R.id.AutoComStaff)
+    AppCompatAutoCompleteTextView AutoComStaff;
+    @BindView(R.id.AutoComOfficeLocation)
+    AppCompatAutoCompleteTextView AutoComOfficeLocation;
+    @BindView(R.id.AutoComPrefix)
+    AppCompatAutoCompleteTextView AutoComPrefix;
+    @BindView(R.id.AutoComEDesi)
+    AppCompatAutoCompleteTextView AutoComEDesi;
+    @BindView(R.id.AutoComtEGender)
+    AppCompatAutoCompleteTextView AutoComtEGender;
+    @BindView(R.id.AutoComPincode)
+    AppCompatAutoCompleteTextView AutoComPincode;
+    @BindView(R.id.AutoComOPincode)
+    AppCompatAutoCompleteTextView AutoComOPincode;
+    @BindView(R.id.tvDateValue)
+    AppCompatTextView tvDateValue;
+    @BindView(R.id.imgToDate)
+    AppCompatImageView imgToDate;
+    @BindView(R.id.etDescr)
+    AppCompatEditText etDescr;
+    @BindView(R.id.etOfAddress)
+    AppCompatEditText etOfAddress;
+    List<WorkTimingList> workTimingLists = new ArrayList<>();
+
     public MyAccountFragment() {
         // Required empty public constructor
     }
@@ -295,20 +331,77 @@ public class MyAccountFragment extends BaseFragment {
 
         logoutViewModel = ViewModelProviders.of(this, mViewModelFactory).get(LogoutViewModel.class);
         logoutViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_LOGOUT));
-    }
-    private void setAdapterForTimingList() {
-        timingList.add(new NotificationResult("","",""));
-        timingList.add(new NotificationResult("","",""));
-        timingList.add(new NotificationResult("","",""));
-        timingList.add(new NotificationResult("","",""));
-        timingList.add(new NotificationResult("","",""));
-        timingList.add(new NotificationResult("","",""));
-        timingList.add(new NotificationResult("","",""));
 
-        if (timingList!=null && timingList.size() > 0) {
-            employeeTimeAdapter = new EmployeeTimeAdapter(mContext, timingList, new EmployeeTimeAdapter.ListItemSelectListener() {
+        employeeListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EmployeeListViewModel.class);
+        employeeListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_EMPLOYEES_LIST));
+
+        getCompanyViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetCompanyViewModel.class);
+        getCompanyViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_COMPANY));
+    }
+
+    /* Call Api For employee list */
+    private void callEmployeeListApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_employee_list);
+                RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
+                RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                RequestBody mRequestToken = RequestBody.create(MediaType.parse("text/plain"),  loginTable.getToken());
+                RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), "0");
+                RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
+                RequestBody mRequestfilter_emp_name = RequestBody.create(MediaType.parse("text/plain"), "");
+                RequestBody mRequestfilter_emp_position = RequestBody.create(MediaType.parse("text/plain"),  "");
+                String status = "1";
+                RequestBody filter_emp_isActive = RequestBody.create(MediaType.parse("text/plain"),  status);
+
+                EmployeeListRequest request = new EmployeeListRequest();
+                request.setAction(mRequestAction);
+                request.setCompanyId(mRequestComId);
+                request.setEmployee(mRequestEmployee);
+                request.setToken(mRequestToken);
+                request.setPageNumber(mRequestpage_number);
+                request.setPageSize(mRequestpage_size);
+                request.setFilterEmpName(mRequestfilter_emp_name);
+                request.setFilterEmpPosition(mRequestfilter_emp_position);
+                request.setFilterEmpIsActive(filter_emp_isActive);
+
+                employeeListViewModel.executeEmployeeListAPI(request);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    /* Call Api For employee list */
+    private void callCompanyListApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_company_details);
+                RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
+                RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), "0");
+                RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
+
+                getCompanyViewModel.hitGetCompanyApi(mRequestAction,mRequestComId,
+                        mRequestpage_number,mRequestpage_size);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    private void setAdapterForTimingList(boolean isToggle) {
+        if (workTimingLists!=null && workTimingLists.size() > 0) {
+            employeeTimeAdapter = new EmployeeTimeAdapter(isToggle,mContext, workTimingLists, new EmployeeTimeAdapter.ListItemSelectListener() {
                 @Override
-                public void onItemClick(NotificationResult mDataTicket, List<NotificationResult> notificationResultListAdapter, boolean status) {
+                public void onItemClick(WorkTimingList mDataTicket, List<WorkTimingList> notificationResultListAdapter, boolean status) {
                 }
             });
             rvSalesList.setHasFixedSize(true);
@@ -409,8 +502,25 @@ public class MyAccountFragment extends BaseFragment {
     }
 
     private void init(){
-        setAdapterForTimingList();
-        laySubmit.setVisibility(View.GONE);
+        tvEmpName.setEnabled(false);
+        LoginTable loginTable = mDb.getDbDAO().getLoginData();
+        if(loginTable!=null){
+            isAdmin = loginTable.getIsadmin();
+            if(isAdmin.equals("0")){
+                laySubmit.setVisibility(View.GONE);
+                layUser.setVisibility(View.VISIBLE);
+                layAdmin.setVisibility(View.GONE);
+                setAllDisabled(0,false);
+                callEmployeeListApi();
+            }
+            else{
+                laySubmit.setVisibility(View.GONE);
+                layUser.setVisibility(View.GONE);
+                layAdmin.setVisibility(View.VISIBLE);
+                setAllDisabled(1,false);
+                callCompanyListApi();
+            }
+        }
         Window window = getActivity().getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -418,20 +528,6 @@ public class MyAccountFragment extends BaseFragment {
         setToolbar();
         cam=2;
         requestPermission();
-        graphModelsList.removeAll(dashboardList);
-        graphModelsList.add(new GraphModel("State C1", "Company Test 1", "5"));
-        graphModelsList.add(new GraphModel("State C2", "Company Test 2", "60"));
-        graphModelsList.add(new GraphModel("State C3", "Company Test 3", "15"));
-        graphModelsList.add(new GraphModel("State C4", "Company Test 4", "90"));
-        graphModelsList.add(new GraphModel("State C5", "Company Test 5", "25"));
-        graphModelsList.add(new GraphModel("State C6", "Company Test 6", "10"));
-        graphModelsList.add(new GraphModel("State C7", "Company Test 7", "45"));
-        graphModelsList.add(new GraphModel("State C8", "Company Test 8", "90"));
-        graphModelsList.add(new GraphModel("State C9", "Company Test 9", "95"));
-        graphModelsList.add(new GraphModel("State C10", "Company Test 10", "50"));
-        graphModelsList.add(new GraphModel("State C11", "Company Test 11", "55"));
-        graphModelsList.add(new GraphModel("State C12", "Company Test 12", "60"));
-        setGraphData(3);
         callProfileImageApi();
         callProfileApi();
     }
@@ -473,25 +569,97 @@ public class MyAccountFragment extends BaseFragment {
         startActivityForResult(Intent.createChooser(intent, "Select File"), SELECT_FILE);
     }
 
+    //set value to gender dropdown
+    private void setDropdownGender() {
+        List<String> mGenderDropdown = new ArrayList<>();
+        mGenderDropdown.add("Male");
+        mGenderDropdown.add("Female");
+        mGenderDropdown.add("Other");
+
+        try {
+            int pos = 0;
+            if (mGenderDropdown != null && mGenderDropdown.size() > 0) {
+                String[] mDropdownList = new String[mGenderDropdown.size()];
+                for (int i = 0; i < mGenderDropdown.size(); i++) {
+                    mDropdownList[i] = String.valueOf(mGenderDropdown.get(i));
+                }
+                //AutoComTextViewVehNo.setText(mDropdownList[pos]);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        mContext,
+                        R.layout.row_dropdown_item,
+                        mDropdownList);
+                //AutoComTextViewVehNo.setThreshold(1);
+                AutoComtEGender.setAdapter(adapter);
+                //mSelectedColor = mDropdownList[pos];
+                AutoComtEGender.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        //mSelectedColor = mDropdownList[position];
+                        //AppUtils.hideKeyBoard(AddEmployeeActivity.this);
+                    }
+                });
+            } else {
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     //perform click actions
-    @OnClick({R.id.imgAdd,R.id.btnNext,R.id.btnSubmit,R.id.btnBack})
+    @OnClick({R.id.imgEdit,R.id.imgAdd,R.id.btnNext,R.id.btnSubmit,R.id.btnBack,R.id.btnEBack,R.id.btnENext
+            ,R.id.layCalender,R.id.imgCall,R.id.btnESubmit})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
+            case R.id.layCalender:
+                openDataPicker(0);
+                break;
+            case R.id.imgEdit:
+                tvEmpName.setEnabled(true);
+                tvEmpName.setBackground(mContext.getDrawable(R.drawable.round_corner_shape_without_fill_thin_yellow));
+                break;
+            case R.id.imgCall:
+                //edit all
+                setAllDisabled(Integer.parseInt(isAdmin),true);
+                break;
             case R.id.imgAdd:
                 showChooseCameraDialog();
                 break;
             case R.id.btnNext:
-                layNext.setVisibility(View.GONE);
+                layAdmin.setVisibility(View.GONE);
                 laySubmit.setVisibility(View.VISIBLE);
+                layUser.setVisibility(View.GONE);
+                btnEBack.setVisibility(View.GONE);
+                btnESubmit.setVisibility(View.GONE);
+                setAdapterForTimingList(true);
+                break;
+            case R.id.btnENext:
+                layAdmin.setVisibility(View.GONE);
+                laySubmit.setVisibility(View.VISIBLE);
+                layUser.setVisibility(View.GONE);
+                btnBack.setVisibility(View.GONE);
+                btnSubmit.setVisibility(View.GONE);
+                setAdapterForTimingList(false);
                 break;
             case R.id.btnSubmit:
-                layNext.setVisibility(View.VISIBLE);
+                layAdmin.setVisibility(View.VISIBLE);
                 laySubmit.setVisibility(View.GONE);
+                layUser.setVisibility(View.GONE);
+                break;
+            case R.id.btnESubmit:
+                layAdmin.setVisibility(View.GONE);
+                laySubmit.setVisibility(View.GONE);
+                layUser.setVisibility(View.VISIBLE);
                 break;
             case R.id.btnBack:
-                layNext.setVisibility(View.VISIBLE);
+                layAdmin.setVisibility(View.VISIBLE);
                 laySubmit.setVisibility(View.GONE);
+                layUser.setVisibility(View.GONE);
+                break;
+            case R.id.btnEBack:
+                layAdmin.setVisibility(View.GONE);
+                laySubmit.setVisibility(View.GONE);
+                layUser.setVisibility(View.VISIBLE);
                 break;
         }
     }
@@ -590,70 +758,7 @@ public class MyAccountFragment extends BaseFragment {
         }
         return path;
     }
-    private void setGraphData(int initStatus) {
-        if(initStatus!=3) {
-            DAYS = new String[6];
-            DAYSY = new String[6];
-        }
-        if(initStatus==3){
-            DAYS = new String[graphModelsList.size()+1];
-            DAYSY = new String[graphModelsList.size()+1];
-        }
-        if(initStatus!=3) {
-            try {
-                endPos = startPos + 6;
-                if (endPos <= graphModelsList.size()) {
-                    //if(startPos<6) {
 
-                    for (int i = 0; i < graphModelsList.size(); i++) {
-                        if (graphModelsList.get(i).getxValue() != null) {
-                            DAYS[i] = graphModelsList.get(i).getxValue();
-                        }
-                        if (graphModelsList.get(i).getyValue() != null) {
-                            DAYSY[i] = graphModelsList.get(i).getyValue();
-                        }
-                    }
-                    try {
-                        //getGraph();
-                        //setAdapterForDashboardList();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    // }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if(initStatus==3){
-            for (int i = 0; i < graphModelsList.size(); i++) {
-                if(graphModelsList.get(i).getxValue()!=null) {
-                    DAYS[i] = graphModelsList.get(i).getxValue();
-                }
-                if(graphModelsList.get(i).getyValue()!=null) {
-                    DAYSY[i] = graphModelsList.get(i).getyValue();
-                }
-            }
-            try {
-                //getGraph();
-                //setAdapterForDashboardList();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-       /* Window window = getActivity().getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));*/
-       /* Window window = getActivity().getWindow();
-        View view = window.getDecorView();
-        BaseActivity.DarkStatusBar.setLightStatusBar(view,getActivity());*/
-    }
 
     @Override
     public void onResume() {
@@ -929,62 +1034,6 @@ public class MyAccountFragment extends BaseFragment {
         return true;
     }
 
-    private BarData getBarEntries() {
-
-        barEntriesArrayList = new ArrayList<>();
-        for (int i = 0; i < DAYSY.length; i++) {
-            Random r = new Random();
-            float x = i;
-            if(DAYSY[i]!=null) {
-                float y = Integer.parseInt(DAYSY[i]);
-                barEntriesArrayList.add(new BarEntry(x, y));
-            }
-        }
-
-        MyBarDataSet set1 = new MyBarDataSet(barEntriesArrayList, "Test");
-        set1.setBarBorderColor(Color.YELLOW);
-        String dark_Red ="#A10616";
-        String light_Red = "#FB6571";
-        String Yellow = "#F9B747";
-        String pink = "#e12c2c";
-        String darkPink = "#DD3546";
-
-       /* list.add(new GradientColor(Color.parseColor("#F9B747"),
-                Color.parseColor("#A10616")));*/
-        /*list.add(new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(pink)));*/
-       /* list.add(new GradientColor(Color.parseColor(pink),
-                Color.parseColor(darkPink)));*/
-        list.add(new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(darkPink)));
-        list.add(new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(dark_Red)));
-
-        //set1.setColor(R.drawable.chart_fill);
-        set1.setGradientColors(list);
-        /*set1.setGradientColor(new int[]{new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(dark_Red)),
-                new GradientColor(Color.parseColor(Yellow),
-                        Color.parseColor(dark_Red)),
-                        new GradientColor(Color.parseColor(Yellow),
-                                Color.parseColor(dark_Red))});*/
-        //ArrayList<BarDataSet> dataSets = new ArrayList<>();
-        //dataSets.add(set1);
-
-       // BarData data = new BarData(xVals, dataSets);
-
-        //set1.setColor(getResources().getColor(R.color.deep_yellow));
-        set1.setDrawValues(false);
-        ArrayList<IBarDataSet> dataSets = new ArrayList<>();
-
-        set1.setHighlightEnabled(false);
-        set1.setDrawValues(true);
-
-        dataSets.add(set1);
-        // adding color to our bar data set.
-        BarData data = new BarData(dataSets);
-        return data;
-    }
 
     //show Receipt Details popup
     public void showVisitDetailsDialog() {
@@ -1109,15 +1158,7 @@ private void setTermsAndPolicy(String webUrl){
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 String myFormat = "dd/MM/yyyy"; //In which you need put here
                 SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
-                if(val==0){
-                    tvDateValueTo.setText(sdf.format(myCalendar.getTime()));
-                }
-                else {
-                    tvDateValueFrom.setText(sdf.format(myCalendar.getTime()));
-                }
-               int diff = AppUtils.getChangeDateForHisab(tvDateValueFrom.getText().toString(),tvDateValueTo.getText().toString());
-                appcomptextNoOfDays.setText("Number of days : "+diff +" Days");
-                noOFDays = diff;
+                tvDateValue.setText(sdf.format(myCalendar.getTime()));
             }
 
         };
@@ -1140,31 +1181,6 @@ private void setTermsAndPolicy(String webUrl){
 
     }
 
-
-
-    public class MyBarDataSet extends BarDataSet {
-
-
-        public MyBarDataSet(List<BarEntry> yVals, String label) {
-            super(yVals, label);
-        }
-
-        @Override
-        public GradientColor getGradientColor(int index) {
-            if (Integer.parseInt(graphModelsList.get(index).getyValue()) < 75) // less than 95 green
-                return list.get(0);
-            else if (Integer.parseInt(graphModelsList.get(index).getyValue()) > 75
-            ) // less than 100 orange
-                return list.get(1);
-            else if(Integer.parseInt(graphModelsList.get(index).getyValue()) > 75
-                    && Integer.parseInt(graphModelsList.get(index).getyValue()) < 150) // less than 100 orange
-                return list.get(1);
-            else // greater or equal than 100 red
-                return list.get(0);
-        }
-
-
-    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -1356,6 +1372,61 @@ private void setTermsAndPolicy(String webUrl){
                     }catch (Exception e){
                         e.printStackTrace();
                     }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EMPLOYEES_LIST)) {
+                            EmployeeListResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), EmployeeListResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                EmployeeList employeeList = responseModel.getResult().getList().get(0);
+                                tvEmpName.setText(employeeList.getEmpName());
+                                AutoComtEEmail.setText(employeeList.getEmpEmail());
+                                AutoComEMobile.setText(employeeList.getEmpMob());
+                                AutoComEDesi.setText(employeeList.getEmpPosition());
+                                AutoComtEGender.setText(employeeList.getEmpGender());
+                                setDropdownGender();
+                                tvDateValue.setText(employeeList.getEmpDob());
+                                etDescr.setText(employeeList.getEmpAddr());
+                                AutoComPincode.setText(employeeList.getEmpPincode());
+                                //set days list
+                                try{ workTimingLists.clear();}catch (Exception e){}
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_mon), employeeList.getMonWorking()==null?"no":employeeList.getMonWorking(), employeeList.getMonStartTime(), employeeList.getMonEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_tue), employeeList.getTueWorking()==null?"no":employeeList.getTueWorking(), employeeList.getTueStartTime(), employeeList.getTueEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_wed), employeeList.getWedWorking()==null?"no":employeeList.getWedWorking(), employeeList.getWedStartTime(), employeeList.getWedEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_thur), employeeList.getThrusWorking()==null?"no":employeeList.getThrusWorking(), employeeList.getThrusStartTime(), employeeList.getThrusEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_fri), employeeList.getFriWorking()==null?"no":employeeList.getFriWorking(), employeeList.getFriStartTime(), employeeList.getFriEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_sat), employeeList.getSatWorking()==null?"no":employeeList.getSatWorking(), employeeList.getSatStartTime(), employeeList.getSatStartTime()));
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun), employeeList.getSunWorking()==null?"no":employeeList.getSunWorking(), employeeList.getSunStartTime(), employeeList.getSunEndTime()));
+                                setTimeDisabled(Integer.parseInt(isAdmin));
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_COMPANY)) {
+                            GetCompanyResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetCompanyResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                GetCompanyList employeeList = responseModel.getResult().getList().get(0);
+                                AutoComEmailId.setText(employeeList.getEmailId());
+                                AutoComMobile.setText(employeeList.getContactNo());
+                                etOfAddress.setText(employeeList.getOfficeAddress());
+                                AutoComOPincode.setText(employeeList.getPincode());
+                                AutoComGstNo.setText(employeeList.getGstNo());
+                                AutoComStaff.setText(employeeList.getStaffStrength());
+                                AutoComPrefix.setText(employeeList.getUserPrefix());
+                                try{ workTimingLists.clear();}catch (Exception e){}
+                                workTimingLists.add(new WorkTimingList(false,"Mon", employeeList.getMonWorking()==null?"no":employeeList.getMonWorking(), employeeList.getMonStartTime(), employeeList.getMonEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,"Tue", employeeList.getTueWorking()==null?"no":employeeList.getTueWorking(), employeeList.getTueStartTime(), employeeList.getTueEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,"Wed", employeeList.getWedWorking()==null?"no":employeeList.getWedWorking(), employeeList.getWedStartTime(), employeeList.getWedEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,"Thur", employeeList.getThursWorking()==null?"no":employeeList.getThursWorking(), employeeList.getThursStartTime(), employeeList.getThursEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,"Fri", employeeList.getFriWorking()==null?"no":employeeList.getFriWorking(), employeeList.getFriStartTime(), employeeList.getFriEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,"Sat", employeeList.getSatWorking()==null?"no":employeeList.getSatWorking(), employeeList.getSatStartTime(), employeeList.getSatStartTime()));
+                                workTimingLists.add(new WorkTimingList(false,"Sun", employeeList.getSunWorking()==null?"no":employeeList.getSunWorking(), employeeList.getSunStartTime(), employeeList.getSunEndTime()));
+                                setTimeDisabled(Integer.parseInt(isAdmin));
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
                 break;
             case ERROR:
@@ -1365,6 +1436,7 @@ private void setTermsAndPolicy(String webUrl){
                 break;
         }
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1565,10 +1637,41 @@ private void setTermsAndPolicy(String webUrl){
                     //Toast.makeText(mContext, getString(R.string.somthing_went_wrong), Toast.LENGTH_SHORT).show();
                 }
                 break;
-
         }
-
     }
 
+    private void setAllDisabled(int type,boolean state){
+        //all
+        AutoComOfficeLocation.setEnabled(state);
+        if(type==0) {
+            //employee
+            AutoComtEEmail.setEnabled(state);
+            AutoComEMobile.setEnabled(state);
+            AutoComEDesi.setEnabled(state);
+            AutoComtEGender.setEnabled(state);
+            layCalender.setEnabled(state);
+            etDescr.setEnabled(state);
+            AutoComPincode.setEnabled(state);
+            setTimeDisabled(type);
+        }else {
+            //company
+            AutoComGstNo.setEnabled(state);
+            etOfAddress.setEnabled(state);
+            AutoComOPincode.setEnabled(state);
+            AutoComMobile.setEnabled(state);
+            AutoComEmailId.setEnabled(state);
+            AutoComStaff.setEnabled(state);
+            setTimeDisabled(type);
+        }
+    }
+
+    private void setTimeDisabled(int type){
+        if(type==0) {
+           setAdapterForTimingList(false);
+        }else {
+            //company
+            setAdapterForTimingList(true);
+        }
+    }
 
 }

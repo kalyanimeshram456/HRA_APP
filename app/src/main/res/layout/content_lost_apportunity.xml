@@ -354,7 +354,7 @@
                             android:nestedScrollingEnabled="true"
                             android:paddingBottom="@dimen/_1dp"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                            tools:listitem="@layout/row_lost_opportunity" />
+                            tools:listitem="@layout/row_birth_day_list" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 

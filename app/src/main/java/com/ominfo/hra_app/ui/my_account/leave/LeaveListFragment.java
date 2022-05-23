@@ -167,7 +167,6 @@ public class LeaveListFragment extends BaseFragment {
     AppCompatTextView tvTotalCount;
     List<EnquiryPagermodel> enquiryPageList = new ArrayList<>();
     EnquiryPageAdapter enquiryPageAdapter;
-    List<RmListModel> tagRmList = new ArrayList<>();
     @BindView(R.id.nextPage)
     AppCompatImageView nextPage;
     @BindView(R.id.prePage)

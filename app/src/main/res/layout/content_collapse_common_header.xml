@@ -132,13 +132,13 @@
                         android:id="@+id/imgReport"
                         android:layout_width="@dimen/_22dp"
                         android:layout_height="@dimen/_22dp"
+                        android:layout_centerVertical="true"
                         android:layout_marginHorizontal="@dimen/_20dp"
                         android:layout_toRightOf="@+id/imgCall"
                         android:clickable="true"
                         android:onClick="onClick"
-                        android:layout_centerVertical="true"
                         android:src="@drawable/ic_om_filter"
-                        android:visibility="visible" />
+                        android:visibility="invisible" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvComplaintCount"
@@ -177,7 +177,7 @@
                         android:textAlignment="center"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_12sp"
-                        android:visibility="visible" />
+                        android:visibility="invisible" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvNotifyCount"

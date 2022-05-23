@@ -22,7 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class PostRecyclerAdapter extends RecyclerView.Adapter<BaseViewHolder> {
+public class EmployeeListRecyclerAdapter extends RecyclerView.Adapter<BaseViewHolder> {
   private static final int VIEW_TYPE_LOADING = 0;
   private static final int VIEW_TYPE_NORMAL = 1;
   private boolean isLoaderVisible = false;
@@ -30,7 +30,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<BaseViewHolder> {
   Context context;
   private List<EmployeeList> mPostItems;
 
-  public PostRecyclerAdapter(Context context, List<EmployeeList> postItems, ListItemSelectListener listItemSelectListener)
+  public EmployeeListRecyclerAdapter(Context context, List<EmployeeList> postItems, ListItemSelectListener listItemSelectListener)
   {
     this.context = context;
     this.mPostItems = postItems;

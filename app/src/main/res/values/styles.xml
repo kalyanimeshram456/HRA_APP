@@ -14,7 +14,7 @@
     <style name="Editext.Theme" parent="TextAppearance.AppCompat">
         <item name="android:textSize">@dimen/_14sp</item>
         <item name="colorAccent">@color/back_text_colour</item>
-        <item name="android:textColor">@color/back_text_colour</item>
+        <item name="android:textColor">@color/text_disabled</item>
         <item name="android:textColorHint">@color/back_text_colour</item>
         <!--<item name="android:fontFamily">@font/poppins_bold</item>-->
         <item name="colorPrimary">@color/back_text_colour</item>
@@ -96,19 +96,31 @@
 
     </style>
 
+    <style name="NavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="itemTextAppearanceActive">@style/ActiveText</item>
+        <item name="itemTextAppearanceInactive">@style/InactiveText</item>
+        <item name="android:background">@color/deep_red</item>
+        <item name="itemBackground">@drawable/draw_nav_selectore</item>
+        <item name="itemIconTint">@color/deep_red</item>
+        <item name="itemTextColor">@color/deep_red</item>
+        <item name="paddingStart">@dimen/_2dp</item>
+        <item name="paddingEnd">@dimen/_2dp</item>
+    </style>
+    <style name="ActiveText">
+        <item name="android:textColor">@color/deep_red</item>
+    </style>
+    <style name="InactiveText">
+        <item name="android:textColor">@color/deep_red</item>
+    </style>
+    <style name="AppTheme.BottomBar">
+        <item name="colorPrimary">@color/Light_Yellow</item>
+    </style>
+
     <style name="BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
-        <item name="itemBackground">@android:color/transparent</item>
-        <item name="itemIconTint">@android:color/transparent</item>
-        <item name="itemTextColor">@android:color/transparent</item>
-        <item name="itemTextAppearanceActive">@style/TextAppearance.BottomNavigation.Overline</item>
-        <item name="itemTextAppearanceInactive">@style/TextAppearance.BottomNavigation.Overline</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="paddingStart">32dp</item>
-        <item name="paddingEnd">32dp</item>
-        <item name="iconSize">@dimen/_26dp</item>
-        <item name="labelVisibilityMode">labeled</item>
-        <item name="backgroundTint">@android:color/transparent</item>
-        <item name="background">@android:color/transparent</item>
+        <item name="colorPrimary">@android:color/transparent</item>
+        <item name="colorPrimaryDark">@android:color/transparent</item>
+        <item name="colorAccent">@android:color/transparent</item>
+        <item name="iconSize">@dimen/_80dp</item>
     </style>
 
     <style name="TextAppearance.BottomNavigation.Overline" parent="TextAppearance.MaterialComponents.Overline">

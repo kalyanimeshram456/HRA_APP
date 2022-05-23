@@ -4,12 +4,13 @@
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="oval">
             <gradient
+                android:type="linear"
                 android:angle="180"
-                android:startColor="#39cdfc"
-                android:endColor="#175ce1" />
+                android:startColor="@color/color_main"
+                android:endColor="@color/color_main" />
             <size
-                android:width="@dimen/_50dp"
-                android:height="@dimen/_50dp" />
+                android:width="@dimen/_100dp"
+                android:height="@dimen/_100dp" />
         </shape>
     </item>
     <item

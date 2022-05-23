@@ -4,6 +4,8 @@ package com.ominfo.hra_app.ui.employees.model;
 import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
 
+import okhttp3.RequestBody;
+
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
 public class EmployeeList {
@@ -104,6 +106,37 @@ public class EmployeeList {
     private String mWedStartTime;
     @SerializedName("wed_working")
     private String mWedWorking;
+
+    @SerializedName("office_address")
+    private String officeAddress;
+    @SerializedName("office_latitude")
+    private String officeLatitude;
+    @SerializedName("office_longitude")
+    private String officeLongitude;
+
+    public String getOfficeAddress() {
+        return officeAddress;
+    }
+
+    public void setOfficeAddress(String officeAddress) {
+        this.officeAddress = officeAddress;
+    }
+
+    public String getOfficeLatitude() {
+        return officeLatitude;
+    }
+
+    public void setOfficeLatitude(String officeLatitude) {
+        this.officeLatitude = officeLatitude;
+    }
+
+    public String getOfficeLongitude() {
+        return officeLongitude;
+    }
+
+    public void setOfficeLongitude(String officeLongitude) {
+        this.officeLongitude = officeLongitude;
+    }
 
     public String getCasualLeaves() {
         return mCasualLeaves;

@@ -204,6 +204,15 @@
     <string name="scr_lbl_select_status">Select Status</string>
     <string name="scr_lbl_unavailable">Unavailable</string>
     <string name="scr_lbl_rs">₹</string>
+    <string name="scr_lbl_yes">yes</string>
+    <string name="scr_lbl_no">no</string>
+    <string name="scr_lbl_mon">Mon</string>
+    <string name="scr_lbl_tue">Tue</string>
+    <string name="scr_lbl_wed">Wed</string>
+    <string name="scr_lbl_thur">Thur</string>
+    <string name="scr_lbl_fri">Fri</string>
+    <string name="scr_lbl_sat">Sat</string>
+    <string name="scr_lbl_sun">Sun</string>
     <string name="scr_lbl_old_password">Old Password</string>
     <string name="scr_lbl_new_password">New Password</string>
     <string name="scr_lbl_confirm_password">Confirm Password</string>
@@ -319,5 +328,18 @@
     <string name="scr_lbl_trial_plan">Trial plan</string>
     <string name="scr_lbl_coupon_code">Coupon code</string>
     <string name="msg_enter_coupon_code">Enter coupon code</string>
+    <string name="scr_lbl_last_paid_date">Last paid date</string>
+    <string name="scr_lbl_employee_name">Employee name</string>
+    <string name="scr_lbl_payment_date">Payment date</string>
+    <string name="scr_lbl_no_of_leaves">No. of leaves</string>
+    <string name="scr_lbl_salary_slip">Salary Slip</string>
+    <string name="scr_lbl_addition">Addition</string>
+    <string name="scr_lbl_deduction">Deduction</string>
+    <string name="scr_lbl_coupon_applid">Coupon applied successfully.</string>
+    <string name="scr_lbl_registered_address">Registered address</string>
+    <string name="scr_lbl_start_time">09:30:00</string>
+    <string name="scr_lbl_end_time">17:30:00</string>
+    <string name="scr_lbl_upcoming_birthdays">Upcoming Birthdays</string>
+    <string name="scr_lbl_today_s_birthday">Today\'s Birthday</string>
 
 </resources>

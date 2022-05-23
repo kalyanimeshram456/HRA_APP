@@ -65,29 +65,85 @@ public class EditEmployeeRequest {
     @SerializedName("token")
     private RequestBody token;
 
+    @SerializedName("office_address")
+    private RequestBody mOfficeAddress;
+    @SerializedName("office_latitude")
+    private RequestBody mOfficeLatitude;
+    @SerializedName("office_longitude")
+    private RequestBody mOfficeLongitude;
+    @SerializedName("fri_working")
+    private RequestBody fri_working;
+    @SerializedName("fri_start_time")
+    private RequestBody fri_start_time;
+    @SerializedName("fri_end_time")
+    private RequestBody fri_end_time;
+    @SerializedName("mon_end_time")
+    private RequestBody mMonEndTime;
+    @SerializedName("mon_start_time")
+    private RequestBody mMonStartTime;
+    @SerializedName("mon_working")
+    private RequestBody mMonWorking;
+    @SerializedName("sat_end_time")
+    private RequestBody mSatEndTime;
+    @SerializedName("sat_start_time")
+    private RequestBody mSatStartTime;
+    @SerializedName("sat_working")
+    private RequestBody mSatWorking;
+    @SerializedName("staff_strength")
+    private RequestBody mStaffStrength;
+    @SerializedName("sun_end_time")
+    private RequestBody mSunEndTime;
+    @SerializedName("sun_start_time")
+    private RequestBody mSunStartTime;
+    @SerializedName("sun_working")
+    private RequestBody mSunWorking;
+    @SerializedName("thurs_end_time")
+    private RequestBody mThursEndTime;
+    @SerializedName("thurs_start_time")
+    private RequestBody mThursStartTime;
+    @SerializedName("thurs_working")
+    private RequestBody mThursWorking;
+    @SerializedName("tue_end_time")
+    private RequestBody mTueEndTime;
+    @SerializedName("tue_start_time")
+    private RequestBody mTueStartTime;
+    @SerializedName("tue_working")
+    private RequestBody mTueWorking;
+    @SerializedName("updated_by")
+    private RequestBody mUpdatedBy;
+    @SerializedName("updated_on")
+    private RequestBody mUpdatedOn;
+    @SerializedName("user_prefix")
+    private RequestBody mUserPrefix;
+    @SerializedName("wed_end_time")
+    private RequestBody mWedEndTime;
+    @SerializedName("wed_start_time")
+    private RequestBody mWedStartTime;
+    @SerializedName("wed_working")
+    private RequestBody mWedWorking;
 
-    public RequestBody getToken() {
-        return token;
+    public RequestBody getFri_working() {
+        return fri_working;
     }
 
-    public void setToken(RequestBody token) {
-        this.token = token;
+    public void setFri_working(RequestBody fri_working) {
+        this.fri_working = fri_working;
     }
 
-    public RequestBody getUpdatedBy() {
-        return updatedBy;
+    public RequestBody getFri_start_time() {
+        return fri_start_time;
     }
 
-    public void setUpdatedBy(RequestBody updatedBy) {
-        this.updatedBy = updatedBy;
+    public void setFri_start_time(RequestBody fri_start_time) {
+        this.fri_start_time = fri_start_time;
     }
 
-    public RequestBody getEmpId() {
-        return empId;
+    public RequestBody getFri_end_time() {
+        return fri_end_time;
     }
 
-    public void setEmpId(RequestBody empId) {
-        this.empId = empId;
+    public void setFri_end_time(RequestBody fri_end_time) {
+        this.fri_end_time = fri_end_time;
     }
 
     public RequestBody getAction() {
@@ -178,6 +234,14 @@ public class EditEmployeeRequest {
         this.companyID = companyID;
     }
 
+    public RequestBody getToken() {
+        return token;
+    }
+
+    public void setToken(RequestBody token) {
+        this.token = token;
+    }
+
     public RequestBody getSalary() {
         return salary;
     }
@@ -209,4 +273,214 @@ public class EditEmployeeRequest {
     public void setSickLeaves(RequestBody sickLeaves) {
         this.sickLeaves = sickLeaves;
     }
+
+    public RequestBody getMonEndTime() {
+        return mMonEndTime;
+    }
+
+    public void setMonEndTime(RequestBody monEndTime) {
+        mMonEndTime = monEndTime;
+    }
+
+    public RequestBody getMonStartTime() {
+        return mMonStartTime;
+    }
+
+    public void setMonStartTime(RequestBody monStartTime) {
+        mMonStartTime = monStartTime;
+    }
+
+    public RequestBody getMonWorking() {
+        return mMonWorking;
+    }
+
+    public void setMonWorking(RequestBody monWorking) {
+        mMonWorking = monWorking;
+    }
+
+    public RequestBody getOfficeAddress() {
+        return mOfficeAddress;
+    }
+
+    public void setOfficeAddress(RequestBody officeAddress) {
+        mOfficeAddress = officeAddress;
+    }
+
+    public RequestBody getOfficeLatitude() {
+        return mOfficeLatitude;
+    }
+
+    public void setOfficeLatitude(RequestBody officeLatitude) {
+        mOfficeLatitude = officeLatitude;
+    }
+
+    public RequestBody getOfficeLongitude() {
+        return mOfficeLongitude;
+    }
+
+    public void setOfficeLongitude(RequestBody officeLongitude) {
+        mOfficeLongitude = officeLongitude;
+    }
+
+    public RequestBody getSatEndTime() {
+        return mSatEndTime;
+    }
+
+    public void setSatEndTime(RequestBody satEndTime) {
+        mSatEndTime = satEndTime;
+    }
+
+    public RequestBody getSatStartTime() {
+        return mSatStartTime;
+    }
+
+    public void setSatStartTime(RequestBody satStartTime) {
+        mSatStartTime = satStartTime;
+    }
+
+    public RequestBody getSatWorking() {
+        return mSatWorking;
+    }
+
+    public void setSatWorking(RequestBody satWorking) {
+        mSatWorking = satWorking;
+    }
+
+    public RequestBody getStaffStrength() {
+        return mStaffStrength;
+    }
+
+    public void setStaffStrength(RequestBody staffStrength) {
+        mStaffStrength = staffStrength;
+    }
+
+    public RequestBody getSunEndTime() {
+        return mSunEndTime;
+    }
+
+    public void setSunEndTime(RequestBody sunEndTime) {
+        mSunEndTime = sunEndTime;
+    }
+
+    public RequestBody getSunStartTime() {
+        return mSunStartTime;
+    }
+
+    public void setSunStartTime(RequestBody sunStartTime) {
+        mSunStartTime = sunStartTime;
+    }
+
+    public RequestBody getSunWorking() {
+        return mSunWorking;
+    }
+
+    public void setSunWorking(RequestBody sunWorking) {
+        mSunWorking = sunWorking;
+    }
+
+    public RequestBody getThursEndTime() {
+        return mThursEndTime;
+    }
+
+    public void setThursEndTime(RequestBody thursEndTime) {
+        mThursEndTime = thursEndTime;
+    }
+
+    public RequestBody getThursStartTime() {
+        return mThursStartTime;
+    }
+
+    public void setThursStartTime(RequestBody thursStartTime) {
+        mThursStartTime = thursStartTime;
+    }
+
+    public RequestBody getThursWorking() {
+        return mThursWorking;
+    }
+
+    public void setThursWorking(RequestBody thursWorking) {
+        mThursWorking = thursWorking;
+    }
+
+    public RequestBody getTueEndTime() {
+        return mTueEndTime;
+    }
+
+    public void setTueEndTime(RequestBody tueEndTime) {
+        mTueEndTime = tueEndTime;
+    }
+
+    public RequestBody getTueStartTime() {
+        return mTueStartTime;
+    }
+
+    public void setTueStartTime(RequestBody tueStartTime) {
+        mTueStartTime = tueStartTime;
+    }
+
+    public RequestBody getTueWorking() {
+        return mTueWorking;
+    }
+
+    public void setTueWorking(RequestBody tueWorking) {
+        mTueWorking = tueWorking;
+    }
+
+    public RequestBody getUpdatedOn() {
+        return mUpdatedOn;
+    }
+
+    public void setUpdatedOn(RequestBody updatedOn) {
+        mUpdatedOn = updatedOn;
+    }
+
+    public RequestBody getUserPrefix() {
+        return mUserPrefix;
+    }
+
+    public void setUserPrefix(RequestBody userPrefix) {
+        mUserPrefix = userPrefix;
+    }
+
+    public RequestBody getWedEndTime() {
+        return mWedEndTime;
+    }
+
+    public void setWedEndTime(RequestBody wedEndTime) {
+        mWedEndTime = wedEndTime;
+    }
+
+    public RequestBody getWedStartTime() {
+        return mWedStartTime;
+    }
+
+    public void setWedStartTime(RequestBody wedStartTime) {
+        mWedStartTime = wedStartTime;
+    }
+
+    public RequestBody getWedWorking() {
+        return mWedWorking;
+    }
+
+    public void setWedWorking(RequestBody wedWorking) {
+        mWedWorking = wedWorking;
+    }
+
+    public RequestBody getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(RequestBody updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public RequestBody getEmpId() {
+        return empId;
+    }
+
+    public void setEmpId(RequestBody empId) {
+        this.empId = empId;
+    }
+
+
 }

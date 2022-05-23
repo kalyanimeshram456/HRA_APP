@@ -7,7 +7,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.ominfo.hra_app.ui.attendance.model.LocationPerHourViewModel;
 import com.ominfo.hra_app.ui.attendance.model.MarkAttendanceViewModel;
 import com.ominfo.hra_app.ui.attendance.model.UpdateAttendanceViewModel;
-import com.ominfo.hra_app.ui.dashboard.model.GetDashboardViewModel;
+import com.ominfo.hra_app.ui.dashboard.model.CalenderHolidaysListViewModel;
+import com.ominfo.hra_app.ui.dashboard.model.GetBirthDayListViewModel;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeViewModel;
 import com.ominfo.hra_app.ui.employees.model.DeactivateEmployeeViewModel;
 import com.ominfo.hra_app.ui.employees.model.EditEmployeeViewModel;
@@ -19,6 +20,7 @@ import com.ominfo.hra_app.ui.login.model.LogoutViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ChangePasswordViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ChangeProfileImageViewModel;
+import com.ominfo.hra_app.ui.my_account.model.GetCompanyViewModel;
 import com.ominfo.hra_app.ui.my_account.model.GetProfileImageViewModel;
 import com.ominfo.hra_app.ui.my_account.model.GetTicketViewModel;
 import com.ominfo.hra_app.ui.my_account.model.LeaveApplicationViewModel;
@@ -30,9 +32,12 @@ import com.ominfo.hra_app.ui.notifications.model.DeleteNotificationViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LeaveSingleRecordViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LeaveStatusViewModel;
 import com.ominfo.hra_app.ui.notifications.model.NotificationViewModel;
+import com.ominfo.hra_app.ui.registration.model.ApplyCouponViewModel;
 import com.ominfo.hra_app.ui.registration.model.CheckPrefixViewModel;
 import com.ominfo.hra_app.ui.registration.model.RegistrationViewModel;
 import com.ominfo.hra_app.ui.registration.model.SubscriptionViewModel;
+import com.ominfo.hra_app.ui.salary.model.SalaryAllListViewModel;
+import com.ominfo.hra_app.ui.salary.model.SalarySheetViewModel;
 import com.ominfo.hra_app.ui.sales_credit.model.SalesCreditViewModel;
 import com.ominfo.hra_app.ui.sales_credit.model.View30ViewModel;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
@@ -69,8 +74,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
          else  if (modelClass.isAssignableFrom(GetVisitViewModel.class)) {
              return (T) new GetVisitViewModel(service);
          }
-         else  if (modelClass.isAssignableFrom(GetDashboardViewModel.class)) {
-             return (T) new GetDashboardViewModel(service);
+         else  if (modelClass.isAssignableFrom(GetBirthDayListViewModel.class)) {
+             return (T) new GetBirthDayListViewModel(service);
          }
          else  if (modelClass.isAssignableFrom(ProfileViewModel.class)) {
                  return (T) new ProfileViewModel(service);
@@ -171,6 +176,18 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
              return (T) new PastLeaveListViewModel(service);
          }else  if (modelClass.isAssignableFrom(LeaveCountViewModel.class)) {
              return (T) new LeaveCountViewModel(service);
+         }else  if (modelClass.isAssignableFrom(SalaryAllListViewModel.class)) {
+             return (T) new SalaryAllListViewModel(service);
+         }else  if (modelClass.isAssignableFrom(SalarySheetViewModel.class)) {
+             return (T) new SalarySheetViewModel(service);
+         }else  if (modelClass.isAssignableFrom(SalarySheetViewModel.class)) {
+             return (T) new SalarySheetViewModel(service);
+         }else  if (modelClass.isAssignableFrom(ApplyCouponViewModel.class)) {
+        return (T) new ApplyCouponViewModel(service);
+         }else  if (modelClass.isAssignableFrom(GetCompanyViewModel.class)) {
+             return (T) new GetCompanyViewModel(service);
+         }else  if (modelClass.isAssignableFrom(CalenderHolidaysListViewModel.class)) {
+             return (T) new CalenderHolidaysListViewModel(service);
          }
 
         throw new IllegalArgumentException("Unknown class name");

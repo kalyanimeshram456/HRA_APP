@@ -114,7 +114,6 @@
             android:theme="@style/AppTheme.White">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -131,10 +130,16 @@
             android:theme="@style/AppTheme.FullScreen"
             android:windowSoftInputMode="adjustPan" />
 
-      <!--  <meta-data
+        <activity
+            android:name=".ui.visit_report.activity.AddLocationActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.FullScreen">
+        </activity>
+        <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
--->
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

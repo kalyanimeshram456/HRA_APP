@@ -421,6 +421,24 @@ public class AppUtils {
         }
         return sDateFormate;
     }
+    public static String convertIntToMonth(String sDate) {
+        String sDateFormate = "";
+        try {
+            String pattern = "MMM";
+            String inputPattern = "yyyy-MM";
+
+            SimpleDateFormat fmt = new SimpleDateFormat(inputPattern);
+            Date date = fmt.parse(sDate);
+
+            SimpleDateFormat fmtOut = new SimpleDateFormat(pattern);
+            sDateFormate = fmtOut.format(date);
+
+            LogUtil.printLog(TAG, "sDateFormate: " + sDateFormate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sDateFormate;
+    }
 
     public static String getOSVersion() {
 
@@ -542,6 +560,19 @@ public class AppUtils {
     public static String convertAlarmDate(String date12){
         SimpleDateFormat displayFormat = new SimpleDateFormat("E, MMM yyyy");
         SimpleDateFormat parseFormat = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = null;
+        try {
+            date = parseFormat.parse(date12);
+            return displayFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return date12;
+        }
+    }
+
+    public static String convertDobDate(String date12){
+        SimpleDateFormat displayFormat = new SimpleDateFormat("dd, MMM yyyy");
+        SimpleDateFormat parseFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = null;
         try {
             date = parseFormat.parse(date12);

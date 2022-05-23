@@ -4,132 +4,167 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.hra_app.R;
-import com.ominfo.hra_app.ui.employees.model.EmployeeList;
+import com.ominfo.hra_app.ui.employees.BaseViewHolder;
+import com.ominfo.hra_app.ui.salary.model.SalaryAllData;
+import com.ominfo.hra_app.ui.salary.model.SalaryList;
+import com.ominfo.hra_app.util.AppUtils;
 
 import java.util.List;
 
-public class SalaryAdapter extends RecyclerView.Adapter<SalaryAdapter.ViewHolder> {
-    ListItemSelectListener listItemSelectListener;
-    private List<EmployeeList> mListData;
-    private Context mContext;
-    private String mDate;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
-    public SalaryAdapter(Context mContext) {
-        this.mContext = mContext;
+public class SalaryAdapter extends RecyclerView.Adapter<BaseViewHolder> {
+  private static final int VIEW_TYPE_LOADING = 0;
+  private static final int VIEW_TYPE_NORMAL = 1;
+  private boolean isLoaderVisible = false;
+  ListItemSelectListener listItemSelectListener;
+  Context context;
+  private List<SalaryList> mPostItems;
+  private List<SalaryAllData> dataList;
+
+  public SalaryAdapter(Context context, List<SalaryList> postItems, List<SalaryAllData> dataList, ListItemSelectListener listItemSelectListener)
+  {
+    this.context = context;
+    this.mPostItems = postItems;this.dataList = dataList;
+    this.listItemSelectListener = listItemSelectListener;
+  }
+
+  @NonNull @Override
+  public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+    switch (viewType) {
+      case VIEW_TYPE_NORMAL:
+        return new ViewHolder(
+            LayoutInflater.from(parent.getContext()).inflate(R.layout.row_salary, parent, false));
+      case VIEW_TYPE_LOADING:
+        return new ProgressHolder(
+            LayoutInflater.from(parent.getContext()).inflate(R.layout.item_loading, parent, false));
+      default:
+        return null;
+    }
+  }
+
+  @Override
+  public void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
+    holder.onBind(position);
+  }
+
+  @Override
+  public int getItemViewType(int position) {
+    if (isLoaderVisible) {
+      return position == mPostItems.size() - 1 ? VIEW_TYPE_LOADING : VIEW_TYPE_NORMAL;
+    } else {
+      return VIEW_TYPE_NORMAL;
+    }
+  }
+
+  @Override
+  public int getItemCount() {
+    return mPostItems == null ? 0 : mPostItems.size();
+  }
+
+  public void addItems(List<SalaryList> postItems,List<SalaryAllData> mdataList) {
+    mPostItems.addAll(postItems);
+    dataList.addAll(mdataList);
+    notifyDataSetChanged();
+  }
+
+  public void addLoading() {
+    isLoaderVisible = true;
+    mPostItems.add(new SalaryList());
+    dataList.add(new SalaryAllData());
+    notifyItemInserted(mPostItems.size() - 1);
+    notifyItemInserted(dataList.size() - 1);
+  }
+
+  public void removeLoading() {
+    isLoaderVisible = false;
+    int position = mPostItems.size() - 1;
+    SalaryList item = getItem(position);
+    if (item != null) {
+      mPostItems.remove(position);
+      notifyItemRemoved(position);
+      dataList.remove(position);
+      notifyItemRemoved(position);
+    }
+  }
+
+  public void clear() {
+    mPostItems.clear();
+    dataList.clear();
+    notifyDataSetChanged();
+  }
+
+  SalaryList getItem(int position) {
+    return mPostItems.get(position);
+  }
+
+  public class ViewHolder extends BaseViewHolder {
+    @BindView(R.id.tvEmpName)
+    AppCompatTextView textViewTitle;
+    @BindView(R.id.tvDesi)
+    AppCompatTextView textViewDescription;
+    @BindView(R.id.tvDate)
+    AppCompatTextView tvDate;
+    @BindView(R.id.tvAmount)
+    AppCompatTextView tvAmount;
+    @BindView(R.id.layCard)
+    CardView layCard;
+    @BindView(R.id.imgBirthPro)
+    CircleImageView imgBirthPro;
+    @BindView(R.id.progress_barBirth)
+    ProgressBar progress_barBirth;
+    ViewHolder(View itemView) {
+      super(itemView);
+      ButterKnife.bind(this, itemView);
     }
 
-    public SalaryAdapter(Context context, List<EmployeeList> listData, ListItemSelectListener itemClickListener) {
-        this.mListData = listData;
-        this.mContext = context;
-        this.listItemSelectListener = itemClickListener;
+    protected void clear() {
+
     }
 
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View listItem = layoutInflater.inflate(R.layout.row_salary, parent, false);
+    public void onBind(int position) {
+      super.onBind(position);
+      SalaryList item = mPostItems.get(position);
+      SalaryAllData itemD = dataList.get(position);
+      tvAmount.setText(AppUtils.convertyyyytodd(itemD.getCreatedOn()));
+      textViewTitle.setText(item.getEmpName());
+      textViewDescription.setText(item.getEmpPosition());
+      AppUtils.loadImageURL(context,mPostItems.get(position).getEmpProfilePic(),
+              imgBirthPro,progress_barBirth);
 
-        return new ViewHolder(listItem);
-    }
-
-    public void updateList(List<EmployeeList> list){
-        mListData = list;
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
-        if(mListData.size()>0) {
-            //holder.layStatus.setVisibility(View.GONE);
-            holder.setIsRecyclable(false);
-           /* holder.tvName.setText(mListData.get(position).getDocNo()+" ("+mListData.get(position).getType()+")");
-            holder.tvCity.setText(mListData.get(position).getCityName());*/
+      layCard.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          listItemSelectListener.onItemClick(0,mPostItems.get(position));
         }
-        else {
-            holder.setIsRecyclable(true);
-        }
-
-     /*   holder.tvCity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mListData.get(position).getType().equals("Customer")) {
-                    //LogUtil.printToastMSG(mContext,mListData.get(position).getType());
-                    listItemSelectListener.onItemClick(0,mListData.get(position));
-                }
-                else{
-                    if(mListData.get(position).getUrl()!=null &&
-                            !mListData.get(position).getUrl().equals("")) {
-                        //LogUtil.printToastMSG(mContext, mListData.get(position).getType());
-                        listItemSelectListener.onItemClick(1, mListData.get(position));
-                    }
-                    else{
-                        LogUtil.printToastMSG(mContext,"Url not available!");
-                    }
-                }
-            }
-        });
-        holder.tvName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mListData.get(position).getType().equals("Customer")) {
-                    //LogUtil.printToastMSG(mContext,mListData.get(position).getType());
-                    listItemSelectListener.onItemClick(0,mListData.get(position));
-                }
-                else{
-                    if(mListData.get(position).getUrl()!=null &&
-                            !mListData.get(position).getUrl().equals("")) {
-                        //LogUtil.printToastMSG(mContext, mListData.get(position).getType());
-                        listItemSelectListener.onItemClick(1, mListData.get(position));
-                    }
-                    else{
-                        LogUtil.printToastMSG(mContext,"Url not available!");
-                    }
-                }
-            }
-        });
-*/
-       /*
-        holder.imgClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.layStatus.setVisibility(View.GONE);
-            }
-        });*/
-
+      });
     }
+  }
 
+  public class ProgressHolder extends BaseViewHolder {
+    ProgressHolder(View itemView) {
+      super(itemView);
+      ButterKnife.bind(this, itemView);
+    }
 
     @Override
-    public int getItemCount() {
-        return mListData == null ? 0 : mListData.size();
+    protected void clear() {
     }
+  }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        AppCompatTextView tvName,tvCity;
-        LinearLayoutCompat layClick;
-        AppCompatImageView imgExit,imgClose;
-        FrameLayout layStatus;
-
-        ViewHolder(View itemView) {
-            super(itemView);
-            //tvName = itemView.findViewById(R.id.tvName);
-           // tvCity = itemView.findViewById(R.id.tvCity);
-            //layClick = itemView.findViewById(R.id.layClick);
-          }
-    }
-
-    public interface ListItemSelectListener {
-        void onItemClick(int mData,EmployeeList searchresult);
-    }
+  public interface ListItemSelectListener {
+    void onItemClick(int mData, SalaryList searchresult);
+  }
 }

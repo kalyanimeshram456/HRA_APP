@@ -30,6 +30,8 @@ import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.login.LoginActivity;
+import com.ominfo.hra_app.ui.registration.model.ApplyCouponResponse;
+import com.ominfo.hra_app.ui.registration.model.ApplyCouponViewModel;
 import com.ominfo.hra_app.ui.registration.model.CheckPrefixResponse;
 import com.ominfo.hra_app.ui.registration.model.CheckPrefixViewModel;
 import com.ominfo.hra_app.ui.registration.model.RegisterResponse;
@@ -56,7 +58,7 @@ public class RegistrationActivity extends BaseActivity {
     private RegistrationViewModel registrationViewModel;
     private CheckPrefixViewModel checkPrefixViewModel;
     private SubscriptionViewModel subscriptionViewModel;
-
+    private ApplyCouponViewModel applyCouponViewModel;
     private AppDatabase mDb;
     public static boolean activityVisible; // Variable that will check the
 
@@ -80,6 +82,10 @@ public class RegistrationActivity extends BaseActivity {
     TextInputLayout input_textUsernamePrefix;
     @BindView(R.id.AutoComUsernamePrefix)
     AppCompatAutoCompleteTextView AutoComUsernamePrefix;
+    @BindView(R.id.input_textCoupon)
+    TextInputLayout input_textCoupon;
+    @BindView(R.id.AutoComCoupon)
+    AppCompatAutoCompleteTextView AutoComCoupon;
     @BindView(R.id.input_textEmailId)
     TextInputLayout input_textEmailId;
     @BindView(R.id.AutoComEmailId)
@@ -128,6 +134,9 @@ public class RegistrationActivity extends BaseActivity {
 
         subscriptionViewModel = ViewModelProviders.of(RegistrationActivity.this, mViewModelFactory).get(SubscriptionViewModel.class);
         subscriptionViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_get_subs_price));
+
+        applyCouponViewModel = ViewModelProviders.of(RegistrationActivity.this, mViewModelFactory).get(ApplyCouponViewModel.class);
+        applyCouponViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_check_coupon_validity));
     }
 
     /* Call Api For Login user and get user details */
@@ -169,7 +178,17 @@ public class RegistrationActivity extends BaseActivity {
             LogUtil.printToastMSG(RegistrationActivity.this, getString(R.string.err_msg_connection_was_refused));
         }
     }
+    /* Call Api For user prefix */
+    private void callCheckCouponApi() {
+        if (NetworkCheck.isInternetAvailable(RegistrationActivity.this)) {
+            RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_check_coupon_validity);
+            RequestBody mRequestBodyName = RequestBody.create(MediaType.parse("text/plain"), AutoComCoupon.getText().toString().trim());
+            applyCouponViewModel.hitApplyCouponApi(mRequestBodyAction, mRequestBodyName);
 
+        } else {
+            LogUtil.printToastMSG(RegistrationActivity.this, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
     /*
      * ACCESS_FINE_LOCATION permission result
      * */
@@ -324,12 +343,15 @@ public class RegistrationActivity extends BaseActivity {
     }
 
     //perform click actions
-    @OnClick({R.id.imgInfo, R.id.btnRegister})
+    @OnClick({R.id.imgInfo, R.id.btnRegister,R.id.applyButton})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
             case R.id.imgInfo:
                 showSubscriptionDialog();
+                break;
+            case R.id.applyButton:
+                callCheckCouponApi();
                 break;
             case R.id.btnRegister:
                 if (isDetailsValid()) {
@@ -434,6 +456,17 @@ public class RegistrationActivity extends BaseActivity {
                             tvSubDesc.setText("Subscription charges will be\n ₹" + subCharges + " / User / Year + GST");
                             setSubCharges();
                             LogUtil.printToastMSG(RegistrationActivity.this, responseModel.getResult().getMessage());
+                        }
+                    }
+                    if (tag.equalsIgnoreCase(DynamicAPIPath.action_check_coupon_validity)) {
+                        ApplyCouponResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ApplyCouponResponse.class);
+                        if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                          // AutoComCoupon.setError(getString(R.string.scr_lbl_coupon_applid));
+                            setError(1, input_textCoupon, getString(R.string.scr_lbl_coupon_applid));
+                           // LogUtil.printToastMSG(RegistrationActivity.this, responseModel.getResult().getMessage());
+                        }
+                        else{// AutoComCoupon.setError("Coupon is not valid.");
+                            setError(0, input_textCoupon, "Coupon is not valid.");
                         }
                     }
                 }

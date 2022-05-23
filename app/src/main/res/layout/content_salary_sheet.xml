@@ -97,12 +97,12 @@
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="@dimen/_10dp"
                         android:layout_gravity="center_vertical"
-                        android:gravity="center_vertical"
+                        android:layout_marginHorizontal="@dimen/_10dp"
                         android:background="@android:color/transparent"
-                        android:paddingVertical="@dimen/_10dp"
-                        android:orientation="horizontal">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingVertical="@dimen/_10dp">
 
                         <RelativeLayout
                             android:id="@+id/layBirthPro"
@@ -146,10 +146,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="left|center_vertical"
-                            android:layout_weight="0.8"
-                            android:paddingTop="@dimen/_0dp"
+                            android:layout_weight="0.9"
                             android:gravity="left|center_vertical"
-                            >
+                            android:paddingTop="@dimen/_0dp">
 
 
                             <androidx.appcompat.widget.AppCompatTextView
@@ -182,9 +181,9 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="right|center_horizontal"
                             android:layout_weight="1"
-                            android:visibility="gone"
                             android:gravity="right|center_horizontal"
-                            android:paddingTop="@dimen/_0dp">
+                            android:paddingTop="@dimen/_0dp"
+                            android:visibility="gone">
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/tvDate"

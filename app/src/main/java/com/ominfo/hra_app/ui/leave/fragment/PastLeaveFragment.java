@@ -236,7 +236,19 @@ public class PastLeaveFragment extends BaseFragment {
         } else {
             rvEnquiryPager.setVisibility(View.GONE);
         }
-
+        enquiryPageAdapter = new EnquiryPageAdapter(mContext, enquiryPageList, new EnquiryPageAdapter.ListItemSelectListener() {
+            @Override
+            public void onItemClick(EnquiryPagermodel mData, List<EnquiryPagermodel> mDataList) {
+                enquiryPageList = mDataList;
+                try {
+                    pagerClicked = String.valueOf(Integer.parseInt(mData.getPageNo())-1);
+                    enquiryPageAdapter.updateList(mDataList);
+                }catch (Exception e){e.printStackTrace();}
+                try {
+                    callGetPastLeaveApi(String.valueOf(Integer.parseInt(mData.getPageNo()) - 1));
+                }catch (Exception e){e.printStackTrace();}
+            }
+        });
         rvEnquiryPager.setHasFixedSize(true);
         //rvEnquiryPager.setLayoutManager(new GridLayoutManager(mContext, 3));
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false);
@@ -246,32 +258,6 @@ public class PastLeaveFragment extends BaseFragment {
         try{
             rvEnquiryPager.scrollToPosition(Integer.parseInt(pagerClicked));}catch (Exception e){e.printStackTrace();}
         final boolean[] check = {false};
-        prePage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //try{
-                /*LogUtil.printToastMSG(mContext,"prev");
-                int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
-                rvEnquiryPager.scrollToPosition(firstVisiblePosition-1);
-                //int firstVisiblePositionNew = layoutManager.findFirstVisibleItemPosition();
-                enquiryPageAdapter.updatePageList(firstVisiblePosition-1);
-                }catch (Exception e){e.printStackTrace();*/
-                //}catch (Exception e){e.printStackTrace();}
-            }
-        });
-        nextPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    /*LogUtil.printToastMSG(mContext,"next");
-                    int firstVisiblePositionLast = layoutManager.findLastVisibleItemPosition();
-                    int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
-                    rvEnquiryPager.scrollToPosition(firstVisiblePositionLast-1);
-                    //int firstVisiblePositionNew = layoutManager.findFirstVisibleItemPosition();
-                    enquiryPageAdapter.updatePageList(firstVisiblePosition + 1);*/
-                }catch (Exception e){e.printStackTrace();}
-            }
-        });
     }
 
     private void resetApiData(){
@@ -544,7 +530,7 @@ public class PastLeaveFragment extends BaseFragment {
                 String monthNumber  =  String.valueOf(month).length()==1?"0"+month : String.valueOf(month);
                 RequestBody mRequestBodyMonth = RequestBody.create(MediaType.parse("text/plain"), monthNumber);
                 RequestBody mRequestPageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);
-                RequestBody mRequestPageSize = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
+                RequestBody mRequestPageSize = RequestBody.create(MediaType.parse("text/plain"), "4");
 
                 PastLeaveListRequest request = new PastLeaveListRequest();
                 request.setAction(mRequestBodyAction);
@@ -834,8 +820,8 @@ public class PastLeaveFragment extends BaseFragment {
                                                     String.valueOf(((responseModel.getResult().getNextpage()-1) + pastLeaveList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries"));
                                         }
                                         else {
-                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getResult().getNextpage()-1)*7)+1) + " to " +
-                                                    String.valueOf(((responseModel.getResult().getNextpage()-1)*7)+ pastLeaveList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries");
+                                            tvPage.setText("Showing " + String.valueOf(((responseModel.getResult().getNextpage()-1)*4)+1) + " to " +
+                                                    String.valueOf(((responseModel.getResult().getNextpage()-1)*4)+ pastLeaveList.size()) + " of " + String.valueOf(responseModel.getResult().getTotalrows()) + "\nEntries");
                                         }
                                     }
                                     else{

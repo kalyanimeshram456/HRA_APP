@@ -33,6 +33,14 @@ public interface NetworkAPIServices {
 
     @Multipart
     @POST()
+    Observable<JsonElement> getCompany(@Url String url,
+                                       @Part("action") RequestBody uploadType,
+                                       @Part("company_id") RequestBody company_id,
+                                       @Part("page_number") RequestBody page_number,
+                                       @Part("page_size") RequestBody page_size);
+
+    @Multipart
+    @POST()
     Observable<JsonElement> getTicketNo(@Url String url,
                                         @Part("action") RequestBody action);
 
@@ -115,6 +123,11 @@ public interface NetworkAPIServices {
     Observable<JsonElement> checkPrefix(@Url String url,
                                         @Part("action") RequestBody uploadType,
                                         @Part("user_prefix") RequestBody user_prefix);
+    @Multipart
+    @POST()
+    Observable<JsonElement> applyCoupon(@Url String url,
+                                        @Part("action") RequestBody uploadType,
+                                        @Part("cou_code") RequestBody cou_code);
 
     @Multipart
     @POST()
@@ -275,12 +288,17 @@ public interface NetworkAPIServices {
 
     @Multipart
     @POST()
-    Observable<JsonElement> getDashboard(@Url String url,
+    Observable<JsonElement> getBirthDayList(@Url String url,
                                          @Part("action") RequestBody uploadType,
-                                         @Part("employee") RequestBody uploadTypeEmployee,
-                                         @Part("company_id") RequestBody companyId,
-                                         @Part("start_date") RequestBody startDate,
-                                         @Part("end_date") RequestBody endDate);
+                                         @Part("month") RequestBody month);
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> calenderHolidays(@Url String url,
+                                            @Part("action") RequestBody uploadType,
+                                            @Part("company_id") RequestBody company_id,
+                                             @Part("from_date") RequestBody from_date,
+                                             @Part("end_date") RequestBody end_date);
 
     @Multipart
     @POST()
@@ -348,6 +366,25 @@ public interface NetworkAPIServices {
 
     @Multipart
     @POST()
+    Observable<JsonElement> salaryAllList(@Url String url,
+                                          @Part("action") RequestBody uploadType,
+                                          @Part("isAdmin") RequestBody employee,
+                                          @Part("company_ID") RequestBody company_id,
+                                          @Part("emp_id") RequestBody emp_id,
+                                          @Part("page_number") RequestBody page_number,
+                                          @Part("page_size") RequestBody page_size
+                                          );
+    @Multipart
+    @POST()
+    Observable<JsonElement> salarySheet(@Url String url,
+                                          @Part("action") RequestBody uploadType,
+                                          @Part("emp_id") RequestBody emp_id,
+                                          @Part("page_number") RequestBody page_number,
+                                          @Part("page_size") RequestBody page_size
+    );
+
+    @Multipart
+    @POST()
     Observable<JsonElement> acceptRejectList(@Url String url,
                                              @Part("action") RequestBody uploadType,
                                              @Part("emp_id") RequestBody emp_id,
@@ -390,23 +427,27 @@ public interface NetworkAPIServices {
     @Multipart
     @POST()
     Observable<JsonElement> addEmployee(@Url String url,
-                                        @Part("action") RequestBody uploadType,
-                                        @Part("emp_name") RequestBody emp_name,
-                                        @Part("emp_mob") RequestBody emp_mob,
-                                        @Part("emp_email") RequestBody emp_email,
-                                        @Part("emp_addr") RequestBody emp_addr,
-                                        @Part("emp_dob") RequestBody emp_dob,
-                                        @Part("emp_gender") RequestBody emp_gender,
-                                        @Part("emp_pincode") RequestBody emp_pincode,
-                                        @Part("emp_position") RequestBody emp_position,
-                                        @Part("created_by") RequestBody created_by,
-                                        @Part("company_ID") RequestBody company_ID,
-                                        @Part("token") RequestBody token,
-                                        @Part("salary") RequestBody salary,
-                                        @Part("other_leaves") RequestBody other_leaves,
-                                        @Part("casual_leaves") RequestBody casual_leaves,
-                                        @Part("sick_leaves") RequestBody sick_leaves,
-                                        @Part("joining_date") RequestBody joining_date
+                                        @Part("action") RequestBody uploadType, @Part("emp_name") RequestBody emp_name,
+                                        @Part("emp_mob") RequestBody emp_mob, @Part("emp_email") RequestBody emp_email,
+                                        @Part("emp_addr") RequestBody emp_addr, @Part("emp_dob") RequestBody emp_dob,
+                                        @Part("emp_gender") RequestBody emp_gender, @Part("emp_pincode") RequestBody emp_pincode,
+                                        @Part("emp_position") RequestBody emp_position, @Part("created_by") RequestBody created_by,
+                                        @Part("company_ID") RequestBody company_ID, @Part("token") RequestBody token,
+                                        @Part("salary") RequestBody salary, @Part("other_leaves") RequestBody other_leaves,
+                                        @Part("casual_leaves") RequestBody casual_leaves, @Part("sick_leaves") RequestBody sick_leaves,
+                                        @Part("joining_date") RequestBody joining_date,@Part("office_address") RequestBody office_address,
+                                        @Part("office_longitude") RequestBody office_longitude,@Part("office_latitude") RequestBody office_latitude,
+                                        @Part("mon_working") RequestBody mon_working,@Part("tue_working") RequestBody tue_working,
+                                        @Part("wed_working") RequestBody wed_working,@Part("thrus_working") RequestBody thrus_working,
+                                        @Part("fri_working") RequestBody fri_working,@Part("sat_working") RequestBody sat_working,
+                                        @Part("sun_working") RequestBody sun_working,@Part("mon_start_time") RequestBody mon_start_time,
+                                        @Part("tue_start_time") RequestBody tue_start_time,@Part("wed_start_time") RequestBody wed_start_time,
+                                        @Part("thrus_start_time") RequestBody thrus_start_time,@Part("fri_start_time") RequestBody fri_start_time,
+                                        @Part("sat_start_time") RequestBody sat_start_time,@Part("sun_start_time") RequestBody sun_start_time,
+                                        @Part("mon_end_time") RequestBody mon_end_time,@Part("tue_end_time") RequestBody tue_end_time,
+                                        @Part("wed_end_time") RequestBody wed_end_time,@Part("thrus_end_time") RequestBody thrus_end_time,
+                                        @Part("fri_end_time") RequestBody fri_end_time,@Part("sat_end_time") RequestBody sat_end_time,
+                                        @Part("sun_end_time") RequestBody sun_end_time
     );
 
     @Multipart
@@ -429,7 +470,20 @@ public interface NetworkAPIServices {
                                          @Part("casual_leaves") RequestBody casual_leaves,
                                          @Part("sick_leaves") RequestBody sick_leaves,
                                          @Part("joining_date") RequestBody joining_date,
-                                         @Part("token") RequestBody token
+                                         @Part("token") RequestBody token,
+                                         @Part("office_address") RequestBody office_address,
+                                         @Part("office_longitude") RequestBody office_longitude,@Part("office_latitude") RequestBody office_latitude,
+                                         @Part("mon_working") RequestBody mon_working,@Part("tue_working") RequestBody tue_working,
+                                         @Part("wed_working") RequestBody wed_working,@Part("thrus_working") RequestBody thrus_working,
+                                         @Part("fri_working") RequestBody fri_working,@Part("sat_working") RequestBody sat_working,
+                                         @Part("sun_working") RequestBody sun_working,@Part("mon_start_time") RequestBody mon_start_time,
+                                         @Part("tue_start_time") RequestBody tue_start_time,@Part("wed_start_time") RequestBody wed_start_time,
+                                         @Part("thrus_start_time") RequestBody thrus_start_time,@Part("fri_start_time") RequestBody fri_start_time,
+                                         @Part("sat_start_time") RequestBody sat_start_time,@Part("sun_start_time") RequestBody sun_start_time,
+                                         @Part("mon_end_time") RequestBody mon_end_time,@Part("tue_end_time") RequestBody tue_end_time,
+                                         @Part("wed_end_time") RequestBody wed_end_time,@Part("thrus_end_time") RequestBody thrus_end_time,
+                                         @Part("fri_end_time") RequestBody fri_end_time,@Part("sat_end_time") RequestBody sat_end_time,
+                                         @Part("sun_end_time") RequestBody sun_end_time
     );
 
     @Multipart

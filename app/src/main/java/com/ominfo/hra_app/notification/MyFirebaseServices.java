@@ -27,7 +27,7 @@ import java.util.Date;
 public class MyFirebaseServices extends FirebaseMessagingService {
 
     private static final String TAG = "PushNotification";
-    private static final String CHANNEL_ID ="109" ;
+    private static final String CHANNEL_ID ="209" ;
     private FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
     private DatabaseReference mDatabaseReference, mRef;
     int mAppCommunityMinutes;
