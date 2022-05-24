@@ -58,7 +58,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
-                                android:layout_weight="5.5">
+                                android:layout_weight="1.4">
 
                                 <RelativeLayout
                                     android:layout_width="wrap_content"
@@ -67,7 +67,7 @@
                                     android:orientation="horizontal">
 
                                     <de.hdodenhof.circleimageview.CircleImageView
-                                        android:id="@+id/imgProfileDash"
+                                        android:id="@+id/imgBirthPro"
                                         android:layout_width="match_parent"
                                         android:layout_height="@dimen/_40dp"
                                         android:layout_gravity="left|center"
@@ -98,7 +98,7 @@
                                 </RelativeLayout>
                                 <!-- android:indeterminateTintMode="src_atop"-->
                                 <ProgressBar
-                                    android:id="@+id/progress_bar"
+                                    android:id="@+id/progress_barBirth"
                                     android:layout_width="@dimen/_25dp"
                                     android:layout_height="@dimen/_25dp"
                                     android:layout_centerInParent="true"
@@ -114,7 +114,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_horizontal"
                                 android:layout_marginLeft="@dimen/_10dp"
-                                android:layout_weight="1"
+                                android:layout_weight="0.8"
                                 android:gravity="left"
                                 android:paddingVertical="@dimen/_6dp">
 
@@ -137,6 +137,39 @@
                                     android:layout_gravity="center"
                                     android:fontFamily="@font/gilroy_regular"
                                     android:text="Admin"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_12sp" />
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:id="@+id/relAddHoliday"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="right"
+                                android:layout_marginLeft="@dimen/_10dp"
+                                android:layout_weight="1"
+                                android:gravity="right"
+                                android:paddingVertical="@dimen/_6dp">
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:id="@+id/imgCal"
+                                    android:layout_width="@dimen/_24dp"
+                                    android:layout_height="@dimen/_24dp"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_gravity="right"
+                                    android:layout_marginRight="@dimen/_20dp"
+                                    android:src="@drawable/ic_add_calender" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/imgCal"
+                                    android:layout_gravity="center"
+                                    android:layout_marginTop="@dimen/_2dp"
+                                    android:fontFamily="@font/gilroy_semibold"
+                                    android:text="@string/scr_lbl_add_holiday"
+                                    android:layout_alignParentRight="true"
                                     android:textAlignment="center"
                                     android:textColor="@color/white"
                                     android:textSize="@dimen/_12sp" />
@@ -291,13 +324,22 @@
                                     android:textColor="@color/color_main"
                                     android:textSize="@dimen/_16sp" />
 
-                                <com.ominfo.hra_app.ui.dashboard.calender.SimpleCalendar
-                                    android:id="@+id/square_day"
+                                <com.ominfo.hra_app.zcustomcalendar.CustomCalendar
+                                    android:id="@+id/custom_calendar"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content" />
-
+                                    android:layout_height="wrap_content"
+                                    app:day_of_week_length="1"
+                                    android:layout_gravity="center_horizontal"
+                                    android:gravity="center_horizontal"
+                                    app:day_of_week_start_from="sunday"
+                                    android:background="@drawable/layout_round_shape_grey_border_small"
+                                    android:layout_marginVertical="@dimen/_10dp"
+                                    android:layout_marginHorizontal="@dimen/_10dp"
+                                    android:paddingBottom="@dimen/_2dp"
+                                 />
                             </androidx.appcompat.widget.LinearLayoutCompat>
-                        </androidx.cardview.widget.CardView>
+
+                                </androidx.cardview.widget.CardView>
 
                         <androidx.cardview.widget.CardView
                             android:id="@+id/cardSale"

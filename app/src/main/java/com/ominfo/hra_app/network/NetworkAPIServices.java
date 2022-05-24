@@ -302,6 +302,15 @@ public interface NetworkAPIServices {
 
     @Multipart
     @POST()
+    Observable<JsonElement> addHoliday(@Url String url,
+                                             @Part("action") RequestBody uploadType,
+                                             @Part("company_id") RequestBody company_id,
+                                             @Part("date") RequestBody date,
+                                             @Part("name") RequestBody name,
+                                       @Part("description") RequestBody description);
+
+    @Multipart
+    @POST()
     Observable<JsonElement> getProfileImage(@Url String url,
                                             @Part("action") RequestBody uploadType,
                                             @Part("company_id") RequestBody uploadTypeEmployee,
@@ -320,7 +329,9 @@ public interface NetworkAPIServices {
     @POST()
     Observable<JsonElement> getLeaveCount(@Url String url,
                                             @Part("action") RequestBody uploadType,
-                                            @Part("emp_id") RequestBody emp_id
+                                            @Part("emp_id") RequestBody emp_id,
+                                          @Part("company_ID") RequestBody company_ID,
+                                          @Part("month") RequestBody month
     );
 
 

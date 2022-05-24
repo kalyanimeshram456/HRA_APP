@@ -728,11 +728,11 @@ public class AppUtils {
         return formattedDate;
     }
 
-    public static String getStartVisitDate() {
+    public static String getLeaveCountDate() {
         Calendar c = Calendar.getInstance();
         //System.out.println("Current time => "+c.getTime());
         //2021-04-08 16:45:14.084445
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat df = new SimpleDateFormat("MM");
         String formattedDate = df.format(c.getTime());
         // formattedDate have current date/time
         return formattedDate;

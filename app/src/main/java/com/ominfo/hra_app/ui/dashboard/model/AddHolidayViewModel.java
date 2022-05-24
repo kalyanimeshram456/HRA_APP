@@ -1,4 +1,4 @@
-package com.ominfo.hra_app.ui.leave.model;
+package com.ominfo.hra_app.ui.dashboard.model;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -11,13 +11,13 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.RequestBody;
 
-public class LeaveCountViewModel extends ViewModel {
+public class AddHolidayViewModel extends ViewModel {
     private final CompositeDisposable disposables = new CompositeDisposable();
     private final MutableLiveData<ApiResponse> responseLiveData = new MutableLiveData<>();
     private Service service;
 
 
-    public LeaveCountViewModel(Service service) {
+    public AddHolidayViewModel(Service service) {
         this.service = service;
     }
 
@@ -25,11 +25,8 @@ public class LeaveCountViewModel extends ViewModel {
         return responseLiveData;
     }
 
-
-    public void hitLeaveCountApi(RequestBody action, RequestBody empId
-            , RequestBody comId, RequestBody mon) {
-
-        disposables.add(service.executeLeaveCountAPI(action,empId,comId,mon)
+    public void hitAddHolidayApi(AddHolidayRequest addHolidayRequest) {
+        disposables.add(service.executeAddHolidayAPI(addHolidayRequest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe((d) -> responseLiveData.setValue(ApiResponse.loading()))

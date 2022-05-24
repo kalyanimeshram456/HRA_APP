@@ -61,12 +61,15 @@ public class DynamicAPIPath {
     public static final String POST_RAISE_TICKET = BASE+"?action=raise_ticket";
     public static final String POST_GET_TICKET = BASE+"?action=get_filterraised_record";
     public static final String POST_UPDATE_TICKET = BASE+"?action=ticket_updated";
+    public static final String POST_ADD_HOLIDAY = BASE+"?action=add_company_holiday";
+
 
     //action string
     public static final String POST_FETCH_KATA_CHITTI = "index_with_DRapp.php?action=getKantaChitthi";
     public static final String action_login = "login";
     public static final String action_get_tour = "tourget";
     public static final String action_logout = "logout";
+    public static final String action_add_holiday = "add_company_holiday";
     public static final String action_get_leave_single = "get_record";
     public static final String action_location_per_hour = "emp_long_lati_tracking";
     public static final String action_add_employee = "add_employee";

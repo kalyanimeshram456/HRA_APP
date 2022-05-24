@@ -3,6 +3,7 @@ import com.google.gson.JsonElement;
 import com.ominfo.hra_app.ui.attendance.model.LocationPerHourRequest;
 import com.ominfo.hra_app.ui.attendance.model.MarkAttendanceRequest;
 import com.ominfo.hra_app.ui.attendance.model.UpdateAttendanceRequest;
+import com.ominfo.hra_app.ui.dashboard.model.AddHolidayRequest;
 import com.ominfo.hra_app.ui.dashboard.model.DashboardRequest;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeRequest;
 import com.ominfo.hra_app.ui.employees.model.EditEmployeeRequest;
@@ -157,6 +158,14 @@ public class Service {
                 action,cId,from,to
         );
     }
+    public Observable<JsonElement> executeAddHolidayAPI(AddHolidayRequest addHolidayRequest) {
+        return networkAPIServices.addHoliday(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_ADD_HOLIDAY),
+                addHolidayRequest.getAction(),addHolidayRequest.getCompany_id(),
+                addHolidayRequest.getDate(),addHolidayRequest.getName(),
+                addHolidayRequest.getDescription()
+        );
+    }
     public Observable<JsonElement> executeGetProfileImageAPI(RequestBody action,
                                                              RequestBody comId, RequestBody empId) {
         return networkAPIServices.getProfileImage(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
@@ -177,11 +186,12 @@ public class Service {
         );
     }
 
-    public Observable<JsonElement> executeLeaveCountAPI(RequestBody action, RequestBody empId) {
+    public Observable<JsonElement> executeLeaveCountAPI(RequestBody action, RequestBody empId
+            , RequestBody comId, RequestBody mon) {
         return networkAPIServices.getLeaveCount(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_LEAVE_COUNT),
                 action,
-                empId
+                empId,comId,mon
         );
     }
 

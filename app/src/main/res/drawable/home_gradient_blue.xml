@@ -2,23 +2,26 @@
     <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
-            android:shape="oval">
+            android:shape="rectangle">
             <gradient
                 android:type="linear"
                 android:angle="180"
                 android:startColor="@color/color_main"
                 android:endColor="@color/color_main" />
             <size
-                android:width="@dimen/_100dp"
-                android:height="@dimen/_100dp" />
+                android:width="@dimen/_50dp"
+                android:height="@dimen/_50dp" />
+            <padding
+                android:right="@dimen/_30dp"
+                android:left="@dimen/_30dp"/>
         </shape>
     </item>
     <item
         android:left="0dp"
         android:right="0dp"
         android:gravity="center"
-        android:height="@dimen/_40dp"
-        android:width="@dimen/_40dp">
+        android:height="@dimen/_25dp"
+        android:width="@dimen/_25dp">
        <bitmap android:src="@drawable/ic_home_white" />
     </item>
 

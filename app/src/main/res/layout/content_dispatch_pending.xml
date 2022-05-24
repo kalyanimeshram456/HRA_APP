@@ -344,7 +344,9 @@
 
 
                         </RelativeLayout>
-                        <include layout="@layout/content_empty_enquiry_layout"/>
+
+                        <include layout="@layout/content_empty_enquiry_layout" />
+
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvSalesList"
                             android:layout_width="match_parent"

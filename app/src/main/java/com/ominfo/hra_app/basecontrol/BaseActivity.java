@@ -3,6 +3,7 @@ package com.ominfo.hra_app.basecontrol;
 import static com.ominfo.hra_app.MainActivity.ssCustomBottomNavigation;
 import static com.ominfo.hra_app.ui.attendance.StartAttendanceActivity.tvCurrLocation;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -242,15 +243,15 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
             }
         }
     }
-    // Self explanatory method
+   /* // Self explanatory method
     public boolean checkForInternet() {
         ConnectivityManager cm =
                 (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        @SuppressLint("MissingPermission") NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
-    }
+    }*/
     //starting foreground service and registering broadcast for lat long
     public void startLocationService() {
         startService(new Intent(this, BackgroundAttentionService.class));
@@ -819,7 +820,11 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
             if (loginTable != null) {
                 RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_leave_count);
                 RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
-                leaveCountViewModel.hitLeaveCountApi(mRequestBodyType,mRequestBodyTypeEmployee);
+                RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
+                RequestBody mRequestMon = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getLeaveCountDate());
+
+                leaveCountViewModel.hitLeaveCountApi(mRequestBodyType,mRequestBodyTypeEmployee,
+                        mRequestComId,mRequestMon);
             }
         } else {
             LogUtil.printToastMSG(BaseActivity.this, getString(R.string.err_msg_connection_was_refused));

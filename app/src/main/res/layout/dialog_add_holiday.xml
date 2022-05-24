@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/_350dp"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
+    android:paddingBottom="@dimen/_16dp"
+    android:paddingTop="@dimen/_12dp"
+    android:paddingHorizontal="@dimen/_10dp"
+    android:gravity="center"
+    android:background="@drawable/shape_round_dialog"
+    android:layout_marginVertical="@dimen/_16dp"
+    android:layout_marginHorizontal="@dimen/_10dp"
+    android:orientation="vertical">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:fontFamily="@font/gilroy_bold"
+            android:gravity="left"
+            android:text="@string/scr_lbl_add_holiday"
+            android:textColor="@color/color_main"
+            android:textSize="@dimen/_16sp"
+            android:visibility="visible" />
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgCancel"
+            android:layout_width="@dimen/_16dp"
+            android:layout_height="@dimen/_16dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_close" />
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_6dp"
+        android:padding="@dimen/_10dp"
+        android:background="@drawable/shape_round_white_round_dialog"
+        android:orientation="vertical">
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:gravity="center_vertical|top"
+            android:layout_gravity="center_vertical|top"
+            android:layout_marginRight="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            >
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_0dp"
+            android:fontFamily="@font/font_semibold"
+            android:text="@string/scr_lbl_date"
+            android:textColor="@color/back_text_colour"
+            android:textSize="@dimen/_14sp" />
+
+        <RelativeLayout
+            android:id="@+id/layFromDate"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_45dp"
+            android:layout_below="@+id/tvStart"
+            android:layout_marginTop="@dimen/_6dp"
+            android:background="@drawable/button_round_shape_corners"
+            android:clickable="true"
+            android:descendantFocusability="blocksDescendants"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/_10dp"
+            android:paddingVertical="@dimen/_10dp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvDateValueFrom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/gilroy_semibold"
+                android:gravity="left"
+                android:hint="dd/mm/yyyy"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <ImageView
+                android:layout_width="@dimen/_17dp"
+                android:layout_height="@dimen/_17dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginLeft="@dimen/_3dp"
+                android:layout_centerVertical="true"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/ic_calendar" />
+
+        </RelativeLayout>
+        </RelativeLayout>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/appcomptext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_marginTop="@dimen/_16dp"
+        android:fontFamily="@font/gilroy_semibold"
+        android:text="@string/scr_lbl_holiday_name"
+        android:textColor="@color/back_text_colour"
+        android:textSize="@dimen/_14sp" />
+
+    <!--TAG Text filed-->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/input_text"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:hintEnabled="false"
+        android:layout_marginTop="@dimen/_6dp"
+        app:boxCornerRadiusTopEnd="@dimen/_10dp"
+        app:boxCornerRadiusTopStart="@dimen/_10dp"
+        app:boxCornerRadiusBottomEnd="@dimen/_10dp"
+        app:boxCornerRadiusBottomStart="@dimen/_10dp"
+        app:hintTextAppearance="@style/Editext.Theme"
+        app:endIconDrawable="@android:color/transparent"
+        app:startIconContentDescription="$"
+        app:placeholderTextAppearance="@style/Editext.Theme">
+
+        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+            android:id="@+id/AutoComHolidayName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/toggle_add_reminder_edt"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:inputType="text"
+            android:text=""
+            android:hint="@string/scr_lbl_holiday_name"
+            android:imeOptions="actionDone"
+            android:textColor="@color/black_heading"
+            android:textColorHint="@color/app_gray"
+            android:fontFamily="@font/gilroy_semibold"
+            android:padding="@dimen/_10dp"
+            android:textSize="@dimen/_14sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/appcomptextRemark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_marginTop="@dimen/_16dp"
+        android:layout_marginHorizontal="@dimen/_0dp"
+        android:fontFamily="@font/gilroy_semibold"
+        android:text="@string/scr_lbl_description_eng"
+        android:textColor="@color/back_text_colour"
+        android:textSize="@dimen/_14sp" />
+
+    <!--TAG Text box-->
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/etDescr"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_60dp"
+        android:layout_marginTop="@dimen/_6dp"
+        android:imeOptions="actionDone"
+        android:textAlignment="textStart"
+        android:background="@drawable/toggle_add_reminder_edt"
+        android:inputType="textMultiLine"
+        android:singleLine="false"
+        android:layout_marginHorizontal="@dimen/_0dp"
+        android:overScrollMode="always"
+        android:scrollbarStyle="insideInset"
+        android:scrollbars="vertical"
+        android:textSize="@dimen/_15sp"
+        android:paddingTop="@dimen/_10dp"
+        android:paddingHorizontal="@dimen/_10dp"
+        android:hint="@string/scr_lbl_description_eng"
+        android:textColorHint="@color/app_gray"
+        app:errorEnabled="true"
+        android:gravity="start" />
+
+    <androidx.appcompat.widget.AppCompatButton
+             android:id="@+id/submitButton"
+             android:layout_width="match_parent"
+             android:layout_height="@dimen/_40dp"
+             android:layout_alignParentBottom="true"
+             android:layout_gravity="bottom"
+             android:layout_weight="1"
+             android:layout_marginTop="@dimen/_25dp"
+             android:layout_marginLeft="@dimen/_0dp"
+             android:background="@drawable/bg_button_round_corner_5"
+             android:fontFamily="@font/gilroy_semibold"
+             android:gravity="center"
+             android:paddingTop="@dimen/_2dp"
+             android:text="@string/scr_lbl_submit"
+             android:textColor="@color/white"
+             android:textSize="@dimen/_14sp" />
+
+    </LinearLayout>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
