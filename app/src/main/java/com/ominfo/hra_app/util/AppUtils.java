@@ -147,6 +147,31 @@ public class AppUtils {
             return Date1;
         }
     }
+
+    public static String  convertIntToMonth(int monthnum){
+        try{
+        Calendar cal=Calendar.getInstance();
+        SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
+        cal.set(Calendar.MONTH,monthnum);
+        String month_name = month_date.format(cal.getTime());
+        return month_name;
+       }
+        catch(Exception e) { }
+        return ""+monthnum;
+    }
+
+    public static String convertMonthToInt(String monthName){
+        try{
+            Date date = new SimpleDateFormat("MMMM", Locale.ENGLISH).parse(monthName);//put your month name in english here
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            int val = cal.get(Calendar.MONTH)+1;
+           return String.valueOf(val).length()==1?"0"+val:String.valueOf(val);
+        }
+        catch(Exception e) { }
+        return monthName;
+    }
+
     public static int getChangeDateForHisab(String start,String end)
     {
         try {
@@ -773,6 +798,63 @@ public class AppUtils {
         return startDateStr;
     }
 
+    public static String dateAfterYear(){
+        Calendar cal = Calendar.getInstance();
+        Date today = cal.getTime();
+        cal.add(Calendar.YEAR, 1); // to get previous year add -1
+        Date nextYear = cal.getTime();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault());
+        String startDateStr = df.format(nextYear);
+        return startDateStr;
+    }
+
+    public static String startEndMonthfromInt(int month){
+        try {
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.MONTH, 0);
+            calendar.set(Calendar.DATE, calendar.getActualMinimum(month));
+            Date monthFirstDay = calendar.getTime();
+            calendar.set(Calendar.DATE, calendar.getActualMaximum(month));
+            Date monthLastDay = calendar.getTime();
+
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            String startDateStr = df.format(monthFirstDay);
+            String endDateStr = df.format(monthLastDay);
+
+            //Log.e("DateFirstLast",);
+            return startDateStr + "~" + endDateStr;
+        }catch (Exception e){}
+        return "~";
+    }
+
+    public static String startHolidayMonth(Calendar calendar ){
+        calendar.add(Calendar.MONTH, 0);
+        calendar.set(Calendar.DATE, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
+        Date monthFirstDay = calendar.getTime();
+        calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        Date monthLastDay = calendar.getTime();
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault());
+        String startDateStr = df.format(monthFirstDay);
+        String endDateStr = df.format(monthLastDay);
+
+        Log.e("DateFirstLast",startDateStr+" "+endDateStr);
+        return startDateStr;
+    }
+    public static String endHolidayMonth(Calendar calendar){
+        calendar.add(Calendar.MONTH, 0);
+        calendar.set(Calendar.DATE, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
+        Date monthFirstDay = calendar.getTime();
+        calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        Date monthLastDay = calendar.getTime();
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault());
+        String startDateStr = df.format(monthFirstDay);
+        String endDateStr = df.format(monthLastDay);
+
+        Log.e("DateFirstLast",startDateStr+" "+endDateStr);
+        return endDateStr;
+    }
     public static String startLastMonth(){
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MONTH, -1);

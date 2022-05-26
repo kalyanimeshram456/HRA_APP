@@ -5,6 +5,7 @@ import static com.ominfo.hra_app.zcustomcalendar.CustomCalendar.PREVIOUS;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -19,11 +20,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -53,6 +57,7 @@ import com.ominfo.hra_app.ui.attendance.model.AttendanceList;
 import com.ominfo.hra_app.ui.attendance.ripple_effect.RippleBackground;
 import com.ominfo.hra_app.ui.dashboard.adapter.TodayBirthDayAdapter;
 import com.ominfo.hra_app.ui.dashboard.model.AddHolidayRequest;
+import com.ominfo.hra_app.ui.dashboard.model.AddHolidayResponse;
 import com.ominfo.hra_app.ui.dashboard.model.AddHolidayViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.BirthDayDobdatum;
 import com.ominfo.hra_app.ui.dashboard.model.CalenderHolidayLeave;
@@ -60,8 +65,10 @@ import com.ominfo.hra_app.ui.dashboard.model.CalenderHolidayResponse;
 import com.ominfo.hra_app.ui.dashboard.model.CalenderHolidaysListViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.DashModel;
 import com.ominfo.hra_app.ui.dashboard.model.DashboardRequest;
+import com.ominfo.hra_app.ui.dashboard.model.EditHolidayViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.GetBirthDayListViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.GetBirthDayResponse;
+import com.ominfo.hra_app.ui.employees.model.EditEmployeeResponse;
 import com.ominfo.hra_app.ui.leave.model.LeaveCountResponse;
 import com.ominfo.hra_app.ui.leave.model.LeaveCountViewModel;
 import com.ominfo.hra_app.ui.login.LoginActivity;
@@ -78,6 +85,7 @@ import com.ominfo.hra_app.util.LogUtil;
 import com.ominfo.hra_app.util.SharedPref;
 
 import com.ominfo.hra_app.zcustomcalendar.CustomCalendar;
+import com.ominfo.hra_app.zcustomcalendar.OnCalenderHolidaySelectedListener;
 import com.ominfo.hra_app.zcustomcalendar.OnDateSelectedListener;
 import com.ominfo.hra_app.zcustomcalendar.OnNavigationButtonClickedListener;
 import com.ominfo.hra_app.zcustomcalendar.Property;
@@ -160,6 +168,8 @@ public class DashboardFragment extends BaseFragment {
     @Inject
     ViewModelFactory mViewModelFactory;
     private GetProfileImageViewModel getProfileImageViewModel;
+    private EditHolidayViewModel editHolidayViewModel;
+
     public static boolean activityVisible; // Variable that will check the
     final static String CONNECTIVITY_ACTION = "android.net.conn.CONNECTIVITY_CHANGE";
     IntentFilter intentFilter;
@@ -181,12 +191,18 @@ public class DashboardFragment extends BaseFragment {
     FloatingActionButton add_attendance;
     @BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout mSwipeRefreshLayout;
-    Dialog mDialogLogout,dialogAddHoliday;
+    Dialog mDialogLogout,dialogAddHoliday,mDialogEditHoliday;
     private LogoutViewModel logoutViewModel;
     private LeaveCountViewModel leaveCountViewModel;
     private AddHolidayViewModel addHolidayViewModel;
-    AppCompatTextView tvDateValueFrom,AutoComHolidayName;
+    AppCompatTextView tvDateValueFrom;
+    AppCompatAutoCompleteTextView AutoComHolidayName;
     AppCompatEditText etDescr;
+    String mFromDate = "",mToDate = "";
+    HashMap<Object, Property> descHashMap = new HashMap<>();
+    HashMap<Integer, Object> dateHashmap = new HashMap<>();
+    Calendar calendar = Calendar.getInstance();
+
     public DashboardFragment() {
         // Required empty public constructor
     }
@@ -237,13 +253,6 @@ public class DashboardFragment extends BaseFragment {
         super.onResume();
         callLeaveCountApi();
         setToolbar();
-        /*Window window = getActivity().getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));*/
-       /* Window window = getActivity().getWindow();
-        View view = window.getDecorView();
-        BaseActivity.DarkStatusBar.setLightStatusBar(view,getActivity());*/
         try {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if (loginTable != null) {
@@ -252,8 +261,9 @@ public class DashboardFragment extends BaseFragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        callDashboardApi("6");
-        callCalenderHolidaysApi("", "");
+        mFromDate = AppUtils.startMonth(); mToDate = AppUtils.endMonth();
+        callCalenderHolidaysApi();
+        callDashboardApi();
         //tvHighlight.setText("Today's Highlights");
     }
 
@@ -275,6 +285,9 @@ public class DashboardFragment extends BaseFragment {
 
         addHolidayViewModel = ViewModelProviders.of(this, mViewModelFactory).get(AddHolidayViewModel.class);
         addHolidayViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_ADD_HOLIDAY));
+
+        editHolidayViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EditHolidayViewModel.class);
+        editHolidayViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_EDIT_HOLIDAY));
     }
 
     public static void setTimerMillis(Context context, long millis) {
@@ -337,7 +350,11 @@ public class DashboardFragment extends BaseFragment {
                 if (NetworkCheck.isInternetAvailable(mContext)) {
                     swipeStatus = true;
                     setToolbar();
-                    callDashboardApi("6");
+
+                    //mFromDate = AppUtils.startMonth(); mToDate = AppUtils.endMonth();
+                    callCalenderHolidaysApi();
+                    callDashboardApi();
+                    callLeaveCountApi();
                 } else {
                     swipeStatus = false;
                     LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
@@ -369,7 +386,7 @@ public class DashboardFragment extends BaseFragment {
 
     private void setCalenderData() {
         // Initialize description hashmap
-        HashMap<Object, Property> descHashMap = new HashMap<>();
+
 
         // Initialize default property
         Property defaultProperty = new Property();
@@ -401,20 +418,24 @@ public class DashboardFragment extends BaseFragment {
         descHashMap.put("absent", absentProperty);
 
         // set desc hashmap on custom calendar
+        custom_calendar.invalidate();
         custom_calendar.setMapDescToProp(descHashMap);
 
         // Initialize date hashmap
-        HashMap<Integer, Object> dateHashmap = new HashMap<>();
+
         // initialize calendar
-        Calendar calendar = Calendar.getInstance();
 
         // Put values
         dateHashmap.put(calendar.get(Calendar.DAY_OF_MONTH), "current");
-        if (calenderHolidayLeave != null && calenderHolidayLeave.size() > 0) {
-            for (int i = 0; i < calenderHolidayLeave.size(); i++) {
-                String[] str = calenderHolidayLeave.get(i).getDate().split("-");
-                dateHashmap.put(Integer.valueOf(str[2]), "absent");
+        try {
+            if (calenderHolidayLeave != null && calenderHolidayLeave.size() > 0) {
+                for (int i = 0; i < calenderHolidayLeave.size(); i++) {
+                    String[] str = calenderHolidayLeave.get(i).getDate().split("-");
+                    dateHashmap.put(Integer.valueOf(str[2]), "absent");
+                }
             }
+        }catch (Exception e){
+            e.printStackTrace();
         }
        /* dateHashmap.put(1,"present");
         dateHashmap.put(2,"absent");
@@ -430,44 +451,47 @@ public class DashboardFragment extends BaseFragment {
             @Override
             public void onDateSelected(View view, Calendar selectedDate, Object desc) {
                 // get string date
-                String mon = String.valueOf(selectedDate.get(Calendar.MONTH) + 1).length() == 1 ?
-                        "0" + String.valueOf(selectedDate.get(Calendar.MONTH) + 1) :
-                        String.valueOf(selectedDate.get(Calendar.MONTH) + 1);
-                String day = String.valueOf(selectedDate.get(Calendar.DAY_OF_MONTH)).length() == 1 ?
-                        "0" + String.valueOf(selectedDate.get(Calendar.DAY_OF_MONTH)) :
-                        String.valueOf(selectedDate.get(Calendar.DAY_OF_MONTH));
-                String sDate = selectedDate.get(Calendar.YEAR)
-                        + "-" + mon
-                        + "-" + day;
+                try {
+                    String mon = String.valueOf(selectedDate.get(Calendar.MONTH) + 1).length() == 1 ?
+                            "0" + String.valueOf(selectedDate.get(Calendar.MONTH) + 1) :
+                            String.valueOf(selectedDate.get(Calendar.MONTH) + 1);
+                    String day = String.valueOf(selectedDate.get(Calendar.DAY_OF_MONTH)).length() == 1 ?
+                            "0" + String.valueOf(selectedDate.get(Calendar.DAY_OF_MONTH)) :
+                            String.valueOf(selectedDate.get(Calendar.DAY_OF_MONTH));
+                    String sDate = selectedDate.get(Calendar.YEAR)
+                            + "-" + mon
+                            + "-" + day;
 
-                // display date in toast
-                Boolean event = false;
-                for (int i = 0; i < calenderHolidayLeave.size(); i++) {
-                    if (sDate.equals(calenderHolidayLeave.get(i).getDate())) {
-                        LogUtil.printToastMSG(mContext, calenderHolidayLeave.get(i).getName());
-                        event = true;
+                    // display date in toast
+                    Boolean event = false;
+                    for (int i = 0; i < calenderHolidayLeave.size(); i++) {
+                        if (sDate.equals(calenderHolidayLeave.get(i).getDate())) {
+                            showEditHolidayDialog(calenderHolidayLeave.get(i).getRecordId(),
+                                    calenderHolidayLeave.get(i).getDate(), calenderHolidayLeave.get(i).getName() + "("
+                                            + calenderHolidayLeave.get(i).getDescription() + ")");
+                            //LogUtil.printToastMSG(mContext, calenderHolidayLeave.get(i).getName());
+                            event = true;
+                        }
                     }
-                }
-                if (!event) {
-                    LogUtil.printToastMSG(mContext,"No events for "+sDate);
+                    if (!event) {
+                        LogUtil.printToastMSG(mContext, "No events for " + sDate);
+                    }
+                }catch (Exception e){
+                    LogUtil.printToastMSG(mContext, "Something went wrong!");
                 }
             }
         });
-
-        custom_calendar.setOnNavigationButtonClickedListener(PREVIOUS, new OnNavigationButtonClickedListener() {
+        custom_calendar.setOnCalenderListener(new OnCalenderHolidaySelectedListener() {
             @Override
-            public Map<Integer, Object>[] onNavigationButtonClicked(int whichButton, Calendar newMonth) {
-                callCalenderHolidaysApi("","");
-                return new Map[0];
-            }
-        });
-        custom_calendar.setOnNavigationButtonClickedListener(NEXT, new OnNavigationButtonClickedListener() {
-            @Override
-            public Map<Integer, Object>[] onNavigationButtonClicked(int whichButton, Calendar newMonth) {
-                callCalenderHolidaysApi("","");
-                Map<Integer, Object>[] maps = new Map[1];
-                maps[0].put(0,newMonth);
-                return maps;
+            public void onDateSelected(Calendar selectedDate) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                String test=  sdf.format(selectedDate.getTime());
+                mFromDate = AppUtils.startHolidayMonth(selectedDate);
+                mToDate = AppUtils.endHolidayMonth(selectedDate);
+                calendar = selectedDate;
+                //LogUtil.printToastMSG(mContext,test+"k "+mFromDate+"jn"+mToDate);
+                callCalenderHolidaysApi();
+                callDashboardApi();
             }
         });
     }
@@ -545,7 +569,7 @@ public class DashboardFragment extends BaseFragment {
                         if (date1.compareTo(date2) == -1) {
                             // Outputs -1 as date1 is before date2
                             rippleEffect.stopRippleAnimation();
-                            add_attendance.setVisibility(View.GONE);
+                            //add_attendance.setVisibility(View.GONE);
                             rippleEffect.setVisibility(View.GONE);
                         } else {
                             // LogUtil.printToastMSG(mContext,iSActiveChill+"-"+iSCheckInDoneChill);
@@ -559,7 +583,7 @@ public class DashboardFragment extends BaseFragment {
                         if ((date1.compareTo(date2) == -1) || (((!valll[1].equals("00:00:00")) && (dateEnd.compareTo(date2) == 1) && (dateEnd.compareTo(date5) == -1)))) {
                             // Outputs -1 as date1 is before date2
                             rippleEffect.stopRippleAnimation();
-                            add_attendance.setVisibility(View.GONE);
+                            //add_attendance.setVisibility(View.GONE);
                             rippleEffect.setVisibility(View.GONE);
                         } else if (date1.compareTo(date2) == 1 && date1.compareTo(date3) == -1) {
                             // Outputs -1 as date3 is before date2
@@ -585,7 +609,7 @@ public class DashboardFragment extends BaseFragment {
                         } else if (date1.compareTo(date5) == 1) {
                             // Outputs 1 as date4 is after date3
                             rippleEffect.stopRippleAnimation();
-                            add_attendance.setVisibility(View.GONE);
+                            //add_attendance.setVisibility(View.GONE);
                             rippleEffect.setVisibility(View.GONE);
                             try {
                                 ((BaseActivity) mContext).stopService(new Intent(mContext, BackgroundAttentionService.class));
@@ -723,9 +747,9 @@ public class DashboardFragment extends BaseFragment {
             if (loginTable != null) {
                 RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_add_holiday);
                 RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
-                RequestBody mRequestDate = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
-                RequestBody mRequestName = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
-                RequestBody mRequestDescription = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
+                RequestBody mRequestDate = RequestBody.create(MediaType.parse("text/plain"), AppUtils.changeToSlashToDash(tvDateValueFrom.getText().toString()));
+                RequestBody mRequestName = RequestBody.create(MediaType.parse("text/plain"), AutoComHolidayName.getText().toString());
+                RequestBody mRequestDescription = RequestBody.create(MediaType.parse("text/plain"), etDescr.getText().toString());
 
                 AddHolidayRequest addHolidayRequest = new AddHolidayRequest();
                 addHolidayRequest.setAction(mRequestBodyAction);
@@ -734,6 +758,23 @@ public class DashboardFragment extends BaseFragment {
                 addHolidayRequest.setName(mRequestName);
                 addHolidayRequest.setDescription(mRequestDescription);
                 addHolidayViewModel.hitAddHolidayApi(addHolidayRequest);
+            } else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    /* Call Api For edit holiday */
+    private void callEditHolidayApi(String id) {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if (loginTable != null) {
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_update_active_holiday);
+                RequestBody mRequestId = RequestBody.create(MediaType.parse("text/plain"), id);
+
+                editHolidayViewModel.hitEditHolidayApi(mRequestBodyAction,mRequestId);
             } else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
             }
@@ -771,24 +812,60 @@ public class DashboardFragment extends BaseFragment {
         mDialogLogout.show();
     }
 
-    public void showAddHolidayDialog() {
-        dialogAddHoliday = new Dialog(mContext, R.style.ThemeDialogCustom);
-        dialogAddHoliday.setContentView(R.layout.dialog_add_holiday);
-        dialogAddHoliday.setCanceledOnTouchOutside(true);
-        AppCompatImageView mClose = dialogAddHoliday.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = dialogAddHoliday.findViewById(R.id.submitButton);
-        AppCompatButton cancelButton = dialogAddHoliday.findViewById(R.id.cancelButton);
-
+    public void showEditHolidayDialog(String id,String date,String name) {
+        mDialogEditHoliday = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialogEditHoliday.setContentView(R.layout.dialog_edit_holiday);
+        mDialogEditHoliday.setCanceledOnTouchOutside(true);
+        AppCompatImageView mClose = mDialogEditHoliday.findViewById(R.id.imgCancel);
+        AppCompatButton okayButton = mDialogEditHoliday.findViewById(R.id.uploadButton);
+        AppCompatButton cancelButton = mDialogEditHoliday.findViewById(R.id.cancelButton);
+        AppCompatTextView tvStart = mDialogEditHoliday.findViewById(R.id.tvStart);
+        AppCompatTextView tvDate = mDialogEditHoliday.findViewById(R.id.tvDate);
+        AppCompatTextView tvName = mDialogEditHoliday.findViewById(R.id.tvName);
+        tvDate.setText("Date : "+AppUtils.convertDobDate(date));
+        tvName.setText("Title : "+name);
+        tvStart.setText("Do you want to disable this holiday ?");
         okayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callAddHolidayApi();
+                callEditHolidayApi(id);
             }
         });
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialogAddHoliday.dismiss();
+                mDialogEditHoliday.dismiss();
+            }
+        });
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogEditHoliday.dismiss();
+            }
+        });
+        mDialogEditHoliday.show();
+    }
+    public void showAddHolidayDialog() {
+        dialogAddHoliday = new Dialog(mContext, R.style.ThemeDialogCustom);
+        dialogAddHoliday.setContentView(R.layout.dialog_add_holiday);
+        dialogAddHoliday.setCanceledOnTouchOutside(true);
+        RelativeLayout mClose = dialogAddHoliday.findViewById(R.id.layCancel);
+        AppCompatButton okayButton = dialogAddHoliday.findViewById(R.id.submitButton);
+        //AppCompatButton cancelButton = dialogAddHoliday.findViewById(R.id.cancelButton);
+        tvDateValueFrom = dialogAddHoliday.findViewById(R.id.tvDateValueFrom);
+        AutoComHolidayName = dialogAddHoliday.findViewById(R.id.AutoComHolidayName);
+        etDescr = dialogAddHoliday.findViewById(R.id.etDescr);
+        RelativeLayout layFromDate = dialogAddHoliday.findViewById(R.id.layFromDate);
+        layFromDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openDataPicker();
+            }
+        });
+        okayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callAddHolidayApi();
             }
         });
         mClose.setOnClickListener(new View.OnClickListener() {
@@ -799,15 +876,38 @@ public class DashboardFragment extends BaseFragment {
         });
         dialogAddHoliday.show();
     }
+    //set date picker view
+    private void openDataPicker() {
+        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                // TODO Auto-generated method stub
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                String myFormat = "dd/MM/yyyy"; //In which you need put here
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+                tvDateValueFrom.setText(sdf.format(myCalendar.getTime()));
+
+            }
+
+        };
+
+        new DatePickerDialog(mContext, date, myCalendar
+                .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+
+    }
     /* Call Api For RM */
-    private void callDashboardApi(String mon) {
+    private void callDashboardApi() {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if (loginTable != null) {
-                DashboardRequest dashboardRequest = new DashboardRequest();
+                String[] mon=mFromDate.split("-");
                 RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_birth_day);
-                RequestBody mRequestMon = RequestBody.create(MediaType.parse("text/plain"), mon);
+                RequestBody mRequestMon = RequestBody.create(MediaType.parse("text/plain"), mon[1].length()==1?"0"+mon[1]:mon[1]);
 
                 getBirthDayListViewModel.hitGetBirthDayListApi(mRequestAction, mRequestMon);
             } else {
@@ -816,7 +916,7 @@ public class DashboardFragment extends BaseFragment {
         } else {
             LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
             try {
-                AttendanceDaysTable loginAttendance = mDb.getDbDAO().getTestAttendanceData();
+                AttendanceDaysTable loginAttendance = mDb.getDbDAO().getTestAttendanceData(); //check
                 if (loginAttendance != null) {
                     setAttendanceFloatingButtons(loginAttendance.getLoginDays());
                 } else {
@@ -829,14 +929,14 @@ public class DashboardFragment extends BaseFragment {
     }
 
     /* Call Api For calender holidays */
-    private void callCalenderHolidaysApi(String from, String to) {
+    private void callCalenderHolidaysApi() {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if (loginTable != null) {
                 RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_company_holiday);
                 RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
-                RequestBody mRequestFrom = RequestBody.create(MediaType.parse("text/plain"), "2022-05-10");
-                RequestBody mRequestTo = RequestBody.create(MediaType.parse("text/plain"), "2022-05-30");
+                RequestBody mRequestFrom = RequestBody.create(MediaType.parse("text/plain"), mFromDate);
+                RequestBody mRequestTo = RequestBody.create(MediaType.parse("text/plain"), mToDate);
 
                 calenderHolidaysListViewModel.hitCalenderHolidaysListApi(mRequestAction, mRequestComId,
                         mRequestFrom, mRequestTo);
@@ -990,10 +1090,26 @@ public class DashboardFragment extends BaseFragment {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_CALENDER_HOLIDAY)) {
                             CalenderHolidayResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), CalenderHolidayResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                calenderHolidayLeave.removeAll(calenderHolidayLeave);
-                                calenderHolidayLeave = responseModel.getResult().getLeave();
-                                setCalenderData();
-                                LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
+                                try{calenderHolidayLeave=new ArrayList<>();
+                                    descHashMap = new HashMap<>();dateHashmap = new HashMap<>();}catch (Exception e){}
+                                if (responseModel.getResult().getLeave()!=null &&
+                                        responseModel.getResult().getLeave().size()>0) {
+                                    calenderHolidayLeave = responseModel.getResult().getLeave();
+                                    try {
+                                        if (calenderHolidayLeave != null && calenderHolidayLeave.size() > 0) {
+                                            for (int i = 0; i < calenderHolidayLeave.size(); i++) {
+                                                String[] str = calenderHolidayLeave.get(i).getDate().split("-");
+                                                dateHashmap.put(Integer.valueOf(str[2]), "absent");
+                                            }
+                                            // set date
+                                            // custom_calendar.setNextButtonColor(R.color.colorAccent);
+                                            custom_calendar.setDate(calendar, dateHashmap);
+                                        }
+                                    }catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                               // LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                             } else {
                                 LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                             }
@@ -1057,6 +1173,66 @@ public class DashboardFragment extends BaseFragment {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_ADD_HOLIDAY)) {
+                            AddHolidayResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), AddHolidayResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                dialogAddHoliday.dismiss();
+                                showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),
+                                        true,dialogAddHoliday);
+                                //mFromDate = AppUtils.startMonth(); mToDate = AppUtils.endMonth();
+                                callCalenderHolidaysApi();
+                                callDashboardApi();
+                            }
+                            else{
+                                showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),
+                                        false,dialogAddHoliday);
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    try{
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_LEAVE_COUNT)) {
+                            LeaveCountResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LeaveCountResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                LoginTable loginTable = mDb.getDbDAO().getLoginData();
+                                if(loginTable!=null){
+                                    int totA = Integer.parseInt(responseModel.getResult().getCurent_month_days());
+                                    int absA = Integer.parseInt(responseModel.getResult().getTotal_absent_late());
+                                    if(loginTable.getIsadmin().equals("0")) {
+                                        tvAttendanceTitle.setText("Today's Attendance");
+                                        tvAttendanceValue.setText(Math.abs(totA-absA)+" / "+totA);
+                                        tvLeaveTitle.setText("Today's Late Marks");
+                                        tvLeaveValue.setText(responseModel.getResult().getLate_mark());
+                                    }
+                                    else{
+                                        tvAttendanceTitle.setText("Attendance this month");
+                                        tvAttendanceValue.setText(absA+" / "+totA);
+                                        tvLeaveTitle.setText("Late marks this month");
+                                        tvLeaveValue.setText(responseModel.getResult().getLate_mark()+" / "+totA);
+                                    }
+                                }
+                            }
+                        }
+                    }catch (Exception e){e.printStackTrace();}
+                    try{
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EDIT_HOLIDAY)) {
+                            EditEmployeeResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), EditEmployeeResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                mDialogEditHoliday.dismiss();
+                                showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),
+                                        true,null);
+                                //mFromDate = AppUtils.startMonth(); mToDate = AppUtils.endMonth();
+                                callCalenderHolidaysApi();
+                                callDashboardApi();
+                            }
+                            else{
+                                showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),
+                                        false,null);
+                            }
+                        }
+                    }catch (Exception e){e.printStackTrace();}
                 }
                 break;
             case ERROR:
@@ -1068,146 +1244,4 @@ public class DashboardFragment extends BaseFragment {
                 break;
         }
     }
-
-    /*private void updateAttendanceData(GetDashboardResponse responseModel) {
-        try {
-            mDb.getDbDAO().deleteAttendanceData();
-
-            AttendanceDaysTable daysTable = new AttendanceDaysTable();
-            daysTable.setLoginDays(responseModel.getDashboard().getLoginDays());
-            mDb.getDbDAO().insertAttendanceData(daysTable);
-
-            AttendanceDaysTable loginAttendance = mDb.getDbDAO().getTestAttendanceData();
-            if (loginAttendance != null) {
-                setAttendanceFloatingButtons(loginAttendance.getLoginDays());
-                //LogUtil.printToastMSG(mContext, loginAttendance.getLoginDays().getTueDay().toString());
-            } else {
-                LogUtil.printToastMSG(mContext, "Something went wrong ,Please re-login.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }*/
-
-    private void downloadImageFromUrl(String url, String lr, File file, int pos) {
-        @SuppressLint("StaticFieldLeak")
-        class DownloadFileFromURL extends AsyncTask<String, String, String> {
-
-            private static final String TAG = "yyyy";
-            private String Path = file.getAbsolutePath();
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                //mDialogloader.show();
-                //showProgressLoader(getString(R.string.scr_message_please_wait));
-            }
-
-            @Override
-            protected String doInBackground(String... params) {
-                try {
-                    // Array6 repeatativeList = new Array6();
-                    if (!url.equals("")) {
-                        int count;
-                        try {
-                            String baseUrl = url;
-                            URL url = new URL(baseUrl/* + params[0]*/);
-                            URLConnection connection = url.openConnection();
-                            connection.connect();
-
-                            // this will be useful so that you can show a tipical 0-100%
-                            // progress bar
-                            int lengthOfFile = connection.getContentLength();
-
-                            // download the file
-                            InputStream input = new BufferedInputStream(url.openStream(), 8192);
-
-                            // Output stream
-                            OutputStream output = new FileOutputStream(file);
-
-                            byte[] data = new byte[1024];
-
-                            long total = 0;
-
-                            while ((count = input.read(data)) != -1) {
-                                total += count;
-                                // publishing the progress....
-                                // After this onProgressUpdate will be called
-                                publishProgress("" + (int) ((total * 100) / lengthOfFile));
-
-                                // writing data to file
-                                output.write(data, 0, count);
-                            }
-
-                            // flushing output
-                            output.flush();
-
-                            // closing streams
-                            output.close();
-                            input.close();
-                            Path = file.getAbsolutePath();
-                            //new VehicleDetailsLrImage(lr, "", null,file.getAbsolutePath()));
-
-                        } catch (Exception e) {
-                            LogUtil.printLog(TAG, "Error: " + Objects.requireNonNull(e.getMessage()));
-                        }
-                    }
-                    //LrNo = mImageList.get(i).getLr();
-                    // }
-                    return Path;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return Path;
-                }
-            }
-
-            @Override
-            protected void onPostExecute(String list) {
-                LogUtil.printLog("image_new", list);
-                //Bitmap myBitmap = BitmapFactory.decodeFile(new File(list).getAbsolutePath());
-                //imgProfileDash.setImageBitmap(myBitmap);
-                /*AppUtils.loadImageURL(mContext, list
-                        , imgProfileDash, null);*/
-            }
-        }
-        new DownloadFileFromURL().execute("", "path", "lr");
-    }
-
-    //request camera and storage permission
-    private void requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (mContext.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
-                    || mContext.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || mContext.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-
-                requestPermissions(new String[]
-                                {
-                                        Manifest.permission.CAMERA,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                                },
-                        1000);
-
-            } else {
-                // reqPermissionCode();
-            }
-        } else {
-            //reqPermissionCode();
-        }
-    }
-
-
-    /*@Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finishAffinity();
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(receiver);
-    }*/
-
 }

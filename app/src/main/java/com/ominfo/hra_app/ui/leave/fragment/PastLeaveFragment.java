@@ -4,11 +4,8 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,9 +31,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.model.GradientColor;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.ominfo.hra_app.R;
@@ -44,15 +38,16 @@ import com.ominfo.hra_app.basecontrol.BaseActivity;
 import com.ominfo.hra_app.basecontrol.BaseApplication;
 import com.ominfo.hra_app.basecontrol.BaseFragment;
 import com.ominfo.hra_app.database.AppDatabase;
-import com.ominfo.hra_app.interfaces.Constants;
 import com.ominfo.hra_app.network.ApiResponse;
 import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
-import com.ominfo.hra_app.ui.dashboard.model.DashModel;
-import com.ominfo.hra_app.ui.employees.model.EmployeeList;
 import com.ominfo.hra_app.ui.leave.adapter.PastLeaveListAdapter;
+import com.ominfo.hra_app.ui.leave.model.ActiveEmployeeListEmpDatum;
+import com.ominfo.hra_app.ui.leave.model.ActiveEmployeeListResponse;
+import com.ominfo.hra_app.ui.leave.model.ActiveEmployeeListViewModel;
+import com.ominfo.hra_app.ui.leave.model.EmployeeLeaveMonthsList;
 import com.ominfo.hra_app.ui.leave.model.PastLeave;
 import com.ominfo.hra_app.ui.leave.model.PastLeaveListRequest;
 import com.ominfo.hra_app.ui.leave.model.PastLeaveListResponse;
@@ -61,15 +56,12 @@ import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveRequest;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveResponse;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveViewModel;
-import com.ominfo.hra_app.ui.my_account.model.LeaveApplicationRequest;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.sales_credit.adapter.EnquiryPageAdapter;
 import com.ominfo.hra_app.ui.sales_credit.model.EnquiryPagermodel;
-import com.ominfo.hra_app.ui.sales_credit.model.GraphModel;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -117,6 +109,7 @@ public class PastLeaveFragment extends BaseFragment {
     @Inject
     ViewModelFactory mViewModelFactory;
     private PastLeaveListViewModel pastLeaveListViewModel;
+    private ActiveEmployeeListViewModel activeEmployeeListViewModel;
     List<EnquiryPagermodel> enquiryPageList = new ArrayList<>();
     @BindView(R.id.rvEnquiryPager)
     RecyclerView rvEnquiryPager;
@@ -147,7 +140,21 @@ public class PastLeaveFragment extends BaseFragment {
     LinearLayoutCompat layList;
     @BindView(R.id.layPagination)
     RelativeLayout layPagination;
-
+    @BindView(R.id.AutoComAddEmp)
+    AppCompatAutoCompleteTextView AutoComAddEmp;
+    @BindView(R.id.input_textAddEmp)
+    TextInputLayout input_textAddEmp;
+    @BindView(R.id.AutoComMonth)
+    AppCompatAutoCompleteTextView AutoComMonth;
+    @BindView(R.id.appcomptextAddEmp)
+    AppCompatTextView appcomptextAddEmp;
+    @BindView(R.id.tvAddLeave)
+    AppCompatTextView tvAddLeave;
+    @BindView(R.id.imgAddLeave)
+    AppCompatImageView imgAddLeave;
+    List<ActiveEmployeeListEmpDatum> activeEmployeeList = new ArrayList<>();
+    String selectedActiveEmpid = "0";
+    LoginTable loginTable;
     public PastLeaveFragment() {
         // Required empty public constructor
     }
@@ -193,8 +200,17 @@ public class PastLeaveFragment extends BaseFragment {
         tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
         layList.setVisibility(View.VISIBLE);
         layPagination.setVisibility(View.VISIBLE);
+        loginTable = mDb.getDbDAO().getLoginData();
+        if(loginTable.getIsadmin().equals("0")){
+            appcomptextAddEmp.setVisibility(View.GONE);
+            input_textAddEmp.setVisibility(View.GONE);
+            tvAddLeave.setVisibility(View.VISIBLE);
+            imgAddLeave.setVisibility(View.VISIBLE);
+        }
         setEnquiryPagerList(1);
         setAdapterForLeaveList();
+        setDropdownMonth();
+        callGetActiveEmployeeListApi();
         callGetPastLeaveApi("0");
     }
 
@@ -204,6 +220,9 @@ public class PastLeaveFragment extends BaseFragment {
 
         applyLeaveViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ApplyLeaveViewModel.class);
         applyLeaveViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_APPLY_LEAVE));
+
+        activeEmployeeListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ActiveEmployeeListViewModel.class);
+        activeEmployeeListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_ACTIVE_EMP_LIST));
     }
 
     private void setPagerEnquiryList(long pageNo){
@@ -523,11 +542,8 @@ public class PastLeaveFragment extends BaseFragment {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
                 RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_past_leave);
-                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
-                Calendar instance = Calendar.getInstance();
-                int currentMonth = instance.get(Calendar.MONTH);
-                int month=currentMonth+1;
-                String monthNumber  =  String.valueOf(month).length()==1?"0"+month : String.valueOf(month);
+                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),/*selectedActiveEmpid*/"46");
+                String monthNumber  =  AppUtils.convertMonthToInt(AutoComMonth.getText().toString().trim());
                 RequestBody mRequestBodyMonth = RequestBody.create(MediaType.parse("text/plain"), monthNumber);
                 RequestBody mRequestPageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);
                 RequestBody mRequestPageSize = RequestBody.create(MediaType.parse("text/plain"), "4");
@@ -540,6 +556,25 @@ public class PastLeaveFragment extends BaseFragment {
                 request.setPageSize(mRequestPageSize);
 
                 pastLeaveListViewModel.hitPastLeaveListAPI(request);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    /* Call Api For active employee List */
+    private void callGetActiveEmployeeListApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_active_emp_list);
+                RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
+                RequestBody mRequestEmpId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                activeEmployeeListViewModel.hitActiveEmployeeListAPI(mRequestBodyAction,
+                        mRequestComId,mRequestEmpId);
             }
             else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
@@ -651,6 +686,87 @@ public class PastLeaveFragment extends BaseFragment {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                    }
+                });
+
+            } else {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //set value to Search dropdown
+    private void setDropdownActiveEmpList() {
+        try {
+            int pos = 0;
+            if (activeEmployeeList != null && activeEmployeeList.size() > 0) {
+                String[] mDropdownList = new String[activeEmployeeList.size()];
+                for (int i = 0; i < activeEmployeeList.size(); i++) {
+                    mDropdownList[i] = String.valueOf(activeEmployeeList.get(i).getEmpName());
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        mContext,
+                        R.layout.row_dropdown_item,
+                        mDropdownList);
+                //tvHighlight.setThreshold(1);
+                AutoComAddEmp.setAdapter(adapter);
+                //mListDropdownView.setHint(mDropdownList[pos]);
+                AutoComAddEmp.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        for (int i = 0; i < activeEmployeeList.size(); i++) {
+                            if (AutoComAddEmp.getText().toString().trim().equals(activeEmployeeList.get(i).getEmpName()))
+                            { selectedActiveEmpid = activeEmployeeList.get(i).getEmpId();
+                        }callGetPastLeaveApi("0");
+                    }
+                    }
+                });
+
+            } else {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //set value to month dropdown
+    private void setDropdownMonth() {
+        List<EmployeeLeaveMonthsList> monthsLists = new ArrayList<>();
+        monthsLists.add(new EmployeeLeaveMonthsList("January","31 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("February","28 days in a common year and 29 days in leap years"));
+        monthsLists.add(new EmployeeLeaveMonthsList("March","31 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("April","30 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("May","31 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("June","30 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("July","31 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("August","31 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("September","30 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("October","31 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("November","30 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("December","31 days"));
+
+        try {
+            int pos = 0;
+            if (monthsLists != null && monthsLists.size() > 0) {
+                String[] mDropdownList = new String[monthsLists.size()];
+                for (int i = 0; i < monthsLists.size(); i++) {
+                    mDropdownList[i] = String.valueOf(monthsLists.get(i).getName());
+                    //pos = i;
+                }
+                AutoComMonth.setText(mDropdownList[pos]);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        mContext,
+                        R.layout.row_dropdown_item,
+                        mDropdownList);
+                //tvHighlight.setThreshold(1);
+                AutoComMonth.setAdapter(adapter);
+                AutoComMonth.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                     callGetPastLeaveApi("0");
                     }
                 });
 
@@ -794,11 +910,35 @@ public class PastLeaveFragment extends BaseFragment {
                                 ((BaseActivity)mContext).showSuccessDialog(responseModel.getResult().getMessage(),
                                         true,getActivity());
                                 //((BaseActivity)mContext).setRateUsCounter(mContext);
+                                try{setEnquiryPagerList(1);
+                                setAdapterForLeaveList();
+                                callGetPastLeaveApi("0");}catch (Exception e){}
                             }
                             else {
                                 mDialogChangePass.dismiss();
                                 ((BaseActivity)mContext).showSuccessDialog(responseModel.getResult().getMessage(),
                                         true,getActivity());
+                            }
+                        }
+                    }catch (Exception e){
+                        ((BaseActivity)mContext).showSuccessDialog("Leave application upload failed.",
+                                true,getActivity());
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_ACTIVE_EMP_LIST)) {
+                            ActiveEmployeeListResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ActiveEmployeeListResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                               try{activeEmployeeList.removeAll(activeEmployeeList);}catch (Exception e){}
+                               if(responseModel.getResult().getEmpData()!=null &&
+                               responseModel.getResult().getEmpData().size()>0){
+                                   activeEmployeeList = responseModel.getResult().getEmpData();
+                                   setDropdownActiveEmpList();
+                               }
+                            }
+                            else {
+
                             }
                         }
                     }catch (Exception e){
@@ -839,9 +979,9 @@ public class PastLeaveFragment extends BaseFragment {
                             }
                         }
                     }catch (Exception e){
-                        ((BaseActivity)mContext).showSuccessDialog("Leave application upload failed.",
+                      /*  ((BaseActivity)mContext).showSuccessDialog("Leave application upload failed.",
                                 true,getActivity());
-                        e.printStackTrace();
+                        e.printStackTrace();*/
                     }
                 }
                 break;

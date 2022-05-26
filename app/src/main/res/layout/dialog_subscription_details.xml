@@ -55,7 +55,7 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvCompany"
-            android:layout_width="@dimen/_110dp"
+            android:layout_width="@dimen/_120dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
@@ -101,7 +101,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvAmount"
-                android:layout_width="@dimen/_110dp"
+                android:layout_width="@dimen/_120dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
@@ -146,7 +146,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvRM"
-                android:layout_width="@dimen/_110dp"
+                android:layout_width="@dimen/_120dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
@@ -183,6 +183,52 @@
 
         </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_10dp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvDiscount"
+                android:layout_width="@dimen/_120dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/gilroy_regular"
+                android:gravity="left"
+                android:text="Coupon Discount"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvDiscountColon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/tvDiscount"
+                android:fontFamily="@font/gilroy_regular"
+                android:gravity="center"
+                android:text="  :  "
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvDiscountValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tvDiscountColon"
+                android:fontFamily="@font/gilroy_semibold"
+                android:gravity="start"
+                android:layout_centerVertical="true"
+                android:hint="@string/scr_lbl_rs_0"
+                android:inputType="textMultiLine"
+                android:text=""
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+        </RelativeLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1.5dip"
@@ -200,7 +246,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvState"
-                android:layout_width="@dimen/_110dp"
+                android:layout_width="@dimen/_120dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"

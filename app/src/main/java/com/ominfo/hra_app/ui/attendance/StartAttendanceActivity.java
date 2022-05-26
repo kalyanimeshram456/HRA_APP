@@ -61,9 +61,11 @@ import com.ominfo.hra_app.network.ApiResponse;
 import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
-import com.ominfo.hra_app.ui.attendance.model.MarkAttendanceRequest;
+import com.ominfo.hra_app.ui.attendance.model.GetAttendanceAtt;
+import com.ominfo.hra_app.ui.attendance.model.GetAttendanceRequest;
+import com.ominfo.hra_app.ui.attendance.model.GetAttendanceResponse;
 import com.ominfo.hra_app.ui.attendance.model.MarkAttendanceResponse;
-import com.ominfo.hra_app.ui.attendance.model.MarkAttendanceViewModel;
+import com.ominfo.hra_app.ui.attendance.model.GetAttendanceViewModel;
 import com.ominfo.hra_app.ui.attendance.model.UpdateAttendanceRequest;
 import com.ominfo.hra_app.ui.attendance.model.UpdateAttendanceResponse;
 import com.ominfo.hra_app.ui.attendance.model.UpdateAttendanceViewModel;
@@ -81,6 +83,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -109,7 +112,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
      AppCompatButton mButtonStartVisit;*/
     @BindView(R.id.imgChecked)
     AppCompatImageView imgChecked;
-
+    List<GetAttendanceAtt> getAttendanceAttList = new ArrayList<>();
     GoogleApiClient googleApiClient;
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
     LocationManager locationManager;
@@ -119,7 +122,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     @Inject
     ViewModelFactory mViewModelFactory;
     private GetVisitNoViewModel getVisitNoViewModel;
-    private MarkAttendanceViewModel markAttendanceViewModel;
+    private GetAttendanceViewModel getAttendanceViewModel;
     private UpdateAttendanceViewModel updateAttendanceViewModel;
     private AppDatabase mDb;
     @BindView(R.id.progressBarHolder)
@@ -158,7 +161,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
         tvCurrLocation = findViewById(R.id.tvCurrLocation);
         final RippleBackground rippleBackground = (RippleBackground) findViewById(R.id.content);
         rippleBackground.startRippleAnimation(0, mContext);
-        final Handler handler = new Handler();
+
         imgChecked.setVisibility(View.GONE);
         showSmallProgressBar(mProgressBarHolder);
         if (!isGPSEnabled(mContext)) {
@@ -166,52 +169,9 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
         } else {
             getLocation();
         }
-        Intent intent = getIntent();
-        if (intent != null) {
-            transactionId = intent.getStringExtra(Constants.TRANSACTION_ID);
-            Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_IN_BUTTON, false);
-            if (iSTimer) {
-                String startlocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
-                String startlocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
-                Geocoder geocoder;
-                List<Address> addresses;
-                geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
-
-                try {
-                    addresses = geocoder.getFromLocation(Double.parseDouble(startlocationLat), Double.parseDouble(startlocationLng), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-                    String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-                    String city = addresses.get(0).getLocality();
-                    String state = addresses.get(0).getAdminArea();
-                    String country = addresses.get(0).getCountryName();
-                    String postalCode = addresses.get(0).getPostalCode();
-                    String knownName = addresses.get(0).getFeatureName();
-                    tvCurrLocation.setText("Current Location : " + address);
-                } catch (Exception e) {
-                }
-                layBottomCheckOut.setVisibility(View.VISIBLE);
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        dismissSmallProgressBar(mProgressBarHolder);
-                        doBounceAnimationOnce(tvCheckInName);
-                        tvCheckInName.setText("Check Out");
-                    }
-                }, 1600);
-            } else {
-                layBottomCheckOut.setVisibility(View.INVISIBLE);
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        dismissSmallProgressBar(mProgressBarHolder);
-                        doBounceAnimationOnce(tvCheckInName);
-                        tvCheckInName.setText("Check In");
-                        String address = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_TITLE, "Unavailable");
-
-                    }
-                }, 1600);
-            }
-        }
         prepareAllData();
+        callGetAttendanceApi();
+
     }
 
     private void prepareAllData() {
@@ -255,10 +215,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     @Override
     protected void onStart() {
         super.onStart();
-        Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_OUT_ENABLED, false);
-        if (!iSTimer) {
             startLocationService();
-        }
     }
 
     private void doBounceAnimation(View targetView) {
@@ -296,57 +253,36 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     }
 
     private void injectAPI() {
-        getVisitNoViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetVisitNoViewModel.class);
-        getVisitNoViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_GET_VISIT_NO));
-
-        markAttendanceViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MarkAttendanceViewModel.class);
-        markAttendanceViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_MARK_ATTENDANCE));
+        getAttendanceViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetAttendanceViewModel.class);
+        getAttendanceViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_GET_ATTENDANCE));
 
         updateAttendanceViewModel = ViewModelProviders.of(this, mViewModelFactory).get(UpdateAttendanceViewModel.class);
         updateAttendanceViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_UPDATE_ATTENDANCE));
     }
 
-    /* Call Api For visit no */
-    private void callVisitNoApi() {
-        if (NetworkCheck.isInternetAvailable(this)) {
-            LoginTable loginTable = mDb.getDbDAO().getLoginData();
-            /*if(loginTable!=null) {
-                RequestBody mRequestBodyTypeAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_visit_no);
-                RequestBody mRequestBodyTypeCompID = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());//loginTable.getCompanyId());
-            */
-            getVisitNoViewModel.hitGetVisitNoApi();
-            /*}
-            else {
-                LogUtil.printToastMSG(this, "Something is wrong.");
-            }*/
-        } else {
-            LogUtil.printToastMSG(this, getString(R.string.err_msg_connection_was_refused));
-        }
-    }
-
-    /* Call Api For Mark Attendance */
-    private void callMarkAttendanceApi() {
+    /* Call Api For get Attendance */
+    private void callGetAttendanceApi() {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if (loginTable != null) {
-                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_mark_attendance);
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_attendance);
                 RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
-                RequestBody mRequestBodyDate = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentDateInyyyymmdd());
+                RequestBody mRequestBodyFDate = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentDateInyyyymmdd());
+                RequestBody mRequestBodyTDate = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentDateInyyyymmdd());
                 String startlocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
                 String startlocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
                 String mTime_ = AppUtils.getCurrentTimeIn24hr();
-                RequestBody mRequestBodyStartTime = RequestBody.create(MediaType.parse("text/plain"), mTime_);
-                RequestBody mRequestBodyStartLat = RequestBody.create(MediaType.parse("text/plain"), startlocationLat);
-                RequestBody mRequestBodyStartLong = RequestBody.create(MediaType.parse("text/plain"), startlocationLng);
+                RequestBody mRequestToken = RequestBody.create(MediaType.parse("text/plain"), loginTable.getToken());
+                RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
                 SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENDANCE_CHECKIN_TIME, mTime_);
-                MarkAttendanceRequest markAttendanceRequest = new MarkAttendanceRequest();
+                GetAttendanceRequest markAttendanceRequest = new GetAttendanceRequest();
                 markAttendanceRequest.setAction(mRequestBodyAction);
                 markAttendanceRequest.setEmpId(mRequestBodyTypeEmpId);
-                markAttendanceRequest.setDate(mRequestBodyDate);
-                markAttendanceRequest.setStartTime(mRequestBodyStartTime);
-                markAttendanceRequest.setStartLatitude(mRequestBodyStartLat);
-                markAttendanceRequest.setStartLongitude(mRequestBodyStartLong);
-                markAttendanceViewModel.hitMarkAttendanceApi(markAttendanceRequest);
+                markAttendanceRequest.setFrm_date(mRequestBodyFDate);
+                markAttendanceRequest.setTo_date(mRequestBodyTDate);
+                markAttendanceRequest.setToken(mRequestToken);
+                markAttendanceRequest.setCompany_ID(mRequestComId);
+                getAttendanceViewModel.hitGetAttendanceApi(markAttendanceRequest);
             } else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
             }
@@ -356,28 +292,78 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     }
 
     /* Call Api For Update Attendance */
-    private void callUpdateAttendanceApi() {
+    private void callUpdateAttendanceApi(int isUpdate) {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if (loginTable != null) {
-                String id = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENDANCE_ID, "0");
+                UpdateAttendanceRequest markAttendanceRequest = new UpdateAttendanceRequest();
                 String startTime = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENDANCE_CHECKIN_TIME, "00:00:00");
                 RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_update_attendance);
-                RequestBody mRequestBodyStartTime = RequestBody.create(MediaType.parse("text/plain"), startTime);
-                RequestBody mRequestBodyEndTime = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentTimeIn24hr());
-                RequestBody mRequestBodyId = RequestBody.create(MediaType.parse("text/plain"), id);
-                String startlocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
-                String startlocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
-                RequestBody mRequestBodyEndLat = RequestBody.create(MediaType.parse("text/plain"), startlocationLat);
-                RequestBody mRequestBodyEndLong = RequestBody.create(MediaType.parse("text/plain"), startlocationLng);
+                RequestBody mRequestEmailID = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                RequestBody mRequestdate = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentDateInyyyymmdd());
 
-                UpdateAttendanceRequest markAttendanceRequest = new UpdateAttendanceRequest();
+                String cTime = AppUtils.getCurrentTimeIn24hr();
+                String clocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
+                String clocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
+                String dataLoc = "";
+                try {
+                    Geocoder geocoder = new Geocoder(StartAttendanceActivity.this);
+                    String lat = clocationLat;
+                    String lng = clocationLng;
+                    List<Address> addressList = geocoder.getFromLocation(Double.parseDouble(lat),
+                            Double.parseDouble(lng), 1);
+                    if (addressList != null && addressList.size() > 0) {
+                        Address address = addressList.get(0);
+                        String locality = addressList.get(0).getAddressLine(0);
+                        dataLoc = locality;
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                RequestBody mRequestStartTime = RequestBody.create(MediaType.parse("text/plain"), cTime);
+                RequestBody mRequestBodyAddr = RequestBody.create(MediaType.parse("text/plain"), dataLoc);
+                RequestBody mRequestBodyStartLat = RequestBody.create(MediaType.parse("text/plain"), clocationLat);
+                RequestBody mRequestBodyStartLong = RequestBody.create(MediaType.parse("text/plain"), clocationLng);
+
+                if(isUpdate==0) {
+                    String timeApi = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENDANCE_START_TIME, "00:00:00");
+                    String currDate = AppUtils.getCurrentDateTime_() + " " + AppUtils.getCurrentTimeIn24hr();
+                    String savedDate = timeApi + " " + AppUtils.getCurrentTimeIn24hr();
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                    String isTime = "0";
+                    try {
+                        SimpleDateFormat sdf30 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                        Date date = sdf30.parse(savedDate);
+                        Calendar calendar30 = Calendar.getInstance();
+                        calendar30.setTime(date);
+                        calendar30.add(Calendar.MINUTE, 15);
+                        Date date1 = sdf.parse(sdf30.format(calendar30.getTime()));//saved + 15
+                        Date date2 = sdf.parse(currDate); //curr
+                        if (date2.compareTo(date1) == 1) {
+                            isTime = "1";
+                        }
+                    }catch (Exception e){}
+
+                    RequestBody mRequestIsLate = RequestBody.create(MediaType.parse("text/plain"), isTime);
+                    markAttendanceRequest.setStart_time(mRequestStartTime);
+                    markAttendanceRequest.setStart_latitude(mRequestBodyStartLat);
+                    markAttendanceRequest.setStart_longitude(mRequestBodyStartLong);
+                    markAttendanceRequest.setOffice_start_addr(mRequestBodyAddr);
+                    markAttendanceRequest.setIs_late(mRequestIsLate);
+                }
+                else{
+                    markAttendanceRequest.setEnd_time(mRequestStartTime);
+                    markAttendanceRequest.setEnd_latitude(mRequestBodyStartLat);
+                    markAttendanceRequest.setEnd_longitude(mRequestBodyStartLong);
+                    markAttendanceRequest.setOffice_end_addr(mRequestBodyAddr);
+                }
+
                 markAttendanceRequest.setAction(mRequestBodyAction);
-                markAttendanceRequest.setStartTime(mRequestBodyStartTime);
-                markAttendanceRequest.setEndTime(mRequestBodyEndTime);
-                markAttendanceRequest.setId(mRequestBodyId);
-                markAttendanceRequest.setEndLatitude(mRequestBodyEndLat);
-                markAttendanceRequest.setEndLongitude(mRequestBodyEndLong);
+                markAttendanceRequest.setEmp_id(mRequestEmailID);
+                markAttendanceRequest.setDate(mRequestdate);
+
                 updateAttendanceViewModel.hitUpdateAttendanceApi(markAttendanceRequest);
             } else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
@@ -624,11 +610,10 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                             addressCurr.equals("Fetching...") || addressCurr.equals("")) {
                         LogUtil.printToastMSG(mContext, "Please wait, Location is getting fetch.");
                     } else {
-                        Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_IN_BUTTON, false);
-                        if (iSTimer) {
-                            callUpdateAttendanceApi();
+                        if (getAttendanceAttList!=null && getAttendanceAttList.size()>0) {
+                            callUpdateAttendanceApi(1);
                         } else {
-                            callMarkAttendanceApi();
+                            callUpdateAttendanceApi(0);
                         }
                     }
                     break;
@@ -649,10 +634,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_OUT_ENABLED, false);
-        if (!iSTimer) {
-            stopService(new Intent(mContext, BackgroundAttentionService.class));
-        }
+        stopService(new Intent(mContext, BackgroundAttentionService.class));
     }
 
     @Override
@@ -726,15 +708,57 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                         e.printStackTrace();
                     }
                     try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_MARK_ATTENDANCE)) {
-                            MarkAttendanceResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), MarkAttendanceResponse.class);
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_ATTENDANCE)) {
+                            GetAttendanceResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetAttendanceResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
-                                imgChecked.setVisibility(View.VISIBLE);
+                                final Handler handler = new Handler();
+                                getAttendanceAttList = responseModel.getResult().getAtt();
+                                if(responseModel.getResult().getAtt()==null) {
+                                    layBottomCheckOut.setVisibility(View.INVISIBLE);
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            dismissSmallProgressBar(mProgressBarHolder);
+                                            doBounceAnimationOnce(tvCheckInName);
+                                            tvCheckInName.setText("Check In");
+                                            String address = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_TITLE, "Unavailable");
+
+                                        }
+                                    }, 1600);
+                                }else{
+                                    String startlocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
+                                    String startlocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
+                                    Geocoder geocoder;
+                                    List<Address> addresses;
+                                    geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
+
+                                    try {
+                                        addresses = geocoder.getFromLocation(Double.parseDouble(startlocationLat), Double.parseDouble(startlocationLng), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                                        String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                                        String city = addresses.get(0).getLocality();
+                                        String state = addresses.get(0).getAdminArea();
+                                        String country = addresses.get(0).getCountryName();
+                                        String postalCode = addresses.get(0).getPostalCode();
+                                        String knownName = addresses.get(0).getFeatureName();
+                                        tvCurrLocation.setText("Current Location : " + address);
+                                    } catch (Exception e) {
+                                    }
+                                    layBottomCheckOut.setVisibility(View.VISIBLE);
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            dismissSmallProgressBar(mProgressBarHolder);
+                                            doBounceAnimationOnce(tvCheckInName);
+                                            tvCheckInName.setText("Check Out");
+                                        }
+                                    }, 1600);
+                                }
+                               /* imgChecked.setVisibility(View.VISIBLE);
                                 //doBounceAnimation(imgChecked);
                                 final Animation animation = AnimationUtils.loadAnimation(this, R.anim.bounce_out);
                                 imgChecked.startAnimation(animation);
-                                SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENDANCE_ID, String.valueOf(responseModel.getResult().getId()));
+                                //SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENDANCE_ID, String.valueOf(responseModel.getResult().getId()));
                                 //set toggle
                                 SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_IN_BUTTON, true);
                                 SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_OUT_ENABLED, true);
@@ -745,8 +769,20 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                                     public void run() {
                                         finish();
                                     }
-                                }, 1700);
+                                }, 1700);*/
                             } else {
+                                layBottomCheckOut.setVisibility(View.INVISIBLE);
+                                final Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        dismissSmallProgressBar(mProgressBarHolder);
+                                        doBounceAnimationOnce(tvCheckInName);
+                                        tvCheckInName.setText("Check In");
+                                        String address = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_TITLE, "Unavailable");
+
+                                    }
+                                }, 1600);
                                 LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                             }
                         }
@@ -772,9 +808,6 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                                     @Override
                                     public void run() {
                                         finish();
-                                        try{
-                                        setRateUsCounter(mContext);}catch (Exception
-                                        e){}
                                     }
                                 }, 1700);
                             } else {

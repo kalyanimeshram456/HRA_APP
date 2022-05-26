@@ -17,6 +17,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 
 import com.ominfo.hra_app.R;
 
+import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.zcustomcalendar.CustomCalendar;
 import com.ominfo.hra_app.zcustomcalendar.OnDateSelectedListener;
 import com.ominfo.hra_app.zcustomcalendar.Property;
@@ -35,7 +36,7 @@ public class CustomCalendar extends LinearLayout {
 	
 	public static final int PREVIOUS = -1;
 	public static final int NEXT = 1;
-	
+
 	public static final int THREE_LETTER_MONTH__WITH_YEAR = 0;
 	public static final int FULL_MONTH__WITH_YEAR = 1;
 
@@ -61,6 +62,7 @@ public class CustomCalendar extends LinearLayout {
 	
 	private Calendar selectedDate = null;
 	private OnDateSelectedListener listener = null;
+	private OnCalenderHolidaySelectedListener listenerTest = null;
 	private OnNavigationButtonClickedListener leftButtonListener = null;
 	private OnNavigationButtonClickedListener rightButtonListener = null;
 	private float rowHeight = 0;
@@ -128,6 +130,7 @@ public class CustomCalendar extends LinearLayout {
 					mapDateToDesc = null;
 					mapDateToTag = null;
 				}
+				listenerTest.onDateSelected(selectedDate);
 				setAll();
 			}
 		});
@@ -148,6 +151,7 @@ public class CustomCalendar extends LinearLayout {
 					mapDateToDesc = null;
 					mapDateToTag = null;
 				}
+				listenerTest.onDateSelected(selectedDate);
 				setAll();
 			}
 		});
@@ -172,8 +176,8 @@ public class CustomCalendar extends LinearLayout {
 			View btn = null;
 			if(mapDescToProp != null && mapDescToProp.get("disabled") != null && mapDescToProp.get("disabled").layoutResource != -1) {
 				Property prop = mapDescToProp.get("disabled");
-				btn =  LayoutInflater.from(context).inflate(prop.layoutResource, null);
-				if(prop.dateTextViewResource != -1 && btn.findViewById(prop.dateTextViewResource) != null) ((TextView)btn.findViewById(prop.dateTextViewResource)).setText("" + (previousMonth.getActualMaximum(Calendar.DAY_OF_MONTH)-(j-i-1)));
+				//btn =  LayoutInflater.from(context).inflate(prop.layoutResource, null);
+				//if(prop.dateTextViewResource != -1 && btn.findViewById(prop.dateTextViewResource) != null) ((TextView)btn.findViewById(prop.dateTextViewResource)).setText("" + (previousMonth.getActualMaximum(Calendar.DAY_OF_MONTH)-(j-i-1)));
 			}
 			else {
 				btn = new Button(context);
@@ -216,8 +220,8 @@ public class CustomCalendar extends LinearLayout {
 			View btn = null;
 			if(mapDescToProp != null && mapDescToProp.get("disabled") != null) {
 				Property prop = mapDescToProp.get("disabled");
-				btn =  LayoutInflater.from(context).inflate(prop.layoutResource, null);
-				if(prop.dateTextViewResource != -1 && btn.findViewById(prop.dateTextViewResource) != null) ((TextView)btn.findViewById(prop.dateTextViewResource)).setText("" + k);
+				//btn =  LayoutInflater.from(context).inflate(prop.layoutResource, null);
+				//if(prop.dateTextViewResource != -1 && btn.findViewById(prop.dateTextViewResource) != null) ((TextView)btn.findViewById(prop.dateTextViewResource)).setText("" + k);
 			}
 			else {
 				btn = new Button(context);
@@ -278,13 +282,15 @@ public class CustomCalendar extends LinearLayout {
 		btn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				selectedDate.set(Calendar.DAY_OF_MONTH, date);
-				if(listener != null) {
-					listener.onDateSelected(btn, selectedDate, mapDateToDesc.get(new Integer(date)));
-				}
-				if(selectedButton != null) selectedButton.setSelected(false);
-				btn.setSelected(true);
-				selectedButton = btn;
+				try {
+					selectedDate.set(Calendar.DAY_OF_MONTH, date);
+					if (listener != null) {
+						listener.onDateSelected(btn, selectedDate, mapDateToDesc.get(new Integer(date)));
+					}
+					if (selectedButton != null) selectedButton.setSelected(false);
+					btn.setSelected(true);
+					selectedButton = btn;
+				}catch (Exception e){}
 			}
 		});
 		if(selectedDate.get(Calendar.DAY_OF_MONTH) == date) {
@@ -410,6 +416,10 @@ public class CustomCalendar extends LinearLayout {
 	public void setOnDateSelectedListener(OnDateSelectedListener listener) {
 		this.listener = listener;
 		readyMonthAndYear();
+	}
+
+	public void setOnCalenderListener(OnCalenderHolidaySelectedListener mL) {
+		this.listenerTest = mL;
 	}
 	
 	/**

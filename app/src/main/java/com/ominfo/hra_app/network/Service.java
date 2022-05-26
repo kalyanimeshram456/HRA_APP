@@ -1,10 +1,9 @@
 package com.ominfo.hra_app.network;
 import com.google.gson.JsonElement;
 import com.ominfo.hra_app.ui.attendance.model.LocationPerHourRequest;
-import com.ominfo.hra_app.ui.attendance.model.MarkAttendanceRequest;
+import com.ominfo.hra_app.ui.attendance.model.GetAttendanceRequest;
 import com.ominfo.hra_app.ui.attendance.model.UpdateAttendanceRequest;
 import com.ominfo.hra_app.ui.dashboard.model.AddHolidayRequest;
-import com.ominfo.hra_app.ui.dashboard.model.DashboardRequest;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeRequest;
 import com.ominfo.hra_app.ui.employees.model.EditEmployeeRequest;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListRequest;
@@ -12,6 +11,7 @@ import com.ominfo.hra_app.ui.leave.model.AcceptRejectListRequest;
 import com.ominfo.hra_app.ui.leave.model.LeaveStatusRequest;
 import com.ominfo.hra_app.ui.leave.model.PastLeaveListRequest;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveRequest;
+import com.ominfo.hra_app.ui.my_account.model.EditCompanyRequest;
 import com.ominfo.hra_app.ui.my_account.model.GetTicketRequest;
 import com.ominfo.hra_app.ui.my_account.model.LeaveApplicationRequest;
 import com.ominfo.hra_app.ui.my_account.model.ProfileRequest;
@@ -40,7 +40,10 @@ public class Service {
         return networkAPIServices.registration(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_REGISTRATION),
                 request.getAction(),request.getName(),request.getAddress(),
                 request.getPincode(),request.getContactNo(),request.getEmailId(),
-                request.getStaffStrength(),request.getUserPrefix());
+                request.getStaffStrength(),request.getUserPrefix(),request.getGst_percent(),
+                request.getSub_charge(),request.getGst_amount(),request.getDiscount_rate(),
+                request.getTotal_charge(),request.getCoupon(),request.getPlan_type(),request.getAdmin_name()
+                ,request.getGst_no());
     }
     public Observable<JsonElement> executeCheckPrefixAPI(RequestBody action, RequestBody prefix) {
         return networkAPIServices.checkPrefix(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_CHECK_PREFIX),
@@ -95,16 +98,21 @@ public class Service {
                 ,request.getTicket_no()
         );
     }
-    public Observable<JsonElement> executeMarkAttendanceAPI(MarkAttendanceRequest markAttendanceRequest) {
-        return networkAPIServices.markAttendance(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_MARK_ATTENDANCE),
-                markAttendanceRequest.getAction(), markAttendanceRequest.getEmpId(), markAttendanceRequest.getDate(),
-                markAttendanceRequest.getStartTime(), markAttendanceRequest.getStartLatitude(), markAttendanceRequest.getStartLongitude()
+    public Observable<JsonElement> executeGetAttendanceAPI(GetAttendanceRequest markAttendanceRequest) {
+        return networkAPIServices.getAttendance(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_ATTENDANCE),
+                markAttendanceRequest.getAction(), markAttendanceRequest.getEmpId(), markAttendanceRequest.getFrm_date(),markAttendanceRequest.getTo_date(),
+                markAttendanceRequest.getToken(), markAttendanceRequest.getCompany_ID()
         );
     }
     public Observable<JsonElement> executeUpdateAttendanceAPI(UpdateAttendanceRequest updateAttendanceRequest) {
         return networkAPIServices.updateAttendance(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_UPDATE_ATTENDANCE),
-                updateAttendanceRequest.getAction()/*, updateAttendanceRequest.getStartTime()*/, updateAttendanceRequest.getEndTime(),
-                updateAttendanceRequest.getId(), updateAttendanceRequest.getEndLatitude(), updateAttendanceRequest.getEndLongitude()
+                updateAttendanceRequest.getAction(), updateAttendanceRequest.getEmp_id(),
+                updateAttendanceRequest.getDate(),
+                updateAttendanceRequest.getStart_time(), updateAttendanceRequest.getStart_longitude(),
+                updateAttendanceRequest.getStart_latitude(), updateAttendanceRequest.getOffice_start_addr(),
+                updateAttendanceRequest.getIs_late(), updateAttendanceRequest.getOffice_end_addr(),
+                updateAttendanceRequest.getEnd_time(), updateAttendanceRequest.getEnd_longitude(),
+                updateAttendanceRequest.getEnd_latitude()
         );
     }
     public Observable<JsonElement> executeLocationPerHourAPI(LocationPerHourRequest locationPerHourRequest) {
@@ -164,6 +172,12 @@ public class Service {
                 addHolidayRequest.getAction(),addHolidayRequest.getCompany_id(),
                 addHolidayRequest.getDate(),addHolidayRequest.getName(),
                 addHolidayRequest.getDescription()
+        );
+    }
+    public Observable<JsonElement> executeEditHolidayAPI(RequestBody action,RequestBody record_id) {
+        return networkAPIServices.editHoliday(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_EDIT_HOLIDAY),
+               action,record_id
         );
     }
     public Observable<JsonElement> executeGetProfileImageAPI(RequestBody action,
@@ -282,6 +296,13 @@ public class Service {
                 request.getLeaveStatus(),request.getUpdatedBy()
         );
     }
+    public Observable<JsonElement> executeActiveEmployeeListAPI(RequestBody action,RequestBody comId,
+                                                                RequestBody empId) {
+        return networkAPIServices.activeEmployeeList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_ACTIVE_EMP_LIST),
+               action,comId,empId
+        );
+    }
     public Observable<JsonElement> executeDeactivateEmployeeAPI(RequestBody action,RequestBody updateby,RequestBody empId) {
         return networkAPIServices.deactivateEmployee(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_DEACT_EMPLOYEE),
@@ -341,6 +362,31 @@ public class Service {
                         ,addEmployeeRequest.getSunEndTime()
         );
     }
+
+    public Observable<JsonElement> executeEditCompanyAPI(EditCompanyRequest editCompanyRequest) {
+        return networkAPIServices.editCompany(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_EDIT_COMPANY),
+                editCompanyRequest.getAction(), editCompanyRequest.getCompany_ID(),
+                editCompanyRequest.getName(), editCompanyRequest.getContact_no(),
+                editCompanyRequest.getEmail_id(), editCompanyRequest.getStaff_strength(),
+                editCompanyRequest.getGst_no(), editCompanyRequest.getPincode(),
+                editCompanyRequest.getRegistered_address(),
+                editCompanyRequest.getOfficeAddress(),editCompanyRequest.getOfficeLatitude(),
+                editCompanyRequest.getOfficeLongitude(),
+                editCompanyRequest.getMonWorking() ,editCompanyRequest.getTueWorking()
+                ,editCompanyRequest.getWedWorking() ,editCompanyRequest.getThursWorking()
+                ,editCompanyRequest.getFri_working() ,editCompanyRequest.getSatWorking()
+                ,editCompanyRequest.getSunWorking() ,editCompanyRequest.getMonStartTime()
+                ,editCompanyRequest.getTueStartTime() ,editCompanyRequest.getWedStartTime()
+                ,editCompanyRequest.getThursStartTime() ,editCompanyRequest.getFri_start_time()
+                ,editCompanyRequest.getSatStartTime() ,editCompanyRequest.getSunStartTime()
+                ,editCompanyRequest.getMonEndTime() ,editCompanyRequest.getTueEndTime()
+                ,editCompanyRequest.getWedEndTime() ,editCompanyRequest.getThursEndTime()
+                ,editCompanyRequest.getFri_end_time() ,editCompanyRequest.getSatEndTime()
+                ,editCompanyRequest.getSunEndTime()
+        );
+    }
+
 
     public Observable<JsonElement> executeGetTopCustomerAPI(TopCustomerRequest topCustomerRequest) {
         return networkAPIServices.getTopCustomer(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_TOP_CUST),

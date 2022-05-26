@@ -74,7 +74,11 @@ import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.ui.dashboard.model.DashModel;
+import com.ominfo.hra_app.ui.employees.AddEmployeeActivity;
 import com.ominfo.hra_app.ui.employees.adapter.EmployeeTimeAdapter;
+import com.ominfo.hra_app.ui.employees.model.EditEmployeeRequest;
+import com.ominfo.hra_app.ui.employees.model.EditEmployeeResponse;
+import com.ominfo.hra_app.ui.employees.model.EditEmployeeViewModel;
 import com.ominfo.hra_app.ui.employees.model.EmployeeList;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListRequest;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListResponse;
@@ -92,6 +96,9 @@ import com.ominfo.hra_app.ui.my_account.model.ChangePasswordResponse;
 import com.ominfo.hra_app.ui.my_account.model.ChangePasswordViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ChangeProfileImageResponse;
 import com.ominfo.hra_app.ui.my_account.model.ChangeProfileImageViewModel;
+import com.ominfo.hra_app.ui.my_account.model.EditCompanyRequest;
+import com.ominfo.hra_app.ui.my_account.model.EditCompanyResonse;
+import com.ominfo.hra_app.ui.my_account.model.EditCompanyViewModel;
 import com.ominfo.hra_app.ui.my_account.model.GetCompanyList;
 import com.ominfo.hra_app.ui.my_account.model.GetCompanyResponse;
 import com.ominfo.hra_app.ui.my_account.model.GetCompanyViewModel;
@@ -104,6 +111,7 @@ import com.ominfo.hra_app.ui.my_account.model.WorkTimingList;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.sales_credit.activity.PdfPrintActivity;
 import com.ominfo.hra_app.ui.sales_credit.model.GraphModel;
+import com.ominfo.hra_app.ui.visit_report.activity.AddLocationActivity;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
 import com.ominfo.hra_app.util.RealPathUtils;
@@ -174,10 +182,6 @@ public class MyAccountFragment extends BaseFragment {
     AppCompatImageView imgNotify;
     BarData barData;
     private boolean isUpload = false;
-
-    List<DashModel> dashboardList = new ArrayList<>();
-    List<DashModel> tagList = new ArrayList<>();
-    List<GraphModel> graphModelsList = new ArrayList<>();
     @Inject
     ViewModelFactory mViewModelFactory;
     private ProfileViewModel profileViewModel;
@@ -188,7 +192,10 @@ public class MyAccountFragment extends BaseFragment {
     private LogoutViewModel logoutViewModel;
     private EmployeeListViewModel employeeListViewModel;
     private GetCompanyViewModel getCompanyViewModel;
+    private EditEmployeeViewModel editEmployeeViewModel;
+    private EditCompanyViewModel editCompanyViewModel;
 
+    EmployeeList employeeListResData;
     final Calendar myCalendar = Calendar.getInstance();
     private AppDatabase mDb;
     @BindView(R.id.progressBarHolder)
@@ -255,7 +262,7 @@ public class MyAccountFragment extends BaseFragment {
     @BindView(R.id.etOfAddress)
     AppCompatEditText etOfAddress;
     List<WorkTimingList> workTimingLists = new ArrayList<>();
-
+    String officeLat = "",officeLong="";
     public MyAccountFragment() {
         // Required empty public constructor
     }
@@ -337,6 +344,199 @@ public class MyAccountFragment extends BaseFragment {
 
         getCompanyViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetCompanyViewModel.class);
         getCompanyViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_COMPANY));
+
+        editEmployeeViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EditEmployeeViewModel.class);
+        editEmployeeViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_edit_employee));
+
+        editCompanyViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EditCompanyViewModel.class);
+        editCompanyViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_EDIT_COMPANY));
+
+    }
+
+    /* Call Api For edit employee */
+    private void callEditEmployeeApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyTypeAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_edit_employee);
+                RequestBody mRequestBodyTypeEmpName = RequestBody.create(MediaType.parse("text/plain"),tvEmpName.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpMob = RequestBody.create(MediaType.parse("text/plain"), AutoComEMobile.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpEmail = RequestBody.create(MediaType.parse("text/plain"), AutoComEmailId.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpAddr = RequestBody.create(MediaType.parse("text/plain"), etDescr.getText().toString().trim());//loginTable.getCompanyId());
+                String dob = AppUtils.changeToSlashToDash(tvDateValue.getText().toString().trim());
+                RequestBody mRequestBodyTypeEmpDob = RequestBody.create(MediaType.parse("text/plain"), dob);//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpGender = RequestBody.create(MediaType.parse("text/plain"), AutoComtEGender.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpPincode = RequestBody.create(MediaType.parse("text/plain"), AutoComPincode.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpPos = RequestBody.create(MediaType.parse("text/plain"), AutoComEDesi.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeupdated_by = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeemp_id = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeSalary = RequestBody.create(MediaType.parse("text/plain"), employeeListResData.getSalary()==null?"":employeeListResData.getSalary());//loginTable.getCompanyId());
+                RequestBody mRequestBodyOtherLeave = RequestBody.create(MediaType.parse("text/plain"), employeeListResData.getOtherLeaves()==null?"":employeeListResData.getOtherLeaves());//loginTable.getCompanyId());
+                RequestBody mRequestBodyCasualLeave = RequestBody.create(MediaType.parse("text/plain"), employeeListResData.getCasualLeaves()==null?"":employeeListResData.getCasualLeaves());//loginTable.getCompanyId());
+                RequestBody mRequestBodySickLeave = RequestBody.create(MediaType.parse("text/plain"), employeeListResData.getSickLeaves()==null?"":employeeListResData.getSickLeaves());//loginTable.getCompanyId());
+                //String join = AppUtils.changeToSlashToDash(employeeListResData.getJoiningDate());
+                RequestBody mRequestBodyJoiningDate = RequestBody.create(MediaType.parse("text/plain"),employeeListResData.getJoiningDate()==null?"":employeeListResData.getJoiningDate());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeToken = RequestBody.create(MediaType.parse("text/plain"), loginTable.getToken());//loginTable.getCompanyId());
+                RequestBody mRequestAddr = RequestBody.create(MediaType.parse("text/plain"),AutoComOfficeLocation.getText().toString());//loginTable.getCompanyId());
+                RequestBody mRequestLat = RequestBody.create(MediaType.parse("text/plain"),officeLat);//loginTable.getCompanyId());
+                RequestBody mRequestLong = RequestBody.create(MediaType.parse("text/plain"),officeLong);//loginTable.getCompanyId());
+                RequestBody mRequestMon = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(0).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestTue = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(1).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestWed = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(2).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestThur = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(3).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestFri = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(4).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestSat = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(5).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestSun = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(6).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestMonStart = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(0).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestTueStart = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(1).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestWedStart = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(2).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestThurStart = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(3).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestFriStart = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(4).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestSatStart = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(5).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestSunStart = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(6).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestMonEnd = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(0).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestTueEnd = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(1).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestWedEnd = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(2).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestThurEnd = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(3).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestFriEnd = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(4).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestSatEnd = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(5).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestSunEnd = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(6).getMonEndTime());//loginTable.getCompanyId());
+
+                EditEmployeeRequest request = new EditEmployeeRequest();
+                request.setAction(mRequestBodyTypeAction);
+                request.setEmpName(mRequestBodyTypeEmpName);
+                request.setEmpMob(mRequestBodyTypeEmpMob);
+                request.setEmpEmail(mRequestBodyTypeEmpEmail);
+                request.setEmpAddr(mRequestBodyTypeEmpAddr);
+                request.setEmpDob(mRequestBodyTypeEmpDob);
+                request.setEmpGender(mRequestBodyTypeEmpGender);
+                request.setEmpPincode(mRequestBodyTypeEmpPincode);
+                request.setEmpPosition(mRequestBodyTypeEmpPos);
+                request.setUpdatedBy(mRequestBodyTypeupdated_by);
+                request.setCompanyID(mRequestBodyTypeComId);
+                request.setEmpId(mRequestBodyTypeemp_id);
+                request.setSalary(mRequestBodyTypeSalary);
+                request.setOtherLeaves(mRequestBodyOtherLeave);
+                request.setCasualLeaves(mRequestBodyCasualLeave);
+                request.setSickLeaves(mRequestBodySickLeave);
+                request.setJoiningDate(mRequestBodyJoiningDate);
+                request.setToken(mRequestBodyTypeToken);
+                request.setOfficeAddress(mRequestAddr);
+                request.setOfficeLatitude(mRequestLat);
+                request.setOfficeLongitude(mRequestLong);
+                request.setMonWorking(mRequestMon);
+                request.setTueWorking(mRequestTue);
+                request.setWedWorking(mRequestWed);
+                request.setThursWorking(mRequestThur);
+                request.setFri_working(mRequestFri);
+                request.setSatWorking(mRequestSat);
+                request.setSunWorking(mRequestSun);
+                request.setMonStartTime(mRequestMonStart);
+                request.setTueStartTime(mRequestTueStart);
+                request.setWedStartTime(mRequestWedStart);
+                request.setThursStartTime(mRequestThurStart);
+                request.setFri_start_time(mRequestFriStart);
+                request.setSatStartTime(mRequestSatStart);
+                request.setSunStartTime(mRequestSunStart);
+                request.setMonEndTime(mRequestMonEnd);
+                request.setTueEndTime(mRequestTueEnd);
+                request.setWedEndTime(mRequestWedEnd);
+                request.setThursEndTime(mRequestThurEnd);
+                request.setFri_end_time(mRequestFriEnd);
+                request.setSatEndTime(mRequestSatEnd);
+                request.setSunEndTime(mRequestSunEnd);
+                editEmployeeViewModel.hitEditEmployeeAPI(request);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    /* Call Api For edit Company */
+    private void callEditCompanyApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyTypeAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_edit_employee);
+                RequestBody mRequestBodyComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
+                RequestBody mRequestBodyName = RequestBody.create(MediaType.parse("text/plain"), tvEmpName.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodyContact = RequestBody.create(MediaType.parse("text/plain"), AutoComMobile.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodyEmail = RequestBody.create(MediaType.parse("text/plain"), AutoComEmailId.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodystaff = RequestBody.create(MediaType.parse("text/plain"), AutoComStaff.getText().toString());//loginTable.getCompanyId());
+                RequestBody mRequestBodyGst = RequestBody.create(MediaType.parse("text/plain"), AutoComGstNo.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodyPincode = RequestBody.create(MediaType.parse("text/plain"), AutoComOPincode.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestRegAddress = RequestBody.create(MediaType.parse("text/plain"), etOfAddress.getText().toString());//loginTable.getCompanyId());
+                RequestBody mRequestAddr = RequestBody.create(MediaType.parse("text/plain"),AutoComOfficeLocation.getText().toString());//loginTable.getCompanyId());
+                RequestBody mRequestLat = RequestBody.create(MediaType.parse("text/plain"),officeLat==null?"0.0":officeLat);//loginTable.getCompanyId());
+                RequestBody mRequestLong = RequestBody.create(MediaType.parse("text/plain"),officeLong==null?"0.0":officeLong);//loginTable.getCompanyId());
+                RequestBody mRequestMon = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(0).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestTue = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(1).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestWed = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(2).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestThur = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(3).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestFri = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(4).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestSat = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(5).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestSun = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(6).getMonWorking());//loginTable.getCompanyId());
+                RequestBody mRequestMonStart = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(0).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestTueStart = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(1).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestWedStart = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(2).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestThurStart = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(3).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestFriStart = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(4).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestSatStart = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(5).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestSunStart = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(6).getMonStartTime());//loginTable.getCompanyId());
+                RequestBody mRequestMonEnd = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(0).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestTueEnd = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(1).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestWedEnd = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(2).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestThurEnd = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(3).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestFriEnd = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(4).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestSatEnd = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(5).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestSunEnd = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(6).getMonEndTime());//loginTable.getCompanyId());
+
+                EditCompanyRequest request = new EditCompanyRequest();
+                request.setAction(mRequestBodyTypeAction);
+                request.setName(mRequestBodyName);
+                request.setCompany_ID(mRequestBodyComId);
+                request.setContact_no(mRequestBodyContact);
+                request.setEmail_id(mRequestBodyEmail);
+                request.setStaff_strength(mRequestBodystaff);
+                request.setGst_no(mRequestBodyGst);
+                request.setPincode(mRequestBodyPincode);
+                request.setRegistered_address(mRequestRegAddress);
+                request.setOfficeAddress(mRequestAddr);
+                request.setOfficeLatitude(mRequestLat);
+                request.setOfficeLongitude(mRequestLong);
+                request.setMonWorking(mRequestMon);
+                request.setTueWorking(mRequestTue);
+                request.setWedWorking(mRequestWed);
+                request.setThursWorking(mRequestThur);
+                request.setFri_working(mRequestFri);
+                request.setSatWorking(mRequestSat);
+                request.setSunWorking(mRequestSun);
+                request.setMonStartTime(mRequestMonStart);
+                request.setTueStartTime(mRequestTueStart);
+                request.setWedStartTime(mRequestWedStart);
+                request.setThursStartTime(mRequestThurStart);
+                request.setFri_start_time(mRequestFriStart);
+                request.setSatStartTime(mRequestSatStart);
+                request.setSunStartTime(mRequestSunStart);
+                request.setMonEndTime(mRequestMonEnd);
+                request.setTueEndTime(mRequestTueEnd);
+                request.setWedEndTime(mRequestWedEnd);
+                request.setThursEndTime(mRequestThurEnd);
+                request.setFri_end_time(mRequestFriEnd);
+                request.setSatEndTime(mRequestSatEnd);
+                request.setSunEndTime(mRequestSunEnd);
+                editCompanyViewModel.hitEditCompanyAPI(request);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
     }
 
     /* Call Api For employee list */
@@ -503,6 +703,8 @@ public class MyAccountFragment extends BaseFragment {
 
     private void init(){
         tvEmpName.setEnabled(false);
+        btnSubmit.setVisibility(View.GONE);
+        btnESubmit.setVisibility(View.GONE);
         LoginTable loginTable = mDb.getDbDAO().getLoginData();
         if(loginTable!=null){
             isAdmin = loginTable.getIsadmin();
@@ -607,7 +809,7 @@ public class MyAccountFragment extends BaseFragment {
 
     //perform click actions
     @OnClick({R.id.imgEdit,R.id.imgAdd,R.id.btnNext,R.id.btnSubmit,R.id.btnBack,R.id.btnEBack,R.id.btnENext
-            ,R.id.layCalender,R.id.imgCall,R.id.btnESubmit})
+            ,R.id.layCalender,R.id.imgCall,R.id.btnESubmit,R.id.layAddLocation})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
@@ -645,11 +847,15 @@ public class MyAccountFragment extends BaseFragment {
                 layAdmin.setVisibility(View.VISIBLE);
                 laySubmit.setVisibility(View.GONE);
                 layUser.setVisibility(View.GONE);
+                setAllDisabled(1,false);
+                callCompanyListApi();
                 break;
             case R.id.btnESubmit:
                 layAdmin.setVisibility(View.GONE);
                 laySubmit.setVisibility(View.GONE);
                 layUser.setVisibility(View.VISIBLE);
+                setAllDisabled(0,false);
+                callEditEmployeeApi();
                 break;
             case R.id.btnBack:
                 layAdmin.setVisibility(View.VISIBLE);
@@ -660,6 +866,12 @@ public class MyAccountFragment extends BaseFragment {
                 layAdmin.setVisibility(View.GONE);
                 laySubmit.setVisibility(View.GONE);
                 layUser.setVisibility(View.VISIBLE);
+                break;
+            case R.id.layAddLocation:
+                int LAUNCH_SECOND_ACTIVITY = 1000;
+                Intent i = new Intent(mContext, AddLocationActivity.class);
+                startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
+                //launchScreen(mContext,AddLocationActivity.class);
                 break;
         }
     }
@@ -1278,6 +1490,34 @@ private void setTermsAndPolicy(String webUrl){
                         e.printStackTrace();
                     }
                     try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.action_edit_employee)) {
+                            EditEmployeeResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), EditEmployeeResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                showSuccessDialogFragment(mContext,"Employee Edited successfully !",true, null);
+                            }
+                            else {
+                                showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),false, null);
+                            }
+                            callEmployeeListApi();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EDIT_COMPANY)) {
+                            EditCompanyResonse responseModel = new Gson().fromJson(apiResponse.data.toString(), EditCompanyResonse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                showSuccessDialogFragment(mContext,"Company Edited successfully !",true, null);
+                            }
+                            else {
+                                showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),false, null);
+                            }
+                            callCompanyListApi();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_APPLY_LEAVE)) {
                             ApplyLeaveResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ApplyLeaveResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
@@ -1376,25 +1616,35 @@ private void setTermsAndPolicy(String webUrl){
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EMPLOYEES_LIST)) {
                             EmployeeListResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), EmployeeListResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                EmployeeList employeeList = responseModel.getResult().getList().get(0);
-                                tvEmpName.setText(employeeList.getEmpName());
-                                AutoComtEEmail.setText(employeeList.getEmpEmail());
-                                AutoComEMobile.setText(employeeList.getEmpMob());
-                                AutoComEDesi.setText(employeeList.getEmpPosition());
-                                AutoComtEGender.setText(employeeList.getEmpGender());
+                                employeeListResData = responseModel.getResult().getList().get(0);
+                                tvEmpName.setText(employeeListResData.getEmpName());
+                                AutoComtEEmail.setText(employeeListResData.getEmpEmail());
+                                AutoComEMobile.setText(employeeListResData.getEmpMob());
+                                AutoComEDesi.setText(employeeListResData.getEmpPosition());
+                                AutoComtEGender.setText(employeeListResData.getEmpGender());
                                 setDropdownGender();
-                                tvDateValue.setText(employeeList.getEmpDob());
-                                etDescr.setText(employeeList.getEmpAddr());
-                                AutoComPincode.setText(employeeList.getEmpPincode());
+                                tvDateValue.setText(employeeListResData.getEmpDob());
+                                AutoComOfficeLocation.setText(employeeListResData.getOfficeAddress());
+                                etDescr.setText(employeeListResData.getEmpAddr());
+                                AutoComPincode.setText(employeeListResData.getEmpPincode());
+                                officeLat = employeeListResData.getOfficeLatitude();
+                                officeLong = employeeListResData.getOfficeLongitude();
                                 //set days list
-                                try{ workTimingLists.clear();}catch (Exception e){}
-                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_mon), employeeList.getMonWorking()==null?"no":employeeList.getMonWorking(), employeeList.getMonStartTime(), employeeList.getMonEndTime()));
-                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_tue), employeeList.getTueWorking()==null?"no":employeeList.getTueWorking(), employeeList.getTueStartTime(), employeeList.getTueEndTime()));
-                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_wed), employeeList.getWedWorking()==null?"no":employeeList.getWedWorking(), employeeList.getWedStartTime(), employeeList.getWedEndTime()));
-                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_thur), employeeList.getThrusWorking()==null?"no":employeeList.getThrusWorking(), employeeList.getThrusStartTime(), employeeList.getThrusEndTime()));
-                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_fri), employeeList.getFriWorking()==null?"no":employeeList.getFriWorking(), employeeList.getFriStartTime(), employeeList.getFriEndTime()));
-                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_sat), employeeList.getSatWorking()==null?"no":employeeList.getSatWorking(), employeeList.getSatStartTime(), employeeList.getSatStartTime()));
-                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun), employeeList.getSunWorking()==null?"no":employeeList.getSunWorking(), employeeList.getSunStartTime(), employeeList.getSunEndTime()));
+                                try{ workTimingLists.removeAll(workTimingLists);}catch (Exception e){}
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_mon), employeeListResData.getMonWorking()==null?"no":employeeListResData.getMonWorking(),
+                                        employeeListResData.getMonStartTime()==null?getString(R.string.scr_lbl_start_time):employeeListResData.getMonStartTime(), employeeListResData.getMonEndTime()==null?getString(R.string.scr_lbl_end_time):employeeListResData.getMonEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_tue), employeeListResData.getTueWorking()==null?"no":employeeListResData.getTueWorking(),
+                                        employeeListResData.getTueStartTime()==null?getString(R.string.scr_lbl_start_time):employeeListResData.getTueStartTime(), employeeListResData.getTueEndTime()==null?getString(R.string.scr_lbl_end_time):employeeListResData.getTueEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_wed), employeeListResData.getWedWorking()==null?"no":employeeListResData.getWedWorking(),
+                                        employeeListResData.getWedStartTime()==null?getString(R.string.scr_lbl_start_time):employeeListResData.getWedStartTime(), employeeListResData.getWedEndTime()==null?getString(R.string.scr_lbl_end_time):employeeListResData.getWedEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_thur), employeeListResData.getThrusWorking()==null?"no":employeeListResData.getThrusWorking(),
+                                        employeeListResData.getThrusStartTime()==null?getString(R.string.scr_lbl_start_time):employeeListResData.getThrusStartTime(), employeeListResData.getThrusEndTime()==null?getString(R.string.scr_lbl_end_time):employeeListResData.getThrusEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_fri), employeeListResData.getFriWorking()==null?"no":employeeListResData.getFriWorking(),
+                                        employeeListResData.getFriStartTime()==null?getString(R.string.scr_lbl_start_time):employeeListResData.getFriStartTime(), employeeListResData.getFriEndTime()==null?getString(R.string.scr_lbl_end_time):employeeListResData.getFriEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_sat), employeeListResData.getSatWorking()==null?"no":employeeListResData.getSatWorking(),
+                                        employeeListResData.getSatStartTime()==null?getString(R.string.scr_lbl_start_time):employeeListResData.getSatStartTime(), employeeListResData.getSatEndTime()==null?getString(R.string.scr_lbl_end_time):employeeListResData.getSatEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun), employeeListResData.getSunWorking()==null?"no":employeeListResData.getSunWorking(),
+                                        employeeListResData.getSunStartTime()==null?getString(R.string.scr_lbl_start_time):employeeListResData.getSunStartTime(), employeeListResData.getSunEndTime()==null?getString(R.string.scr_lbl_end_time):employeeListResData.getSunEndTime()));
                                 setTimeDisabled(Integer.parseInt(isAdmin));
                             }
                         }
@@ -1413,14 +1663,24 @@ private void setTermsAndPolicy(String webUrl){
                                 AutoComGstNo.setText(employeeList.getGstNo());
                                 AutoComStaff.setText(employeeList.getStaffStrength());
                                 AutoComPrefix.setText(employeeList.getUserPrefix());
-                                try{ workTimingLists.clear();}catch (Exception e){}
-                                workTimingLists.add(new WorkTimingList(false,"Mon", employeeList.getMonWorking()==null?"no":employeeList.getMonWorking(), employeeList.getMonStartTime(), employeeList.getMonEndTime()));
-                                workTimingLists.add(new WorkTimingList(false,"Tue", employeeList.getTueWorking()==null?"no":employeeList.getTueWorking(), employeeList.getTueStartTime(), employeeList.getTueEndTime()));
-                                workTimingLists.add(new WorkTimingList(false,"Wed", employeeList.getWedWorking()==null?"no":employeeList.getWedWorking(), employeeList.getWedStartTime(), employeeList.getWedEndTime()));
-                                workTimingLists.add(new WorkTimingList(false,"Thur", employeeList.getThursWorking()==null?"no":employeeList.getThursWorking(), employeeList.getThursStartTime(), employeeList.getThursEndTime()));
-                                workTimingLists.add(new WorkTimingList(false,"Fri", employeeList.getFriWorking()==null?"no":employeeList.getFriWorking(), employeeList.getFriStartTime(), employeeList.getFriEndTime()));
-                                workTimingLists.add(new WorkTimingList(false,"Sat", employeeList.getSatWorking()==null?"no":employeeList.getSatWorking(), employeeList.getSatStartTime(), employeeList.getSatStartTime()));
-                                workTimingLists.add(new WorkTimingList(false,"Sun", employeeList.getSunWorking()==null?"no":employeeList.getSunWorking(), employeeList.getSunStartTime(), employeeList.getSunEndTime()));
+                                officeLat = employeeList.getOfficeLatitude();
+                                officeLong = employeeList.getOfficeLongitude();
+                                AutoComOfficeLocation.setText(employeeList.getOfficeAddress());
+                                try{ workTimingLists.removeAll(workTimingLists);}catch (Exception e){}
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_mon), employeeList.getMonWorking()==null?"no":employeeList.getMonWorking(),
+                                        employeeList.getMonStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getMonStartTime(), employeeList.getMonEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getMonEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_tue), employeeList.getTueWorking()==null?"no":employeeList.getTueWorking(),
+                                        employeeList.getTueStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getTueStartTime(), employeeList.getTueEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getTueEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_wed), employeeList.getWedWorking()==null?"no":employeeList.getWedWorking(),
+                                        employeeList.getWedStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getWedStartTime(), employeeList.getWedEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getWedEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_thur), employeeList.getThursWorking()==null?"no":employeeList.getThursWorking(),
+                                        employeeList.getThursStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getThursStartTime(), employeeList.getThursEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getThursEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_fri), employeeList.getFriWorking()==null?"no":employeeList.getFriWorking(),
+                                        employeeList.getFriStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getFriStartTime(), employeeList.getFriEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getFriEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_sat), employeeList.getSatWorking()==null?"no":employeeList.getSatWorking(),
+                                        employeeList.getSatStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getSatStartTime(), employeeList.getSatEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getSatEndTime()));
+                                workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun), employeeList.getSunWorking()==null?"no":employeeList.getSunWorking(),
+                                        employeeList.getSunStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getSunStartTime(), employeeList.getSunEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getSunEndTime()));
                                 setTimeDisabled(Integer.parseInt(isAdmin));
                             }
                         }
@@ -1488,6 +1748,25 @@ private void setTermsAndPolicy(String webUrl){
                 e.printStackTrace();
             }
             //}
+        }
+        if (requestCode == 1000) {
+            if(resultCode == Activity.RESULT_OK){
+                String locationLat = SharedPref.getInstance(mContext).read(SharedPrefKey.ENTERED_VISIT_LAT, "0.0");
+                String locationLng = SharedPref.getInstance(mContext).read(SharedPrefKey.ENTERED_VISIT_LNG, "0.0");
+                String location = SharedPref.getInstance(mContext).read(SharedPrefKey.LOCATION_ENTERED_TXT, "Not Available");
+                String result=data.getStringExtra("result");
+                //String str = "<b>"+result+"</b>";
+                AutoComOfficeLocation.setText(location);
+                officeLat = locationLat;
+                officeLong = locationLng;
+                //tvAddLocation.setText(location);
+                /*double km = distance(Double.parseDouble(locationLat),Double.parseDouble(startlocationLat),
+                        Double.parseDouble(locationLng),Double.parseDouble(startlocationLng));*/
+                //LogUtil.printToastMSG(mContext,km+" K.M.");
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Write your code if there's no result
+            }
         }
     }
 
@@ -1652,6 +1931,8 @@ private void setTermsAndPolicy(String webUrl){
             layCalender.setEnabled(state);
             etDescr.setEnabled(state);
             AutoComPincode.setEnabled(state);
+            if(state){
+            btnESubmit.setVisibility(View.VISIBLE);}
             setTimeDisabled(type);
         }else {
             //company
@@ -1661,6 +1942,8 @@ private void setTermsAndPolicy(String webUrl){
             AutoComMobile.setEnabled(state);
             AutoComEmailId.setEnabled(state);
             AutoComStaff.setEnabled(state);
+            if(state){
+            btnSubmit.setVisibility(View.VISIBLE);}
             setTimeDisabled(type);
         }
     }

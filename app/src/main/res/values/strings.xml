@@ -343,5 +343,6 @@
     <string name="scr_lbl_today_s_birthday">Today\'s Birthday</string>
     <string name="scr_lbl_add_holiday">Add Holiday</string>
     <string name="scr_lbl_holiday_name">Holiday name</string>
+    <string name="scr_lbl_disable">Disable</string>
 
 </resources>

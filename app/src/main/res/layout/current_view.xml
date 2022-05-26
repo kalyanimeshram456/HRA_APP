@@ -14,7 +14,8 @@
         app:cardCornerRadius="0dp"
         android:elevation="@dimen/_0dp"
         card_view:cardElevation="0dp"
-        android:layout_margin="1dp"
+        android:layout_marginHorizontal="1dp"
+        android:layout_marginTop="@dimen/_3dp"
         app:cardBackgroundColor="@color/pink">
 
         <TextView

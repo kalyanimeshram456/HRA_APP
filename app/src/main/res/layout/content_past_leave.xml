@@ -72,6 +72,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_45dp"
                             android:background="@drawable/toggle_add_reminder_edt"
+                            android:dropDownHeight="@dimen/_300dp"
                             android:focusable="false"
                             android:focusableInTouchMode="false"
                             android:fontFamily="@font/gilroy_semibold"
@@ -119,6 +120,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_45dp"
                             android:background="@drawable/toggle_add_reminder_edt"
+                            android:dropDownHeight="@dimen/_300dp"
                             android:focusable="false"
                             android:focusableInTouchMode="false"
                             android:fontFamily="@font/gilroy_semibold"
@@ -140,12 +142,13 @@
                     android:layout_width="@dimen/_40dp"
                     android:layout_height="@dimen/_40dp"
                     android:layout_below="@id/laycard"
+                    android:visibility="gone"
                     android:layout_marginHorizontal="@dimen/_16dp"
                     android:layout_marginTop="@dimen/_16dp"
                     android:src="@drawable/ic_add_dashboard" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/searchView"
+                    android:id="@+id/tvAddLeave"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/imgAddLeave"
@@ -153,6 +156,7 @@
                     android:layout_marginTop="@dimen/_5dp"
                     android:fontFamily="@font/gilroy_regular"
                     android:text="@string/scr_lbl_add_leave"
+                    android:visibility="gone"
                     android:textColor="@color/back_text_colour"
                     android:textSize="@dimen/_12sp" />
 
@@ -160,7 +164,7 @@
                     android:id="@+id/layBorder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/searchView"
+                    android:layout_below="@+id/tvAddLeave"
                     android:layout_marginHorizontal="@dimen/_10dp"
                     android:layout_marginTop="@dimen/_16dp"
                     android:background="@drawable/layout_round_shape_blue_border"

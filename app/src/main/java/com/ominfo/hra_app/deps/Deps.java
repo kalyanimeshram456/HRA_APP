@@ -8,6 +8,7 @@ import com.ominfo.hra_app.ui.attendance.StartAttendanceActivity;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.ui.employees.EmployeeFragment;
 import com.ominfo.hra_app.ui.leave.LeaveFragment;
+import com.ominfo.hra_app.ui.leave.fragment.EmployeeLeaveListFragment;
 import com.ominfo.hra_app.ui.leave.fragment.PastLeaveFragment;
 import com.ominfo.hra_app.ui.login.LoginActivity;
 import com.ominfo.hra_app.ui.my_account.MyAccountFragment;
@@ -35,6 +36,8 @@ public interface Deps
     void inject(BaseActivity baseActivity);
 
     void inject(LeaveFragment leaveFragment);
+
+    void inject(EmployeeLeaveListFragment employeeLeaveListFragment);
 
     void inject(SalarySlipFragment salarySlipFragment);
 

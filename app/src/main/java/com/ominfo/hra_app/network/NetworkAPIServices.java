@@ -46,13 +46,13 @@ public interface NetworkAPIServices {
 
     @Multipart
     @POST()
-    Observable<JsonElement> markAttendance(@Url String url,
-                                           @Part("action") RequestBody uploadType,
-                                           @Part("emp_id") RequestBody emp_id,
-                                           @Part("date") RequestBody duration,
-                                           @Part("start_time") RequestBody start_time,
-                                           @Part("start_longitude") RequestBody end_time,
-                                           @Part("start_latitude") RequestBody leave_type);
+    Observable<JsonElement> getAttendance(@Url String url,
+                                          @Part("action") RequestBody uploadType,
+                                          @Part("emp_id") RequestBody emp_id,
+                                          @Part("from_date") RequestBody from_date,
+                                          @Part("end_date") RequestBody end_date,
+                                          @Part("token") RequestBody token,
+                                          @Part("company_ID") RequestBody company_ID);
 
     @Multipart
     @POST()
@@ -81,9 +81,15 @@ public interface NetworkAPIServices {
     @POST()
     Observable<JsonElement> updateAttendance(@Url String url,
                                              @Part("action") RequestBody uploadType,
-            /*@Part("start_time") RequestBody start_time,*/
+                                            @Part("emp_id") RequestBody emp_id,
+                                             @Part("date") RequestBody date,
+                                             @Part("start_time") RequestBody start_time,
+                                             @Part("start_longitude") RequestBody start_longitude,
+                                             @Part("start_latitude") RequestBody start_latitude,
+                                             @Part("office_start_addr") RequestBody office_start_addr,
+                                             @Part("is_late") RequestBody is_late,
+                                             @Part("office_end_addr") RequestBody office_end_addr,
                                              @Part("end_time") RequestBody end_time,
-                                             @Part("id") RequestBody id,
                                              @Part("end_longitude") RequestBody end_longitude,
                                              @Part("end_latitude") RequestBody end_latitude);
 
@@ -116,7 +122,17 @@ public interface NetworkAPIServices {
                                          @Part("contact_no") RequestBody contact_no,
                                          @Part("email_id") RequestBody email_id,
                                          @Part("staff_strength") RequestBody staff_strength,
-                                         @Part("user_prefix") RequestBody user_prefix);
+                                         @Part("user_prefix") RequestBody user_prefix,
+                                         @Part("gst_percent") RequestBody gst_percent,
+                                         @Part("sub_charge") RequestBody sub_charge,
+                                         @Part("gst_amount") RequestBody gst_amount,
+                                         @Part("discount_rate") RequestBody discount_rate,
+                                         @Part("total_charge") RequestBody total_charge,
+                                         @Part("coupon") RequestBody coupon,
+                                         @Part("plan_type") RequestBody plan_type,
+                                         @Part("admin_name") RequestBody admin_name,
+                                         @Part("gst_no") RequestBody gst_no);
+
 
     @Multipart
     @POST()
@@ -308,6 +324,11 @@ public interface NetworkAPIServices {
                                              @Part("date") RequestBody date,
                                              @Part("name") RequestBody name,
                                        @Part("description") RequestBody description);
+    @Multipart
+    @POST()
+    Observable<JsonElement> editHoliday(@Url String url,
+                                       @Part("action") RequestBody uploadType,
+                                       @Part("record_id") RequestBody record_id);
 
     @Multipart
     @POST()
@@ -429,6 +450,14 @@ public interface NetworkAPIServices {
 
     @Multipart
     @POST()
+    Observable<JsonElement> activeEmployeeList(@Url String url,
+                                        @Part("action") RequestBody uploadType,
+                                        @Part("company_id") RequestBody company_id,
+                                        @Part("emp_id") RequestBody emp_id
+    );
+
+    @Multipart
+    @POST()
     Observable<JsonElement> deactivateEmployee(@Url String url,
                                                @Part("action") RequestBody uploadType,
                                                @Part("updated_by") RequestBody updated_by,
@@ -484,6 +513,34 @@ public interface NetworkAPIServices {
                                          @Part("token") RequestBody token,
                                          @Part("office_address") RequestBody office_address,
                                          @Part("office_longitude") RequestBody office_longitude,@Part("office_latitude") RequestBody office_latitude,
+                                         @Part("mon_working") RequestBody mon_working,@Part("tue_working") RequestBody tue_working,
+                                         @Part("wed_working") RequestBody wed_working,@Part("thrus_working") RequestBody thrus_working,
+                                         @Part("fri_working") RequestBody fri_working,@Part("sat_working") RequestBody sat_working,
+                                         @Part("sun_working") RequestBody sun_working,@Part("mon_start_time") RequestBody mon_start_time,
+                                         @Part("tue_start_time") RequestBody tue_start_time,@Part("wed_start_time") RequestBody wed_start_time,
+                                         @Part("thrus_start_time") RequestBody thrus_start_time,@Part("fri_start_time") RequestBody fri_start_time,
+                                         @Part("sat_start_time") RequestBody sat_start_time,@Part("sun_start_time") RequestBody sun_start_time,
+                                         @Part("mon_end_time") RequestBody mon_end_time,@Part("tue_end_time") RequestBody tue_end_time,
+                                         @Part("wed_end_time") RequestBody wed_end_time,@Part("thrus_end_time") RequestBody thrus_end_time,
+                                         @Part("fri_end_time") RequestBody fri_end_time,@Part("sat_end_time") RequestBody sat_end_time,
+                                         @Part("sun_end_time") RequestBody sun_end_time
+    );
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> editCompany(@Url String url,
+                                         @Part("action") RequestBody uploadType,
+                                         @Part("company_ID") RequestBody emp_name,
+                                         @Part("name") RequestBody emp_mob,
+                                         @Part("contact_no") RequestBody emp_email,
+                                         @Part("email_id") RequestBody emp_addr,
+                                         @Part("staff_strength") RequestBody emp_dob,
+                                         @Part("gst_no") RequestBody emp_gender,
+                                         @Part("pincode") RequestBody emp_pincode,
+                                         @Part("registered_address") RequestBody emp_position,
+                                         @Part("office_address") RequestBody updated_by,
+                                         @Part("office_latitude") RequestBody company_ID,
+                                         @Part("office_longitude") RequestBody emp_id,
                                          @Part("mon_working") RequestBody mon_working,@Part("tue_working") RequestBody tue_working,
                                          @Part("wed_working") RequestBody wed_working,@Part("thrus_working") RequestBody thrus_working,
                                          @Part("fri_working") RequestBody fri_working,@Part("sat_working") RequestBody sat_working,

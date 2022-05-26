@@ -1,4 +1,4 @@
-package com.ominfo.hra_app.ui.attendance.model;
+package com.ominfo.hra_app.ui.dashboard.model;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -9,14 +9,15 @@ import com.ominfo.hra_app.network.Service;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.RequestBody;
 
-public class MarkAttendanceViewModel extends ViewModel {
+public class EditHolidayViewModel extends ViewModel {
     private final CompositeDisposable disposables = new CompositeDisposable();
     private final MutableLiveData<ApiResponse> responseLiveData = new MutableLiveData<>();
     private Service service;
 
 
-    public MarkAttendanceViewModel(Service service) {
+    public EditHolidayViewModel(Service service) {
         this.service = service;
     }
 
@@ -24,10 +25,8 @@ public class MarkAttendanceViewModel extends ViewModel {
         return responseLiveData;
     }
 
-
-    public void hitMarkAttendanceApi(MarkAttendanceRequest markAttendanceRequest) {
-
-        disposables.add(service.executeMarkAttendanceAPI(markAttendanceRequest)
+    public void hitEditHolidayApi(RequestBody action,RequestBody record_id ){
+        disposables.add(service.executeEditHolidayAPI(action,record_id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe((d) -> responseLiveData.setValue(ApiResponse.loading()))

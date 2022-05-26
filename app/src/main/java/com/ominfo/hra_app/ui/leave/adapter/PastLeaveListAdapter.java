@@ -63,8 +63,8 @@ public class PastLeaveListAdapter extends RecyclerView.Adapter<PastLeaveListAdap
                 }catch (Exception e){
                 }
                 holder.tvCompanyName.setText(start+"-"+end);
-                holder.tvState.setText(mListData.get(position).getLeaveType());
-                holder.tvRs.setText(mListData.get(position).getStatus());
+                holder.tvState.setText(mListData.get(position).getStatus());
+                holder.tvRs.setText(mListData.get(position).getLeaveType());
                 holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
                 holder.imgIndicator.setVisibility(View.GONE);
                /* if(mListData.get(position).getPaymentStatus().equals("PAID"))

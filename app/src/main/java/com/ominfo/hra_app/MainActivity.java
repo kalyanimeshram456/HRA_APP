@@ -60,11 +60,12 @@ import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.ui.dashboard.model.DashModel;
 import com.ominfo.hra_app.ui.employees.EmployeeFragment;
 import com.ominfo.hra_app.ui.leave.LeaveFragment;
+import com.ominfo.hra_app.ui.leave.fragment.EmployeeLeaveListFragment;
+import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.my_account.MyAccountFragment;
 import com.ominfo.hra_app.ui.salary.SalaryFragment;
 import com.ominfo.hra_app.util.AppUtils;
 import com.simform.custombottomnavigation.SSCustomBottomNavigation;
-
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -106,6 +107,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
     Dialog mDialog;
     MeowBottomNavigation meowBottomNavigation;
     public static SSCustomBottomNavigation ssCustomBottomNavigation;
+    LoginTable loginTable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +132,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
             getLocation();
         }
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
+        loginTable = mDb.getDbDAO().getLoginData();
         ssCustomBottomNavigation = findViewById(R.id.bottomNavigationN);
 
         ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(1, R.drawable.ic_home_grad,"Home"));
@@ -153,7 +156,16 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
                         temp = new EmployeeFragment();
                         break;
                     case 3:
-                        temp = new LeaveFragment();
+                        if(loginTable!=null) {
+                            if(loginTable.getIsadmin().equals("0")){
+                                temp = new EmployeeLeaveListFragment();
+                            } else{
+                                temp = new LeaveFragment();
+                            }
+                        }
+                        else{
+                            temp = new LeaveFragment();
+                        }
                         break;
                     case 4:
                         temp = new SalaryFragment();

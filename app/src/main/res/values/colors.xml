@@ -79,6 +79,7 @@
     <color name="light_grey_100">#FF707070</color>
     <color name="black_sub_heading">#060606</color>
     <color name="bg_screen">#eef2fb</color>
+    <color name="bg_calender_screen">#F5F6F8</color>
     <color name="colorSemiTransparentWhite">#B2FFFFFF</color>
     <color name="fed02d">#fed02d</color>
     <color name="black_tv">#060606</color>

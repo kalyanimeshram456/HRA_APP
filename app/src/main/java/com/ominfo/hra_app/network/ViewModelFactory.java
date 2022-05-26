@@ -5,14 +5,17 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.ominfo.hra_app.ui.attendance.model.LocationPerHourViewModel;
-import com.ominfo.hra_app.ui.attendance.model.MarkAttendanceViewModel;
+import com.ominfo.hra_app.ui.attendance.model.GetAttendanceViewModel;
 import com.ominfo.hra_app.ui.attendance.model.UpdateAttendanceViewModel;
+import com.ominfo.hra_app.ui.dashboard.model.AddHolidayViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.CalenderHolidaysListViewModel;
+import com.ominfo.hra_app.ui.dashboard.model.EditHolidayViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.GetBirthDayListViewModel;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeViewModel;
 import com.ominfo.hra_app.ui.employees.model.DeactivateEmployeeViewModel;
 import com.ominfo.hra_app.ui.employees.model.EditEmployeeViewModel;
 import com.ominfo.hra_app.ui.leave.model.AcceptRejectLeaveListViewModel;
+import com.ominfo.hra_app.ui.leave.model.ActiveEmployeeListViewModel;
 import com.ominfo.hra_app.ui.leave.model.LeaveCountViewModel;
 import com.ominfo.hra_app.ui.leave.model.PastLeaveListViewModel;
 import com.ominfo.hra_app.ui.login.model.LoginViewModel;
@@ -20,6 +23,7 @@ import com.ominfo.hra_app.ui.login.model.LogoutViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ChangePasswordViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ChangeProfileImageViewModel;
+import com.ominfo.hra_app.ui.my_account.model.EditCompanyViewModel;
 import com.ominfo.hra_app.ui.my_account.model.GetCompanyViewModel;
 import com.ominfo.hra_app.ui.my_account.model.GetProfileImageViewModel;
 import com.ominfo.hra_app.ui.my_account.model.GetTicketViewModel;
@@ -113,8 +117,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
          else  if (modelClass.isAssignableFrom(ApplyLeaveViewModel.class)) {
              return (T) new ApplyLeaveViewModel(service);
          }
-         else  if (modelClass.isAssignableFrom(MarkAttendanceViewModel.class)) {
-             return (T) new MarkAttendanceViewModel(service);
+         else  if (modelClass.isAssignableFrom(GetAttendanceViewModel.class)) {
+             return (T) new GetAttendanceViewModel(service);
          }
          else  if (modelClass.isAssignableFrom(UpdateAttendanceViewModel.class)) {
              return (T) new UpdateAttendanceViewModel(service);
@@ -188,6 +192,14 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
              return (T) new GetCompanyViewModel(service);
          }else  if (modelClass.isAssignableFrom(CalenderHolidaysListViewModel.class)) {
              return (T) new CalenderHolidaysListViewModel(service);
+         }else  if (modelClass.isAssignableFrom(AddHolidayViewModel.class)) {
+             return (T) new AddHolidayViewModel(service);
+         }else  if (modelClass.isAssignableFrom(ActiveEmployeeListViewModel.class)) {
+             return (T) new ActiveEmployeeListViewModel(service);
+         }else  if (modelClass.isAssignableFrom(EditHolidayViewModel.class)) {
+             return (T) new EditHolidayViewModel(service);
+         }else  if (modelClass.isAssignableFrom(EditCompanyViewModel.class)) {
+             return (T) new EditCompanyViewModel(service);
          }
 
         throw new IllegalArgumentException("Unknown class name");

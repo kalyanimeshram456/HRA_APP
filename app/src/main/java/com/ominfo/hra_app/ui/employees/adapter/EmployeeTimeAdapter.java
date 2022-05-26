@@ -64,6 +64,12 @@ public class EmployeeTimeAdapter extends RecyclerView.Adapter<EmployeeTimeAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         if (mListData != null) {
+            if(mListData.get(position).getMonStartTime()==null){
+                holder.tvTimeValueFrom.setText(AppUtils.convert24to12Attendance("10:00:00"));
+            }
+            if(mListData.get(position).getMonEndTime()==null){
+                holder.tvTimeValueTo.setText(AppUtils.convert24to12Attendance("19:00:00"));
+            }
             if(mListData.get(position).getMonWorking().toLowerCase().equals("yes")){
                 holder.switchDay.setChecked(true);
             }

@@ -20,7 +20,7 @@ public class DynamicAPIPath {
     public static final String POST_LEAVE_STATUS= BASE+"?action=apply_leave_updated";
     public static final String POST_GET_PAST_LEAVE= BASE+"?action=get_record";
     public static final String POST_CALENDER_HOLIDAY=BASE+"?action=get_company_holiday";
-    public static final String POST_ADD_REMINDER= BASE_NODEJS+"addreminder";
+    public static final String POST_ACTIVE_EMP_LIST=BASE+"?action=get_emp_list";
     public static final String POST_UPDATE_REMINDER= BASE_NODEJS+"updatereminder";
     public static final String POST_RECEIPT= BASE+"?action=get_receipt_records";
     public static final String POST_ADD_VISIT= BASE+"?action=add_visit";
@@ -46,6 +46,8 @@ public class DynamicAPIPath {
     public static final String POST_GET_SALES_CREDIT= BASE+"?action=salescreditreport";
     public static final String POST_GET_LEAVE_APP= BASE+"?action=get_leave_records";
     public static final String POST_GET_LEAVE_SINGLE= BASE+"?action=get_record";
+    public static final String POST_EDIT_COMPANY= BASE+"?action=edit_company";
+    public static final String POST_GET_PAST_EMP_LIST= BASE+"?action=get_pastleave_record";
     public static final String POST_ENQUIRY_STATUS= BASE+"?action=statusget";
     public static final String POST_GET_TOUR= BASE+"?action=tourget";
     public static final String POST_GET_VISIT_NO= BASE_NODEJS+"generatevisit_id";
@@ -53,8 +55,8 @@ public class DynamicAPIPath {
     public static final String POST_GET_DASHBOARD= BASE+"?action=getDashboard";
     public static final String POST_APPLY_LEAVE = BASE+"?action=apply_leave";
     public static final String POST_GET_COMPANY = BASE+"?action=get_company_details";
-    public static final String POST_MARK_ATTENDANCE= BASE+"?action=mark_attendance";
-    public static final String POST_UPDATE_ATTENDANCE= BASE+"?action=attendance_updated";
+    public static final String POST_GET_ATTENDANCE = BASE+"?action=get_today_attendance";
+    public static final String POST_UPDATE_ATTENDANCE= BASE+"?action=mark_attendance_new";
     public static final String POST_LOCATION_PER_HOUR= BASE+"?action=emp_long_lati_tracking";
     public static final String POST_TOP_CUST= BASE+"?action=top_customer";
     public static final String POST_BIRTH_DAY_LIST = BASE+"?action=getbirthdaydata";
@@ -62,6 +64,7 @@ public class DynamicAPIPath {
     public static final String POST_GET_TICKET = BASE+"?action=get_filterraised_record";
     public static final String POST_UPDATE_TICKET = BASE+"?action=ticket_updated";
     public static final String POST_ADD_HOLIDAY = BASE+"?action=add_company_holiday";
+    public static final String POST_EDIT_HOLIDAY = BASE+"?action=update_active_holiday";
 
 
     //action string
@@ -74,16 +77,17 @@ public class DynamicAPIPath {
     public static final String action_location_per_hour = "emp_long_lati_tracking";
     public static final String action_add_employee = "add_employee";
     public static final String action_edit_employee = "edit_employee";
-    public static final String action_mark_attendance = "mark_attendance";
-    public static final String action_update_attendance = "attendance_updated";
+    public static final String action_get_attendance = "get_today_attendance";
+    public static final String action_update_attendance = "mark_attendance_new";
     public static final String action_get_past_leave = "get_record";
+    public static final String action_edit_company = "edit_company";
     public static final String action_get_subs_price = "get_subs_price";
     public static final String action_get_visit = "visitget";
     public static final String action_get_top_customer = "top_customer";
     public static final String action_deactivate_employee = "deactivate_employee";
     public static final String action_check_coupon_validity = "checkcoupon_validity";
     public static final String action_get_leave_app = "get_leave_records";
-    public static final String action_edit_company = "edit_company";
+    public static final String action_update_active_holiday = "update_active_holiday";
     public static final String action_get_view360 = "custOverAllData";
     public static final String action_get_quotation = "get_quotation_record";
     public static final String action_get_sales_credit = "salescreditreport";
@@ -103,7 +107,7 @@ public class DynamicAPIPath {
     public static final String action_accept_reject_List = "get_leave_records";
     public static final String action_apply_leave_updated = "apply_leave_updated";
     public static final String action_leave_count = "get_leave_count";
-    public static final String action_get_ticket = "get_filterraised_record";
+    public static final String action_get_active_emp_list = "get_emp_list";
     public static final String action_get_company_holiday = "get_company_holiday";
     public static final String action_get_birth_day = "getbirthdaydata";
     public static final String action_check_prefix = "check_userprefix";

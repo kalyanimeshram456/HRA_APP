@@ -27,7 +27,7 @@ import java.util.Calendar;
 
 public class SimpleCalendar extends LinearLayout {
 
-    public static final String CUSTOM_GREY = "#a0a0a0";
+    public static final String CUSTOM_GREY = "#ffffff";
     public static final String[] ENG_MONTH_NAMES = {"January", "February", "March", "April",
             "May", "June", "July", "August",
             "September", "October", "November", "December"};
@@ -453,7 +453,7 @@ public class SimpleCalendar extends LinearLayout {
             for (int dayInWeek = 0; dayInWeek < 7; ++dayInWeek) {
                 final Button day = new Button(context);
                 day.setTextColor(Color.parseColor(CUSTOM_GREY));
-                day.setBackgroundColor(Color.TRANSPARENT);
+                day.setBackgroundColor(Color.WHITE);
                 day.setLayoutParams(buttonParams);
                 day.setTextSize((int) metrics.density * 8);
                 day.setSingleLine();
