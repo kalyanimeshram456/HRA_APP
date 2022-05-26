@@ -297,7 +297,6 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if (loginTable != null) {
                 UpdateAttendanceRequest markAttendanceRequest = new UpdateAttendanceRequest();
-                String startTime = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENDANCE_CHECKIN_TIME, "00:00:00");
                 RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_update_attendance);
                 RequestBody mRequestEmailID = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
                 RequestBody mRequestdate = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentDateInyyyymmdd());
@@ -305,22 +304,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                 String cTime = AppUtils.getCurrentTimeIn24hr();
                 String clocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
                 String clocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
-                String dataLoc = "";
-                try {
-                    Geocoder geocoder = new Geocoder(StartAttendanceActivity.this);
-                    String lat = clocationLat;
-                    String lng = clocationLng;
-                    List<Address> addressList = geocoder.getFromLocation(Double.parseDouble(lat),
-                            Double.parseDouble(lng), 1);
-                    if (addressList != null && addressList.size() > 0) {
-                        Address address = addressList.get(0);
-                        String locality = addressList.get(0).getAddressLine(0);
-                        dataLoc = locality;
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                String dataLoc = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_TITLE, getString(R.string.scr_lbl_unavailable));
 
                 RequestBody mRequestStartTime = RequestBody.create(MediaType.parse("text/plain"), cTime);
                 RequestBody mRequestBodyAddr = RequestBody.create(MediaType.parse("text/plain"), dataLoc);
@@ -330,7 +314,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                 if(isUpdate==0) {
                     String timeApi = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENDANCE_START_TIME, "00:00:00");
                     String currDate = AppUtils.getCurrentDateTime_() + " " + AppUtils.getCurrentTimeIn24hr();
-                    String savedDate = timeApi + " " + AppUtils.getCurrentTimeIn24hr();
+                    String savedDate = AppUtils.getCurrentDateTime_() + " " + timeApi;
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                     String isTime = "0";
                     try {
@@ -341,10 +325,12 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                         calendar30.add(Calendar.MINUTE, 15);
                         Date date1 = sdf.parse(sdf30.format(calendar30.getTime()));//saved + 15
                         Date date2 = sdf.parse(currDate); //curr
-                        if (date2.compareTo(date1) == 1) {
+                        if (date2.compareTo(date1) > 0) {
                             isTime = "1";
                         }
-                    }catch (Exception e){}
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
 
                     RequestBody mRequestIsLate = RequestBody.create(MediaType.parse("text/plain"), isTime);
                     markAttendanceRequest.setStart_time(mRequestStartTime);

@@ -7,13 +7,13 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.hra_app.R;
 import com.ominfo.hra_app.ui.employees.BaseViewHolder;
-import com.ominfo.hra_app.ui.salary.model.SalaryAllData;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllList;
 import com.ominfo.hra_app.util.AppUtils;
 
@@ -23,7 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class SalaryAdapter extends RecyclerView.Adapter<BaseViewHolder> {
+public class SalaryDisAdapter extends RecyclerView.Adapter<BaseViewHolder> {
   private static final int VIEW_TYPE_LOADING = 0;
   private static final int VIEW_TYPE_NORMAL = 1;
   private boolean isLoaderVisible = false;
@@ -31,7 +31,7 @@ public class SalaryAdapter extends RecyclerView.Adapter<BaseViewHolder> {
   Context context;
   private List<SalaryAllList> mPostItems;
 
-  public SalaryAdapter(Context context, List<SalaryAllList> postItems, ListItemSelectListener listItemSelectListener)
+  public SalaryDisAdapter(Context context, List<SalaryAllList> postItems, ListItemSelectListener listItemSelectListener)
   {
     this.context = context;
     this.mPostItems = postItems;
@@ -44,7 +44,7 @@ public class SalaryAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     switch (viewType) {
       case VIEW_TYPE_NORMAL:
         return new ViewHolder(
-            LayoutInflater.from(parent.getContext()).inflate(R.layout.row_salary, parent, false));
+            LayoutInflater.from(parent.getContext()).inflate(R.layout.row_salary_disbursment, parent, false));
       case VIEW_TYPE_LOADING:
         return new ProgressHolder(
             LayoutInflater.from(parent.getContext()).inflate(R.layout.item_loading, parent, false));
@@ -103,16 +103,19 @@ public class SalaryAdapter extends RecyclerView.Adapter<BaseViewHolder> {
   }
 
   public class ViewHolder extends BaseViewHolder {
-    @BindView(R.id.tvEmpName)
-    AppCompatTextView textViewTitle;
-    @BindView(R.id.tvDesi)
-    AppCompatTextView textViewDescription;
-    @BindView(R.id.tvDate)
-    AppCompatTextView tvDate;
-    @BindView(R.id.tvAmount)
-    AppCompatTextView tvAmount;
-    @BindView(R.id.layCard)
-    CardView layCard;
+
+    @BindView(R.id.imgEdit)
+    AppCompatImageView imgEdit;
+    @BindView(R.id.cardClick)
+    CardView cardClick;
+    @BindView(R.id.tvBirthName)
+    AppCompatTextView tvBirthName;
+    @BindView(R.id.tvBirthValue)
+    AppCompatTextView tvBirthValue;
+    @BindView(R.id.tvLeave)
+    AppCompatTextView tvLeave;
+    @BindView(R.id.tvSalary)
+    AppCompatTextView tvSalary;
     @BindView(R.id.imgBirthPro)
     CircleImageView imgBirthPro;
     @BindView(R.id.progress_barBirth)
@@ -128,17 +131,23 @@ public class SalaryAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
     public void onBind(int position) {
       super.onBind(position);
-      SalaryAllList item = mPostItems.get(position);
-      tvAmount.setText(AppUtils.convertyyyytodd(item.getLastSalpaidDate()));
-      textViewTitle.setText(item.getEmpName());
-      textViewDescription.setText(item.getEmpPosition());
+      tvBirthName.setText(mPostItems.get(position).getEmpName());
+      tvBirthValue.setText(mPostItems.get(position).getEmpPosition());
+      tvLeave.setText(mPostItems.get(position).getLeaveCountCurMon());
+      tvSalary.setText(context.getString(R.string.scr_lbl_rs)+mPostItems.get(position).getSalary());
       AppUtils.loadImageURL(context,mPostItems.get(position).getEmpProfilePic(),
               imgBirthPro,progress_barBirth);
 
-      layCard.setOnClickListener(new View.OnClickListener() {
+     cardClick.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          listItemSelectListener.onItemClick(0,mPostItems.get(position));
+          listItemSelectListener.onItemClick(0, mPostItems.get(position));
+        }
+      });
+     imgEdit.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          listItemSelectListener.onItemClick(1, mPostItems.get(position));
         }
       });
     }

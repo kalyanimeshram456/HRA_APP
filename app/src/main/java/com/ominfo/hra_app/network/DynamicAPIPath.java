@@ -26,7 +26,7 @@ public class DynamicAPIPath {
     public static final String POST_ADD_VISIT= BASE+"?action=add_visit";
     public static final String POST_EDIT_VISIT= BASE+"?action=editVisit";
     public static final String POST_GET_PROFILE = BASE+"?action=getcrmempprofilepic";
-    public static final String POST_NOTIFICATION = BASE+"?action=getcrmempnotif";
+    public static final String POST_NOTIFICATION = BASE+"?action=get_late_nofitydetails";
     public static final String POST_DEL_NOTIFICATION = BASE+"?action=marknotifread";
     public static final String POST_CHECK_COUPON= BASE+"?action=checkcoupon_validity";
     public static final String POST_CHANGE_PROFILE = BASE+"?action=updatecrmempprofilepic";
@@ -101,7 +101,7 @@ public class DynamicAPIPath {
     public static final String action_employee_list = "get_employee_list";
     public static final String action_salary_all_list = "get_emplist_sal";
     public static final String action_salary_sheet = "emp_monthly_sal_crd";
-    public static final String action_notification = "getcrmempnotif";
+    public static final String action_notification = "get_late_nofitydetails";
     public static final String action_delete_notification = "marknotifread";
     public static final String GET_USER_LIST = "user";
     public static final String action_accept_reject_List = "get_leave_records";

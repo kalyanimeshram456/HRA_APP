@@ -1,11 +1,11 @@
 package com.ominfo.hra_app.ui.salary.fragment;
 
-import android.app.Activity;
+import static com.ominfo.hra_app.ui.employees.PaginationListener.PAGE_START;
+
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -34,12 +34,11 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.model.GradientColor;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
 import com.ominfo.hra_app.R;
 import com.ominfo.hra_app.basecontrol.BaseActivity;
 import com.ominfo.hra_app.basecontrol.BaseApplication;
@@ -48,15 +47,18 @@ import com.ominfo.hra_app.database.AppDatabase;
 import com.ominfo.hra_app.interfaces.Constants;
 import com.ominfo.hra_app.network.ApiResponse;
 import com.ominfo.hra_app.network.DynamicAPIPath;
+import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
-import com.ominfo.hra_app.ui.dashboard.model.DashModel;
+import com.ominfo.hra_app.ui.employees.PaginationListener;
 import com.ominfo.hra_app.ui.employees.model.EmployeeList;
+import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
-import com.ominfo.hra_app.ui.salary.adapter.SalaryDisbursementAdapter;
-import com.ominfo.hra_app.ui.sales_credit.activity.PdfPrintActivity;
-import com.ominfo.hra_app.ui.sales_credit.activity.View360Activity;
-import com.ominfo.hra_app.ui.sales_credit.model.GraphModel;
+import com.ominfo.hra_app.ui.salary.adapter.SalaryDisAdapter;
+import com.ominfo.hra_app.ui.salary.model.SalaryAllList;
+import com.ominfo.hra_app.ui.salary.model.SalaryAllListRequest;
+import com.ominfo.hra_app.ui.salary.model.SalaryAllListViewModel;
+import com.ominfo.hra_app.ui.salary.model.SalaryAllResponse;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
@@ -73,6 +75,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 //https://github.com/PhilJay/MPAndroidChart/wiki/Modifying-the-Viewport
 
 /**
@@ -80,11 +84,10 @@ import butterknife.OnClick;
  * Use the {@link SalaryDisbursementFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SalaryDisbursementFragment extends BaseFragment {
+public class SalaryDisbursementFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 
     Context mContext;
-    SalaryDisbursementAdapter salaryDisbursementAdapter;
-    //AddTagAdapter addTagAdapter;
+    SalaryDisAdapter salaryDisbursementAdapter;
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
     @BindView(R.id.imgBack)
@@ -96,24 +99,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
     @BindView(R.id.tv_emptyLayTitle)
     AppCompatTextView tv_emptyLayTitle;
     private AppDatabase mDb;
-    BarData barData;
-    List<GradientColor> list = new ArrayList<>();
-    // variable for our bar data set.
-    BarDataSet barDataSet;
-
-    // array list for storing entries.
-    ArrayList barEntriesArrayList;
-    //private static final String[] DATA_BAR_GRAPH = new String[6];//{"","09:00",
-    private String[] DAYS = new String[100];/*{"C1", "C2", "C3", "C4", "C5", "C6", *//*"C7", "C8", "C9"
-            , "C10", "C11", "C12"*//*};*/
-
-    private String[] DAYSY = new String[100];/*{"5", "60", "15", "70", "25",
-           "10"*//*, "45","90", "95","50", "55","60", "65"*//*};*/
-    int startPos = 0 , endPos = 0;
-
     List<EmployeeList> searchresultList = new ArrayList<>();
-    List<DashModel> tagList = new ArrayList<>();
-    List<GraphModel> graphModelsList = new ArrayList<>();
     @BindView(R.id.progressBarHolder)
     FrameLayout mProgressBarHolder;
     @BindView(R.id.empty_layoutActivity)
@@ -126,6 +112,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
     @Inject
     ViewModelFactory mViewModelFactory;
     private EmployeeListViewModel searchCrmViewModel;
+    private SalaryAllListViewModel salaryAllListViewModel;
 
     private Dialog mDialogChangePass;
     LinearLayoutCompat layoutLeaveTime;
@@ -140,6 +127,14 @@ public class SalaryDisbursementFragment extends BaseFragment {
     AppCompatAutoCompleteTextView tvAutoLeaveStatus;
     AppCompatAutoCompleteTextView AutoComTextViewDuration;
     AppCompatAutoCompleteTextView AutoComTextViewLeaveType;
+    List<SalaryAllList> salaryAllresultList = new ArrayList<>();
+    @BindView(R.id.swipeRefresh)
+    SwipeRefreshLayout swipeRefresh;
+    private int currentPage = PAGE_START;
+    private boolean isLastPage = false;
+    private long totalPage = 0;
+    private boolean isLoading = false;
+    int itemCount = 0;
 
     public SalaryDisbursementFragment() {
         // Required empty public constructor
@@ -186,84 +181,92 @@ public class SalaryDisbursementFragment extends BaseFragment {
                 .load(R.drawable.img_bg_search)
                 .into(iv_emptyLayimage);
         tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
-        searchresultList.add(new EmployeeList());searchresultList.add(new EmployeeList());
-        searchresultList.add(new EmployeeList());searchresultList.add(new EmployeeList());
-        setAdapterForLeaveList();
         tv_emptyLayTitle.setText("Search something...");
-        graphModelsList.removeAll(graphModelsList);
-        graphModelsList.add(new GraphModel("State C1", "Company Test 1", "5"));
-        graphModelsList.add(new GraphModel("State C2", "Company Test 2", "60"));
-        graphModelsList.add(new GraphModel("State C3", "Company Test 3", "15"));
-        graphModelsList.add(new GraphModel("State C4", "Company Test 4", "90"));
-        graphModelsList.add(new GraphModel("State C5", "Company Test 5", "25"));
-        graphModelsList.add(new GraphModel("State C6", "Company Test 6", "10"));
-        graphModelsList.add(new GraphModel("State C7", "Company Test 7", "45"));
-        graphModelsList.add(new GraphModel("State C8", "Company Test 8", "90"));
-        graphModelsList.add(new GraphModel("State C9", "Company Test 9", "95"));
-        graphModelsList.add(new GraphModel("State C10", "Company Test 10", "50"));
-        graphModelsList.add(new GraphModel("State C11", "Company Test 11", "55"));
-        graphModelsList.add(new GraphModel("State C12", "Company Test 12", "60"));
-        setGraphData(3);
+        swipeRefresh.setOnRefreshListener(this);
+
+        rvSalesList.setHasFixedSize(true);
+        // use a linear layout manager
+        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
+        rvSalesList.setLayoutManager(layoutManager);
+
+        salaryDisbursementAdapter = new SalaryDisAdapter(mContext,new ArrayList<>(), new SalaryDisAdapter.ListItemSelectListener() {
+            @Override
+            public void onItemClick(int mDataTicket,SalaryAllList employeeList) {
+                if(mDataTicket==1){
+                    showSalaryDisbursmentDialog();
+                }
+                else{
+                    SalarySheetFragment sheetFragment = new SalarySheetFragment();
+                    moveFromFragment(sheetFragment,getActivity());
+                }
+            }
+        });
+        rvSalesList.setAdapter(salaryDisbursementAdapter);
+        callSalaryAllListApi("0");
+
+        /**
+         * add scroll listener while user reach in bottom load more will call
+         */
+        rvSalesList.addOnScrollListener(new PaginationListener(layoutManager) {
+            @Override
+            protected void loadMoreItems() {
+                isLoading = true;
+                currentPage++;
+                callSalaryAllListApi(String.valueOf(currentPage));
+            }
+
+            @Override
+            public boolean isLastPage() {
+                return isLastPage;
+            }
+
+            @Override
+            public boolean isLoading() {
+                return isLoading;
+            }
+        });
     }
 
     private void injectAPI() {
         searchCrmViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EmployeeListViewModel.class);
         searchCrmViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_EMPLOYEES_LIST));
-   }
 
-    private void setGraphData(int initStatus) {
-        if(initStatus!=3) {
-            DAYS = new String[6];
-            DAYSY = new String[6];
-        }
-        if(initStatus==3){
-            DAYS = new String[graphModelsList.size()+1];
-            DAYSY = new String[graphModelsList.size()+1];
-        }
-        if(initStatus!=3) {
-            try {
-                endPos = startPos + 6;
-                if (endPos <= graphModelsList.size()) {
-                    //if(startPos<6) {
-
-                    for (int i = 0; i < graphModelsList.size(); i++) {
-                        if (graphModelsList.get(i).getxValue() != null) {
-                            DAYS[i] = graphModelsList.get(i).getxValue();
-                        }
-                        if (graphModelsList.get(i).getyValue() != null) {
-                            DAYSY[i] = graphModelsList.get(i).getyValue();
-                        }
-                    }
-                    try {
-                        //getGraph();
-                        //setAdapterForDashboardList();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    // }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if(initStatus==3){
-            for (int i = 0; i < graphModelsList.size(); i++) {
-                if(graphModelsList.get(i).getxValue()!=null) {
-                    DAYS[i] = graphModelsList.get(i).getxValue();
-                }
-                if(graphModelsList.get(i).getyValue()!=null) {
-                    DAYSY[i] = graphModelsList.get(i).getyValue();
-                }
-            }
-            try {
-                //getGraph();
-                //setAdapterForDashboardList();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
+        salaryAllListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(SalaryAllListViewModel.class);
+        salaryAllListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_SALARY_ALL_LIST));
     }
+
+    /* Call Api For employee list */
+    private void callSalaryAllListApi(String pageNo) {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_salary_all_list);
+                RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
+                RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                RequestBody mRequestisAd = RequestBody.create(MediaType.parse("text/plain"),  loginTable.getIsadmin());
+                RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), pageNo);
+                RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
+                String mon = AppUtils.convertMonthSalary();
+                RequestBody mRequestMonth = RequestBody.create(MediaType.parse("text/plain"), mon);
+
+                SalaryAllListRequest request= new SalaryAllListRequest();
+                request.setAction(mRequestAction);
+                request.setCompany_ID(mRequestComId);
+                request.setEmp_id(mRequestEmployee);
+                request.setIsAdmin(mRequestisAd);
+                request.setPageNumber(mRequestpage_number);
+                request.setPageSize(mRequestpage_size);
+                request.setMonth(mRequestMonth);
+                salaryAllListViewModel.hitSalaryAllListAPI(request);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -316,8 +319,8 @@ public class SalaryDisbursementFragment extends BaseFragment {
     }
 
 
-    private void setAdapterForLeaveList() {
-        if (searchresultList!=null && searchresultList.size() > 0) {
+    private void setAdapterForSalaryAllList() {
+        if (salaryAllresultList!=null && salaryAllresultList.size() > 0) {
             rvSalesList.setVisibility(View.VISIBLE);
             emptyLayout.setVisibility(View.GONE);
             } else {
@@ -328,9 +331,9 @@ public class SalaryDisbursementFragment extends BaseFragment {
                     .into(iv_emptyLayimage);
             tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
         }
-        salaryDisbursementAdapter = new SalaryDisbursementAdapter(mContext, searchresultList, new SalaryDisbursementAdapter.ListItemSelectListener() {
+        salaryDisbursementAdapter = new SalaryDisAdapter(mContext, salaryAllresultList, new SalaryDisAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket,EmployeeList searchresult) {
+            public void onItemClick(int mDataTicket,SalaryAllList searchresult) {
               if(mDataTicket==1){
                   showSalaryDisbursmentDialog();
               }
@@ -783,132 +786,6 @@ public class SalaryDisbursementFragment extends BaseFragment {
     }
 
 
-  /*  //set date picker view
-    private void openDataPicker(AppCompatTextView datePickerField,int mFrom) {
-        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-                // TODO Auto-generated method stub
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                String myFormat="";
-                if(mFrom==0) {
-                    myFormat = "dd MMM yyyy"; //In which you need put here
-                }
-                else{
-                    myFormat = "dd/MM/yyyy"; //In which you need put here
-                }
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-                datePickerField.setText(sdf.format(myCalendar.getTime()));
-            }
-
-        };
-
-        new DatePickerDialog(this, date, myCalendar
-                .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-
-    }
-
-    //show truck details popup
-    public void showTruckDetailsDialog() {
-        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_truck_details);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-        RelativeLayout relRC = mDialog.findViewById(R.id.relRC);
-        RelativeLayout relPUC = mDialog.findViewById(R.id.relPUC);
-        RelativeLayout relIss = mDialog.findViewById(R.id.relIss);
-
-        relRC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        relPUC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        relIss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }
-
-    //show truck details popup
-    public void showFullImageDialog() {
-        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_doc_full_view);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }*/
-
-
-    /*//request camera and storage permission
-    private void requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (mContext.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-            ) {
-
-                requestPermissions(new String[]
-                                { Manifest.permission.CAMERA,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                },
-                        1000);
-
-            } else {
-                //createFolder();
-            }
-        } else {
-            //createFolder();
-        }
-    }
-*/
-
     /*
      * ACCESS_FINE_LOCATION permission result
      * */
@@ -930,6 +807,27 @@ public class SalaryDisbursementFragment extends BaseFragment {
                 break;
 
         }
+    }
+
+    private void doApiCall() {
+        final ArrayList<SalaryAllList> items = new ArrayList<>();
+        for (int i = 0; i < salaryAllresultList.size(); i++) {
+            items.add(salaryAllresultList.get(i));
+        }
+
+        if (currentPage != PAGE_START) salaryDisbursementAdapter.removeLoading();
+        salaryDisbursementAdapter.addItems(items);
+        swipeRefresh.setRefreshing(false);
+
+        // check weather is last page or not
+        if (currentPage < totalPage) {
+            salaryDisbursementAdapter.addLoading();
+        } else {
+            isLastPage = true;
+        }
+        isLoading = false;
+        //  }
+        // }, 0);
     }
 
 
@@ -956,6 +854,22 @@ public class SalaryDisbursementFragment extends BaseFragment {
                     }catch (Exception e){
                         e.printStackTrace();
                     }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_SALARY_ALL_LIST)) {
+                            SalaryAllResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SalaryAllResponse.class);
+                            totalPage = responseModel.getResult().getTotalrows();
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                if (salaryAllresultList != null) {
+                                    //employeeListArrayList= new ArrayList<>();
+                                }
+                                salaryAllresultList = responseModel.getResult().getList();
+                                //salaryDataList = responseModel.getResult().getList(); removeee
+                                doApiCall();
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
                 break;
             case ERROR:
@@ -966,4 +880,12 @@ public class SalaryDisbursementFragment extends BaseFragment {
     }
 
 
+    @Override
+    public void onRefresh() {
+        itemCount = 0;
+        currentPage = PAGE_START;
+        isLastPage = false;
+        salaryDisbursementAdapter.clear();
+        callSalaryAllListApi("0");
+    }
 }

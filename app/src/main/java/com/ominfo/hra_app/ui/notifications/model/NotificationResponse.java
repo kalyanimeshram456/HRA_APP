@@ -9,13 +9,13 @@ import com.google.gson.annotations.SerializedName;
 public class NotificationResponse {
 
     @SerializedName("result")
-    private NotiResult mResult;
+    private NotificationResult mResult;
 
-    public NotiResult getResult() {
+    public NotificationResult getResult() {
         return mResult;
     }
 
-    public void setResult(NotiResult result) {
+    public void setResult(NotificationResult result) {
         mResult = result;
     }
 

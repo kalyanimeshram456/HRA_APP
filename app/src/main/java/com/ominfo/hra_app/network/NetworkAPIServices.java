@@ -342,8 +342,8 @@ public interface NetworkAPIServices {
     @POST()
     Observable<JsonElement> getNotification(@Url String url,
                                             @Part("action") RequestBody uploadType,
-                                            @Part("company_id") RequestBody uploadTypeEmployee,
-                                            @Part("employee_id") RequestBody companyId
+                                            @Part("emp_id") RequestBody uploadTypeEmployee,
+                                            @Part("date") RequestBody companyId
     );
 
     @Multipart
@@ -404,7 +404,8 @@ public interface NetworkAPIServices {
                                           @Part("company_ID") RequestBody company_id,
                                           @Part("emp_id") RequestBody emp_id,
                                           @Part("page_number") RequestBody page_number,
-                                          @Part("page_size") RequestBody page_size
+                                          @Part("page_size") RequestBody page_size,
+                                          @Part("month") RequestBody month
                                           );
     @Multipart
     @POST()

@@ -708,20 +708,20 @@ public class MyAccountFragment extends BaseFragment {
         LoginTable loginTable = mDb.getDbDAO().getLoginData();
         if(loginTable!=null){
             isAdmin = loginTable.getIsadmin();
-            if(isAdmin.equals("0")){
+            //if(isAdmin.equals("0")){
                 laySubmit.setVisibility(View.GONE);
                 layUser.setVisibility(View.VISIBLE);
                 layAdmin.setVisibility(View.GONE);
                 setAllDisabled(0,false);
                 callEmployeeListApi();
-            }
+           /* }
             else{
                 laySubmit.setVisibility(View.GONE);
                 layUser.setVisibility(View.GONE);
                 layAdmin.setVisibility(View.VISIBLE);
                 setAllDisabled(1,false);
                 callCompanyListApi();
-            }
+            }*/
         }
         Window window = getActivity().getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);

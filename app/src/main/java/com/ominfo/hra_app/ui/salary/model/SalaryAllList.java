@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class SalaryList {
+public class SalaryAllList {
 
     @SerializedName("company_ID")
     private String mCompanyID;
@@ -18,10 +18,18 @@ public class SalaryList {
     private String mEmpPosition;
     @SerializedName("emp_profile_pic")
     private String mEmpProfilePic;
+    @SerializedName("last_salpaid_date")
+    private String mLastSalpaidDate;
+    @SerializedName("leave_count_cur_mon")
+    private String mLeaveCountCurMon;
     @SerializedName("logo_url")
     private String mLogoUrl;
     @SerializedName("name")
     private String mName;
+    @SerializedName("salary")
+    private String mSalary;
+    @SerializedName("salary_this_month")
+    private Long mSalaryThisMonth;
 
     public String getCompanyID() {
         return mCompanyID;
@@ -63,6 +71,22 @@ public class SalaryList {
         mEmpProfilePic = empProfilePic;
     }
 
+    public String getLastSalpaidDate() {
+        return mLastSalpaidDate;
+    }
+
+    public void setLastSalpaidDate(String lastSalpaidDate) {
+        mLastSalpaidDate = lastSalpaidDate;
+    }
+
+    public String getLeaveCountCurMon() {
+        return mLeaveCountCurMon;
+    }
+
+    public void setLeaveCountCurMon(String leaveCountCurMon) {
+        mLeaveCountCurMon = leaveCountCurMon;
+    }
+
     public String getLogoUrl() {
         return mLogoUrl;
     }
@@ -77,6 +101,22 @@ public class SalaryList {
 
     public void setName(String name) {
         mName = name;
+    }
+
+    public String getSalary() {
+        return mSalary;
+    }
+
+    public void setSalary(String salary) {
+        mSalary = salary;
+    }
+
+    public Long getSalaryThisMonth() {
+        return mSalaryThisMonth;
+    }
+
+    public void setSalaryThisMonth(Long salaryThisMonth) {
+        mSalaryThisMonth = salaryThisMonth;
     }
 
 }

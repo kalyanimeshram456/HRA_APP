@@ -3,7 +3,6 @@ package com.ominfo.hra_app.basecontrol;
 import static com.ominfo.hra_app.MainActivity.ssCustomBottomNavigation;
 import static com.ominfo.hra_app.ui.attendance.StartAttendanceActivity.tvCurrLocation;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -18,8 +17,6 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,7 +31,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -75,10 +71,7 @@ import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.NetworkModule;
 import com.ominfo.hra_app.network.ViewModelFactory;
-import com.ominfo.hra_app.ui.attendance.model.LocationPerHourRequest;
 import com.ominfo.hra_app.ui.attendance.model.LocationPerHourResponse;
-import com.ominfo.hra_app.ui.attendance.model.LocationPerHourTable;
-import com.ominfo.hra_app.ui.attendance.model.LocationPerHourViewModel;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.ui.leave.model.LeaveCountResponse;
 import com.ominfo.hra_app.ui.leave.model.LeaveCountViewModel;
@@ -98,7 +91,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -194,48 +186,6 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                     SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_LONG, String.valueOf(location.getLongitude()));
                     SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_TITLE, address);
                     Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_OUT_ENABLED, false);
-                    if(iSTimer) {
-                        LoginTable loginTable = mDb.getDbDAO().getLoginData();
-                        if (loginTable != null) {
-                            RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_location_per_hour);
-                            RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
-                            RequestBody mRequestBodyDate = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentDateInyyyymmdd());
-                            RequestBody mRequestBodyLat = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(location.getLatitude()));
-                            RequestBody mRequestBodyLong = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(location.getLongitude()));
-                            RequestBody mRequestBodyStartTime = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentTimeIn24hr());
-                            Random rnd = new Random();
-                            int number = rnd.nextInt(99999);
-                            // this will convert any number sequence into 6 character.
-                            String geneatedId = String.format("%05d", number);
-                            RequestBody mReqToken = RequestBody.create(MediaType.parse("text/plain"), geneatedId);
-                            LocationPerHourTable locationPerHourTable = new LocationPerHourTable();
-                            locationPerHourTable.setAction(DynamicAPIPath.action_location_per_hour);
-                            locationPerHourTable.setEmpId(loginTable.getEmployeeId());
-                            locationPerHourTable.setDate(AppUtils.getCurrentDateInyyyymmdd());
-                            locationPerHourTable.setLatitude(String.valueOf(location.getLatitude()));
-                            locationPerHourTable.setLongitude(String.valueOf(location.getLongitude()));
-                            locationPerHourTable.setStartTime(AppUtils.getCurrentTimeIn24hr());
-                            locationPerHourTable.setRequestedToken(geneatedId);
-                            mDb.getDbDAO().insertLocationPerHour(locationPerHourTable);
-                            //int count = mDb.getDbDAO().getCountLocation();
-                            //LogUtil.printToastMSG(context, String.valueOf(count));
-                            if (NetworkCheck.isInternetAvailable(context)) {
-                                LocationPerHourRequest locationPerHourRequest = new LocationPerHourRequest();
-                                locationPerHourRequest.setAction(mRequestBodyAction);
-                                locationPerHourRequest.setEmpId(mRequestBodyTypeEmpId);
-                                locationPerHourRequest.setDate(mRequestBodyDate);
-                                locationPerHourRequest.setLatitude(mRequestBodyLat);
-                                locationPerHourRequest.setLongitude(mRequestBodyLong);
-                                locationPerHourRequest.setStartTime(mRequestBodyStartTime);
-                                locationPerHourRequest.setRequestedToken(mReqToken);
-                                //locationPerHourViewModel.hitLocationPerHourApi(locationPerHourRequest);
-                            } else {
-                                LogUtil.printToastMSG(context, "Something is wrong.");
-                            }
-                        } else {
-                            LogUtil.printToastMSG(context, getString(R.string.err_msg_connection_was_refused));
-                        }
-                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -804,10 +754,10 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if (loginTable != null) {
                 RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_notification);
-                RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
-                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
+                RequestBody mRequestBodyDate = RequestBody.create(MediaType.parse("text/plain"),"2022-05-23" /*AppUtils.getCurrentDateInyyyymmdd()*/);
                 notificationViewModel.hitNotificationApi(mRequestBodyType,mRequestBodyTypeCompId
-                        ,mRequestBodyTypeEmployee);
+                        ,mRequestBodyDate);
             }
         } else {
             LogUtil.printToastMSG(BaseActivity.this, getString(R.string.err_msg_connection_was_refused));
@@ -874,14 +824,14 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                             if (responseModel != null/* && responseModel.getResult().getStatus().equals("success")*/) {
                                 try {
                                     isNotify = false;
-                                    if(responseModel.getResult().getNotifdata().size()>0){
+                                    if(responseModel.getResult().getNotify().size()>0){
                                         imgNotifyCount.setVisibility(View.VISIBLE);
                                     }
                                     else{
                                         imgNotifyCount.setVisibility(View.INVISIBLE);
                                     }
-                                    SharedPref.getInstance(this).write(SharedPrefKey.IS_NOTIFY_COUNT, String.valueOf(responseModel.getResult().getNotifdata().size()));
-                                    imgNotifyCount.setText(String.valueOf(responseModel.getResult().getNotifdata().size()));
+                                    SharedPref.getInstance(this).write(SharedPrefKey.IS_NOTIFY_COUNT, String.valueOf(responseModel.getResult().getNotify().size()));
+                                    imgNotifyCount.setText(String.valueOf(responseModel.getResult().getNotify().size()));
                                 }catch (Exception e){
                                     LogUtil.printToastMSG(this,e.getMessage());
                                     e.printStackTrace();

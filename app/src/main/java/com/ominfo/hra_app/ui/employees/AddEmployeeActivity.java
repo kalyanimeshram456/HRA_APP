@@ -5,11 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.location.LocationManager;
-import android.media.ExifInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -55,15 +51,11 @@ import com.ominfo.hra_app.ui.my_account.model.GetCompanyList;
 import com.ominfo.hra_app.ui.my_account.model.GetCompanyResponse;
 import com.ominfo.hra_app.ui.my_account.model.GetCompanyViewModel;
 import com.ominfo.hra_app.ui.my_account.model.WorkTimingList;
-import com.ominfo.hra_app.ui.notifications.adapter.NotificationsAdapter;
-import com.ominfo.hra_app.ui.notifications.model.NotificationResult;
 import com.ominfo.hra_app.ui.visit_report.activity.AddLocationActivity;
-import com.ominfo.hra_app.ui.visit_report.model.VisitNoResponse;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
 import com.ominfo.hra_app.util.SharedPref;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -77,7 +69,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-import retrofit2.http.Part;
 
 public class AddEmployeeActivity extends BaseActivity {
     Context mContext;

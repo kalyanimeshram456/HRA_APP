@@ -18,6 +18,7 @@ import com.ominfo.hra_app.ui.my_account.model.ProfileRequest;
 import com.ominfo.hra_app.ui.my_account.model.RaiseTicketRequest;
 import com.ominfo.hra_app.ui.my_account.model.UpdateTicketRequest;
 import com.ominfo.hra_app.ui.registration.model.RegistrationRequest;
+import com.ominfo.hra_app.ui.salary.model.SalaryAllListRequest;
 import com.ominfo.hra_app.ui.sales_credit.model.GetView360Request;
 import com.ominfo.hra_app.ui.sales_credit.model.SalesCreditRequest;
 import com.ominfo.hra_app.ui.top_customer.model.TopCustomerRequest;
@@ -256,12 +257,13 @@ public class Service {
                 employeeListRequest.getFilterEmpIsActive()
         );
     }
-    public Observable<JsonElement> executeAllSalaryListAPI(RequestBody action,
-             RequestBody isAd, RequestBody comId, RequestBody empId,RequestBody pageNo, RequestBody pageS) {
+    public Observable<JsonElement> executeAllSalaryListAPI(SalaryAllListRequest salaryAllListRequest) {
         return networkAPIServices.salaryAllList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
-                DynamicAPIPath.POST_SALARY_ALL_LIST),
-                action,isAd,comId,empId,
-                pageNo,pageS
+                DynamicAPIPath.POST_SALARY_ALL_LIST),salaryAllListRequest.getAction(),
+                salaryAllListRequest.getIsAdmin(),
+                salaryAllListRequest.getCompany_ID(),
+                salaryAllListRequest.getEmp_id(),salaryAllListRequest.getPageNumber(),
+                salaryAllListRequest.getPageSize(),salaryAllListRequest.getMonth()
         );
     }
     public Observable<JsonElement> executeSalarySheetAPI(RequestBody action,

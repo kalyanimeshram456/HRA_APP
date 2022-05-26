@@ -99,9 +99,9 @@
                         android:layout_below="@+id/tvBirthName"
                         android:layout_gravity="center"
                         android:fontFamily="@font/gilroy_regular"
+                        android:inputType="textMultiLine"
                         android:text="User designation"
                         android:textAlignment="center"
-                        android:inputType="textMultiLine"
                         android:textColor="@color/gray"
                         android:textSize="@dimen/_12sp" />
 
@@ -116,14 +116,14 @@
                     android:paddingTop="@dimen/_0dp">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvDate"
+                        android:id="@+id/tvLeave"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:fontFamily="@font/gilroy_regular"
-                        android:text="03"
-                        android:inputType="textMultiLine"
                         android:gravity="bottom"
+                        android:inputType="textMultiLine"
+                        android:text="03"
                         android:textColor="@color/black_heading"
                         android:textSize="@dimen/_13sp" />
 
@@ -144,10 +144,10 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:layout_gravity="center"
-                    android:fontFamily="@font/gilroy_regular"
-                    android:text="@string/scr_lbl_rs_0"
-                    android:inputType="textMultiLine"
                     android:layout_marginLeft="@dimen/_0dp"
+                    android:fontFamily="@font/gilroy_regular"
+                    android:inputType="textMultiLine"
+                    android:text="@string/scr_lbl_rs_0"
                     android:textAlignment="center"
                     android:textColor="@color/black_heading"
                     android:textSize="@dimen/_13sp" />

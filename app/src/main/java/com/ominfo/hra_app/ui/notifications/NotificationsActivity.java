@@ -7,7 +7,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
-import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
@@ -39,6 +38,7 @@ import com.ominfo.hra_app.ui.notifications.model.DeleteNotificationViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LeaveSingleRecordResponse;
 import com.ominfo.hra_app.ui.notifications.model.LeaveSingleRecordViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LeaveStatusViewModel;
+import com.ominfo.hra_app.ui.notifications.model.NotificationNotify;
 import com.ominfo.hra_app.ui.notifications.model.NotificationResponse;
 import com.ominfo.hra_app.ui.notifications.model.NotificationResult;
 import com.ominfo.hra_app.ui.notifications.model.NotificationViewModel;
@@ -64,7 +64,7 @@ public class NotificationsActivity extends BaseActivity {
     Context mContext;
     @BindView(R.id.rvPuranaHisab)
     RecyclerView rvPuranaHisab;
-    @BindView(R.id.tvSearchView)
+    @BindView(R.id.tvTitle)
     AppCompatTextView toolbarTitle;
     @BindView(R.id.tv_emptyLayTitle)
     AppCompatTextView textViewEmptyLayTitle;
@@ -83,7 +83,7 @@ public class NotificationsActivity extends BaseActivity {
     @BindView(R.id.imgBack)
     LinearLayoutCompat imgBack;
     NotificationsAdapter mNotificationsAdapter;
-    List<NotificationResult> notificationList = new ArrayList<>();
+    List<NotificationNotify> notificationList = new ArrayList<>();
     @Inject
     ViewModelFactory mViewModelFactory;
     private NotificationViewModel notificationViewModel;
@@ -96,7 +96,7 @@ public class NotificationsActivity extends BaseActivity {
     AppCompatTextView appcomptextLeaveTime;
     View viewToDate;
     RelativeLayout layToDate;
-    List<NotificationResult> notificationResultList = new ArrayList<>();
+    //List<NotificationNotify> notificationResultList = new ArrayList<>();
     int notiId = 0;
 
     @Override
@@ -163,10 +163,6 @@ public class NotificationsActivity extends BaseActivity {
 
     private void setToolbar(){
         //set toolbar title
-        Window window = getWindow();
-        View view = window.getDecorView();
-        BaseActivity.DarkStatusBar.setLightStatusBar(view,this);
-
         toolbarTitle.setText("Notifications");
         initToolbar(1,mContext,R.id.imgBack,R.id.imgReport,R.id.imgNotify,tvNotifyCount,0,R.id.imgCall);
     }
@@ -203,10 +199,10 @@ public class NotificationsActivity extends BaseActivity {
             textViewEmptyLayTitle.setText("Please wait...");
             if (loginTable != null) {
                 RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_notification);
-                RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
-                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
+                RequestBody mRequestBodyDate = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentDateInyyyymmdd());
                 notificationViewModel.hitNotificationApi(mRequestBodyType,mRequestBodyTypeCompId
-                        ,mRequestBodyTypeEmployee);
+                        ,mRequestBodyDate);
             }
         } else {
             LogUtil.printToastMSG(NotificationsActivity.this, getString(R.string.err_msg_connection_was_refused));
@@ -381,10 +377,10 @@ public class NotificationsActivity extends BaseActivity {
         if (notificationList!=null && notificationList.size() > 0) {
             mNotificationsAdapter = new NotificationsAdapter(mContext, notificationList, new NotificationsAdapter.ListItemSelectListener() {
                 @Override
-                public void onItemClick(NotificationResult mDataTicket,List<NotificationResult> notificationResultListAdapter,boolean status) {
-                     notificationResultList = notificationResultListAdapter;
-                    tvNotifyCount.setText(String.valueOf(notificationResultList.size()));
-                    if(notificationResultList.size()==0){
+                public void onItemClick(NotificationNotify mDataTicket, List<NotificationNotify> notificationResultListAdapter, boolean status) {
+                    notificationList = notificationResultListAdapter;
+                     tvNotifyCount.setText(String.valueOf(notificationList.size()));
+                    if(notificationList.size()==0){
                         emptyBox.setBackground(getResources().getDrawable(R.drawable.layout_round_shape_blue_border));
                         textViewEmptyLayTitle.setVisibility(View.VISIBLE);
                         linearLayoutEmptyActivity.setVisibility(View.VISIBLE);
@@ -398,11 +394,11 @@ public class NotificationsActivity extends BaseActivity {
                         emptyBox.setBackground(null);
                         iv_emptyLayimage.setVisibility(View.GONE);}
                     if(status){
-                    callDeleteNotificationApi(mDataTicket.getId());
-                    mNotificationsAdapter.updateList(notificationResultList);}
+                    callDeleteNotificationApi(mDataTicket.getRecordId());
+                    mNotificationsAdapter.updateList(notificationList);}
                     else{
-                        callSingleRecordApi(mDataTicket.getRelativeId());
-                        notiId = Integer.parseInt(mDataTicket.getId()==null?"0":mDataTicket.getId());
+                        callSingleRecordApi(mDataTicket.getRelatedId());
+                        notiId = Integer.parseInt(mDataTicket.getRecordId()==null?"0":mDataTicket.getRecordId());
                     }
                 }
             });
@@ -441,11 +437,11 @@ public class NotificationsActivity extends BaseActivity {
                     LogUtil.printLog(tag, apiResponse.data.toString());
                     if (tag.equalsIgnoreCase(DynamicAPIPath.POST_NOTIFICATION)) {
                         NotificationResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), NotificationResponse.class);
-                        if (responseModel != null) {
+                        if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                             mSwipeRefreshLayout.setRefreshing(false);
-                            notificationList.clear();
-                            if(responseModel.getResult()!=null && responseModel.getResult().getNotifdata().size()>0) {
-                                notificationList = responseModel.getResult().getNotifdata();
+                            try{notificationList.removeAll(notificationList);}catch (Exception e){}
+                            if(responseModel.getResult()!=null && responseModel.getResult().getNotify().size()>0) {
+                                notificationList = responseModel.getResult().getNotify();
                             }
                             //TODO REMOVE
                             //notificationList.add(new NotificationResult("Static Test Demo Leave","Tap to perform Action...","INFO"));
@@ -482,7 +478,7 @@ public class NotificationsActivity extends BaseActivity {
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 mDialogChangePass.dismiss();
                                 callDeleteNotificationApi(String.valueOf(notiId));
-                                mNotificationsAdapter.updateList(notificationResultList);
+                                mNotificationsAdapter.updateList(notificationList);
                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
                             }
                             else {

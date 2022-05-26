@@ -4,8 +4,6 @@ package com.ominfo.hra_app.ui.salary.model;
 import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
 public class SalaryAllResult {
@@ -13,9 +11,7 @@ public class SalaryAllResult {
     @SerializedName("currentpage")
     private String mCurrentpage;
     @SerializedName("list")
-    private java.util.List<SalaryList> mList;
-    @SerializedName("data")
-    private java.util.List<SalaryAllData> data;
+    private java.util.List<SalaryAllList> mList;
     @SerializedName("message")
     private String mMessage;
     @SerializedName("nextpage")
@@ -29,14 +25,6 @@ public class SalaryAllResult {
     @SerializedName("totalrows")
     private Long mTotalrows;
 
-    public List<SalaryAllData> getData() {
-        return data;
-    }
-
-    public void setData(List<SalaryAllData> data) {
-        this.data = data;
-    }
-
     public String getCurrentpage() {
         return mCurrentpage;
     }
@@ -45,11 +33,11 @@ public class SalaryAllResult {
         mCurrentpage = currentpage;
     }
 
-    public java.util.List<SalaryList> getList() {
+    public java.util.List<SalaryAllList> getList() {
         return mList;
     }
 
-    public void setList(java.util.List<SalaryList> list) {
+    public void setList(java.util.List<SalaryAllList> list) {
         mList = list;
     }
 

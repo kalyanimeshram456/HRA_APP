@@ -1,6 +1,7 @@
 
 package com.ominfo.hra_app.ui.notifications.model;
 
+import java.util.List;
 import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
 
@@ -8,81 +9,35 @@ import com.google.gson.annotations.SerializedName;
 @SuppressWarnings("unused")
 public class NotificationResult {
 
-    @SerializedName("customer")
-    private String mCustomer;
-    @SerializedName("heading")
-    private String mHeading;
-    @SerializedName("id")
-    private String mId;
-    @SerializedName("text")
-    private String mText;
-    @SerializedName("type")
-    private String mType;
-    @SerializedName("url")
-    private String mUrl;
-    @SerializedName("related_id")
-    private String relativeId;
+    @SerializedName("message")
+    private String mMessage;
+    @SerializedName("notify")
+    private List<NotificationNotify> mNotify;
+    @SerializedName("status")
+    private String mStatus;
 
-    public NotificationResult(String mHeading, String mText, String mType) {
-        this.mHeading = mHeading;
-        this.mText = mText;
-        this.mType = mType;
+    public String getMessage() {
+        return mMessage;
     }
 
-    public String getRelativeId() {
-        return relativeId;
+    public void setMessage(String message) {
+        mMessage = message;
     }
 
-    public void setRelativeId(String relativeId) {
-        this.relativeId = relativeId;
+    public List<NotificationNotify> getNotify() {
+        return mNotify;
     }
 
-    public String getCustomer() {
-        return mCustomer;
+    public void setNotify(List<NotificationNotify> notify) {
+        mNotify = notify;
     }
 
-    public void setCustomer(String customer) {
-        mCustomer = customer;
+    public String getStatus() {
+        return mStatus;
     }
 
-    public String getHeading() {
-        return mHeading;
-    }
-
-    public void setHeading(String heading) {
-        mHeading = heading;
-    }
-
-    public String getId() {
-        return mId;
-    }
-
-    public void setId(String id) {
-        mId = id;
-    }
-
-    public String getText() {
-        return mText;
-    }
-
-    public void setText(String text) {
-        mText = text;
-    }
-
-    public String getType() {
-        return mType;
-    }
-
-    public void setType(String type) {
-        mType = type;
-    }
-
-    public String getUrl() {
-        return mUrl;
-    }
-
-    public void setUrl(String url) {
-        mUrl = url;
+    public void setStatus(String status) {
+        mStatus = status;
     }
 
 }

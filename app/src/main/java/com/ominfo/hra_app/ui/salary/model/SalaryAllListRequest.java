@@ -14,14 +14,8 @@ public class SalaryAllListRequest {
     @SerializedName("action")
     private RequestBody action;
 
-    @SerializedName("company_id")
-    private RequestBody companyId;
-
-    @SerializedName("employee")
-    private RequestBody employee;
-
-    @SerializedName("token")
-    private RequestBody token;
+    @SerializedName("company_ID")
+    private RequestBody company_ID;
 
     @SerializedName("page_number")
     private RequestBody pageNumber;
@@ -29,14 +23,30 @@ public class SalaryAllListRequest {
     @SerializedName("page_size")
     private RequestBody pageSize;
 
-    @SerializedName("filter_emp_name")
-    private RequestBody filterEmpName;
+    @SerializedName("isAdmin")
+    private RequestBody isAdmin;
 
-    @SerializedName("filter_emp_position")
-    private RequestBody filterEmpPosition;
+    @SerializedName("month")
+    private RequestBody month;
 
-    @SerializedName("filter_emp_isActive")
-    private RequestBody filterEmpIsActive;
+    @SerializedName("emp_id")
+    private RequestBody emp_id;
+
+    public RequestBody getMonth() {
+        return month;
+    }
+
+    public void setMonth(RequestBody month) {
+        this.month = month;
+    }
+
+    public RequestBody getEmp_id() {
+        return emp_id;
+    }
+
+    public void setEmp_id(RequestBody emp_id) {
+        this.emp_id = emp_id;
+    }
 
     public RequestBody getAction() {
         return action;
@@ -46,28 +56,12 @@ public class SalaryAllListRequest {
         this.action = action;
     }
 
-    public RequestBody getCompanyId() {
-        return companyId;
+    public RequestBody getCompany_ID() {
+        return company_ID;
     }
 
-    public void setCompanyId(RequestBody companyId) {
-        this.companyId = companyId;
-    }
-
-    public RequestBody getEmployee() {
-        return employee;
-    }
-
-    public void setEmployee(RequestBody employee) {
-        this.employee = employee;
-    }
-
-    public RequestBody getToken() {
-        return token;
-    }
-
-    public void setToken(RequestBody token) {
-        this.token = token;
+    public void setCompany_ID(RequestBody company_ID) {
+        this.company_ID = company_ID;
     }
 
     public RequestBody getPageNumber() {
@@ -86,27 +80,11 @@ public class SalaryAllListRequest {
         this.pageSize = pageSize;
     }
 
-    public RequestBody getFilterEmpName() {
-        return filterEmpName;
+    public RequestBody getIsAdmin() {
+        return isAdmin;
     }
 
-    public void setFilterEmpName(RequestBody filterEmpName) {
-        this.filterEmpName = filterEmpName;
-    }
-
-    public RequestBody getFilterEmpPosition() {
-        return filterEmpPosition;
-    }
-
-    public void setFilterEmpPosition(RequestBody filterEmpPosition) {
-        this.filterEmpPosition = filterEmpPosition;
-    }
-
-    public RequestBody getFilterEmpIsActive() {
-        return filterEmpIsActive;
-    }
-
-    public void setFilterEmpIsActive(RequestBody filterEmpIsActive) {
-        this.filterEmpIsActive = filterEmpIsActive;
+    public void setIsAdmin(RequestBody isAdmin) {
+        this.isAdmin = isAdmin;
     }
 }

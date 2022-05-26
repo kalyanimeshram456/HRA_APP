@@ -69,6 +69,10 @@ import com.ominfo.hra_app.ui.dashboard.model.EditHolidayViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.GetBirthDayListViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.GetBirthDayResponse;
 import com.ominfo.hra_app.ui.employees.model.EditEmployeeResponse;
+import com.ominfo.hra_app.ui.employees.model.EmployeeList;
+import com.ominfo.hra_app.ui.employees.model.EmployeeListRequest;
+import com.ominfo.hra_app.ui.employees.model.EmployeeListResponse;
+import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
 import com.ominfo.hra_app.ui.leave.model.LeaveCountResponse;
 import com.ominfo.hra_app.ui.leave.model.LeaveCountViewModel;
 import com.ominfo.hra_app.ui.login.LoginActivity;
@@ -79,6 +83,7 @@ import com.ominfo.hra_app.ui.login.model.LogoutResponse;
 import com.ominfo.hra_app.ui.login.model.LogoutViewModel;
 import com.ominfo.hra_app.ui.my_account.model.GetProfileImageViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ProfileImageResponse;
+import com.ominfo.hra_app.ui.my_account.model.WorkTimingList;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
@@ -169,7 +174,7 @@ public class DashboardFragment extends BaseFragment {
     ViewModelFactory mViewModelFactory;
     private GetProfileImageViewModel getProfileImageViewModel;
     private EditHolidayViewModel editHolidayViewModel;
-
+    private EmployeeListViewModel employeeListViewModel;
     public static boolean activityVisible; // Variable that will check the
     final static String CONNECTIVITY_ACTION = "android.net.conn.CONNECTIVITY_CHANGE";
     IntentFilter intentFilter;
@@ -288,6 +293,9 @@ public class DashboardFragment extends BaseFragment {
 
         editHolidayViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EditHolidayViewModel.class);
         editHolidayViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_EDIT_HOLIDAY));
+
+        employeeListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EmployeeListViewModel.class);
+        employeeListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_EMPLOYEES_LIST));
     }
 
     public static void setTimerMillis(Context context, long millis) {
@@ -350,7 +358,7 @@ public class DashboardFragment extends BaseFragment {
                 if (NetworkCheck.isInternetAvailable(mContext)) {
                     swipeStatus = true;
                     setToolbar();
-
+                    callEmployeeListApi();
                     //mFromDate = AppUtils.startMonth(); mToDate = AppUtils.endMonth();
                     callCalenderHolidaysApi();
                     callDashboardApi();
@@ -650,7 +658,6 @@ public class DashboardFragment extends BaseFragment {
         }
     }
 
-
     private void setAdapterForBirthDayList() {
         if (birthDayDobdatumList != null && birthDayDobdatumList.size() > 0) {
             todayBirthDayAdapter = new TodayBirthDayAdapter(mContext, birthDayDobdatumList, new TodayBirthDayAdapter.ListItemSelectListener() {
@@ -705,6 +712,43 @@ public class DashboardFragment extends BaseFragment {
                 ;
             }
         });
+    }
+
+    /* Call Api For employee list */
+    private void callEmployeeListApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_employee_list);
+                RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
+                RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                RequestBody mRequestToken = RequestBody.create(MediaType.parse("text/plain"),  loginTable.getToken());
+                RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), "0");
+                RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
+                RequestBody mRequestfilter_emp_name = RequestBody.create(MediaType.parse("text/plain"), "");
+                RequestBody mRequestfilter_emp_position = RequestBody.create(MediaType.parse("text/plain"),  "");
+                String status = "1";
+                RequestBody filter_emp_isActive = RequestBody.create(MediaType.parse("text/plain"),  status);
+
+                EmployeeListRequest request = new EmployeeListRequest();
+                request.setAction(mRequestAction);
+                request.setCompanyId(mRequestComId);
+                request.setEmployee(mRequestEmployee);
+                request.setToken(mRequestToken);
+                request.setPageNumber(mRequestpage_number);
+                request.setPageSize(mRequestpage_size);
+                request.setFilterEmpName(mRequestfilter_emp_name);
+                request.setFilterEmpPosition(mRequestfilter_emp_position);
+                request.setFilterEmpIsActive(filter_emp_isActive);
+
+                employeeListViewModel.executeEmployeeListAPI(request);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
     }
 
     /* Call Api Leave */
@@ -1161,9 +1205,9 @@ public class DashboardFragment extends BaseFragment {
                                             tvLeaveValue.setText(responseModel.getResult().getLate_mark());
                                         }
                                         else{
-                                            tvAttendanceTitle.setText("Attendance this month");
+                                            tvAttendanceTitle.setText("Attendance(monthly)");
                                             tvAttendanceValue.setText(absA+" / "+totA);
-                                            tvLeaveTitle.setText("Late marks this month");
+                                            tvLeaveTitle.setText("Late mark(monthly)");
                                             tvLeaveValue.setText(responseModel.getResult().getLate_mark()+" / "+totA);
                                         }
                                     }
@@ -1193,30 +1237,6 @@ public class DashboardFragment extends BaseFragment {
                         e.printStackTrace();
                     }
                     try{
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_LEAVE_COUNT)) {
-                            LeaveCountResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LeaveCountResponse.class);
-                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                LoginTable loginTable = mDb.getDbDAO().getLoginData();
-                                if(loginTable!=null){
-                                    int totA = Integer.parseInt(responseModel.getResult().getCurent_month_days());
-                                    int absA = Integer.parseInt(responseModel.getResult().getTotal_absent_late());
-                                    if(loginTable.getIsadmin().equals("0")) {
-                                        tvAttendanceTitle.setText("Today's Attendance");
-                                        tvAttendanceValue.setText(Math.abs(totA-absA)+" / "+totA);
-                                        tvLeaveTitle.setText("Today's Late Marks");
-                                        tvLeaveValue.setText(responseModel.getResult().getLate_mark());
-                                    }
-                                    else{
-                                        tvAttendanceTitle.setText("Attendance this month");
-                                        tvAttendanceValue.setText(absA+" / "+totA);
-                                        tvLeaveTitle.setText("Late marks this month");
-                                        tvLeaveValue.setText(responseModel.getResult().getLate_mark()+" / "+totA);
-                                    }
-                                }
-                            }
-                        }
-                    }catch (Exception e){e.printStackTrace();}
-                    try{
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EDIT_HOLIDAY)) {
                             EditEmployeeResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), EditEmployeeResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
@@ -1233,6 +1253,42 @@ public class DashboardFragment extends BaseFragment {
                             }
                         }
                     }catch (Exception e){e.printStackTrace();}
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EMPLOYEES_LIST)) {
+                            EmployeeListResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), EmployeeListResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                mDb.getDbDAO().deleteAttendanceData();
+                                EmployeeList employeeListResData = responseModel.getResult().getList().get(0);
+                                AttendanceDaysTable daysTable = new AttendanceDaysTable();
+                                DayData dayData = new DayData();
+                                dayData.setMonDay("Monday");dayData.setMonWorking(employeeListResData.getMonWorking());
+                                dayData.setMonStartTime(employeeListResData.getMonStartTime());
+                                dayData.setMonEndTime(employeeListResData.getMonEndTime());
+                                dayData.setTueDay("Tuesday");dayData.setTueWorking(employeeListResData.getTueWorking());
+                                dayData.setTueStartTime(employeeListResData.getTueStartTime());
+                                dayData.setTueEndTime(employeeListResData.getTueEndTime());
+                                dayData.setWedDay("Wednesday");dayData.setWedWorking(employeeListResData.getWedWorking());
+                                dayData.setWedStartTime(employeeListResData.getWedStartTime());
+                                dayData.setWedEndTime(employeeListResData.getWedEndTime());
+                                dayData.setThrusDay("Thursday");dayData.setThrusWorking(employeeListResData.getThrusWorking());
+                                dayData.setThrusStartTime(employeeListResData.getThrusStartTime());
+                                dayData.setThrusEndTime(employeeListResData.getThrusEndTime());
+                                dayData.setFriDay("Friday");dayData.setFriWorking(employeeListResData.getFriWorking());
+                                dayData.setFriStartTime(employeeListResData.getFriStartTime());
+                                dayData.setFriEndTime(employeeListResData.getFriEndTime());
+                                dayData.setSatDay("Saturday");dayData.setSatWorking(employeeListResData.getSatWorking());
+                                dayData.setSatStartTime(employeeListResData.getSatStartTime());
+                                dayData.setSatEndTime(employeeListResData.getSatEndTime());
+                                dayData.setSunDay("Sunday");dayData.setSunWorking(employeeListResData.getSunWorking());
+                                dayData.setSunStartTime(employeeListResData.getSunStartTime());
+                                dayData.setSunEndTime(employeeListResData.getSunEndTime());
+                                daysTable.setLoginDays(dayData);
+                                mDb.getDbDAO().insertAttendanceData(daysTable);
+                               }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
                 break;
             case ERROR:

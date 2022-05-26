@@ -9,13 +9,13 @@ import com.google.gson.annotations.SerializedName;
 public class UpdateLeaveStatusResponse {
 
     @SerializedName("result")
-    private Result mResult;
+    private UpdateLeaveResult mResult;
 
-    public Result getResult() {
+    public UpdateLeaveResult getResult() {
         return mResult;
     }
 
-    public void setResult(Result result) {
+    public void setResult(UpdateLeaveResult result) {
         mResult = result;
     }
 

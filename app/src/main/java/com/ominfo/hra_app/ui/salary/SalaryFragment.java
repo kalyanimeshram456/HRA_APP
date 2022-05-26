@@ -2,10 +2,8 @@ package com.ominfo.hra_app.ui.salary;
 
 import static com.ominfo.hra_app.ui.employees.PaginationListener.PAGE_START;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,20 +39,18 @@ import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.ui.dashboard.model.DashModel;
-import com.ominfo.hra_app.ui.employees.AddEmployeeActivity;
 import com.ominfo.hra_app.ui.employees.PaginationListener;
-import com.ominfo.hra_app.ui.employees.model.EmployeeList;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.salary.adapter.SalaryAdapter;
 import com.ominfo.hra_app.ui.salary.fragment.SalaryDisbursementFragment;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllData;
+import com.ominfo.hra_app.ui.salary.model.SalaryAllList;
+import com.ominfo.hra_app.ui.salary.model.SalaryAllListRequest;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllListViewModel;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllResponse;
-import com.ominfo.hra_app.ui.salary.model.SalaryList;
-import com.ominfo.hra_app.ui.sales_credit.activity.PdfPrintActivity;
-import com.ominfo.hra_app.ui.sales_credit.activity.View360Activity;
 import com.ominfo.hra_app.ui.sales_credit.model.GraphModel;
+import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
 
 import java.text.SimpleDateFormat;
@@ -93,25 +89,7 @@ public class SalaryFragment extends BaseFragment implements SwipeRefreshLayout.O
     @BindView(R.id.tv_emptyLayTitle)
     AppCompatTextView tv_emptyLayTitle;
     private AppDatabase mDb;
-    BarData barData;
-    List<GradientColor> list = new ArrayList<>();
-    // variable for our bar data set.
-    BarDataSet barDataSet;
-
-    // array list for storing entries.
-    ArrayList barEntriesArrayList;
-    //private static final String[] DATA_BAR_GRAPH = new String[6];//{"","09:00",
-    private String[] DAYS = new String[100];/*{"C1", "C2", "C3", "C4", "C5", "C6", *//*"C7", "C8", "C9"
-            , "C10", "C11", "C12"*//*};*/
-
-    private String[] DAYSY = new String[100];/*{"5", "60", "15", "70", "25",
-           "10"*//*, "45","90", "95","50", "55","60", "65"*//*};*/
-    int startPos = 0 , endPos = 0;
-
-    List<SalaryList> salaryAllresultList = new ArrayList<>();
-    List<SalaryAllData> salaryDataList = new ArrayList<>();
-    List<DashModel> tagList = new ArrayList<>();
-    List<GraphModel> graphModelsList = new ArrayList<>();
+    List<SalaryAllList> salaryAllresultList = new ArrayList<>();
     @BindView(R.id.progressBarHolder)
     FrameLayout mProgressBarHolder;
     @BindView(R.id.empty_layoutActivity)
@@ -185,9 +163,9 @@ public class SalaryFragment extends BaseFragment implements SwipeRefreshLayout.O
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         rvSalesList.setLayoutManager(layoutManager);
 
-        salaryAdapter = new SalaryAdapter(mContext,new ArrayList<>(),new ArrayList<>(), new SalaryAdapter.ListItemSelectListener() {
+        salaryAdapter = new SalaryAdapter(mContext,new ArrayList<>(), new SalaryAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket,SalaryList employeeList) {
+            public void onItemClick(int mDataTicket,SalaryAllList employeeList) {
 
             }
         });
@@ -232,8 +210,18 @@ public class SalaryFragment extends BaseFragment implements SwipeRefreshLayout.O
                 RequestBody mRequestisAd = RequestBody.create(MediaType.parse("text/plain"),  loginTable.getIsadmin());
                 RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), pageNo);
                 RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
+                String mon = AppUtils.convertMonthSalary();
+                RequestBody mRequestMonth = RequestBody.create(MediaType.parse("text/plain"), mon);
 
-                salaryAllListViewModel.hitSalaryAllListAPI(mRequestAction,mRequestisAd,mRequestComId,mRequestEmployee,mRequestpage_number,mRequestpage_size);
+                SalaryAllListRequest request= new SalaryAllListRequest();
+                request.setAction(mRequestAction);
+                request.setCompany_ID(mRequestComId);
+                request.setEmp_id(mRequestEmployee);
+                request.setIsAdmin(mRequestisAd);
+                request.setPageNumber(mRequestpage_number);
+                request.setPageSize(mRequestpage_size);
+                request.setMonth(mRequestMonth);
+                salaryAllListViewModel.hitSalaryAllListAPI(request);
             }
             else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
@@ -242,23 +230,15 @@ public class SalaryFragment extends BaseFragment implements SwipeRefreshLayout.O
             LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
         }
     }
-    private void doApiCall() {
-        final ArrayList<SalaryList> items = new ArrayList<>();
-        final ArrayList<SalaryAllData> itemsD = new ArrayList<>();
-           /* new Handler().postDelayed(new Runnable() {
 
-                @Override
-                public void run() {*/
+    private void doApiCall() {
+        final ArrayList<SalaryAllList> items = new ArrayList<>();
         for (int i = 0; i < salaryAllresultList.size(); i++) {
             items.add(salaryAllresultList.get(i));
-            itemsD.add(salaryDataList.get(i));
         }
-        // do this all stuff on Success of APIs response
-        /**
-         * manage progress view
-         */
+
         if (currentPage != PAGE_START) salaryAdapter.removeLoading();
-        salaryAdapter.addItems(items,itemsD);
+        salaryAdapter.addItems(items);
         swipeRefresh.setRefreshing(false);
 
         // check weather is last page or not
@@ -361,7 +341,7 @@ public class SalaryFragment extends BaseFragment implements SwipeRefreshLayout.O
                                         //employeeListArrayList= new ArrayList<>();
                                     }
                                     salaryAllresultList = responseModel.getResult().getList();
-                                    salaryDataList = responseModel.getResult().getData();
+                                    //salaryDataList = responseModel.getResult().getList(); removeee
                                     doApiCall();
                                 }
                         }

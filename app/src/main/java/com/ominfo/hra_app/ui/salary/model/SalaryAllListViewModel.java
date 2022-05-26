@@ -26,9 +26,8 @@ public class SalaryAllListViewModel extends ViewModel {
         return responseLiveData;
     }
 
-    public void hitSalaryAllListAPI(RequestBody action,RequestBody isAd, RequestBody comId
-            , RequestBody empId, RequestBody pageNo, RequestBody pageS) {
-        disposables.add(service.executeAllSalaryListAPI(action,isAd,comId,empId,pageNo,pageS)
+    public void hitSalaryAllListAPI(SalaryAllListRequest salaryAllListRequest) {
+        disposables.add(service.executeAllSalaryListAPI(salaryAllListRequest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe((d) -> responseLiveData.setValue(ApiResponse.loading()))

@@ -160,6 +160,12 @@ public class AppUtils {
         return ""+monthnum;
     }
 
+    public static String convertMonthSalary(){
+        Calendar cal = Calendar.getInstance();
+        String str = new SimpleDateFormat("MMMM").format(cal.getTime());
+        return convertMonthToInt(str);
+    }
+
     public static String convertMonthToInt(String monthName){
         try{
             Date date = new SimpleDateFormat("MMMM", Locale.ENGLISH).parse(monthName);//put your month name in english here
