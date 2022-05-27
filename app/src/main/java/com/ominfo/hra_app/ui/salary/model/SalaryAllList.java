@@ -10,6 +10,8 @@ public class SalaryAllList {
 
     @SerializedName("company_ID")
     private String mCompanyID;
+    @SerializedName("status")
+    private String status;
     @SerializedName("emp_id")
     private String mEmpId;
     @SerializedName("emp_name")
@@ -29,7 +31,15 @@ public class SalaryAllList {
     @SerializedName("salary")
     private String mSalary;
     @SerializedName("salary_this_month")
-    private Long mSalaryThisMonth;
+    private double mSalaryThisMonth;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getCompanyID() {
         return mCompanyID;
@@ -111,11 +121,11 @@ public class SalaryAllList {
         mSalary = salary;
     }
 
-    public Long getSalaryThisMonth() {
+    public double getSalaryThisMonth() {
         return mSalaryThisMonth;
     }
 
-    public void setSalaryThisMonth(Long salaryThisMonth) {
+    public void setSalaryThisMonth(double salaryThisMonth) {
         mSalaryThisMonth = salaryThisMonth;
     }
 

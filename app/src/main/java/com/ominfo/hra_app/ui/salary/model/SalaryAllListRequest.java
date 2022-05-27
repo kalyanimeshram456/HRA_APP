@@ -29,8 +29,19 @@ public class SalaryAllListRequest {
     @SerializedName("month")
     private RequestBody month;
 
+    @SerializedName("year")
+    private RequestBody year;
+
     @SerializedName("emp_id")
     private RequestBody emp_id;
+
+    public RequestBody getYear() {
+        return year;
+    }
+
+    public void setYear(RequestBody year) {
+        this.year = year;
+    }
 
     public RequestBody getMonth() {
         return month;

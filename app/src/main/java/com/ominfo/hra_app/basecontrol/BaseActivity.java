@@ -77,6 +77,7 @@ import com.ominfo.hra_app.ui.leave.model.LeaveCountResponse;
 import com.ominfo.hra_app.ui.leave.model.LeaveCountViewModel;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
+import com.ominfo.hra_app.ui.notifications.model.NotificationDetailsResponse;
 import com.ominfo.hra_app.ui.notifications.model.NotificationResponse;
 import com.ominfo.hra_app.ui.notifications.model.NotificationViewModel;
 import com.ominfo.hra_app.util.AppUtils;
@@ -755,7 +756,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
             if (loginTable != null) {
                 RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_notification);
                 RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
-                RequestBody mRequestBodyDate = RequestBody.create(MediaType.parse("text/plain"),"2022-05-23" /*AppUtils.getCurrentDateInyyyymmdd()*/);
+                RequestBody mRequestBodyDate = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
                 notificationViewModel.hitNotificationApi(mRequestBodyType,mRequestBodyTypeCompId
                         ,mRequestBodyDate);
             }
@@ -824,14 +825,14 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                             if (responseModel != null/* && responseModel.getResult().getStatus().equals("success")*/) {
                                 try {
                                     isNotify = false;
-                                    if(responseModel.getResult().getNotify().size()>0){
+                                    if(responseModel.getResult().getNotifdata().size()>0){
                                         imgNotifyCount.setVisibility(View.VISIBLE);
                                     }
                                     else{
                                         imgNotifyCount.setVisibility(View.INVISIBLE);
                                     }
-                                    SharedPref.getInstance(this).write(SharedPrefKey.IS_NOTIFY_COUNT, String.valueOf(responseModel.getResult().getNotify().size()));
-                                    imgNotifyCount.setText(String.valueOf(responseModel.getResult().getNotify().size()));
+                                    SharedPref.getInstance(this).write(SharedPrefKey.IS_NOTIFY_COUNT, String.valueOf(responseModel.getResult().getNotifdata().size()));
+                                    imgNotifyCount.setText(String.valueOf(responseModel.getResult().getNotifdata().size()));
                                 }catch (Exception e){
                                     LogUtil.printToastMSG(this,e.getMessage());
                                     e.printStackTrace();

@@ -36,11 +36,12 @@ import com.ominfo.hra_app.ui.notifications.adapter.NotificationsAdapter;
 import com.ominfo.hra_app.ui.notifications.model.DeleteNotificationResponse;
 import com.ominfo.hra_app.ui.notifications.model.DeleteNotificationViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LeaveSingleRecordResponse;
-import com.ominfo.hra_app.ui.notifications.model.LeaveSingleRecordViewModel;
+import com.ominfo.hra_app.ui.notifications.model.GetSingleRecordViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LeaveStatusViewModel;
-import com.ominfo.hra_app.ui.notifications.model.NotificationNotify;
+import com.ominfo.hra_app.ui.notifications.model.NotificationData;
+import com.ominfo.hra_app.ui.notifications.model.NotificationDetailsNotify;
+import com.ominfo.hra_app.ui.notifications.model.NotificationDetailsResponse;
 import com.ominfo.hra_app.ui.notifications.model.NotificationResponse;
-import com.ominfo.hra_app.ui.notifications.model.NotificationResult;
 import com.ominfo.hra_app.ui.notifications.model.NotificationViewModel;
 import com.ominfo.hra_app.ui.notifications.model.SingleLeave;
 import com.ominfo.hra_app.ui.notifications.model.UpdateLeaveStatusResponse;
@@ -83,12 +84,12 @@ public class NotificationsActivity extends BaseActivity {
     @BindView(R.id.imgBack)
     LinearLayoutCompat imgBack;
     NotificationsAdapter mNotificationsAdapter;
-    List<NotificationNotify> notificationList = new ArrayList<>();
+    List<NotificationData> notificationList = new ArrayList<>();
     @Inject
     ViewModelFactory mViewModelFactory;
     private NotificationViewModel notificationViewModel;
     private DeleteNotificationViewModel deleteNotificationViewModel;
-    private LeaveSingleRecordViewModel leaveSingleRecordViewModel;
+    private GetSingleRecordViewModel getSingleRecordViewModel;
     private LeaveStatusViewModel leaveStatusViewModel;
     private AppDatabase mDb;
     private Dialog mDialogChangePass;
@@ -185,8 +186,8 @@ public class NotificationsActivity extends BaseActivity {
         deleteNotificationViewModel = ViewModelProviders.of(NotificationsActivity.this, mViewModelFactory).get(DeleteNotificationViewModel.class);
         deleteNotificationViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_DEL_NOTIFICATION));
 
-        leaveSingleRecordViewModel = ViewModelProviders.of(NotificationsActivity.this, mViewModelFactory).get(LeaveSingleRecordViewModel.class);
-        leaveSingleRecordViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_LEAVE_SINGLE));
+        getSingleRecordViewModel = ViewModelProviders.of(NotificationsActivity.this, mViewModelFactory).get(GetSingleRecordViewModel.class);
+        getSingleRecordViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_SINGLE_NOTIFY));
 
         leaveStatusViewModel = ViewModelProviders.of(NotificationsActivity.this, mViewModelFactory).get(LeaveStatusViewModel.class);
         leaveStatusViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_LEAVE_STATUS));
@@ -209,14 +210,17 @@ public class NotificationsActivity extends BaseActivity {
         }
     }
 
+
     /* Call Api For Single record */
     private void callSingleRecordApi(String id) {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
-            if(loginTable!=null) {
-                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_leave_single);
-                RequestBody mRequestBodyTypeId = RequestBody.create(MediaType.parse("text/plain"),id);
-                leaveSingleRecordViewModel.hitLeaveSingleRecordApi(mRequestBodyAction,mRequestBodyTypeId);
+            if (loginTable != null) {
+                RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_single_notify);
+                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
+                RequestBody mRequestBodyDate = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentDateInyyyymmdd());
+                getSingleRecordViewModel.hitLeaveSingleRecordApi(mRequestBodyType,mRequestBodyTypeEmpId
+                        ,mRequestBodyDate);
             }
             else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
@@ -246,111 +250,10 @@ public class NotificationsActivity extends BaseActivity {
     }
 
     //show leave form popup
-    public void showLeaveFormDialog(SingleLeave data) {
+    public void showLeaveFormDialog(NotificationDetailsNotify data) {
         mDialogChangePass = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialogChangePass.setContentView(R.layout.dialog_status_leave_form);
         mDialogChangePass.setCanceledOnTouchOutside(true);
-        AppCompatAutoCompleteTextView AutoComTextViewDuration = mDialogChangePass.findViewById(R.id.AutoComTextViewDuration);
-        AppCompatImageView mClose = mDialogChangePass.findViewById(R.id.imgCancel);
-        AppCompatButton addReceiptButton = mDialogChangePass.findViewById(R.id.addReceiptButton);
-        AppCompatButton addRejectButton = mDialogChangePass.findViewById(R.id.addRejectButton);
-        viewToDate = mDialogChangePass.findViewById(R.id.view);
-        layToDate = mDialogChangePass.findViewById(R.id.layToDate);
-        layoutLeaveTime = mDialogChangePass.findViewById(R.id.layoutLeaveTime);
-        appcomptextLeaveTime = mDialogChangePass.findViewById(R.id.appcomptextLeaveTime);
-        AppCompatTextView tvDateValueFrom = mDialogChangePass.findViewById(R.id.tvDateValueFrom);
-        AppCompatImageView imgFromDate = mDialogChangePass.findViewById(R.id.imgFromDate);
-        AppCompatTextView tvDateValue = mDialogChangePass.findViewById(R.id.tvDateValue);
-        AppCompatTextView appcomptextNoOfDays = mDialogChangePass.findViewById(R.id.appcomptextNoOfDays);
-        AppCompatImageView imgToDate = mDialogChangePass.findViewById(R.id.imgToDate);
-        AppCompatTextView tvTimeValueFrom = mDialogChangePass.findViewById(R.id.tvTimeValueFrom);
-        AppCompatImageView imgToTime = mDialogChangePass.findViewById(R.id.imgToTime);
-        AppCompatTextView tvTimeValue = mDialogChangePass.findViewById(R.id.tvTimeValue);
-        AppCompatTextView tvTitleName = mDialogChangePass.findViewById(R.id.tvTitleName);
-        AppCompatImageView imgTime = mDialogChangePass.findViewById(R.id.imgTime);
-        AppCompatAutoCompleteTextView AutoComTextViewLeaveType = mDialogChangePass.findViewById(R.id.AutoComTextViewLeaveType);
-        AppCompatAutoCompleteTextView AutoComTextViewPOI = mDialogChangePass.findViewById(R.id.AutoComTextViewComment);
-
-        String start = "NA" ,end = "NA";
-        try{
-            start = AppUtils.convertyyyytodd(data.getStartTime());
-            end = AppUtils.convertyyyytodd(data.getEndTime());
-        }catch (Exception e){
-        }
-        tvDateValueFrom.setText(start);
-        tvDateValue.setText(end);
-        String diff = "0";
-        if(data.getDuration().equals("single day"))
-        {
-            diff = "1";
-            viewToDate.setVisibility(View.GONE);
-            layToDate.setVisibility(View.GONE);
-            layoutLeaveTime.setVisibility(View.GONE);
-            appcomptextLeaveTime.setVisibility(View.GONE);
-        }else if(data.getDuration().equals("Half Day")){
-            diff = "Half";
-            viewToDate.setVisibility(View.GONE);
-            layToDate.setVisibility(View.GONE);
-            layoutLeaveTime.setVisibility(View.VISIBLE);
-            appcomptextLeaveTime.setVisibility(View.VISIBLE);
-            String startT = "NA" ,endT = "NA";
-            try{
-                String[] mST = data.getStartTime().split(" ");
-                startT = AppUtils.convert24to12Attendance(mST[1]);
-                String[] mET = data.getEndTime().split(" ");
-                endT = AppUtils.convert24to12Attendance(mET[1]);
-            }catch (Exception e){
-            }
-            tvTimeValueFrom.setText(startT);
-            tvTimeValue.setText(endT);
-        }
-        else {
-            viewToDate.setVisibility(View.VISIBLE);
-            layToDate.setVisibility(View.VISIBLE);
-            layoutLeaveTime.setVisibility(View.GONE);
-            appcomptextLeaveTime.setVisibility(View.GONE);
-            diff = String.valueOf(AppUtils.getChangeDateForHisab(tvDateValueFrom.getText().toString(), tvDateValue.getText().toString()));
-        }
-        if(diff.equals("Half")){
-            appcomptextNoOfDays.setText("Number of days : " + diff + " Day");
-        }
-        else {
-            appcomptextNoOfDays.setText("Number of days : " + diff + " Days");
-        }
-
-        //disable boxes
-        AutoComTextViewDuration.setEnabled(false);AutoComTextViewDuration.setText(data.getDuration());
-        tvDateValueFrom.setEnabled(false);
-        imgFromDate.setVisibility(View.GONE);
-        tvDateValue.setEnabled(false);
-        imgToDate.setVisibility(View.GONE);
-        tvTimeValueFrom.setEnabled(false);
-        imgToTime.setVisibility(View.GONE);
-        tvTimeValue.setEnabled(false);
-        imgTime.setVisibility(View.GONE);
-        AutoComTextViewLeaveType.setEnabled(false);AutoComTextViewLeaveType.setText(data.getLeaveType());
-        AutoComTextViewPOI.setEnabled(false);AutoComTextViewPOI.setText(data.getComment());
-        addReceiptButton.setText(R.string.scr_lbl_accept);tvTitleName.setText(R.string.scr_lbl_leave_details);
-        addRejectButton.setVisibility(View.VISIBLE);
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialogChangePass.dismiss();
-            }
-        });
-        addRejectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                callUpadteLeaveStatusApi(data.getId(),"REJECTED");
-            }
-        });
-        addReceiptButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                callUpadteLeaveStatusApi(data.getId(),"APPROVED");
-            }
-        });
         mDialogChangePass.show();
     }
 
@@ -377,7 +280,7 @@ public class NotificationsActivity extends BaseActivity {
         if (notificationList!=null && notificationList.size() > 0) {
             mNotificationsAdapter = new NotificationsAdapter(mContext, notificationList, new NotificationsAdapter.ListItemSelectListener() {
                 @Override
-                public void onItemClick(NotificationNotify mDataTicket, List<NotificationNotify> notificationResultListAdapter, boolean status) {
+                public void onItemClick(NotificationData mDataTicket, List<NotificationData> notificationResultListAdapter, boolean status) {
                     notificationList = notificationResultListAdapter;
                      tvNotifyCount.setText(String.valueOf(notificationList.size()));
                     if(notificationList.size()==0){
@@ -394,11 +297,11 @@ public class NotificationsActivity extends BaseActivity {
                         emptyBox.setBackground(null);
                         iv_emptyLayimage.setVisibility(View.GONE);}
                     if(status){
-                    callDeleteNotificationApi(mDataTicket.getRecordId());
+                    callDeleteNotificationApi(mDataTicket.getId());
                     mNotificationsAdapter.updateList(notificationList);}
                     else{
                         callSingleRecordApi(mDataTicket.getRelatedId());
-                        notiId = Integer.parseInt(mDataTicket.getRecordId()==null?"0":mDataTicket.getRecordId());
+                        notiId = Integer.parseInt(mDataTicket.getId()==null?"0":mDataTicket.getId());
                     }
                 }
             });
@@ -440,8 +343,8 @@ public class NotificationsActivity extends BaseActivity {
                         if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                             mSwipeRefreshLayout.setRefreshing(false);
                             try{notificationList.removeAll(notificationList);}catch (Exception e){}
-                            if(responseModel.getResult()!=null && responseModel.getResult().getNotify().size()>0) {
-                                notificationList = responseModel.getResult().getNotify();
+                            if(responseModel.getResult()!=null && responseModel.getResult().getNotifdata().size()>0) {
+                                notificationList = responseModel.getResult().getNotifdata();
                             }
                             //TODO REMOVE
                             //notificationList.add(new NotificationResult("Static Test Demo Leave","Tap to perform Action...","INFO"));
@@ -460,10 +363,17 @@ public class NotificationsActivity extends BaseActivity {
                         e.printStackTrace();
                     }
                     try{
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_LEAVE_SINGLE)) {
-                            LeaveSingleRecordResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LeaveSingleRecordResponse.class);
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_SINGLE_NOTIFY)) {
+                            NotificationDetailsResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), NotificationDetailsResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                showLeaveFormDialog(responseModel.getResult().getLeave().get(0));
+                                NotificationDetailsNotify notify = new NotificationDetailsNotify();
+                                if(notify.getType().equals("Late")){
+
+                                }
+                                else{
+
+                                }
+                                showLeaveFormDialog(responseModel.getResult().getNotify().get(0));
                             }
                             else {
                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());

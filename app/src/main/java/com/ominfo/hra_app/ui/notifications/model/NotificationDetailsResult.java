@@ -7,12 +7,12 @@ import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class NotificationResult {
+public class NotificationDetailsResult {
 
     @SerializedName("message")
     private String mMessage;
-    @SerializedName("notifdata")
-    private List<NotificationData> mNotifdata;
+    @SerializedName("notify")
+    private List<NotificationDetailsNotify> mNotify;
     @SerializedName("status")
     private String mStatus;
 
@@ -24,12 +24,12 @@ public class NotificationResult {
         mMessage = message;
     }
 
-    public List<NotificationData> getNotifdata() {
-        return mNotifdata;
+    public List<NotificationDetailsNotify> getNotify() {
+        return mNotify;
     }
 
-    public void setNotifdata(List<NotificationData> notifdata) {
-        mNotifdata = notifdata;
+    public void setNotify(List<NotificationDetailsNotify> notify) {
+        mNotify = notify;
     }
 
     public String getStatus() {

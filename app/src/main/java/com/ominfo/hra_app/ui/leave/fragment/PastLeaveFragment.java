@@ -719,8 +719,9 @@ public class PastLeaveFragment extends BaseFragment {
                         for (int i = 0; i < activeEmployeeList.size(); i++) {
                             if (AutoComAddEmp.getText().toString().trim().equals(activeEmployeeList.get(i).getEmpName()))
                             { selectedActiveEmpid = activeEmployeeList.get(i).getEmpId();
-                        }callGetPastLeaveApi("0");
+                        }
                     }
+                        callGetPastLeaveApi("0");
                     }
                 });
 

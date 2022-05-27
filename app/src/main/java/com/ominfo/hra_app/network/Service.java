@@ -28,7 +28,6 @@ import com.ominfo.hra_app.ui.visit_report.model.PhpEditVisitRequest;
 
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
-import retrofit2.http.Part;
 
 public class Service {
 
@@ -215,7 +214,7 @@ public class Service {
                                                           RequestBody empId,
                                                           RequestBody notif_id) {
         return networkAPIServices.deleteNotification(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
-                DynamicAPIPath.POST_NOTIFICATION),
+                DynamicAPIPath.POST_DEL_NOTIFICATION),
                 action,
                 comId,
                 empId,
@@ -262,8 +261,13 @@ public class Service {
                 DynamicAPIPath.POST_SALARY_ALL_LIST),salaryAllListRequest.getAction(),
                 salaryAllListRequest.getIsAdmin(),
                 salaryAllListRequest.getCompany_ID(),
-                salaryAllListRequest.getEmp_id(),salaryAllListRequest.getPageNumber(),
-                salaryAllListRequest.getPageSize(),salaryAllListRequest.getMonth()
+                salaryAllListRequest.getEmp_id()/*,salaryAllListRequest.getPageNumber(),
+                salaryAllListRequest.getPageSize()*/,salaryAllListRequest.getMonth(),salaryAllListRequest.getYear()
+        );
+    }
+    public Observable<JsonElement> executeSalaryDisburseAPI(RequestBody act,RequestBody list) {
+        return networkAPIServices.salaryAllList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_ADD_SALARY),act,list
         );
     }
     public Observable<JsonElement> executeSalarySheetAPI(RequestBody action,
@@ -431,9 +435,10 @@ public class Service {
                 getTicketRequest.getTicketNo()/*, getTicketRequest.getPriority()*/,getTicketRequest.getStatus(),
                 getTicketRequest.getFromDate(),getTicketRequest.getEndDate());
     }
-    public Observable<JsonElement> executeLeaveSingleRecordAPI(RequestBody action, RequestBody id) {
-        return networkAPIServices.getLeaveSingle(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_LEAVE_APP),
-                action,id);
+    public Observable<JsonElement> executeSingleNotifyDetailsAPI(RequestBody action,
+                                                                 RequestBody comId, RequestBody date) {
+        return networkAPIServices.getSingleNotifyDetails(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_SINGLE_NOTIFY),
+                action,comId,date);
     }
     public Observable<JsonElement> executeLeaveStatusAPI(RequestBody action, RequestBody id,RequestBody leave_status,
                                                          RequestBody updated_by) {

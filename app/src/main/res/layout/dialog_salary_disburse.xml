@@ -73,13 +73,12 @@
                 android:textSize="@dimen/_14sp"
                 android:visibility="visible" />
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/etBasicSalary"
                 android:layout_width="@dimen/_120dp"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@+id/tvBasicSalary"
-                android:background="@drawable/toggle_editext_color"
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
                 android:hint="@string/scr_lbl_rs_0"
@@ -115,7 +114,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@+id/tvAddition"
-                android:background="@drawable/toggle_editext_color"
+                android:background="@drawable/toggle_editext_blue_color"
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
                 android:hint="@string/scr_lbl_rs_0"
@@ -151,7 +150,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@+id/tvDeduction"
-                android:background="@drawable/toggle_editext_color"
+                android:background="@drawable/toggle_editext_blue_color"
                 android:fontFamily="@font/gilroy_semibold"
                 android:gravity="start"
                 android:hint="@string/scr_lbl_rs_0"

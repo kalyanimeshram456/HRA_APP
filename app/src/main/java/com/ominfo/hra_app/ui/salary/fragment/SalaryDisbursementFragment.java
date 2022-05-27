@@ -9,22 +9,29 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -52,14 +59,21 @@ import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.ui.employees.PaginationListener;
 import com.ominfo.hra_app.ui.employees.model.EmployeeList;
+import com.ominfo.hra_app.ui.leave.model.ActiveEmployeeListEmpDatum;
+import com.ominfo.hra_app.ui.leave.model.ActiveEmployeeListResponse;
+import com.ominfo.hra_app.ui.leave.model.ActiveEmployeeListViewModel;
+import com.ominfo.hra_app.ui.leave.model.EmployeeLeaveMonthsList;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.salary.adapter.SalaryDisAdapter;
+import com.ominfo.hra_app.ui.salary.adapter.SalaryNewDisAdapter;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllList;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllListRequest;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllListViewModel;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllResponse;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
+import com.ominfo.hra_app.ui.salary.model.SalaryDisbursetViewModel;
+import com.ominfo.hra_app.ui.salary.model.UpdateSalaryViewModel;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
 
@@ -84,10 +98,10 @@ import okhttp3.RequestBody;
  * Use the {@link SalaryDisbursementFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SalaryDisbursementFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
+public class SalaryDisbursementFragment extends BaseFragment {
 
     Context mContext;
-    SalaryDisAdapter salaryDisbursementAdapter;
+    SalaryNewDisAdapter salaryDisbursementAdapter;
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
     @BindView(R.id.imgBack)
@@ -111,8 +125,10 @@ public class SalaryDisbursementFragment extends BaseFragment implements SwipeRef
     final Calendar myCalendar = Calendar.getInstance();
     @Inject
     ViewModelFactory mViewModelFactory;
-    private EmployeeListViewModel searchCrmViewModel;
+    private ActiveEmployeeListViewModel activeEmployeeListViewModel;
     private SalaryAllListViewModel salaryAllListViewModel;
+    private SalaryDisbursetViewModel salaryDisbursetViewModel;
+    private UpdateSalaryViewModel updateSalaryViewModel;
 
     private Dialog mDialogChangePass;
     LinearLayoutCompat layoutLeaveTime;
@@ -128,14 +144,22 @@ public class SalaryDisbursementFragment extends BaseFragment implements SwipeRef
     AppCompatAutoCompleteTextView AutoComTextViewDuration;
     AppCompatAutoCompleteTextView AutoComTextViewLeaveType;
     List<SalaryAllList> salaryAllresultList = new ArrayList<>();
-    @BindView(R.id.swipeRefresh)
-    SwipeRefreshLayout swipeRefresh;
     private int currentPage = PAGE_START;
     private boolean isLastPage = false;
     private long totalPage = 0;
     private boolean isLoading = false;
     int itemCount = 0;
-
+    List<ActiveEmployeeListEmpDatum> activeEmployeeList = new ArrayList<>();
+    @BindView(R.id.AutoComAddEmp)
+    AppCompatAutoCompleteTextView AutoComAddEmp;
+    @BindView(R.id.AutoComMonth)
+    AppCompatAutoCompleteTextView AutoComMonth;
+    @BindView(R.id.tvTotalDays)
+    AppCompatTextView tvTotalDays;
+    @BindView(R.id.tvTotalSalaries)
+    AppCompatTextView tvTotalSalaries;
+    String selectedActiveEmpid = "0";
+    double total = 0.0;
     public SalaryDisbursementFragment() {
         // Required empty public constructor
     }
@@ -182,80 +206,99 @@ public class SalaryDisbursementFragment extends BaseFragment implements SwipeRef
                 .into(iv_emptyLayimage);
         tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
         tv_emptyLayTitle.setText("Search something...");
-        swipeRefresh.setOnRefreshListener(this);
-
-        rvSalesList.setHasFixedSize(true);
-        // use a linear layout manager
-        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
-        rvSalesList.setLayoutManager(layoutManager);
-
-        salaryDisbursementAdapter = new SalaryDisAdapter(mContext,new ArrayList<>(), new SalaryDisAdapter.ListItemSelectListener() {
-            @Override
-            public void onItemClick(int mDataTicket,SalaryAllList employeeList) {
-                if(mDataTicket==1){
-                    showSalaryDisbursmentDialog();
-                }
-                else{
-                    SalarySheetFragment sheetFragment = new SalarySheetFragment();
-                    moveFromFragment(sheetFragment,getActivity());
-                }
-            }
-        });
-        rvSalesList.setAdapter(salaryDisbursementAdapter);
-        callSalaryAllListApi("0");
-
-        /**
-         * add scroll listener while user reach in bottom load more will call
-         */
-        rvSalesList.addOnScrollListener(new PaginationListener(layoutManager) {
-            @Override
-            protected void loadMoreItems() {
-                isLoading = true;
-                currentPage++;
-                callSalaryAllListApi(String.valueOf(currentPage));
-            }
-
-            @Override
-            public boolean isLastPage() {
-                return isLastPage;
-            }
-
-            @Override
-            public boolean isLoading() {
-                return isLoading;
-            }
-        });
+        setDropdownMonth();
+        callGetActiveEmployeeListApi();
+        setAdapterForSalaryAllList();
+        callSalaryAllListApi();
     }
 
     private void injectAPI() {
-        searchCrmViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EmployeeListViewModel.class);
-        searchCrmViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_EMPLOYEES_LIST));
+        activeEmployeeListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ActiveEmployeeListViewModel.class);
+        activeEmployeeListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_ACTIVE_EMP_LIST));
 
         salaryAllListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(SalaryAllListViewModel.class);
         salaryAllListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_SALARY_ALL_LIST));
+
+        salaryDisbursetViewModel = ViewModelProviders.of(this, mViewModelFactory).get(SalaryDisbursetViewModel.class);
+        salaryDisbursetViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_ADD_SALARY));
+    }
+
+    //set value to month dropdown
+    private void setDropdownMonth() {
+        List<EmployeeLeaveMonthsList> monthsLists = new ArrayList<>();
+        monthsLists.add(new EmployeeLeaveMonthsList("January","31 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("February","28 days in a common year and 29 days in leap years"));
+        monthsLists.add(new EmployeeLeaveMonthsList("March","31 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("April","30 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("May","31 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("June","30 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("July","31 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("August","31 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("September","30 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("October","31 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("November","30 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("December","31 days"));
+
+        try {
+            int pos = 0;
+            if (monthsLists != null && monthsLists.size() > 0) {
+                String[] mDropdownList = new String[monthsLists.size()];
+                for (int i = 0; i < monthsLists.size(); i++) {
+                    mDropdownList[i] = String.valueOf(monthsLists.get(i).getName());
+                    //pos = i;
+                }
+                AutoComMonth.setText(mDropdownList[pos]);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        mContext,
+                        R.layout.row_dropdown_item,
+                        mDropdownList);
+                //tvHighlight.setThreshold(1);
+                AutoComMonth.setAdapter(adapter);
+                AutoComMonth.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                       try{
+                        for(int i=0;i<monthsLists.size();i++){
+                            if(monthsLists.get(i).getName().equals(AutoComMonth.getText().toString().trim())){
+                                tvTotalDays.setText("Total days of month : "+monthsLists.get(i).getDays());
+                            }
+                        }}catch (Exception e){}
+                        callSalaryAllListApi();
+                    }
+                });
+
+            } else {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /* Call Api For employee list */
-    private void callSalaryAllListApi(String pageNo) {
+    private void callSalaryAllListApi() {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
                 RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_salary_all_list);
                 RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
-                RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), selectedActiveEmpid);
                 RequestBody mRequestisAd = RequestBody.create(MediaType.parse("text/plain"),  loginTable.getIsadmin());
-                RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), pageNo);
-                RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
-                String mon = AppUtils.convertMonthSalary();
-                RequestBody mRequestMonth = RequestBody.create(MediaType.parse("text/plain"), mon);
+                //RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), pageNo);
+                //RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
+                String monthNumber  =  AppUtils.convertMonthToInt(AutoComMonth.getText().toString().trim());
+                RequestBody mRequestMonth = RequestBody.create(MediaType.parse("text/plain"), monthNumber);
+                String year = AppUtils.getCurrentYear();
+                RequestBody mRequestYear = RequestBody.create(MediaType.parse("text/plain"), year);
 
                 SalaryAllListRequest request= new SalaryAllListRequest();
+                request.setYear(mRequestYear);
                 request.setAction(mRequestAction);
                 request.setCompany_ID(mRequestComId);
                 request.setEmp_id(mRequestEmployee);
                 request.setIsAdmin(mRequestisAd);
-                request.setPageNumber(mRequestpage_number);
-                request.setPageSize(mRequestpage_size);
+                //request.setPageNumber(mRequestpage_number);
+                //request.setPageSize(mRequestpage_size);
                 request.setMonth(mRequestMonth);
                 salaryAllListViewModel.hitSalaryAllListAPI(request);
             }
@@ -267,45 +310,160 @@ public class SalaryDisbursementFragment extends BaseFragment implements SwipeRef
         }
     }
 
+    /* Call Api For employee list */
+    private void callAddSalaryApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_add_Salary);
+                Gson gson = new Gson();
+                String arrayData = gson.toJson(salaryAllresultList);
+                RequestBody mRequestList = RequestBody.create(MediaType.parse("text/plain"),arrayData);
+
+                salaryDisbursetViewModel.hitSalaryDisbursetAPI(mRequestAction,mRequestList);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    /* Call Api For Update list */
+    private void callUpdateSalaryApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_update_Salary);
+                RequestBody mRequestaddition = RequestBody.create(MediaType.parse("text/plain"), "");
+                RequestBody mRequesttotal = RequestBody.create(MediaType.parse("text/plain"), "");
+                RequestBody mRequestremark = RequestBody.create(MediaType.parse("text/plain"), "");
+                RequestBody mRequestemp_id = RequestBody.create(MediaType.parse("text/plain"), "");
+                RequestBody mRequestdeduction = RequestBody.create(MediaType.parse("text/plain"), "");
+                RequestBody mRequestyear = RequestBody.create(MediaType.parse("text/plain"), "");
+                RequestBody mRequestmonth = RequestBody.create(MediaType.parse("text/plain"), "");
+
+                Gson gson = new Gson();
+                String arrayData = gson.toJson(salaryAllresultList);
+                RequestBody mRequestList = RequestBody.create(MediaType.parse("text/plain"),arrayData);
+
+                salaryDisbursetViewModel.hitSalaryDisbursetAPI(mRequestAction,mRequestList);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+
+    /* Call Api For active employee List */
+    private void callGetActiveEmployeeListApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_active_emp_list);
+                RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
+                RequestBody mRequestEmpId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                activeEmployeeListViewModel.hitActiveEmployeeListAPI(mRequestBodyAction,
+                        mRequestComId,mRequestEmpId);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
     @Override
     public void onResume() {
         super.onResume();
-       /* Window window = getActivity().getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));*/
-        /*Window window = getActivity().getWindow();
-        View view = window.getDecorView();
-        BaseActivity.DarkStatusBar.setLightStatusBar(view,getActivity());*/
-
     }
 
     @Override
     public void onPause() {
         super.onPause();
-       /* Window window = getActivity().getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));*/
-        /*Window window = getActivity().getWindow();
-        View view = window.getDecorView();
-        BaseActivity.DarkStatusBar.setLightStatusBar(view,getActivity());*/
-
-    }
+       }
 
     //show salary disbursment popup
-    public void showSalaryDisbursmentDialog() {
+    public void showSalaryDisbursmentDialog(int pos , SalaryAllList employeeList) {
         Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialog.setContentView(R.layout.dialog_salary_disburse);
         mDialog.setCanceledOnTouchOutside(true);
         AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton downloadButton = mDialog.findViewById(R.id.addSubmitButton);
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
+        AppCompatEditText etAddition = mDialog.findViewById(R.id.etAddition);
+        AppCompatTextView etBasicSalary = mDialog.findViewById(R.id.etBasicSalary);
+        AppCompatEditText etDeduction = mDialog.findViewById(R.id.etDeduction);
+        AppCompatTextView tvTotalValue = mDialog.findViewById(R.id.tvTotalValue);
+        AppCompatTextView appcomptextRemark = mDialog.findViewById(R.id.appcomptextRemark);
+        AppCompatEditText etDescr = mDialog.findViewById(R.id.etDescr);
+        AppCompatButton addSubmitButton = mDialog.findViewById(R.id.addSubmitButton);
+        etBasicSalary.setText(employeeList.getSalaryThisMonth()+"");
+        etAddition.setText("");etDeduction.setText("");
+        tvTotalValue.setText(employeeList.getSalaryThisMonth()+"");
+        if(employeeList.getStatus()!=null && !employeeList.getStatus().equals("")
+                && !employeeList.getStatus().equals("null")){
+            //call api
+            etDescr.setVisibility(View.VISIBLE);appcomptextRemark.setVisibility(View.VISIBLE);
+        }else{ etDescr.setVisibility(View.GONE);appcomptextRemark.setVisibility(View.GONE);}
+        etAddition.addTextChangedListener(new TextWatcher() {
 
-        downloadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                //if(s.length() != 0) {
+                    Double tot = Double.parseDouble(tvTotalValue.getText().toString().trim());
+                    Double totalSum = tot + Double.parseDouble(s.toString().equals("")
+                            ||s.toString()==null?"0":s.toString());
+                    tvTotalValue.setText(totalSum+"");
+              /*  }
+                else{
+
+                }*/
+            }
+        });
+        etDeduction.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                if(s.length() != 0) {
+                    Double tot = Double.parseDouble(tvTotalValue.getText().toString().trim());
+                    Double totalSum = tot - Double.parseDouble(s.toString().equals("")
+                            ||s.toString()==null?"0":s.toString());
+                    tvTotalValue.setText(totalSum+"");
+                }
+            }
+        });
+        addSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDialog.dismiss();
+                //mDialog.dismiss();
+                if(employeeList.getStatus()!=null && !employeeList.getStatus().equals("")
+                && !employeeList.getStatus().equals("null")){
+                    //call api
+                }
+                salaryAllresultList.get(pos).setSalary(tvTotalValue.getText().toString());
+                salaryAllresultList.get(pos).setSalaryThisMonth(Double.valueOf(tvTotalValue.getText().toString()));
+                salaryDisbursementAdapter.updateList(salaryAllresultList);
             }
         });
 
@@ -323,6 +481,11 @@ public class SalaryDisbursementFragment extends BaseFragment implements SwipeRef
         if (salaryAllresultList!=null && salaryAllresultList.size() > 0) {
             rvSalesList.setVisibility(View.VISIBLE);
             emptyLayout.setVisibility(View.GONE);
+            total = 0.0;
+            for(int i=0;i<salaryAllresultList.size();i++){
+                total = total + (double)(salaryAllresultList.get(i).getSalaryThisMonth());
+            }
+            tvTotalSalaries.setText(""+total);
             } else {
             rvSalesList.setVisibility(View.GONE);
             emptyLayout.setVisibility(View.VISIBLE);
@@ -331,22 +494,13 @@ public class SalaryDisbursementFragment extends BaseFragment implements SwipeRef
                     .into(iv_emptyLayimage);
             tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
         }
-        salaryDisbursementAdapter = new SalaryDisAdapter(mContext, salaryAllresultList, new SalaryDisAdapter.ListItemSelectListener() {
+        salaryDisbursementAdapter = new SalaryNewDisAdapter(mContext, salaryAllresultList, new SalaryNewDisAdapter.ListItemSelectListener() {
             @Override
             public void onItemClick(int mDataTicket,SalaryAllList searchresult) {
-              if(mDataTicket==1){
-                  showSalaryDisbursmentDialog();
-              }
-              else{
-                  SalarySheetFragment sheetFragment = new SalarySheetFragment();
-                  moveFromFragment(sheetFragment,getActivity());
-              }
+                showSalaryDisbursmentDialog(mDataTicket,searchresult);
             }
         });
-        //RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecorator(mContext.getDrawable(R.drawable.separator_row_item));
-        //rvSalesList.addItemDecoration(dividerItemDecoration);
-        //rvSalesList.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
-        rvSalesList.setHasFixedSize(true);
+         rvSalesList.setHasFixedSize(true);
         rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
         rvSalesList.setAdapter(salaryDisbursementAdapter);
         final boolean[] check = {false};
@@ -419,12 +573,13 @@ public class SalaryDisbursementFragment extends BaseFragment implements SwipeRef
         int id = view.getId();
         switch (id) {
             case R.id.btnSubmit:
-                SalaryDisbursementFragment myFrag = new SalaryDisbursementFragment();
+                callAddSalaryApi();
+             /*   SalaryDisbursementFragment myFrag = new SalaryDisbursementFragment();
                 FragmentManager manager = getActivity().getSupportFragmentManager();
                 FragmentTransaction trans = manager.beginTransaction();
                 trans.remove(myFrag);
                 trans.commit();
-                manager.popBackStack();
+                manager.popBackStack();*/
                 break;
         }
     }
@@ -729,55 +884,41 @@ public class SalaryDisbursementFragment extends BaseFragment implements SwipeRef
 
     }
 
-
-
-    /*private void injectAPI() {
-        mGetVehicleViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetVehicleViewModel.class);
-        mGetVehicleViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_GET_VEHICLE));
-    }*/
-
-  /*  *//* Call Api For Vehicle List *//*
-    private void callVehicleListApi(String fromDate,String toDate) {
-        if (NetworkCheck.isInternetAvailable(mContext)) {
-            GetVehicleListRequest mRequest = new GetVehicleListRequest();
-            mRequest.setUserkey(mUserKey);//mUserKey); //6b07b768-926c-49b6-ac1c-89a9d03d4c3b
-            mRequest.setFromDate(fromDate);
-            mRequest.setToDate(toDate);
-            Gson gson = new Gson();
-            String bodyInStringFormat = gson.toJson(mRequest);
-            mGetVehicleViewModel.hitGetVehicleApi(bodyInStringFormat);
-        } else {
-            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
-        }
-    }*/
-
-
-
-  /*  private void setAdapterForVehicleList() {
-        if (vehicleModelList.size() > 0) {
-            mLrNumberAdapter = new LrNumberAdapter(mContext, vehicleModelList, new LrNumberAdapter.ListItemSelectListener() {
-                @Override
-                public void onItemClick(GetVehicleListResult mDataTicket) {
-                    Intent intent = new Intent(mContext,AddLrActivity.class);
-                    intent.putExtra(Constants.TRANSACTION_ID, mDataTicket.getTransactionID());
-                    intent.putExtra(Constants.FROM_SCREEN, Constants.LIST);
-                    startActivity(intent);
+    //set value to Search dropdown
+    private void setDropdownActiveEmpList() {
+        try {
+            int pos = 0;
+            if (activeEmployeeList != null && activeEmployeeList.size() > 0) {
+                String[] mDropdownList = new String[activeEmployeeList.size()];
+                for (int i = 0; i < activeEmployeeList.size(); i++) {
+                    mDropdownList[i] = String.valueOf(activeEmployeeList.get(i).getEmpName());
                 }
-            });
-            mRecylerViewLrNumber.setHasFixedSize(true);
-            mRecylerViewLrNumber.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
-            mRecylerViewLrNumber.setAdapter(mLrNumberAdapter);
-            mRecylerViewLrNumber.setVisibility(View.VISIBLE);
-            linearLayoutEmptyActivity.setVisibility(View.GONE);
-            imgEmptyImage.setBackground(getResources().getDrawable(R.drawable.ic_error_load));
-            tvEmptyLayTitle.setText(getString(R.string.scr_lbl_data_loading));
-        } else {
-            mRecylerViewLrNumber.setVisibility(View.GONE);
-            linearLayoutEmptyActivity.setVisibility(View.VISIBLE);
-            imgEmptyImage.setBackground(getResources().getDrawable(R.drawable.ic_error_load));
-            tvEmptyLayTitle.setText(R.string.scr_lbl_no_data_available);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        mContext,
+                        R.layout.row_dropdown_item,
+                        mDropdownList);
+                //tvHighlight.setThreshold(1);
+                AutoComAddEmp.setAdapter(adapter);
+                //mListDropdownView.setHint(mDropdownList[pos]);
+                AutoComAddEmp.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        for (int i = 0; i < activeEmployeeList.size(); i++) {
+                            if (AutoComAddEmp.getText().toString().trim().equals(activeEmployeeList.get(i).getEmpName()))
+                            { selectedActiveEmpid = activeEmployeeList.get(i).getEmpId();
+                            }
+                        }
+                        callSalaryAllListApi();
+                    }
+                });
+
+            } else {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }*/
+    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -809,27 +950,6 @@ public class SalaryDisbursementFragment extends BaseFragment implements SwipeRef
         }
     }
 
-    private void doApiCall() {
-        final ArrayList<SalaryAllList> items = new ArrayList<>();
-        for (int i = 0; i < salaryAllresultList.size(); i++) {
-            items.add(salaryAllresultList.get(i));
-        }
-
-        if (currentPage != PAGE_START) salaryDisbursementAdapter.removeLoading();
-        salaryDisbursementAdapter.addItems(items);
-        swipeRefresh.setRefreshing(false);
-
-        // check weather is last page or not
-        if (currentPage < totalPage) {
-            salaryDisbursementAdapter.addLoading();
-        } else {
-            isLastPage = true;
-        }
-        isLoading = false;
-        //  }
-        // }, 0);
-    }
-
 
     /*Api response */
     private void consumeResponse(ApiResponse apiResponse, String tag) {
@@ -844,30 +964,37 @@ public class SalaryDisbursementFragment extends BaseFragment implements SwipeRef
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
                     try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EMPLOYEES_LIST)) {
-                         /*   SearchCrmResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SearchCrmResponse.class);
-                            if (responseModel != null*//* && responseModel.getStatus()==1*//*) {
-                                searchresultList = responseModel.getResult().getSearchresult();
-                                setAdapterForLeaveList();
-                            }*/
-                        }
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_SALARY_ALL_LIST)) {
+                            SalaryAllResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SalaryAllResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                if (salaryAllresultList != null) {
+                                    salaryAllresultList= new ArrayList<>();
+                                }
+                                salaryAllresultList = responseModel.getResult().getList();
+                                setAdapterForSalaryAllList();
+                            }                        }
                     }catch (Exception e){
                         e.printStackTrace();
                     }
+
                     try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_SALARY_ALL_LIST)) {
-                            SalaryAllResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SalaryAllResponse.class);
-                            totalPage = responseModel.getResult().getTotalrows();
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_ACTIVE_EMP_LIST)) {
+                            ActiveEmployeeListResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ActiveEmployeeListResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                if (salaryAllresultList != null) {
-                                    //employeeListArrayList= new ArrayList<>();
+                                try{activeEmployeeList.removeAll(activeEmployeeList);}catch (Exception e){}
+                                if(responseModel.getResult().getEmpData()!=null &&
+                                        responseModel.getResult().getEmpData().size()>0){
+                                    activeEmployeeList = responseModel.getResult().getEmpData();
+                                    setDropdownActiveEmpList();
                                 }
-                                salaryAllresultList = responseModel.getResult().getList();
-                                //salaryDataList = responseModel.getResult().getList(); removeee
-                                doApiCall();
+                            }
+                            else {
+
                             }
                         }
                     }catch (Exception e){
+                        ((BaseActivity)mContext).showSuccessDialog("Leave application upload failed.",
+                                true,getActivity());
                         e.printStackTrace();
                     }
                 }
@@ -879,13 +1006,4 @@ public class SalaryDisbursementFragment extends BaseFragment implements SwipeRef
         }
     }
 
-
-    @Override
-    public void onRefresh() {
-        itemCount = 0;
-        currentPage = PAGE_START;
-        isLastPage = false;
-        salaryDisbursementAdapter.clear();
-        callSalaryAllListApi("0");
-    }
 }

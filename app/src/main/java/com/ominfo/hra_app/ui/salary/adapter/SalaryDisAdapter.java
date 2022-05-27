@@ -134,7 +134,7 @@ public class SalaryDisAdapter extends RecyclerView.Adapter<BaseViewHolder> {
       tvBirthName.setText(mPostItems.get(position).getEmpName());
       tvBirthValue.setText(mPostItems.get(position).getEmpPosition());
       tvLeave.setText(mPostItems.get(position).getLeaveCountCurMon());
-      tvSalary.setText(context.getString(R.string.scr_lbl_rs)+mPostItems.get(position).getSalary());
+      tvSalary.setText(context.getString(R.string.scr_lbl_rs)+mPostItems.get(position).getSalaryThisMonth());
       AppUtils.loadImageURL(context,mPostItems.get(position).getEmpProfilePic(),
               imgBirthPro,progress_barBirth);
 

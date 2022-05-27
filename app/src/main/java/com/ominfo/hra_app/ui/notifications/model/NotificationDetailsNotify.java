@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class NotificationNotify {
+public class NotificationDetailsNotify {
 
     @SerializedName("company_ID")
     private String mCompanyID;

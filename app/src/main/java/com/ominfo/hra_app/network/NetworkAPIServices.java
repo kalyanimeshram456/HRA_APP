@@ -342,8 +342,8 @@ public interface NetworkAPIServices {
     @POST()
     Observable<JsonElement> getNotification(@Url String url,
                                             @Part("action") RequestBody uploadType,
-                                            @Part("emp_id") RequestBody uploadTypeEmployee,
-                                            @Part("date") RequestBody companyId
+                                            @Part("employee_id") RequestBody uploadTypeEmployee,
+                                            @Part("company_id") RequestBody companyId
     );
 
     @Multipart
@@ -403,10 +403,20 @@ public interface NetworkAPIServices {
                                           @Part("isAdmin") RequestBody employee,
                                           @Part("company_ID") RequestBody company_id,
                                           @Part("emp_id") RequestBody emp_id,
-                                          @Part("page_number") RequestBody page_number,
-                                          @Part("page_size") RequestBody page_size,
-                                          @Part("month") RequestBody month
+                                         /* @Part("page_number") RequestBody page_number,
+                                          @Part("page_size") RequestBody page_size,*/
+                                          @Part("month") RequestBody month,
+                                          @Part("year") RequestBody year
                                           );
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> salaryAllList(@Url String url,
+                                          @Part("action") RequestBody uploadType,
+                                          @Part("salary_list") RequestBody employee
+
+    );
+
     @Multipart
     @POST()
     Observable<JsonElement> salarySheet(@Url String url,
@@ -683,9 +693,10 @@ public interface NetworkAPIServices {
 
     @Multipart
     @POST()
-    Observable<JsonElement> getLeaveSingle(@Url String url,
-                                           @Part("action") RequestBody action,
-                                           @Part("record_id") RequestBody record_id);
+    Observable<JsonElement> getSingleNotifyDetails(@Url String url,
+                                                   @Part("action") RequestBody action,
+                                                   @Part("emp_id") RequestBody emp_id,
+                                                   @Part("date") RequestBody date);
 
     @Multipart
     @POST()

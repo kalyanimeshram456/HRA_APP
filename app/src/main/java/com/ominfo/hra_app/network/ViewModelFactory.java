@@ -33,7 +33,7 @@ import com.ominfo.hra_app.ui.my_account.model.GetTicketNoViewModel;
 import com.ominfo.hra_app.ui.my_account.model.RaiseTicketViewModel;
 import com.ominfo.hra_app.ui.my_account.model.UpdateTicketViewModel;
 import com.ominfo.hra_app.ui.notifications.model.DeleteNotificationViewModel;
-import com.ominfo.hra_app.ui.notifications.model.LeaveSingleRecordViewModel;
+import com.ominfo.hra_app.ui.notifications.model.GetSingleRecordViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LeaveStatusViewModel;
 import com.ominfo.hra_app.ui.notifications.model.NotificationViewModel;
 import com.ominfo.hra_app.ui.registration.model.ApplyCouponViewModel;
@@ -41,6 +41,7 @@ import com.ominfo.hra_app.ui.registration.model.CheckPrefixViewModel;
 import com.ominfo.hra_app.ui.registration.model.RegistrationViewModel;
 import com.ominfo.hra_app.ui.registration.model.SubscriptionViewModel;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllListViewModel;
+import com.ominfo.hra_app.ui.salary.model.SalaryDisbursetViewModel;
 import com.ominfo.hra_app.ui.salary.model.SalarySheetViewModel;
 import com.ominfo.hra_app.ui.sales_credit.model.SalesCreditViewModel;
 import com.ominfo.hra_app.ui.sales_credit.model.View30ViewModel;
@@ -129,8 +130,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
          else  if (modelClass.isAssignableFrom(LeaveApplicationViewModel.class)) {
              return (T) new LeaveApplicationViewModel(service);
          }
-         else  if (modelClass.isAssignableFrom(LeaveSingleRecordViewModel.class)) {
-             return (T) new LeaveSingleRecordViewModel(service);
+         else  if (modelClass.isAssignableFrom(GetSingleRecordViewModel.class)) {
+             return (T) new GetSingleRecordViewModel(service);
          }
          else  if (modelClass.isAssignableFrom(LeaveStatusViewModel.class)) {
              return (T) new LeaveStatusViewModel(service);
@@ -200,6 +201,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
              return (T) new EditHolidayViewModel(service);
          }else  if (modelClass.isAssignableFrom(EditCompanyViewModel.class)) {
              return (T) new EditCompanyViewModel(service);
+         }else  if (modelClass.isAssignableFrom(SalaryDisbursetViewModel.class)) {
+             return (T) new SalaryDisbursetViewModel(service);
          }
 
         throw new IllegalArgumentException("Unknown class name");

@@ -13,7 +13,8 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.hra_app.R;
-import com.ominfo.hra_app.ui.notifications.model.NotificationNotify;
+import com.ominfo.hra_app.ui.notifications.model.NotificationData;
+import com.ominfo.hra_app.ui.notifications.model.NotificationDetailsNotify;
 
 import java.util.List;
 import java.util.Random;
@@ -22,7 +23,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<NotificationNotify> mListData;
+    private List<NotificationData> mListData;
     private Context mContext;
     private String mDate;
 
@@ -30,7 +31,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         this.mContext = mContext;
     }
 
-    public NotificationsAdapter(Context context, List<NotificationNotify> listData, ListItemSelectListener itemClickListener) {
+    public NotificationsAdapter(Context context, List<NotificationData> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -45,7 +46,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<NotificationNotify> list){
+    public void updateList(List<NotificationData> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -61,7 +62,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                 holder.imgNotify.setImageDrawable(new ColorDrawable(randomColor));
 
             holder.tvTitle.setText(mListData.get(position).getHeading());
-            holder.tvDescription.setText(mListData.get(position).getNotifText());
+            holder.tvDescription.setText(mListData.get(position).getText());
             if(mListData.get(position).getType().equals("INFO")){
                 holder.viewColour.setBackground(mContext.getResources().getDrawable(R.drawable.layout_round_shape_corners_8_grey_view));
                 holder.layCross.setVisibility(View.VISIBLE);
@@ -76,7 +77,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
             @Override
             public void onClick(View v) {
                 try {
-                    NotificationNotify temp = mListData.get(position);
+                    NotificationData temp = mListData.get(position);
                     mListData.remove(position);
                     notifyItemRemoved(position);
                     listItemSelectListener.onItemClick(temp, mListData,true);
@@ -140,6 +141,6 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(NotificationNotify mData,List<NotificationNotify> notificationResults,boolean status);
+        void onItemClick(NotificationData mData, List<NotificationData> notificationResults, boolean status);
     }
 }

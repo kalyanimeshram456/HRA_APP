@@ -134,7 +134,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         loginTable = mDb.getDbDAO().getLoginData();
         ssCustomBottomNavigation = findViewById(R.id.bottomNavigationN);
-
+        //ssCustomBottomNavigation.change
         ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(1, R.drawable.ic_home_grad,"Home"));
         ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(2, R.drawable.ic_employee_white,"Employee"));
         ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(3, R.drawable.ic_leave_white,"Leave"));

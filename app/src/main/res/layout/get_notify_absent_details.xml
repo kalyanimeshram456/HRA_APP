@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="340dp"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/_10dp"
+    android:layout_marginVertical="@dimen/_16dp"
+    android:background="@drawable/shape_round_dialog"
+    android:fitsSystemWindows="true"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/_10dp"
+    android:paddingTop="@dimen/_12dp"
+    android:paddingBottom="@dimen/_16dp">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:fontFamily="@font/gilroy_bold"
+            android:gravity="left"
+            android:text="Absent Mark"
+            android:textColor="@color/color_main"
+            android:textSize="@dimen/_16sp" />
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgCancel"
+            android:layout_width="@dimen/_16dp"
+            android:layout_height="@dimen/_16dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_close" />
+
+    </RelativeLayout>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10dp"
+        android:background="@drawable/layout_round_shape_blue_border"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/appcomptext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_16dp"
+            android:fontFamily="@font/gilroy_semibold"
+            android:text="Company Name"
+            android:textColor="@color/back_text_colour"
+            android:textSize="@dimen/_14sp" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10dp"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvStartTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginHorizontal="@dimen/_10dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/gilroy_regular"
+                android:text="@string/scr_lbl_amount"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvEndTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginHorizontal="@dimen/_10dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/gilroy_regular"
+                android:text="@string/scr_lbl_amount"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvAbsentMark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_16dp"
+            android:fontFamily="@font/gilroy_semibold"
+            android:text="Previous absent marks"
+            android:textColor="@color/back_text_colour"
+            android:textSize="@dimen/_14sp" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10dp"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvStartTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginHorizontal="@dimen/_10dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/gilroy_regular"
+                android:text="@string/scr_lbl_amount"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvEndTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginHorizontal="@dimen/_10dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/gilroy_regular"
+                android:text="@string/scr_lbl_amount"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/MarkButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_45dp"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_25dp"
+            android:background="@drawable/bg_button_round_corner_5"
+            android:fontFamily="@font/gilroy_semibold"
+            android:gravity="center"
+            android:paddingTop="@dimen/_1dp"
+            android:text="Mark as present"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_16sp" />
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/UnpaidButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_45dp"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_10dp"
+            android:background="@drawable/bg_button_round_corner_5_red_deactivate"
+            android:fontFamily="@font/gilroy_semibold"
+            android:gravity="center"
+            android:paddingTop="@dimen/_1dp"
+            android:text="Unpaid leave"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_16sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/PaidButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_45dp"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_10dp"
+            android:layout_marginBottom="@dimen/_10dp"
+            android:background="@drawable/bg_button_round_corner_5_cancel"
+            android:fontFamily="@font/gilroy_semibold"
+            android:gravity="center"
+            android:paddingTop="@dimen/_1dp"
+            android:text="paid leave"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_16sp" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

@@ -138,7 +138,7 @@ public class SalarySheetFragment extends BaseFragment {
     @BindView(R.id.rvEnquiryPager)
     RecyclerView rvEnquiryPager;
     private String pagerClicked = "No";
-
+    String empId = "";
     public SalarySheetFragment() {
         // Required empty public constructor
     }
@@ -164,6 +164,7 @@ public class SalarySheetFragment extends BaseFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.activity_salary_sheet, container, false);
         ButterKnife.bind(this, view);
+        empId = getArguments().getString(Constants.edit);
         return view;
     }
 
@@ -252,7 +253,7 @@ public class SalarySheetFragment extends BaseFragment {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
                 RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_salary_sheet);
-                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
+                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),empId);
                 RequestBody mRequestBodyPageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);
                 RequestBody mRequestBodyPageSize = RequestBody.create(MediaType.parse("text/plain"), "8");
 

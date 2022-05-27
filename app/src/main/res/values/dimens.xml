@@ -123,5 +123,6 @@
     <dimen name="design_bottom_navigation_text_size">12sp</dimen>
     <dimen name="design_bottom_navigation_item_icon_Size">100dp</dimen>
     <dimen name="design_bottom_navigation_height" tools:override="true">56dp</dimen>
+    <dimen name="icon_imageview_size">90dp</dimen>
 
 </resources>

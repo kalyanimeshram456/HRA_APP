@@ -17,6 +17,8 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +29,7 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.model.GradientColor;
 import com.google.gson.Gson;
+import com.ominfo.hra_app.MainActivity;
 import com.ominfo.hra_app.R;
 import com.ominfo.hra_app.basecontrol.BaseActivity;
 import com.ominfo.hra_app.basecontrol.BaseApplication;
@@ -43,12 +46,17 @@ import com.ominfo.hra_app.ui.employees.PaginationListener;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.salary.adapter.SalaryAdapter;
+import com.ominfo.hra_app.ui.salary.adapter.SalaryNewAdapter;
+import com.ominfo.hra_app.ui.salary.adapter.SalarySheetListAdapter;
 import com.ominfo.hra_app.ui.salary.fragment.SalaryDisbursementFragment;
+import com.ominfo.hra_app.ui.salary.fragment.SalarySheetFragment;
+import com.ominfo.hra_app.ui.salary.fragment.SalarySlipFragment;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllData;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllList;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllListRequest;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllListViewModel;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllResponse;
+import com.ominfo.hra_app.ui.salary.model.SalarySheetList;
 import com.ominfo.hra_app.ui.sales_credit.model.GraphModel;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
@@ -73,10 +81,10 @@ import okhttp3.RequestBody;
  * Use the {@link SalaryFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SalaryFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
+public class SalaryFragment extends BaseFragment {
 
     Context mContext;
-    SalaryAdapter salaryAdapter;
+    SalaryNewAdapter salaryAdapter;
     //AddTagAdapter addTagAdapter;
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
@@ -102,8 +110,6 @@ public class SalaryFragment extends BaseFragment implements SwipeRefreshLayout.O
     @Inject
     ViewModelFactory mViewModelFactory;
     private SalaryAllListViewModel salaryAllListViewModel;
-    @BindView(R.id.swipeRefresh)
-    SwipeRefreshLayout swipeRefresh;
     private int currentPage = PAGE_START;
     private boolean isLastPage = false;
     private long totalPage = 0;
@@ -145,8 +151,6 @@ public class SalaryFragment extends BaseFragment implements SwipeRefreshLayout.O
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         injectAPI();
         init();
-        //fromDate.setPaintFlags(fromDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
-        //toDate.setPaintFlags(toDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
     }
 
     private void init(){
@@ -156,43 +160,39 @@ public class SalaryFragment extends BaseFragment implements SwipeRefreshLayout.O
                 .into(iv_emptyLayimage);
         tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
         tv_emptyLayTitle.setText("Search something...");
-        swipeRefresh.setOnRefreshListener(this);
+        setAdapterForSalaryList();
+        callSalaryAllListApi();
+    }
 
+    private void setAdapterForSalaryList() {
+        if (salaryAllresultList!=null && salaryAllresultList.size() > 0) {
+            rvSalesList.setVisibility(View.VISIBLE);
+            emptyLayout.setVisibility(View.GONE);
+        } else {
+            rvSalesList.setVisibility(View.GONE);
+            emptyLayout.setVisibility(View.VISIBLE);
+            Glide.with(this)
+                    .load(R.drawable.img_bg_search)
+                    .into(iv_emptyLayimage);
+            tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
+        }
+        salaryAdapter = new SalaryNewAdapter(mContext, salaryAllresultList, new SalaryNewAdapter.ListItemSelectListener() {
+            @Override
+            public void onItemClick(int mDataTicket, SalaryAllList employeeList) {
+                SalarySheetFragment sheetFragment = new SalarySheetFragment();
+                FragmentManager fragmentManager = ((MainActivity)mContext).getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                Bundle args = new Bundle();
+                args.putString(Constants.edit, employeeList.getEmpId());
+                sheetFragment.setArguments(args);
+                fragmentTransaction.add(R.id.framecontainer, sheetFragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            }
+        });
         rvSalesList.setHasFixedSize(true);
-        // use a linear layout manager
-        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
-        rvSalesList.setLayoutManager(layoutManager);
-
-        salaryAdapter = new SalaryAdapter(mContext,new ArrayList<>(), new SalaryAdapter.ListItemSelectListener() {
-            @Override
-            public void onItemClick(int mDataTicket,SalaryAllList employeeList) {
-
-            }
-        });
+        rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
         rvSalesList.setAdapter(salaryAdapter);
-        callSalaryAllListApi("0");
-
-        /**
-         * add scroll listener while user reach in bottom load more will call
-         */
-        rvSalesList.addOnScrollListener(new PaginationListener(layoutManager) {
-            @Override
-            protected void loadMoreItems() {
-                isLoading = true;
-                currentPage++;
-                callSalaryAllListApi(String.valueOf(currentPage));
-            }
-
-            @Override
-            public boolean isLastPage() {
-                return isLastPage;
-            }
-
-            @Override
-            public boolean isLoading() {
-                return isLoading;
-            }
-        });
     }
 
     private void injectAPI() {
@@ -200,7 +200,7 @@ public class SalaryFragment extends BaseFragment implements SwipeRefreshLayout.O
         salaryAllListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_SALARY_ALL_LIST));
    }
     /* Call Api For employee list */
-    private void callSalaryAllListApi(String pageNo) {
+    private void callSalaryAllListApi() {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
@@ -208,18 +208,21 @@ public class SalaryFragment extends BaseFragment implements SwipeRefreshLayout.O
                 RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
                 RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
                 RequestBody mRequestisAd = RequestBody.create(MediaType.parse("text/plain"),  loginTable.getIsadmin());
-                RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), pageNo);
-                RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
+               // RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), pageNo);
+               // RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
                 String mon = AppUtils.convertMonthSalary();
                 RequestBody mRequestMonth = RequestBody.create(MediaType.parse("text/plain"), mon);
+                String year = AppUtils.getCurrentYear();
+                RequestBody mRequestYear = RequestBody.create(MediaType.parse("text/plain"), year);
 
                 SalaryAllListRequest request= new SalaryAllListRequest();
+                request.setYear(mRequestYear);
                 request.setAction(mRequestAction);
                 request.setCompany_ID(mRequestComId);
                 request.setEmp_id(mRequestEmployee);
                 request.setIsAdmin(mRequestisAd);
-                request.setPageNumber(mRequestpage_number);
-                request.setPageSize(mRequestpage_size);
+                //request.setPageNumber(mRequestpage_number);
+                //request.setPageSize(mRequestpage_size);
                 request.setMonth(mRequestMonth);
                 salaryAllListViewModel.hitSalaryAllListAPI(request);
             }
@@ -229,27 +232,6 @@ public class SalaryFragment extends BaseFragment implements SwipeRefreshLayout.O
         } else {
             LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
         }
-    }
-
-    private void doApiCall() {
-        final ArrayList<SalaryAllList> items = new ArrayList<>();
-        for (int i = 0; i < salaryAllresultList.size(); i++) {
-            items.add(salaryAllresultList.get(i));
-        }
-
-        if (currentPage != PAGE_START) salaryAdapter.removeLoading();
-        salaryAdapter.addItems(items);
-        swipeRefresh.setRefreshing(false);
-
-        // check weather is last page or not
-        if (currentPage < totalPage) {
-            salaryAdapter.addLoading();
-        } else {
-            isLastPage = true;
-        }
-        isLoading = false;
-        //  }
-        // }, 0);
     }
 
     private void setToolbar() {
@@ -335,14 +317,12 @@ public class SalaryFragment extends BaseFragment implements SwipeRefreshLayout.O
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_SALARY_ALL_LIST)) {
                             SalaryAllResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SalaryAllResponse.class);
-                            totalPage = responseModel.getResult().getTotalrows();
-                                if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                     if (salaryAllresultList != null) {
-                                        //employeeListArrayList= new ArrayList<>();
+                                        salaryAllresultList= new ArrayList<>();
                                     }
                                     salaryAllresultList = responseModel.getResult().getList();
-                                    //salaryDataList = responseModel.getResult().getList(); removeee
-                                    doApiCall();
+                                    setAdapterForSalaryList();
                                 }
                         }
                     }catch (Exception e){
@@ -357,12 +337,4 @@ public class SalaryFragment extends BaseFragment implements SwipeRefreshLayout.O
         }
     }
 
-    @Override
-    public void onRefresh() {
-        itemCount = 0;
-        currentPage = PAGE_START;
-        isLastPage = false;
-        salaryAdapter.clear();
-        callSalaryAllListApi("0");
-    }
 }
