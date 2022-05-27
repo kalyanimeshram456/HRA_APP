@@ -667,7 +667,7 @@ public class PastLeaveFragment extends BaseFragment {
         List<String> leaveModelList = new ArrayList<>();
         leaveModelList.add("Casual Leave");
         leaveModelList.add("Sick Leave");
-        //leaveModelList.add("Multiple Days");
+        leaveModelList.add("Other Leave");
         try {
             int pos = 0;
             if (leaveModelList != null && leaveModelList.size() > 0) {

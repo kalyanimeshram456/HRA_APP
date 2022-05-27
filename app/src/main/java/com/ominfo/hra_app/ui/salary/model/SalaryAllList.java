@@ -32,6 +32,27 @@ public class SalaryAllList {
     private String mSalary;
     @SerializedName("salary_this_month")
     private double mSalaryThisMonth;
+    @SerializedName("month")
+    private String month;
+    @SerializedName("year")
+    private String year;
+
+
+    public String getMonth() {
+        return month;
+    }
+
+    public void setMonth(String month) {
+        this.month = month;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
+    }
 
     public String getStatus() {
         return status;

@@ -19,6 +19,7 @@ import com.ominfo.hra_app.ui.my_account.model.RaiseTicketRequest;
 import com.ominfo.hra_app.ui.my_account.model.UpdateTicketRequest;
 import com.ominfo.hra_app.ui.registration.model.RegistrationRequest;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllListRequest;
+import com.ominfo.hra_app.ui.salary.model.UpdateSalaryRequest;
 import com.ominfo.hra_app.ui.sales_credit.model.GetView360Request;
 import com.ominfo.hra_app.ui.sales_credit.model.SalesCreditRequest;
 import com.ominfo.hra_app.ui.top_customer.model.TopCustomerRequest;
@@ -265,8 +266,38 @@ public class Service {
                 salaryAllListRequest.getPageSize()*/,salaryAllListRequest.getMonth(),salaryAllListRequest.getYear()
         );
     }
+    public Observable<JsonElement> executeUpdateSalaryAPI(UpdateSalaryRequest salaryRequest) {
+        return networkAPIServices.updateSalary(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_UPDATE_SALARY),salaryRequest.getAction(),
+                salaryRequest.getAddition(),salaryRequest.getTotal(),salaryRequest.getRemark(),
+                salaryRequest.getEmp_id(),salaryRequest.getDeduction(),salaryRequest.getYear(),
+                salaryRequest.getMonth()
+
+        );
+    }
+    public Observable<JsonElement> executeMarkPresentAPI(RequestBody act,RequestBody id) {
+        return networkAPIServices.markPresent(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_MARK_PRESENT),act,id
+        );
+    }
+    public Observable<JsonElement> executeMarkNotLateAPI(RequestBody act,RequestBody id) {
+        return networkAPIServices.markPresent(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_MARK_NOT_LATE),act,id
+        );
+    }
+    public Observable<JsonElement> executeDeductLeaveAPI(RequestBody act,RequestBody emp_id
+            ,RequestBody date,RequestBody status,RequestBody leave_type,RequestBody leave_days) {
+        return networkAPIServices.deductLeave(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_MARK_NOT_LATE),act,emp_id,date,status,leave_type,leave_days
+        );
+    }
+    public Observable<JsonElement> executeUnpaidLeaveAPI(RequestBody act,RequestBody id) {
+        return networkAPIServices.markPresent(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_UNPAID_LEAVE),act,id
+        );
+    }
     public Observable<JsonElement> executeSalaryDisburseAPI(RequestBody act,RequestBody list) {
-        return networkAPIServices.salaryAllList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+        return networkAPIServices.salaryDisburse(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_ADD_SALARY),act,list
         );
     }
@@ -456,9 +487,6 @@ public class Service {
                 getVisitRequest.getFilterRm(),getVisitRequest.getFilterTour());
     }
 
-    public Observable<JsonElement> executeSearchCustAPI(RequestBody mRequestBodyType,RequestBody mRequestBodyType1,RequestBody mRequestBodyType2,RequestBody mRequestBodyType3) {
-        return networkAPIServices.searchCust(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_SEARCH_CUST),mRequestBodyType,mRequestBodyType1,mRequestBodyType2,mRequestBodyType3);
-    }
 
     public Observable<JsonElement> executeEnquiryStatusAPI(RequestBody mRequestBodyType,RequestBody mRequestBodyTypeStatus) {
         return networkAPIServices.enquiryStatus(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_ENQUIRY_STATUS),mRequestBodyType,mRequestBodyTypeStatus);
@@ -504,8 +532,6 @@ public class Service {
         return networkAPIServices.fetchKataChitthi(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_FETCH_KATA_CHITTI),request);
     }
 
-    public Observable<JsonElement> executeUserListApi(String mLimit) {
-        return networkAPIServices.getBookWithTopic(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.GET_USER_LIST+mLimit));
-    }
+
 
 }

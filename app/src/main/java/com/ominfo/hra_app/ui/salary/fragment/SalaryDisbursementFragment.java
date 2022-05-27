@@ -73,6 +73,8 @@ import com.ominfo.hra_app.ui.salary.model.SalaryAllListViewModel;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllResponse;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
 import com.ominfo.hra_app.ui.salary.model.SalaryDisbursetViewModel;
+import com.ominfo.hra_app.ui.salary.model.UpdateSalaryRequest;
+import com.ominfo.hra_app.ui.salary.model.UpdateSalaryResponse;
 import com.ominfo.hra_app.ui.salary.model.UpdateSalaryViewModel;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
@@ -221,6 +223,9 @@ public class SalaryDisbursementFragment extends BaseFragment {
 
         salaryDisbursetViewModel = ViewModelProviders.of(this, mViewModelFactory).get(SalaryDisbursetViewModel.class);
         salaryDisbursetViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_ADD_SALARY));
+
+        updateSalaryViewModel = ViewModelProviders.of(this, mViewModelFactory).get(UpdateSalaryViewModel.class);
+        updateSalaryViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_UPDATE_SALARY));
     }
 
     //set value to month dropdown
@@ -316,34 +321,12 @@ public class SalaryDisbursementFragment extends BaseFragment {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
                 RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_add_Salary);
-                Gson gson = new Gson();
-                String arrayData = gson.toJson(salaryAllresultList);
-                RequestBody mRequestList = RequestBody.create(MediaType.parse("text/plain"),arrayData);
-
-                salaryDisbursetViewModel.hitSalaryDisbursetAPI(mRequestAction,mRequestList);
-            }
-            else {
-                LogUtil.printToastMSG(mContext, "Something is wrong.");
-            }
-        } else {
-            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
-        }
-    }
-
-    /* Call Api For Update list */
-    private void callUpdateSalaryApi() {
-        if (NetworkCheck.isInternetAvailable(mContext)) {
-            LoginTable loginTable = mDb.getDbDAO().getLoginData();
-            if(loginTable!=null) {
-                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_update_Salary);
-                RequestBody mRequestaddition = RequestBody.create(MediaType.parse("text/plain"), "");
-                RequestBody mRequesttotal = RequestBody.create(MediaType.parse("text/plain"), "");
-                RequestBody mRequestremark = RequestBody.create(MediaType.parse("text/plain"), "");
-                RequestBody mRequestemp_id = RequestBody.create(MediaType.parse("text/plain"), "");
-                RequestBody mRequestdeduction = RequestBody.create(MediaType.parse("text/plain"), "");
-                RequestBody mRequestyear = RequestBody.create(MediaType.parse("text/plain"), "");
-                RequestBody mRequestmonth = RequestBody.create(MediaType.parse("text/plain"), "");
-
+                String monthNumber  =  AppUtils.convertMonthToInt(AutoComMonth.getText().toString().trim());
+                String year  =AppUtils.getCurrentYear();
+                for(int i=0;i<salaryAllresultList.size();i++){
+                    salaryAllresultList.get(i).setMonth(monthNumber);
+                    salaryAllresultList.get(i).setYear(year);
+                }
                 Gson gson = new Gson();
                 String arrayData = gson.toJson(salaryAllresultList);
                 RequestBody mRequestList = RequestBody.create(MediaType.parse("text/plain"),arrayData);
@@ -460,6 +443,36 @@ public class SalaryDisbursementFragment extends BaseFragment {
                 if(employeeList.getStatus()!=null && !employeeList.getStatus().equals("")
                 && !employeeList.getStatus().equals("null")){
                     //call api
+                    if (NetworkCheck.isInternetAvailable(mContext)) {
+                        LoginTable loginTable = mDb.getDbDAO().getLoginData();
+                        if(loginTable!=null) {
+                            RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_update_Salary);
+                            RequestBody mRequestaddition = RequestBody.create(MediaType.parse("text/plain"), etAddition.getText().toString()==null || etAddition.getText().toString().equals("")?"0":etAddition.getText().toString());
+                            RequestBody mRequesttotal = RequestBody.create(MediaType.parse("text/plain"),  tvTotalValue.getText().toString()==null || tvTotalValue.getText().toString().equals("")?"0":tvTotalValue.getText().toString());
+                            RequestBody mRequestremark = RequestBody.create(MediaType.parse("text/plain"), etDescr.getText().toString()==null || etDescr.getText().toString().equals("")?"0":etDescr.getText().toString());
+                            RequestBody mRequestemp_id = RequestBody.create(MediaType.parse("text/plain"), employeeList.getEmpId());
+                            RequestBody mRequestdeduction = RequestBody.create(MediaType.parse("text/plain"), etDeduction.getText().toString()==null || etDeduction.getText().toString().equals("")?"0":etDeduction.getText().toString());
+                            RequestBody mRequestyear = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentYear());
+                            String monthNumber  =  AppUtils.convertMonthToInt(AutoComMonth.getText().toString().trim());
+                            RequestBody mRequestmonth = RequestBody.create(MediaType.parse("text/plain"), monthNumber);
+
+                            UpdateSalaryRequest salaryRequest= new UpdateSalaryRequest();
+                            salaryRequest.setAction(mRequestAction);
+                            salaryRequest.setAddition(mRequestaddition);
+                            salaryRequest.setTotal(mRequesttotal);
+                            salaryRequest.setRemark(mRequestremark);
+                            salaryRequest.setEmp_id(mRequestemp_id);
+                            salaryRequest.setDeduction(mRequestdeduction);
+                            salaryRequest.setYear(mRequestyear);
+                            salaryRequest.setMonth(mRequestmonth);
+                            updateSalaryViewModel.hitSalaryAllListAPI(salaryRequest);
+                        }
+                        else {
+                            LogUtil.printToastMSG(mContext, "Something is wrong.");
+                        }
+                    } else {
+                        LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+                    }
                 }
                 salaryAllresultList.get(pos).setSalary(tvTotalValue.getText().toString());
                 salaryAllresultList.get(pos).setSalaryThisMonth(Double.valueOf(tvTotalValue.getText().toString()));
@@ -573,7 +586,11 @@ public class SalaryDisbursementFragment extends BaseFragment {
         int id = view.getId();
         switch (id) {
             case R.id.btnSubmit:
-                callAddSalaryApi();
+                if(salaryAllresultList!=null && salaryAllresultList.size()>0) {
+                    callAddSalaryApi();
+                }else{
+                    LogUtil.printToastMSG(mContext,"Oops, Nothing to upload!");
+                }
              /*   SalaryDisbursementFragment myFrag = new SalaryDisbursementFragment();
                 FragmentManager manager = getActivity().getSupportFragmentManager();
                 FragmentTransaction trans = manager.beginTransaction();
@@ -974,6 +991,37 @@ public class SalaryDisbursementFragment extends BaseFragment {
                                 setAdapterForSalaryAllList();
                             }                        }
                     }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_UPDATE_SALARY)) {
+                            UpdateSalaryResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), UpdateSalaryResponse.class);
+                            if (responseModel != null /*&& responseModel.getResult().getStatus().equals("success")*/) {
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_ADD_SALARY)) {
+                            UpdateSalaryResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), UpdateSalaryResponse.class);
+                            if (responseModel != null /*&& responseModel.getResult().getStatus().equals("success")*/) {
+                                showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),
+                                        true,null);
+                            SalaryDisbursementFragment myFrag = new SalaryDisbursementFragment();
+                            FragmentManager manager = getActivity().getSupportFragmentManager();
+                            FragmentTransaction trans = manager.beginTransaction();
+                            trans.remove(myFrag);
+                            trans.commit();
+                            manager.popBackStack();
+                            }
+                            else {
+                                showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),
+                                        false,null);}
+
+                        }
+                    }catch (Exception e) {
                         e.printStackTrace();
                     }
 

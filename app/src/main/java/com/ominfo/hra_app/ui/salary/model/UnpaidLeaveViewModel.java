@@ -9,14 +9,15 @@ import com.ominfo.hra_app.network.Service;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.RequestBody;
 
-public class UpdateSalaryViewModel extends ViewModel {
+public class UnpaidLeaveViewModel extends ViewModel {
     private final CompositeDisposable disposables = new CompositeDisposable();
     private final MutableLiveData<ApiResponse> responseLiveData = new MutableLiveData<>();
     private Service service;
 
 
-    public UpdateSalaryViewModel(Service service) {
+    public UnpaidLeaveViewModel(Service service) {
         this.service = service;
     }
 
@@ -24,8 +25,8 @@ public class UpdateSalaryViewModel extends ViewModel {
         return responseLiveData;
     }
 
-    public void hitSalaryAllListAPI(UpdateSalaryRequest salaryRequest) {
-        disposables.add(service.executeUpdateSalaryAPI(salaryRequest)
+    public void hitUnpaidLeaveAPI(RequestBody act,RequestBody id) {
+        disposables.add(service.executeUnpaidLeaveAPI(act,id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe((d) -> responseLiveData.setValue(ApiResponse.loading()))

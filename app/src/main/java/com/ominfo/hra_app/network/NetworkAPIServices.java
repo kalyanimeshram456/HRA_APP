@@ -411,10 +411,40 @@ public interface NetworkAPIServices {
 
     @Multipart
     @POST()
-    Observable<JsonElement> salaryAllList(@Url String url,
+    Observable<JsonElement> salaryDisburse(@Url String url,
                                           @Part("action") RequestBody uploadType,
                                           @Part("salary_list") RequestBody employee
+    );
 
+    @Multipart
+    @POST()
+    Observable<JsonElement> updateSalary(@Url String url,
+                                          @Part("action") RequestBody uploadType,
+                                          @Part("addition") RequestBody addition,
+                                         @Part("total") RequestBody total,
+                                         @Part("remark") RequestBody remark,
+                                         @Part("emp_id") RequestBody emp_id,
+                                         @Part("deduction") RequestBody deduction,
+                                         @Part("year") RequestBody year,
+                                         @Part("month") RequestBody month
+    );
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> markPresent(@Url String url,
+                                         @Part("action") RequestBody uploadType,
+                                         @Part("record_id") RequestBody addition
+    );
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> deductLeave(@Url String url,
+                                        @Part("action") RequestBody uploadType,
+                                        @Part("emp_id") RequestBody emp_id,
+                                        @Part("date") RequestBody date,
+                                        @Part("status") RequestBody status,
+                                        @Part("leave_type") RequestBody leave_type,
+                                        @Part("leave_days") RequestBody leave_days
     );
 
     @Multipart

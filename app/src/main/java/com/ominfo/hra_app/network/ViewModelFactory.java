@@ -40,9 +40,13 @@ import com.ominfo.hra_app.ui.registration.model.ApplyCouponViewModel;
 import com.ominfo.hra_app.ui.registration.model.CheckPrefixViewModel;
 import com.ominfo.hra_app.ui.registration.model.RegistrationViewModel;
 import com.ominfo.hra_app.ui.registration.model.SubscriptionViewModel;
+import com.ominfo.hra_app.ui.salary.model.MarkNotLateViewModel;
+import com.ominfo.hra_app.ui.salary.model.MarkPresentViewModel;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllListViewModel;
 import com.ominfo.hra_app.ui.salary.model.SalaryDisbursetViewModel;
 import com.ominfo.hra_app.ui.salary.model.SalarySheetViewModel;
+import com.ominfo.hra_app.ui.salary.model.UnpaidLeaveViewModel;
+import com.ominfo.hra_app.ui.salary.model.UpdateSalaryViewModel;
 import com.ominfo.hra_app.ui.sales_credit.model.SalesCreditViewModel;
 import com.ominfo.hra_app.ui.sales_credit.model.View30ViewModel;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
@@ -203,6 +207,14 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
              return (T) new EditCompanyViewModel(service);
          }else  if (modelClass.isAssignableFrom(SalaryDisbursetViewModel.class)) {
              return (T) new SalaryDisbursetViewModel(service);
+         }else  if (modelClass.isAssignableFrom(UpdateSalaryViewModel.class)) {
+             return (T) new UpdateSalaryViewModel(service);
+         }else  if (modelClass.isAssignableFrom(MarkPresentViewModel.class)) {
+             return (T) new MarkPresentViewModel(service);
+         }else  if (modelClass.isAssignableFrom(UnpaidLeaveViewModel.class)) {
+             return (T) new UnpaidLeaveViewModel(service);
+         }else  if (modelClass.isAssignableFrom(MarkNotLateViewModel.class)) {
+             return (T) new MarkNotLateViewModel(service);
          }
 
         throw new IllegalArgumentException("Unknown class name");

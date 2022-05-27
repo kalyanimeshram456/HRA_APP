@@ -107,7 +107,7 @@
 
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/addReceiptButton"
+            android:id="@+id/submitButton"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_40dp"
             android:layout_alignParentBottom="true"
@@ -122,23 +122,7 @@
             android:text="@string/scr_lbl_submit"
             android:textColor="@color/white"
             android:textSize="@dimen/_16sp" />
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/addRejectButton"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_40dp"
-            android:visibility="gone"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/_0dp"
-            android:layout_marginBottom="@dimen/_10dp"
-            android:background="@drawable/button_round_shape_corners_light_border_blue"
-            android:fontFamily="@font/gilroy_semibold"
-            android:gravity="center"
-            android:layout_marginHorizontal="@dimen/_10dp"
-            android:paddingTop="@dimen/_1dp"
-            android:text="@string/scr_lbl_reject"
-            android:textColor="@color/color_main"
-            android:textSize="@dimen/_16sp" />
+
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

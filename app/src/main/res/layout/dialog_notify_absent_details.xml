@@ -50,14 +50,27 @@
         android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/appcomptext"
+            android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginHorizontal="@dimen/_10dp"
             android:layout_marginTop="@dimen/_16dp"
             android:fontFamily="@font/gilroy_semibold"
-            android:text="Company Name"
+            android:text="@string/scr_lbl_unavailable"
+            android:textColor="@color/back_text_colour"
+            android:textSize="@dimen/_14sp" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvAbsentMark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_16dp"
+            android:fontFamily="@font/gilroy_semibold"
+            android:text="Previous absent marks"
             android:textColor="@color/back_text_colour"
             android:textSize="@dimen/_14sp" />
 
@@ -76,7 +89,7 @@
                 android:layout_marginHorizontal="@dimen/_10dp"
                 android:layout_weight="1"
                 android:fontFamily="@font/gilroy_regular"
-                android:text="@string/scr_lbl_amount"
+                android:text="@string/scr_lbl_unavailable"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
@@ -88,51 +101,7 @@
                 android:layout_marginHorizontal="@dimen/_10dp"
                 android:layout_weight="1"
                 android:fontFamily="@font/gilroy_regular"
-                android:text="@string/scr_lbl_amount"
-                android:textColor="@color/back_text_colour"
-                android:textSize="@dimen/_14sp" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvAbsentMark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginHorizontal="@dimen/_10dp"
-            android:layout_marginTop="@dimen/_16dp"
-            android:fontFamily="@font/gilroy_semibold"
-            android:text="Previous late marks"
-            android:textColor="@color/back_text_colour"
-            android:textSize="@dimen/_14sp" />
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/layMonth"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10dp"
-            android:orientation="horizontal">
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvStartMonth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:layout_marginHorizontal="@dimen/_10dp"
-                android:layout_weight="1"
-                android:fontFamily="@font/gilroy_regular"
-                android:text="@string/scr_lbl_amount"
-                android:textColor="@color/back_text_colour"
-                android:textSize="@dimen/_14sp" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvEndMonth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:layout_marginHorizontal="@dimen/_10dp"
-                android:layout_weight="1"
-                android:fontFamily="@font/gilroy_regular"
-                android:text="@string/scr_lbl_amount"
+                android:text="@string/scr_lbl_unavailable"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -151,23 +120,7 @@
             android:fontFamily="@font/gilroy_semibold"
             android:gravity="center"
             android:paddingTop="@dimen/_1dp"
-            android:text="Mark as not late"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_16sp" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/PaidButton"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_45dp"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginHorizontal="@dimen/_10dp"
-            android:layout_marginTop="@dimen/_10dp"
-            android:background="@drawable/bg_button_round_corner_5_cancel"
-            android:fontFamily="@font/gilroy_semibold"
-            android:gravity="center"
-            android:paddingTop="@dimen/_1dp"
-            android:text="ignore"
+            android:text="Mark as present"
             android:textColor="@color/white"
             android:textSize="@dimen/_16sp" />
 
@@ -180,15 +133,30 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginHorizontal="@dimen/_10dp"
             android:layout_marginTop="@dimen/_10dp"
-            android:layout_marginBottom="@dimen/_10dp"
             android:background="@drawable/bg_button_round_corner_5_red_deactivate"
             android:fontFamily="@font/gilroy_semibold"
             android:gravity="center"
             android:paddingTop="@dimen/_1dp"
-            android:text="Deduct leave"
+            android:text="Unpaid leave"
             android:textColor="@color/white"
             android:textSize="@dimen/_16sp" />
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/PaidButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_45dp"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_10dp"
+            android:layout_marginBottom="@dimen/_10dp"
+            android:background="@drawable/bg_button_round_corner_5_cancel"
+            android:fontFamily="@font/gilroy_semibold"
+            android:gravity="center"
+            android:paddingTop="@dimen/_1dp"
+            android:text="paid leave"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_16sp" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

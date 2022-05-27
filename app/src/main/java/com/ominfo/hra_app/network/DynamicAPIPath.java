@@ -40,6 +40,10 @@ public class DynamicAPIPath {
     public static final String POST_SALARY_SHEET = BASE+"?action=emp_monthly_sal_crd";
     public static final String POST_GET_RM= BASE+"?action=rmget";
     public static final String POST_UPDATE_SALARY= BASE+"?action=salary_edit";
+    public static final String POST_MARK_PRESENT= BASE+"?action=mark_as_persent";
+    public static final String POST_DEDUCT_LEAVE= BASE+"?action=leave_deduct";
+    public static final String POST_MARK_NOT_LATE= BASE+"?action=mark_as_not_late";
+    public static final String POST_UNPAID_LEAVE= BASE+"?action=unpaid_leave";
     public static final String POST_ADD_EMPLOYEES= BASE+"?action=add_employee";
     public static final String POST_EDIT_EMPLOYEES= BASE+"?action=edit_employee";
     public static final String POST_DEACT_EMPLOYEE= BASE+"?action=deactivate_employee";
@@ -93,7 +97,7 @@ public class DynamicAPIPath {
     public static final String action_get_quotation = "get_quotation_record";
     public static final String action_get_sales_credit = "salescreditreport";
     public static final String action_get_dispatch_pend = "dispatchpendingdets";
-    public static final String action_dashboard = "getDashboard";
+    public static final String action_unpaid_leave= "unpaid_leave";
     public static final String action_get_profile_img = "getcrmempprofilepic";
     public static final String action_change_profile_img = "updatecrmempprofilepic";
     public static final String action_change_pass = "changecrmemppassword";
@@ -106,6 +110,9 @@ public class DynamicAPIPath {
     public static final String action_delete_notification = "marknotifread";
     public static final String action_add_Salary = "add_sal_disbursment";
     public static final String action_update_Salary = "salary_edit";
+    public static final String action_mark_as_persent = "mark_as_persent";
+    public static final String action_leave_deduct = "leave_deduct";
+    public static final String action_mark_as_not_late = "mark_as_not_late";
     public static final String action_accept_reject_List = "get_leave_records";
     public static final String action_apply_leave_updated = "apply_leave_updated";
     public static final String action_leave_count = "get_leave_count";
