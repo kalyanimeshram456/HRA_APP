@@ -37,7 +37,7 @@
                     android:layout_marginHorizontal="@dimen/_16dp"
                     android:layout_marginTop="@dimen/_22dp"
                     android:fontFamily="@font/gilroy_semibold"
-                    android:text="4 / 5 Employees active"
+                    android:text="1 / 1 Employees active"
                     android:textColor="@color/gray"
                     android:textSize="@dimen/_14sp" />
 

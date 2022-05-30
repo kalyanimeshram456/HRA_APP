@@ -36,10 +36,17 @@ import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.login.LoginActivity;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
+import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveRequest;
+import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveResponse;
+import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveViewModel;
 import com.ominfo.hra_app.ui.notifications.adapter.NotificationsAdapter;
+import com.ominfo.hra_app.ui.notifications.model.AbsentMarkCountViewModel;
+import com.ominfo.hra_app.ui.notifications.model.AbsentMarkResponse;
 import com.ominfo.hra_app.ui.notifications.model.DeleteNotificationResponse;
 import com.ominfo.hra_app.ui.notifications.model.DeleteNotificationViewModel;
 import com.ominfo.hra_app.ui.notifications.model.GetSingleRecordViewModel;
+import com.ominfo.hra_app.ui.notifications.model.LateMarkCountViewModel;
+import com.ominfo.hra_app.ui.notifications.model.LateMarkResponse;
 import com.ominfo.hra_app.ui.notifications.model.LeaveStatusViewModel;
 import com.ominfo.hra_app.ui.notifications.model.NotificationData;
 import com.ominfo.hra_app.ui.notifications.model.NotificationDetailsNotify;
@@ -99,18 +106,23 @@ public class NotificationsActivity extends BaseActivity {
     DeductLeaveViewModel deductLeaveViewModel;
     private NotificationViewModel notificationViewModel;
     private DeleteNotificationViewModel deleteNotificationViewModel;
+    private ApplyLeaveViewModel applyLeaveViewModel;
+    private LateMarkCountViewModel lateMarkCountViewModel;
+    private AbsentMarkCountViewModel absentMarkCountViewModel;
     private GetSingleRecordViewModel getSingleRecordViewModel;
     private LeaveStatusViewModel leaveStatusViewModel;
     private MarkPresentViewModel markPresentViewModel;
     private UnpaidLeaveViewModel unpaidLeaveViewModel;
     private MarkNotLateViewModel markNotLateViewModel;
     private AppDatabase mDb;
-    private Dialog mDialogPaidLeave;
+    private Dialog mDialogPaidLeave,mDialogDeductLeave;
     LinearLayoutCompat layoutLeaveTime;
     AppCompatTextView appcomptextLeaveTime;
     View viewToDate;
     RelativeLayout layToDate;
+    String record_id = "0";
     int notiId = 0;
+    AppCompatTextView tvStartMonth,tvEndMonth,tvStartTime,tvEndTime;
     Dialog mDialogAbsentMark,mDialogLateMark;
     final Calendar myCalendar = Calendar.getInstance();
 
@@ -218,6 +230,14 @@ public class NotificationsActivity extends BaseActivity {
         deductLeaveViewModel = ViewModelProviders.of(NotificationsActivity.this, mViewModelFactory).get(DeductLeaveViewModel.class);
         deductLeaveViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_DEDUCT_LEAVE));
 
+        lateMarkCountViewModel = ViewModelProviders.of(NotificationsActivity.this, mViewModelFactory).get(LateMarkCountViewModel.class);
+        lateMarkCountViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_LATE_MARK_COUNT));
+
+        absentMarkCountViewModel = ViewModelProviders.of(NotificationsActivity.this, mViewModelFactory).get(AbsentMarkCountViewModel.class);
+        absentMarkCountViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_LATE_ABSENT_COUNT));
+
+        applyLeaveViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ApplyLeaveViewModel.class);
+        applyLeaveViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_APPLY_LEAVE));
     }
 
     /* Call Api Notification */
@@ -228,7 +248,7 @@ public class NotificationsActivity extends BaseActivity {
             if (loginTable != null) {
                 RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_notification);
                 RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
-                RequestBody mRequestBodyDate = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentDateInyyyymmdd());
+                RequestBody mRequestBodyDate = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
                 notificationViewModel.hitNotificationApi(mRequestBodyType,mRequestBodyTypeCompId
                         ,mRequestBodyDate);
             }
@@ -245,7 +265,7 @@ public class NotificationsActivity extends BaseActivity {
             if (loginTable != null) {
                 RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_single_notify);
                 RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
-                RequestBody mRequestBodyDate = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentDateInyyyymmdd());
+                RequestBody mRequestBodyDate = RequestBody.create(MediaType.parse("text/plain"),/* AppUtils.getCurrentDateInyyyymmdd()*/"2022-05-23");
                 getSingleRecordViewModel.hitLeaveSingleRecordApi(mRequestBodyType,mRequestBodyTypeEmpId
                         ,mRequestBodyDate);
             }
@@ -265,10 +285,19 @@ public class NotificationsActivity extends BaseActivity {
         AppCompatAutoCompleteTextView AutoComTextViewLeaveType = mDialogPaidLeave.findViewById(R.id.AutoComTextViewLeaveType);
         AppCompatButton submitButton = mDialogPaidLeave.findViewById(R.id.submitButton);
         setDropdownType(AutoComTextViewLeaveType);
+        RelativeLayout layClose = mDialogLateMark.findViewById(R.id.layClose);
+        layClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDialogPaidLeave.dismiss();
+            }
+        });
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                //paid leave api
+                record_id = data.getRecordId();
+                callApplyLeaveApi(AutoComTextViewLeaveType);
             }
         });
         mDialogPaidLeave.show();
@@ -276,16 +305,24 @@ public class NotificationsActivity extends BaseActivity {
 
     //show leave form popup
     public void showDeductLeaveDialog(NotificationDetailsNotify data) {
-        mDialogPaidLeave = new Dialog(mContext, R.style.ThemeDialogCustom);
-        mDialogPaidLeave.setContentView(R.layout.dialog_deduct_leave);
-        mDialogPaidLeave.setCanceledOnTouchOutside(true);
-        AppCompatAutoCompleteTextView AutoComTextViewDuration = mDialogPaidLeave.findViewById(R.id.AutoComTextViewDuration);
-        AppCompatTextView tvDateValueFrom = mDialogPaidLeave.findViewById(R.id.tvDateValueFrom);
-        RelativeLayout layFromDate = mDialogPaidLeave.findViewById(R.id.layFromDate);
-        AppCompatTextView tvDateValue = mDialogPaidLeave.findViewById(R.id.tvDateValue);
-        RelativeLayout layToDate = mDialogPaidLeave.findViewById(R.id.layToDate);
-        AppCompatButton submitButton = mDialogPaidLeave.findViewById(R.id.submitButton);
+        mDialogDeductLeave = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialogDeductLeave.setContentView(R.layout.dialog_deduct_leave);
+        mDialogDeductLeave.setCanceledOnTouchOutside(true);
+        RelativeLayout layClose = mDialogDeductLeave.findViewById(R.id.layClose);
+        AppCompatAutoCompleteTextView AutoComTextViewDuration = mDialogDeductLeave.findViewById(R.id.AutoComTextViewDuration);
+        AppCompatTextView tvDateValueFrom = mDialogDeductLeave.findViewById(R.id.tvDateValueFrom);
+        RelativeLayout layFromDate = mDialogDeductLeave.findViewById(R.id.layFromDate);
+        AppCompatTextView tvDateValue = mDialogDeductLeave.findViewById(R.id.tvDateValue);
+        RelativeLayout layToDate = mDialogDeductLeave.findViewById(R.id.layToDate);
+        AppCompatButton submitButton = mDialogDeductLeave.findViewById(R.id.submitButton);
         setDropdownLeaveDuration(AutoComTextViewDuration);
+        tvDateValueFrom.setText(AppUtils.getCurrentDateTime());
+        layClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDialogDeductLeave.dismiss();
+            }
+        });
         layFromDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -295,7 +332,7 @@ public class NotificationsActivity extends BaseActivity {
         layToDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openDataPicker(tvDateValue);
+                //openDataPicker(tvDateValue);
             }
         });
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -305,9 +342,10 @@ public class NotificationsActivity extends BaseActivity {
                 if (NetworkCheck.isInternetAvailable(mContext)) {
                     LoginTable loginTable = mDb.getDbDAO().getLoginData();
                     if (loginTable != null) {
+                        record_id = data.getRecordId();
                         RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_leave_deduct);
                         RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
-                        RequestBody mRequestBodyDate = RequestBody.create(MediaType.parse("text/plain"), AppUtils.convert24to12(tvDateValueFrom.getText().toString()));
+                        RequestBody mRequestBodyDate = RequestBody.create(MediaType.parse("text/plain"), AppUtils.dateReminder(tvDateValueFrom.getText().toString()));
                         RequestBody mRequestStatus = RequestBody.create(MediaType.parse("text/plain"), "absent");
                         RequestBody mRequestleave_type = RequestBody.create(MediaType.parse("text/plain"), "unpaid");
                         RequestBody mRequestleave_days = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewDuration.getText().toString());
@@ -323,7 +361,7 @@ public class NotificationsActivity extends BaseActivity {
                 }
             }
         });
-        mDialogPaidLeave.show();
+        mDialogDeductLeave.show();
     }
     //set date picker view
     private void openDataPicker(AppCompatTextView textView) {
@@ -340,7 +378,6 @@ public class NotificationsActivity extends BaseActivity {
                 SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
                 textView.setText(sdf.format(myCalendar.getTime()));
             }
-
         };
         /*  new DatePickerDialog(mContext, date, myCalendar
                 .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
@@ -366,7 +403,7 @@ public class NotificationsActivity extends BaseActivity {
         List<String> leaveModelList = new ArrayList<>();
         leaveModelList.add("Half Day");
         leaveModelList.add("Full Day");
-        leaveModelList.add("Multiple Days");
+        //leaveModelList.add("Multiple Days");
         try {
             int pos = 0;
             if (leaveModelList != null && leaveModelList.size() > 0) {
@@ -394,30 +431,72 @@ public class NotificationsActivity extends BaseActivity {
             e.printStackTrace();
         }
     }
+    /* Call Api For Apply Leave */
+    private void callApplyLeaveApi(AppCompatAutoCompleteTextView AutoComTextViewLeaveType) {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_apply_leave);
+                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
+                RequestBody mRequestBodyDuration = RequestBody.create(MediaType.parse("text/plain"), "Full Day");
+                String startTimeStamp = "00:00:00",endTimeStamp = "23:59:00";
+                RequestBody mRequestBodyStartTime = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentDateInyyyymmdd()+" "+startTimeStamp);
+                RequestBody mRequestBodyEndTime = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentDateInyyyymmdd()+" "+endTimeStamp);
+                RequestBody mRequestBodyLeaveType = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewLeaveType.getText().toString());
+                RequestBody mRequestBodyComment = RequestBody.create(MediaType.parse("text/plain"), "This is marked as paid leave from notifications");
+                // RequestBody mRequestBodyLeaveStatus = RequestBody.create(MediaType.parse("text/plain") , "approved");
+                ///RequestBody mRequestBodyUpdatedBy = RequestBody.create(MediaType.parse("text/plain"),"12"  /*loginTable.getManagerId()*/);
+
+                ApplyLeaveRequest applyLeaveRequest = new ApplyLeaveRequest();
+                applyLeaveRequest.setAction(mRequestBodyAction);
+                applyLeaveRequest.setEmpId(mRequestBodyTypeEmpId);
+                applyLeaveRequest.setDuration(mRequestBodyDuration);
+                applyLeaveRequest.setStartTime(mRequestBodyStartTime);
+                applyLeaveRequest.setEndTime(mRequestBodyEndTime);
+                applyLeaveRequest.setLeaveType(mRequestBodyLeaveType);
+                applyLeaveRequest.setComment(mRequestBodyComment);
+                // applyLeaveRequest.setLeaveStatus(mRequestBodyLeaveStatus);
+                //applyLeaveRequest.setUpdatedBy(mRequestBodyUpdatedBy);
+                applyLeaveViewModel.hitApplyLeaveApi(applyLeaveRequest);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
 
     //show leave form popup
     public void showAbsentMarkDialog(NotificationDetailsNotify data) {
         mDialogAbsentMark = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialogAbsentMark.setContentView(R.layout.dialog_notify_absent_details);
         mDialogAbsentMark.setCanceledOnTouchOutside(true);
+        RelativeLayout layClose = mDialogLateMark.findViewById(R.id.layClose);
         AppCompatTextView tvTitle = mDialogAbsentMark.findViewById(R.id.tvTitle);
-        AppCompatTextView tvStartTime = mDialogAbsentMark.findViewById(R.id.tvStartTime);
-        AppCompatTextView tvEndTime = mDialogAbsentMark.findViewById(R.id.tvEndTime);
+         tvStartTime = mDialogAbsentMark.findViewById(R.id.tvStartTime);
+         tvEndTime = mDialogAbsentMark.findViewById(R.id.tvEndTime);
         AppCompatButton MarkButton = mDialogAbsentMark.findViewById(R.id.MarkButton);
         AppCompatButton UnpaidButton = mDialogAbsentMark.findViewById(R.id.UnpaidButton);
         AppCompatButton PaidButton = mDialogAbsentMark.findViewById(R.id.PaidButton);
         tvTitle.setText(data.getNotifText());
-        int tM = 0,lM=0;
-        tvStartTime.setText("This month : "+tM);
-        tvEndTime.setText("Last month : "+lM);
+        String tM = "00:00:00",lM="00:00:00";
+        callAbsentMarkCountApi();
+        layClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDialogLateMark.dismiss();
+            }
+        });
         MarkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (NetworkCheck.isInternetAvailable(mContext)) {
                     LoginTable loginTable = mDb.getDbDAO().getLoginData();
                     if(loginTable!=null) {
+                        record_id = data.getRecordId();
                         RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_mark_as_persent);
-                        RequestBody mRequestBodyrecord_id = RequestBody.create(MediaType.parse("text/plain"),data.getRecordId());
+                        RequestBody mRequestBodyrecord_id = RequestBody.create(MediaType.parse("text/plain"),data.getRelatedId());
                         markPresentViewModel.hitMarkPresentAPI(mRequestBodyAction,mRequestBodyrecord_id);
                     }
                     else {
@@ -434,8 +513,9 @@ public class NotificationsActivity extends BaseActivity {
                 if (NetworkCheck.isInternetAvailable(mContext)) {
                     LoginTable loginTable = mDb.getDbDAO().getLoginData();
                     if(loginTable!=null) {
+                        record_id = data.getRecordId();
                         RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_unpaid_leave);
-                        RequestBody mRequestBodyrecord_id = RequestBody.create(MediaType.parse("text/plain"),data.getRecordId());
+                        RequestBody mRequestBodyrecord_id = RequestBody.create(MediaType.parse("text/plain"),data.getRelatedId());
                         unpaidLeaveViewModel.hitUnpaidLeaveAPI(mRequestBodyAction,mRequestBodyrecord_id);
                     }
                     else {
@@ -449,6 +529,7 @@ public class NotificationsActivity extends BaseActivity {
         PaidButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mDialogAbsentMark.dismiss();
              showPaidLeaveDialog(data);
             }
         });
@@ -457,31 +538,37 @@ public class NotificationsActivity extends BaseActivity {
 
     //show leave form popup
     public void showLateMarkDialog(NotificationDetailsNotify data) {
-         mDialogLateMark = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialogLateMark = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialogLateMark.setContentView(R.layout.dialog_notify_late_details);
         mDialogLateMark.setCanceledOnTouchOutside(true);
+        RelativeLayout layClose = mDialogLateMark.findViewById(R.id.layClose);
         AppCompatTextView tvTitle = mDialogLateMark.findViewById(R.id.tvTitle);
         AppCompatTextView tvStartTime = mDialogLateMark.findViewById(R.id.tvStartTime);
         AppCompatTextView tvEndTime = mDialogLateMark.findViewById(R.id.tvEndTime);
-        AppCompatTextView tvStartMonth = mDialogLateMark.findViewById(R.id.tvStartMonth);
-        AppCompatTextView tvEndMonth = mDialogLateMark.findViewById(R.id.tvEndMonth);
+        tvStartMonth = mDialogLateMark.findViewById(R.id.tvStartMonth);
+        tvEndMonth = mDialogLateMark.findViewById(R.id.tvEndMonth);
         AppCompatButton MarkButton = mDialogLateMark.findViewById(R.id.MarkButton);
         AppCompatButton ignoreButton = mDialogLateMark.findViewById(R.id.ignoreButton);
         AppCompatButton DeductButton = mDialogLateMark.findViewById(R.id.DeductButton);
         tvTitle.setText(data.getNotifText());
-        String tM = "0",lM="0",tS = "00:00:00",lS="00:00:00";
-        tvStartTime.setText("This month : "+tM);
-        tvEndTime.setText("Last month : "+lM);
-        tvStartMonth.setText("Actual time : "+tS);
-        tvEndMonth.setText("Start time : "+lS);
+        tvStartTime.setText("Actual time : "+AppUtils.convert24to12Attendance(data.getStnd_start_tym()));
+        tvEndTime.setText("Start time : "+AppUtils.convert24to12Attendance(data.getStartTime()));
+        callLateMarkCountApi();
+        layClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDialogLateMark.dismiss();
+            }
+        });
         MarkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (NetworkCheck.isInternetAvailable(mContext)) {
                     LoginTable loginTable = mDb.getDbDAO().getLoginData();
                     if(loginTable!=null) {
+                        record_id = data.getRecordId();
                         RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_mark_as_not_late);
-                        RequestBody mRequestBodyrecord_id = RequestBody.create(MediaType.parse("text/plain"),data.getRecordId());
+                        RequestBody mRequestBodyrecord_id = RequestBody.create(MediaType.parse("text/plain"),data.getRelatedId());
                         markNotLateViewModel.hitMarkNotLateAPI(mRequestBodyAction,mRequestBodyrecord_id);
                     }
                     else {
@@ -502,6 +589,7 @@ public class NotificationsActivity extends BaseActivity {
         DeductButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mDialogLateMark.dismiss();
             showDeductLeaveDialog(data);
             }
         });
@@ -562,6 +650,40 @@ public class NotificationsActivity extends BaseActivity {
         }
     }
 
+    /* Call Api late mark count */
+    private void callLateMarkCountApi() {
+        if (NetworkCheck.isInternetAvailable(NotificationsActivity.this)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if (loginTable != null) {
+                RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_late_mark_count_months);
+                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+
+                lateMarkCountViewModel.hitLateMarkCountApi(mRequestBodyType
+                        ,mRequestBodyTypeEmployee);
+
+            }
+        } else {
+            LogUtil.printToastMSG(NotificationsActivity.this, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    /* Call Api absent mark count */
+    private void callAbsentMarkCountApi() {
+        if (NetworkCheck.isInternetAvailable(NotificationsActivity.this)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if (loginTable != null) {
+                RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_absent_mark_count_months);
+                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+
+                absentMarkCountViewModel.hitAbsentMarkCountApi(mRequestBodyType
+                        ,mRequestBodyTypeEmployee);
+
+            }
+        } else {
+            LogUtil.printToastMSG(NotificationsActivity.this, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
     private void setAdapterForNotificationList() {
         if (notificationList!=null && notificationList.size() > 0) {
             mNotificationsAdapter = new NotificationsAdapter(mContext, notificationList, new NotificationsAdapter.ListItemSelectListener() {
@@ -586,8 +708,12 @@ public class NotificationsActivity extends BaseActivity {
                     callDeleteNotificationApi(mDataTicket.getId());
                     mNotificationsAdapter.updateList(notificationList);}
                     else{
-                        callSingleRecordApi(mDataTicket.getRelatedId());
-                        notiId = Integer.parseInt(mDataTicket.getId()==null?"0":mDataTicket.getId());
+                        LoginTable loginTable = mDb.getDbDAO().getLoginData();
+                        if(loginTable!=null) {
+                            if(!loginTable.getIsadmin().equals("0")){
+                            callSingleRecordApi(mDataTicket.getRelatedId());
+                            notiId = Integer.parseInt(mDataTicket.getId() == null ? "0" : mDataTicket.getId());
+                        }}
                     }
                 }
             });
@@ -652,7 +778,7 @@ public class NotificationsActivity extends BaseActivity {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_SINGLE_NOTIFY)) {
                             NotificationDetailsResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), NotificationDetailsResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                NotificationDetailsNotify notify = new NotificationDetailsNotify();
+                                NotificationDetailsNotify notify = responseModel.getResult().getNotify().get(0);
                                 if(notify.getType().equals("Late")){
                                     showLateMarkDialog(responseModel.getResult().getNotify().get(0));
                                 }
@@ -689,6 +815,21 @@ public class NotificationsActivity extends BaseActivity {
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 mDialogAbsentMark.dismiss();
                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                                callDeleteNotificationApi(record_id);
+                            }
+                            else {
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    } try{
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_MARK_NOT_LATE)) {
+                            UpdateLeaveStatusResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), UpdateLeaveStatusResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                mDialogLateMark.dismiss();
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                                callDeleteNotificationApi(record_id);
                             }
                             else {
                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
@@ -701,14 +842,63 @@ public class NotificationsActivity extends BaseActivity {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_DEDUCT_LEAVE)) {
                             UpdateLeaveStatusResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), UpdateLeaveStatusResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                mDialogLateMark.dismiss();
+                                mDialogDeductLeave.dismiss();
                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                                callDeleteNotificationApi(record_id);
                             }
                             else {
                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
                             }
                         }
                     }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    try{
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_LATE_MARK_COUNT)) {
+                            LateMarkResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LateMarkResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                tvStartMonth.setText("This month : "+responseModel.getResult().getThisMonthCount());
+                                tvEndMonth.setText("Last month : "+responseModel.getResult().getPrevMonthCount());
+                            }
+                            else {
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    try{
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_LATE_ABSENT_COUNT)) {
+                            AbsentMarkResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), AbsentMarkResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                tvStartTime.setText("This month : "+responseModel.getResult().getThisMonthCount());
+                                tvEndTime.setText("Last month : "+responseModel.getResult().getPrevMonthCount());
+                            }
+                            else {
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_APPLY_LEAVE)) {
+                            ApplyLeaveResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ApplyLeaveResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                mDialogPaidLeave.dismiss();
+                                ((BaseActivity)mContext).showSuccessDialog(responseModel.getResult().getMessage(),
+                                        true,NotificationsActivity.this);
+                                callDeleteNotificationApi(record_id);
+                            }
+                            else {
+                                mDialogPaidLeave.dismiss();
+                                ((BaseActivity)mContext).showSuccessDialog(responseModel.getResult().getMessage(),
+                                        true,NotificationsActivity.this);
+                            }
+                        }
+                    }catch (Exception e){
+                        ((BaseActivity)mContext).showSuccessDialog("Leave application upload failed.",
+                                true,NotificationsActivity.this);
                         e.printStackTrace();
                     }
                 }

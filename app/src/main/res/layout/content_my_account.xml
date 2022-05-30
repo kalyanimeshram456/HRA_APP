@@ -564,7 +564,6 @@
                        android:layout_marginHorizontal="@dimen/_10dp"
                        android:layout_marginTop="@dimen/_6dp"
                        android:background="@drawable/button_round_shape_corners"
-                       android:clickable="true"
                        android:descendantFocusability="blocksDescendants"
                        android:orientation="horizontal"
                        android:paddingHorizontal="@dimen/_8dp"
@@ -579,7 +578,8 @@
                            android:fontFamily="@font/gilroy_semibold"
                            android:hint="DD/MM/YYYY"
                            android:text=""
-                           android:textColor="@color/back_text_colour"
+                           android:textColorHint="@color/text_disabled"
+                           android:textColor="@color/text_disabled"
                            android:textSize="@dimen/_14sp" />
 
                        <ImageView

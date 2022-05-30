@@ -4,10 +4,12 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -120,9 +122,12 @@ public class RegistrationActivity extends BaseActivity {
     AppCompatButton applyButton;
     @BindView(R.id.removeButton)
     AppCompatButton removeButton;
+    @BindView(R.id.tvMissing)
+    AppCompatTextView tvMissing;
     String subCharges = "0",discountAmount = "0",couponCode = "",subChargeApi = "",gstAmount="",
     totalAmountCharges= "";
     int gstPer = 18;
+    boolean statusPrefix = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +142,7 @@ public class RegistrationActivity extends BaseActivity {
         mContext = this;
         injectAPI();
         init();
+        tvMissing.setVisibility(View.GONE);
     }
 
     private void injectAPI() {
@@ -327,14 +333,14 @@ public class RegistrationActivity extends BaseActivity {
         //mDialog.setCanceledOnTouchOutside(true);
         RelativeLayout mClose = mDialog.findViewById(R.id.imgCancel);
         //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-       /* new Handler().postDelayed(new Runnable() {
+        new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 mDialog.dismiss();
                 finish();
                 launchScreen(mContext, LoginActivity.class);
             }
-        }, 1100);*/
+        }, 5000);
         mClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -364,7 +370,9 @@ public class RegistrationActivity extends BaseActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
-                    callUserPrefixApi();
+                    if(!TextUtils.isEmpty(AutoComUsernamePrefix.getText().toString().trim())){
+                    callUserPrefixApi();}
+                    else{setError(0, input_textUsernamePrefix, getString(R.string.err_enter_username_prefix));}
                 }
                 return false;
             }
@@ -414,10 +422,14 @@ public class RegistrationActivity extends BaseActivity {
     }
 
     //perform click actions
-    @OnClick({R.id.imgInfo, R.id.btnRegister,R.id.applyButton,R.id.removeButton,R.id.radioYear,R.id.radioTrial})
+    @OnClick({R.id.tvRegClick,R.id.imgInfo, R.id.btnRegister,R.id.applyButton,R.id.removeButton,R.id.radioYear,R.id.radioTrial})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
+            case R.id.tvRegClick:
+                finish();
+                launchScreen(mContext, LoginActivity.class);
+                break;
             case R.id.radioYear:
                 break;
             case R.id.radioTrial:
@@ -427,7 +439,13 @@ public class RegistrationActivity extends BaseActivity {
                 showSubscriptionDialog();
                 break;
             case R.id.applyButton:
-                callCheckCouponApi();
+                if (!TextUtils.isEmpty(AutoComCoupon.getText().toString().trim())){
+                    callCheckCouponApi();
+                }
+                else{
+                    AutoComCoupon.setError("Enter Coupon code!");
+                    LogUtil.printSnackBar(mContext,Color.YELLOW,findViewById(android.R.id.content),getString(R.string.scr_lbl_coupn_msg));
+                }
                 break;
             case R.id.removeButton:
                 removeButton.setVisibility(View.GONE);
@@ -445,6 +463,8 @@ public class RegistrationActivity extends BaseActivity {
             case R.id.btnRegister:
                 if (isDetailsValid()) {
                     callRegisterUserApi();
+                } else{
+                    tvMissing.setVisibility(View.VISIBLE);
                 }
                 break;
         }
@@ -474,6 +494,13 @@ public class RegistrationActivity extends BaseActivity {
 
     /*check validations on field*/
     private boolean isDetailsValid() {
+        setError(0, input_textName, ""); setError(0, input_textAdminName, "");
+        setError(0, input_textAddress, "");
+        setError(0, input_textPincode, "");
+        setError(0, input_textUsernamePrefix, "");
+        setError(0, input_textEmailId, "");
+        setError(0, input_textMobileNo, "");
+        setError(0, input_textEmpStrength, "");
         if (TextUtils.isEmpty(AutoComTextViewName.getText().toString().trim())) {
             setError(0, input_textName, getString(R.string.err_enter_company_name));
             return false;
@@ -483,10 +510,10 @@ public class RegistrationActivity extends BaseActivity {
         } else if (TextUtils.isEmpty(AutoComPincode.getText().toString().trim())) {
             setError(0, input_textPincode, getString(R.string.err_enter_pincode));
             return false;
-        } else if (TextUtils.isEmpty(AutoComUsernamePrefix.getText().toString().trim())) {
+        } else if (TextUtils.isEmpty(AutoComUsernamePrefix.getText().toString().trim())|| !statusPrefix) {
             setError(0, input_textUsernamePrefix, getString(R.string.err_enter_username_prefix));
             return false;
-        } else if (TextUtils.isEmpty(AutoComEmailId.getText().toString().trim())) {
+        } else if (TextUtils.isEmpty(AutoComEmailId.getText().toString().trim()) || !Patterns.EMAIL_ADDRESS.matcher(AutoComEmailId.getText().toString().trim()).matches()) {
             setError(0, input_textEmailId, getString(R.string.err_enter_email_id));
             return false;
         } else if (TextUtils.isEmpty(AutoComAdminName.getText().toString().trim())) {
@@ -529,7 +556,7 @@ public class RegistrationActivity extends BaseActivity {
                     LogUtil.printLog(tag, apiResponse.data.toString());
                     if (tag.equalsIgnoreCase(DynamicAPIPath.action_register)) {
                         RegisterResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), RegisterResponse.class);
-                        if (responseModel != null/* && responseModel.getResult().getStatus().equals("success")*/) {
+                        if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                             showThanksForRegisterDialog();
                         } else {
                             LogUtil.printToastMSG(RegistrationActivity.this, responseModel.getResult().getMessage());
@@ -539,6 +566,7 @@ public class RegistrationActivity extends BaseActivity {
                         CheckPrefixResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), CheckPrefixResponse.class);
                         if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                             tvEx.setVisibility(View.GONE);
+                            statusPrefix = true;
                             setError(1, input_textUsernamePrefix, responseModel.getResult().getMessage());
                         } else {
                             tvEx.setVisibility(View.GONE);
@@ -549,7 +577,11 @@ public class RegistrationActivity extends BaseActivity {
                     if (tag.equalsIgnoreCase(DynamicAPIPath.action_get_subs_price)) {
                         SubscriptionResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SubscriptionResponse.class);
                         if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                            subCharges = responseModel.getResult().getLeave().get(0).getPricePerPerson();
+                            if(responseModel.getResult().getMessage().equals("No record found.")){
+                                subCharges ="0";
+                            }else {
+                                subCharges = responseModel.getResult().getLeave().get(0).getPricePerPerson();
+                            }
                             tvSubDesc.setText("Subscription charges will be\n ₹" + subCharges + " / User / Year + GST");
                             setSubCharges();
                             //LogUtil.printToastMSG(RegistrationActivity.this, responseModel.getResult().getMessage());
@@ -558,22 +590,39 @@ public class RegistrationActivity extends BaseActivity {
                     if (tag.equalsIgnoreCase(DynamicAPIPath.action_check_coupon_validity)) {
                         ApplyCouponResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ApplyCouponResponse.class);
                         if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                            discountAmount = responseModel.getResult().getList().getDiscountAmt();
-                            couponCode = responseModel.getResult().getList().getCode();
-                            AutoComCoupon.setError(getString(R.string.scr_lbl_coupon_applid));
-                            removeButton.setVisibility(View.VISIBLE);
-                            applyButton.setVisibility(View.GONE);
-                            if(radioYear.isChecked()){
-                                setSubCharges();
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                if(responseModel.getResult().getMessage().equals("No record found.")){
+                                    AutoComCoupon.setError("Coupon code is not valid!");
+                                    LogUtil.printSnackBar(mContext,Color.YELLOW,findViewById(android.R.id.content),getString(R.string.scr_lbl_coupn_msg));
+                                }
+                                else{
+                                    discountAmount = responseModel.getResult().getList().getDiscountAmt();
+                                    couponCode = responseModel.getResult().getList().getCode();
+                                    LogUtil.printSnackBar(mContext, Color.GREEN,findViewById(android.R.id.content),"Congrats! You have got Rs"+discountAmount+" Discount on Coupon code -"+
+                                            couponCode+".");
+                                    //AutoComCoupon.setError(getString(R.string.scr_lbl_coupon_applid));
+                                    //setError(1, input_textCoupon, getString(R.string.scr_lbl_coupon_applid));
+                                    removeButton.setVisibility(View.VISIBLE);
+                                    applyButton.setVisibility(View.GONE);
+                                    if(radioYear.isChecked()){
+                                        setSubCharges();
+                                    }
+                                    if(radioTrial.isChecked()) {
+                                        setDiscountChargesTrial();
+                                    }
+                                }
+
+                                // LogUtil.printToastMSG(RegistrationActivity.this, responseModel.getResult().getMessage());
                             }
-                            if(radioTrial.isChecked()) {
-                                setDiscountChargesTrial();
+                            else{ //AutoComCoupon.setError("Coupon is not valid.");
+                                AutoComCoupon.setError("Coupon code is not valid!");
+                                LogUtil.printSnackBar(mContext,Color.YELLOW,findViewById(android.R.id.content),getString(R.string.scr_lbl_coupn_msg));
+
                             }
-                            setError(1, input_textCoupon, getString(R.string.scr_lbl_coupon_applid));
-                           // LogUtil.printToastMSG(RegistrationActivity.this, responseModel.getResult().getMessage());
                         }
-                        else{ AutoComCoupon.setError("Coupon is not valid.");
-                            setError(0, input_textCoupon, "Coupon is not valid.");
+                        else{ //AutoComCoupon.setError("Coupon is not valid.");
+                            AutoComCoupon.setError("Coupon code is not valid!");
+                            LogUtil.printSnackBar(mContext,Color.YELLOW,findViewById(android.R.id.content),getString(R.string.scr_lbl_coupn_msg));
                         }
                     }
                 }

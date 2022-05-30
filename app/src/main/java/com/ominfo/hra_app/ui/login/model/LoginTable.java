@@ -36,6 +36,12 @@ public class LoginTable {
     @SerializedName("name")
     private String mName;
 
+    @ColumnInfo(name = "designation")
+    @Expose
+    @SerializedName("designation")
+    private String designation;
+
+
     @ColumnInfo(name = "profile_picture")
     @Expose
     @SerializedName("profile_picture")
@@ -72,6 +78,14 @@ public class LoginTable {
     @Expose
     @SerializedName("branch_longitute")
     private String branchLongitute;
+
+    public String getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
 
     public String getToken() {
         return token;
@@ -162,16 +176,5 @@ public class LoginTable {
         this.companyId = companyId;
     }
 
-    @Override
-    public String toString() {
-        return "LoginTable{" +
-                "mBaseUrl='" + mBaseUrl + '\'' +
-                ", mIsadmin='" + mIsadmin + '\'' +
-                ", mName='" + mName + '\'' +
-                ", mProfilePicture='" + mProfilePicture + '\'' +
-                ", employeeId='" + employeeId + '\'' +
-                ", companyId='" + companyId + '\'' +
-                ", id=" + id +
-                '}';
-    }
+
 }

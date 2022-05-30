@@ -73,7 +73,7 @@ public class EmployeeTimeAdapter extends RecyclerView.Adapter<EmployeeTimeAdapte
             if(mListData.get(position).getMonWorking().toLowerCase().equals("yes")){
                 holder.switchDay.setChecked(true);
             }
-            else{
+            if(mListData.get(position).getMonWorking().toLowerCase().equals("no")){
                 holder.switchDay.setChecked(false);
             }
             holder.tvDayType.setText(mListData.get(position).getMonDay());
@@ -165,7 +165,7 @@ public class EmployeeTimeAdapter extends RecyclerView.Adapter<EmployeeTimeAdapte
                 //String min = convertDate(myCalendar.get(Calendar.MINUTE));
                 boolean isPM = (selectedHour >= 12);
                 appCompatTextView.setText(String.format("%02d:%02d %s", (selectedHour == 12 || selectedHour == 0) ? 12 : selectedHour % 12, myCalendar.get(Calendar.MINUTE), isPM ? "pm" : "am"));
-                String time = AppUtils.convert12to24(appCompatTextView.getText().toString());
+                String time = AppUtils.convert12to24ForAttention(appCompatTextView.getText().toString());
                 if(val==0) {
                     mListData.get(pos).setMonStartTime(time);
                 }else{

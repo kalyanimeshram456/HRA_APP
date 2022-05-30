@@ -30,19 +30,29 @@
                 android:visibility="visible"
                 android:orientation="vertical">
 
+            <RelativeLayout
+                android:id="@+id/layPastLeave"
+                android:layout_width="@dimen/_80dp"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                android:layout_marginLeft="@dimen/_14dp"
+                android:orientation="vertical">
+
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/tvPastLeave"
                     android:layout_width="@dimen/_34dp"
                     android:layout_height="@dimen/_34dp"
+                    android:layout_marginStart="@dimen/_16dp"
                     android:layout_marginHorizontal="@dimen/_16dp"
                     android:layout_marginTop="@dimen/_20dp"
                     android:src="@drawable/ic_past_leaves" />
+            </RelativeLayout>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/searchView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/tvPastLeave"
+                    android:layout_below="@+id/layPastLeave"
                     android:layout_marginHorizontal="@dimen/_16dp"
                     android:layout_marginTop="@dimen/_5dp"
                     android:fontFamily="@font/gilroy_regular"
@@ -50,12 +60,24 @@
                     android:textColor="@color/back_text_colour"
                     android:textSize="@dimen/_12sp" />
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/searchView"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="@string/scr_lbl_leave_applications"
+                    android:textColor="@color/color_main"
+                    android:textSize="@dimen/_14sp" />
+
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginHorizontal="@dimen/_10dp"
-                    android:layout_marginTop="@dimen/_85dp"
+                    android:layout_marginTop="@dimen/_110dp"
                     android:orientation="vertical">
 
                     <include layout="@layout/content_empty_activity_layout" />

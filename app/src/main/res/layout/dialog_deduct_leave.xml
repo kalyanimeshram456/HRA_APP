@@ -17,6 +17,7 @@
 
 
     <RelativeLayout
+        android:id="@+id/layClose"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -213,12 +214,14 @@
                 android:layout_marginHorizontal="@dimen/_6dp"
                 android:layout_toRightOf="@+id/tvMinAmount"
                 android:layout_weight="1.7"
+                android:visibility="gone"
                 android:layout_gravity="center_vertical"
                 android:background="@color/back_text_colour" />
 
             <RelativeLayout
                 android:id="@+id/layToDate"
                 android:layout_weight="1"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 >

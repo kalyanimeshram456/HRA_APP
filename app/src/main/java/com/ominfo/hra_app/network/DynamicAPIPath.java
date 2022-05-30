@@ -28,6 +28,8 @@ public class DynamicAPIPath {
     public static final String POST_GET_PROFILE = BASE+"?action=getcrmempprofilepic";
     public static final String POST_NOTIFICATION = BASE+"?action=getempnotification";
     public static final String POST_DEL_NOTIFICATION = BASE+"?action=marknotifread";
+    public static final String POST_LATE_MARK_COUNT = BASE+"?action=late_mark_count_months";
+    public static final String POST_LATE_ABSENT_COUNT = BASE+"?action=absent_mark_count_months";
     public static final String POST_CHECK_COUPON= BASE+"?action=checkcoupon_validity";
     public static final String POST_CHANGE_PROFILE = BASE+"?action=updatecrmempprofilepic";
     public static final String POST_CHANGE_PASS = BASE+"?action=changecrmemppassword";
@@ -43,6 +45,7 @@ public class DynamicAPIPath {
     public static final String POST_MARK_PRESENT= BASE+"?action=mark_as_persent";
     public static final String POST_DEDUCT_LEAVE= BASE+"?action=leave_deduct";
     public static final String POST_MARK_NOT_LATE= BASE+"?action=mark_as_not_late";
+    public static final String POST_SALARY_SLIP = BASE+"?action=emp_sal_slip";
     public static final String POST_UNPAID_LEAVE= BASE+"?action=unpaid_leave";
     public static final String POST_ADD_EMPLOYEES= BASE+"?action=add_employee";
     public static final String POST_EDIT_EMPLOYEES= BASE+"?action=edit_employee";
@@ -108,11 +111,14 @@ public class DynamicAPIPath {
     public static final String action_salary_sheet = "emp_monthly_sal_crd";
     public static final String action_notification = "getempnotification";
     public static final String action_delete_notification = "marknotifread";
+    public static final String action_late_mark_count_months = "late_mark_count_months";
+    public static final String action_absent_mark_count_months = "absent_mark_count_months";
     public static final String action_add_Salary = "add_sal_disbursment";
     public static final String action_update_Salary = "salary_edit";
     public static final String action_mark_as_persent = "mark_as_persent";
     public static final String action_leave_deduct = "leave_deduct";
     public static final String action_mark_as_not_late = "mark_as_not_late";
+    public static final String action_emp_sal_slip = "emp_sal_slip";
     public static final String action_accept_reject_List = "get_leave_records";
     public static final String action_apply_leave_updated = "apply_leave_updated";
     public static final String action_leave_count = "get_leave_count";

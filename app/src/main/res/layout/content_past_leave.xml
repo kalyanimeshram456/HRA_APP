@@ -167,6 +167,7 @@
                     android:layout_below="@+id/tvAddLeave"
                     android:layout_marginHorizontal="@dimen/_10dp"
                     android:layout_marginTop="@dimen/_16dp"
+                    android:layout_marginBottom="@dimen/_50dp"
                     android:background="@drawable/layout_round_shape_blue_border"
                     android:orientation="vertical"
 
@@ -439,7 +440,7 @@
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_below="@+id/searchView"
+                    android:layout_below="@+id/layBorder"
                     android:layout_marginHorizontal="@dimen/_10dp"
                     android:layout_marginTop="@dimen/_6dp"
                     android:visibility="gone"

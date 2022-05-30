@@ -177,6 +177,7 @@
                             android:imeOptions="actionNext"
                             android:inputType="number"
                             android:padding="@dimen/_10dp"
+                            android:maxLength="10"
                             android:textColor="@color/black_heading"
                             android:textColorHint="@color/app_gray"
                             android:textSize="@dimen/_14sp" />
@@ -785,7 +786,7 @@
                         android:layout_marginHorizontal="@dimen/_10dp"
                         android:layout_marginTop="@dimen/_16dp"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="Oops, Some fields are missing."
+                        android:text="@string/fields_are_missing"
                         android:textColor="@color/Dark_Red"
                         android:textSize="@dimen/_12sp" />
 

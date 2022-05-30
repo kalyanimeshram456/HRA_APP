@@ -365,6 +365,14 @@ public interface NetworkAPIServices {
                                                @Part("notif_id") RequestBody notifId
     );
 
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> lateMarkCount(@Url String url,
+                                               @Part("action") RequestBody uploadType,
+                                               @Part("emp_id") RequestBody uploadTypeEmployee
+    );
+
     @Multipart
     @POST()
     Observable<JsonElement> changeProfileImage(@Url String url,
@@ -446,6 +454,14 @@ public interface NetworkAPIServices {
                                         @Part("leave_type") RequestBody leave_type,
                                         @Part("leave_days") RequestBody leave_days
     );
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> salarySlip(@Url String url,
+                                        @Part("action") RequestBody uploadType,
+                                        @Part("id") RequestBody id
+    );
+
 
     @Multipart
     @POST()

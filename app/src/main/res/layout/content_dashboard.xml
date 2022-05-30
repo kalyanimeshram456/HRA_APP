@@ -124,8 +124,9 @@
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
                                     android:fontFamily="@font/gilroy_semibold"
-                                    android:text="User Name"
+                                    android:hint="@string/scr_lbl_user_name"
                                     android:textAlignment="center"
+                                    android:textColorHint="@color/white"
                                     android:textColor="@color/white"
                                     android:textSize="@dimen/_16sp" />
 
@@ -134,11 +135,11 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_below="@+id/tvName"
-                                    android:layout_gravity="center"
                                     android:fontFamily="@font/gilroy_regular"
-                                    android:text="Admin"
-                                    android:textAlignment="center"
+                                    android:hint="@string/scr_lbl_designation"
+                                    android:textAlignment="viewStart"
                                     android:textColor="@color/white"
+                                    android:textColorHint="@color/white"
                                     android:textSize="@dimen/_12sp" />
                             </RelativeLayout>
 
@@ -330,13 +331,14 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     app:day_of_week_length="1"
+                                    android:paddingHorizontal="@dimen/_1dp"
                                     android:layout_gravity="center_horizontal"
                                     android:gravity="center_horizontal"
                                     app:day_of_week_start_from="sunday"
                                     android:background="@drawable/layout_round_shape_grey_border_small"
                                     android:layout_marginVertical="@dimen/_10dp"
                                     android:layout_marginHorizontal="@dimen/_10dp"
-                                    android:paddingBottom="@dimen/_2dp"
+                                    android:paddingBottom="@dimen/_3dp"
                                  />
                             </androidx.appcompat.widget.LinearLayoutCompat>
 

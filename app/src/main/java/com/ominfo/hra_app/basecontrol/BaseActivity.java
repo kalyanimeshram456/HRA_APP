@@ -1,5 +1,6 @@
 package com.ominfo.hra_app.basecontrol;
 
+//import static com.ominfo.hra_app.MainActivity.ssCustomBottomNavigation;
 import static com.ominfo.hra_app.MainActivity.ssCustomBottomNavigation;
 import static com.ominfo.hra_app.ui.attendance.StartAttendanceActivity.tvCurrLocation;
 
@@ -834,7 +835,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                                     SharedPref.getInstance(this).write(SharedPrefKey.IS_NOTIFY_COUNT, String.valueOf(responseModel.getResult().getNotifdata().size()));
                                     imgNotifyCount.setText(String.valueOf(responseModel.getResult().getNotifdata().size()));
                                 }catch (Exception e){
-                                    LogUtil.printToastMSG(this,e.getMessage());
+                                    //LogUtil.printToastMSG(this,e.getMessage());
                                     e.printStackTrace();
                                 }
                             }
@@ -849,10 +850,11 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                                     if(responseModel.getResult().getLevCountEmp()!=null &&
                                             !responseModel.getResult().getLevCountEmp().equals("0") &&
                                             !responseModel.getResult().getLevCountEmp().equals("")){
-                                        ssCustomBottomNavigation.setCount(3,responseModel.getResult().getLevCountEmp());
+                                        ssCustomBottomNavigation.setCount(3, responseModel.getResult().getLevCountEmp());
                                     }
                                     else{
                                         ssCustomBottomNavigation.clearCount(3);
+
                                     }
                                 }catch (Exception e){
                                     LogUtil.printToastMSG(this,e.getMessage());

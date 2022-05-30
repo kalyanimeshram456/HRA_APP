@@ -38,6 +38,7 @@ import com.ominfo.hra_app.basecontrol.BaseActivity;
 import com.ominfo.hra_app.basecontrol.BaseApplication;
 import com.ominfo.hra_app.basecontrol.BaseFragment;
 import com.ominfo.hra_app.database.AppDatabase;
+import com.ominfo.hra_app.interfaces.Constants;
 import com.ominfo.hra_app.network.ApiResponse;
 import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
@@ -153,7 +154,7 @@ public class PastLeaveFragment extends BaseFragment {
     @BindView(R.id.imgAddLeave)
     AppCompatImageView imgAddLeave;
     List<ActiveEmployeeListEmpDatum> activeEmployeeList = new ArrayList<>();
-    String selectedActiveEmpid = "0";
+    String selectedActiveEmpid = "0",empId = "", from_screen = "";
     LoginTable loginTable;
     public PastLeaveFragment() {
         // Required empty public constructor
@@ -180,6 +181,10 @@ public class PastLeaveFragment extends BaseFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.activity_past_leave, container, false);
         ButterKnife.bind(this, view);
+        try {
+            empId = getArguments().getString(Constants.edit);
+            from_screen = getArguments().getString(Constants.FROM_SCREEN);
+        }catch (Exception e){}
         return view;
     }
 
@@ -206,6 +211,16 @@ public class PastLeaveFragment extends BaseFragment {
             input_textAddEmp.setVisibility(View.GONE);
             tvAddLeave.setVisibility(View.VISIBLE);
             imgAddLeave.setVisibility(View.VISIBLE);
+        }
+        else {
+            selectedActiveEmpid = loginTable.getEmployeeId();
+            if(from_screen.equals("admin")){
+                if(empId!=null && !empId.equals("")){
+                    appcomptextAddEmp.setVisibility(View.GONE);
+                    input_textAddEmp.setVisibility(View.GONE);
+                    selectedActiveEmpid = empId;
+                }
+            }
         }
         setEnquiryPagerList(1);
         setAdapterForLeaveList();
@@ -361,8 +376,8 @@ public class PastLeaveFragment extends BaseFragment {
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment fragment = new DashboardFragment();
-                ((BaseActivity)mContext).moveFragment(mContext,fragment);
+                PastLeaveFragment pastLeaveFragment = new PastLeaveFragment();
+                removeFragment(pastLeaveFragment);
             }
         });
         imgNotify.setOnClickListener(new View.OnClickListener() {
@@ -542,7 +557,7 @@ public class PastLeaveFragment extends BaseFragment {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
                 RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_past_leave);
-                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),/*selectedActiveEmpid*/"46");
+                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),selectedActiveEmpid);
                 String monthNumber  =  AppUtils.convertMonthToInt(AutoComMonth.getText().toString().trim());
                 RequestBody mRequestBodyMonth = RequestBody.create(MediaType.parse("text/plain"), monthNumber);
                 RequestBody mRequestPageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);

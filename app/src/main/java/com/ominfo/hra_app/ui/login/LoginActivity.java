@@ -5,6 +5,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -34,6 +36,7 @@ import com.ominfo.hra_app.ui.login.model.AttendanceDaysTable;
 import com.ominfo.hra_app.ui.login.model.LoginRequest;
 import com.ominfo.hra_app.ui.login.model.LoginResponse;
 import com.ominfo.hra_app.ui.login.model.LoginViewModel;
+import com.ominfo.hra_app.ui.registration.RegistrationActivity;
 import com.ominfo.hra_app.util.LogUtil;
 import com.ominfo.hra_app.util.SharedPref;
 
@@ -62,6 +65,8 @@ public class LoginActivity extends BaseActivity {
     AppCompatAutoCompleteTextView editTextEmail;
     @BindView(R.id.tvTitle)
     AppCompatTextView tvTitle;
+    @BindView(R.id.tvRegClick)
+    AppCompatTextView tvRegClick;
 
     Context mContext;
     @Inject
@@ -91,6 +96,7 @@ public class LoginActivity extends BaseActivity {
         //FirebaseApp.initializeApp();
         createNotificationChannel();
         getToken();
+        tvRegClick.setPaintFlags(tvRegClick.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
     }
     private void injectAPI() {
          mLoginViewModel = ViewModelProviders.of(LoginActivity.this, mViewModelFactory).get(LoginViewModel.class);
@@ -194,7 +200,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     //perform click actions
-    @OnClick({R.id.loginButton})
+    @OnClick({R.id.loginButton,R.id.tvRegClick})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
@@ -203,7 +209,10 @@ public class LoginActivity extends BaseActivity {
                     callLoginUserApi();
                 }
                 break;
-
+            case R.id.tvRegClick:
+                finish();
+                launchScreen(mContext, RegistrationActivity.class);
+                break;
 
         }
     }
@@ -268,8 +277,10 @@ public class LoginActivity extends BaseActivity {
                         if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                             finish();
                             launchScreen(mContext, MainActivity.class);
-                            LogUtil.printToastMSG(LoginActivity.this, responseModel.getResult().getMessage());
+                            LogUtil.printSnackBar(mContext, Color.GREEN,findViewById(android.R.id.content),responseModel.getResult().getMessage());
+                            //LogUtil.printToastMSG(LoginActivity.this, responseModel.getResult().getMessage());
                             SharedPref.getInstance(this).write(SharedPrefKey.IS_LOGGED_IN, true);
+                            //responseModel.getDetails().setIsadmin("1");
                             mDb.getDbDAO().insertLoginData(responseModel.getDetails());
                             AttendanceDaysTable daysTable = new AttendanceDaysTable();
                             daysTable.setLoginDays(responseModel.getResult().getDayData());

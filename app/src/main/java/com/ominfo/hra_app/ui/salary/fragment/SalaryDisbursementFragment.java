@@ -124,6 +124,8 @@ public class SalaryDisbursementFragment extends BaseFragment {
     AppCompatImageView iv_emptyLayimage;
     @BindView(R.id.tvNotifyCount)
     AppCompatTextView tvNotifyCount;
+    @BindView(R.id.btnSubmit)
+    AppCompatButton btnSubmit;
     final Calendar myCalendar = Calendar.getInstance();
     @Inject
     ViewModelFactory mViewModelFactory;
@@ -131,7 +133,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
     private SalaryAllListViewModel salaryAllListViewModel;
     private SalaryDisbursetViewModel salaryDisbursetViewModel;
     private UpdateSalaryViewModel updateSalaryViewModel;
-
+    Dialog mDialogSalary;
     private Dialog mDialogChangePass;
     LinearLayoutCompat layoutLeaveTime;
     AppCompatTextView appcomptextLeaveTime;
@@ -206,7 +208,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
         Glide.with(this)
                 .load(R.drawable.img_bg_search)
                 .into(iv_emptyLayimage);
-        tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
+        tv_emptyLayTitle.setText(R.string.scr_message_please_wait);
         tv_emptyLayTitle.setText("Search something...");
         setDropdownMonth();
         callGetActiveEmployeeListApi();
@@ -372,20 +374,21 @@ public class SalaryDisbursementFragment extends BaseFragment {
 
     //show salary disbursment popup
     public void showSalaryDisbursmentDialog(int pos , SalaryAllList employeeList) {
-        Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_salary_disburse);
-        mDialog.setCanceledOnTouchOutside(true);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatEditText etAddition = mDialog.findViewById(R.id.etAddition);
-        AppCompatTextView etBasicSalary = mDialog.findViewById(R.id.etBasicSalary);
-        AppCompatEditText etDeduction = mDialog.findViewById(R.id.etDeduction);
-        AppCompatTextView tvTotalValue = mDialog.findViewById(R.id.tvTotalValue);
-        AppCompatTextView appcomptextRemark = mDialog.findViewById(R.id.appcomptextRemark);
-        AppCompatEditText etDescr = mDialog.findViewById(R.id.etDescr);
-        AppCompatButton addSubmitButton = mDialog.findViewById(R.id.addSubmitButton);
+        mDialogSalary = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialogSalary.setContentView(R.layout.dialog_salary_disburse);
+        mDialogSalary.setCanceledOnTouchOutside(true);
+        AppCompatImageView mClose = mDialogSalary.findViewById(R.id.imgCancel);
+        AppCompatEditText etAddition = mDialogSalary.findViewById(R.id.etAddition);
+        AppCompatTextView etBasicSalary = mDialogSalary.findViewById(R.id.etBasicSalary);
+        AppCompatEditText etDeduction = mDialogSalary.findViewById(R.id.etDeduction);
+        AppCompatTextView tvTotalValue = mDialogSalary.findViewById(R.id.tvTotalValue);
+        AppCompatTextView appcomptextRemark = mDialogSalary.findViewById(R.id.appcomptextRemark);
+        AppCompatEditText etDescr = mDialogSalary.findViewById(R.id.etDescr);
+        AppCompatButton addSubmitButton = mDialogSalary.findViewById(R.id.addSubmitButton);
         etBasicSalary.setText(employeeList.getSalaryThisMonth()+"");
         etAddition.setText("");etDeduction.setText("");
         tvTotalValue.setText(employeeList.getSalaryThisMonth()+"");
+        double salary = (double) (employeeList.getSalaryThisMonth());
         if(employeeList.getStatus()!=null && !employeeList.getStatus().equals("")
                 && !employeeList.getStatus().equals("null")){
             //call api
@@ -404,15 +407,11 @@ public class SalaryDisbursementFragment extends BaseFragment {
             @Override
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
-                //if(s.length() != 0) {
-                    Double tot = Double.parseDouble(tvTotalValue.getText().toString().trim());
-                    Double totalSum = tot + Double.parseDouble(s.toString().equals("")
-                            ||s.toString()==null?"0":s.toString());
-                    tvTotalValue.setText(totalSum+"");
-              /*  }
-                else{
-
-                }*/
+                Double totalSum = salary - Double.parseDouble(etDeduction.getText().toString()
+                        .equals("")
+                        ||etDeduction.getText().toString()==null?"0":etDeduction.getText().toString()) + Double.parseDouble(s.toString().equals("")
+                        ||s.toString()==null?"0":s.toString());
+                tvTotalValue.setText(totalSum+"");
             }
         });
         etDeduction.addTextChangedListener(new TextWatcher() {
@@ -428,12 +427,11 @@ public class SalaryDisbursementFragment extends BaseFragment {
             @Override
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
-                if(s.length() != 0) {
-                    Double tot = Double.parseDouble(tvTotalValue.getText().toString().trim());
-                    Double totalSum = tot - Double.parseDouble(s.toString().equals("")
-                            ||s.toString()==null?"0":s.toString());
-                    tvTotalValue.setText(totalSum+"");
-                }
+                //if(s.length() != 0) {
+                Double totalSum = salary + Double.parseDouble(etAddition.getText().toString().equals("")
+                        ||etAddition.getText().toString()==null?"0":etAddition.getText().toString()) - Double.parseDouble(s.toString().equals("")
+                        ||s.toString()==null?"0":s.toString());
+                tvTotalValue.setText(totalSum+"");
             }
         });
         addSubmitButton.setOnClickListener(new View.OnClickListener() {
@@ -483,10 +481,10 @@ public class SalaryDisbursementFragment extends BaseFragment {
         mClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDialog.dismiss();
+                mDialogSalary.dismiss();
             }
         });
-        mDialog.show();
+        mDialogSalary.show();
     }
 
 
@@ -499,6 +497,10 @@ public class SalaryDisbursementFragment extends BaseFragment {
                 total = total + (double)(salaryAllresultList.get(i).getSalaryThisMonth());
             }
             tvTotalSalaries.setText(""+total);
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable.getIsadmin().equals("0")){
+                btnSubmit.setVisibility(View.GONE);
+            }else { btnSubmit.setVisibility(View.VISIBLE);}
             } else {
             rvSalesList.setVisibility(View.GONE);
             emptyLayout.setVisibility(View.VISIBLE);
@@ -563,7 +565,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
 
     private void setToolbar() {
         //set toolbar title
-        tvToolbarTitle.setText(R.string.scr_lbl_past_leaves);
+        tvToolbarTitle.setText(R.string.scr_lbl_salary_disbursement);
         ((BaseActivity)mContext).initToolbar(5, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.imgBack, R.id.imgCall);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -996,7 +998,8 @@ public class SalaryDisbursementFragment extends BaseFragment {
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_UPDATE_SALARY)) {
                             UpdateSalaryResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), UpdateSalaryResponse.class);
-                            if (responseModel != null /*&& responseModel.getResult().getStatus().equals("success")*/) {
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                mDialogSalary.dismiss();
                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
                             }
                         }
@@ -1032,6 +1035,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
                                 try{activeEmployeeList.removeAll(activeEmployeeList);}catch (Exception e){}
                                 if(responseModel.getResult().getEmpData()!=null &&
                                         responseModel.getResult().getEmpData().size()>0){
+                                    //activeEmployeeList.add(new ActiveEmployeeListEmpDatum("","All"));
                                     activeEmployeeList = responseModel.getResult().getEmpData();
                                     setDropdownActiveEmpList();
                                 }

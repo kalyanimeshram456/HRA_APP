@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -113,12 +114,12 @@ public class EmployeeLeaveListAdapter extends RecyclerView.Adapter<BaseViewHolde
     CircleImageView imgBirthPro;
     @BindView(R.id.progress_barBirth)
     ProgressBar progress_barBirth;
-   /* @BindView(R.id.layAccept)
-    RelativeLayout layAccept;
-    @BindView(R.id.layReject)
-    RelativeLayout layReject;
-    @BindView(R.id.layPastLeave)
-    RelativeLayout layPastLeave;*/
+   @BindView(R.id.tvStatus)
+   AppCompatTextView tvStatus;
+    @BindView(R.id.tvDate)
+    AppCompatTextView tvDate;
+    @BindView(R.id.tvDays)
+    AppCompatTextView tvDays;
     ViewHolder(View itemView) {
       super(itemView);
       ButterKnife.bind(this, itemView);
@@ -131,10 +132,19 @@ public class EmployeeLeaveListAdapter extends RecyclerView.Adapter<BaseViewHolde
     public void onBind(int position) {
       super.onBind(position);
       AcceptRejectLeave item = mPostItems.get(position);
-
+      tvStatus.setText(item.getStatus());
+      tvDays.setText(item.getDaysDiff()+" Days");
+      tvDate.setText(AppUtils.convertyyyytoddLeave(item.getStartTime())+"-"+AppUtils.convertyyyytoddLeave(item.getEndTime()));//"2022-05-17 10:00:00
+      if(item.getStatus().equals("APPROVED")){
+        tvStatus.setTextColor(context.getResources().getColor(R.color.green));
+      }
+      else if(item.getStatus().equals("APPLIED")){
+        tvStatus.setTextColor(context.getResources().getColor(R.color.deep_yellow));
+      }
+      else { tvStatus.setTextColor(context.getResources().getColor(R.color.deep_red));}
       textViewTitle.setText(item.getEmpName());
       textViewDescription.setText(item.getLeaveType());
-      AppUtils.loadImageURL(context,"https://ominfo.in/o_hr/"+mPostItems.get(position).getProfilePic(),
+      AppUtils.loadImageURL(context,mPostItems.get(position).getProfilePic(),
               imgBirthPro,progress_barBirth);
 
     }

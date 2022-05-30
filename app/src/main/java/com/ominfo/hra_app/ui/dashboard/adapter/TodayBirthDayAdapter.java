@@ -63,6 +63,8 @@ public class TodayBirthDayAdapter extends RecyclerView.Adapter<TodayBirthDayAdap
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         if (mListData != null) {
+            AppUtils.loadImageURL(mContext,mListData.get(position).getEmpProfilePic(),
+                    holder.imgBirthPro,  holder.progress_barBirth);
             holder.tvBirthName.setText(mListData.get(position).getEmpName());
             holder.tvBirthValue.setText(mListData.get(position).getEmpPosition());
             String mDate = AppUtils.convertDobDate(mListData.get(position).getDob());

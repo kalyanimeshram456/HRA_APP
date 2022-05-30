@@ -22,14 +22,24 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true"
+            android:paddingTop="@dimen/_16dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_16dp"
-                android:layout_marginVertical="@dimen/_16dp"
+                android:layout_marginBottom="@dimen/_40dp"
                 android:background="@drawable/layout_round_shape_grey_border_small"
+                android:orientation="vertical">
+
+                   <RelativeLayout
+                android:id="@+id/contentPrint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                       android:layout_marginHorizontal="@dimen/_1dp"
+                       android:paddingBottom="@dimen/_100dp"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -41,41 +51,68 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginHorizontal="@dimen/_10dp"
                         android:layout_marginTop="@dimen/_10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/layout_round_shape_grey_border_small_blue"
                         android:gravity="center"
                         android:paddingHorizontal="@dimen/_10dp"
-                        android:layout_marginHorizontal="@dimen/_10dp"
-                        android:layout_gravity="center"
-                        android:paddingBottom="@dimen/_16dp"
-                        android:background="@drawable/layout_round_shape_grey_border_small_blue"
-                        android:layout_weight="1">
+                        android:paddingBottom="@dimen/_16dp">
 
                         <RelativeLayout
                             android:id="@+id/lau"
-                            android:layout_centerHorizontal="true"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_10dp"
-                            >
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="@dimen/_10dp">
 
-                        <de.hdodenhof.circleimageview.CircleImageView
-                            android:id="@+id/imgSales"
-                            android:layout_width="@dimen/_50dp"
-                            android:layout_height="@dimen/_50dp"
-                            android:layout_centerVertical="true"
-                            android:layout_gravity="center_horizontal"
-                            android:src="@drawable/ic_user"
-                            android:visibility="visible"
-                            app:civ_border_color="@color/back_text_colour"
-                            app:civ_border_width="0.6dp" />
+                            <RelativeLayout
+                                android:id="@+id/layBirthPro"
+                                android:layout_width="@dimen/_50dp"
+                                android:layout_height="@dimen/_50dp"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="5">
+
+                                <LinearLayout
+                                    android:layout_width="@dimen/_50dp"
+                                    android:layout_height="@dimen/_50dp"
+                                    android:background="@android:color/transparent"
+                                    android:orientation="horizontal">
+
+                                    <de.hdodenhof.circleimageview.CircleImageView
+                                        android:id="@+id/imgBirthPro"
+                                        android:layout_width="@dimen/_50dp"
+                                        android:layout_height="@dimen/_50dp"
+                                        android:layout_gravity="left|center"
+                                        android:clickable="true"
+                                        android:gravity="left"
+                                        android:onClick="onClick"
+                                        android:src="@drawable/ic_user"
+                                        android:visibility="visible"
+                                        app:civ_border_color="@color/pink"
+                                        app:civ_border_width="1dp" />
+
+
+                                </LinearLayout>
+                                <!-- android:indeterminateTintMode="src_atop"-->
+                                <ProgressBar
+                                    android:id="@+id/progress_barBirth"
+                                    android:layout_width="@dimen/_50dp"
+                                    android:layout_height="@dimen/_50dp"
+                                    android:indeterminate="true"
+                                    android:indeterminateDrawable="@drawable/progress_bar_color" />
+
+                            </RelativeLayout>
+
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/tvCompanyName"
-                                android:layout_toRightOf="@+id/imgSales"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
                                 android:layout_gravity="top"
                                 android:layout_marginLeft="@dimen/_10dp"
-                                android:layout_centerVertical="true"
+                                android:layout_toRightOf="@+id/layBirthPro"
                                 android:fontFamily="@font/gilroy_bold"
                                 android:gravity="top"
                                 android:imeOptions="actionDone"
@@ -86,17 +123,19 @@
                                 android:textColorHint="@color/back_text_colour"
                                 android:textSize="@dimen/_16sp" />
                         </RelativeLayout>
+
                         <androidx.appcompat.widget.AppCompatTextView
-                            android:layout_below="@+id/lau"
+                            android:id="@+id/tvMonth"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_below="@+id/lau"
                             android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/_10dp"
                             android:fontFamily="@font/gilroy_bold"
                             android:gravity="center"
                             android:imeOptions="actionDone"
                             android:inputType="textMultiLine"
                             android:maxLines="2"
-                            android:layout_marginTop="@dimen/_10dp"
                             android:text="Payslip of march"
                             android:textColor="@color/back_text_colour"
                             android:textColorHint="@color/back_text_colour"
@@ -151,18 +190,18 @@
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/imgEdit"
-                    android:layout_width="@dimen/_24dp"
-                    android:layout_height="@dimen/_24dp"
-                    android:layout_below="@+id/layTop"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="@dimen/_10dp"
-                    android:layout_marginTop="@dimen/_10dp"
-                    android:src="@drawable/ic_edit_black"
-                    android:visibility="visible" />
+                       <androidx.appcompat.widget.AppCompatImageView
+                           android:id="@+id/imgEdit"
+                           android:layout_width="@dimen/_24dp"
+                           android:layout_height="@dimen/_24dp"
+                           android:layout_below="@+id/layTop"
+                           android:layout_alignParentStart="true"
+                           android:layout_centerVertical="true"
+                           android:layout_gravity="center"
+                           android:layout_marginLeft="@dimen/_10dp"
+                           android:layout_marginTop="@dimen/_10dp"
+                           android:src="@drawable/ic_edit_black"
+                           android:visibility="visible" />
 
                 <RelativeLayout
                     android:id="@+id/layRM"
@@ -175,7 +214,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvDriverBhatta"
-                        android:layout_width="wrap_content"
+                        android:layout_width="@dimen/_110dp"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:fontFamily="@font/gilroy_semibold"
@@ -190,13 +229,13 @@
                         android:layout_height="wrap_content"
                         android:layout_toRightOf="@+id/tvDriverBhatta"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="  :  "
+                        android:text=" :  "
                         android:textColor="@color/gray"
                         android:textSize="@dimen/_14sp"
                         android:visibility="visible" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvRmName"
+                        android:id="@+id/tvEmpName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_toRightOf="@+id/tvDriverBhattaColon"
@@ -218,7 +257,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvCreditAmt"
-                        android:layout_width="wrap_content"
+                        android:layout_width="@dimen/_110dp"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:fontFamily="@font/gilroy_semibold"
@@ -234,13 +273,13 @@
                         android:layout_marginRight="@dimen/_5dp"
                         android:layout_toRightOf="@+id/tvCreditAmt"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="          : "
+                        android:text=" : "
                         android:textColor="@color/back_text_colour"
                         android:textSize="@dimen/_14sp"
                         android:visibility="visible" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvCreditAmtValue"
+                        android:id="@+id/tvDesiValue"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_toRightOf="@+id/tvCreditAmtColon"
@@ -262,7 +301,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvlayCredDays"
-                        android:layout_width="wrap_content"
+                        android:layout_width="@dimen/_110dp"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:fontFamily="@font/gilroy_semibold"
@@ -278,13 +317,13 @@
                         android:layout_marginRight="@dimen/_5dp"
                         android:layout_toRightOf="@+id/tvlayCredDays"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="      : "
+                        android:text=" : "
                         android:textColor="@color/back_text_colour"
                         android:textSize="@dimen/_14sp"
                         android:visibility="visible" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvlayCredDaysValue"
+                        android:id="@+id/tvPaymentDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_toRightOf="@+id/tvlayCredDaysColon"
@@ -306,7 +345,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvNoOfLeaves"
-                        android:layout_width="wrap_content"
+                        android:layout_width="@dimen/_110dp"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:fontFamily="@font/gilroy_semibold"
@@ -322,7 +361,7 @@
                         android:layout_marginRight="@dimen/_5dp"
                         android:layout_toRightOf="@+id/tvNoOfLeaves"
                         android:fontFamily="@font/gilroy_bold"
-                        android:text="         : "
+                        android:text=" : "
                         android:textColor="@color/back_text_colour"
                         android:textSize="@dimen/_14sp"
                         android:visibility="visible" />
@@ -350,7 +389,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvSalary"
-                        android:layout_width="wrap_content"
+                        android:layout_width="@dimen/_110dp"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:fontFamily="@font/gilroy_semibold"
@@ -366,7 +405,7 @@
                         android:layout_marginRight="@dimen/_5dp"
                         android:layout_toRightOf="@+id/tvSalary"
                         android:fontFamily="@font/gilroy_bold"
-                        android:text="                     : "
+                        android:text=" : "
                         android:textColor="@color/back_text_colour"
                         android:textSize="@dimen/_14sp"
                         android:visibility="visible" />
@@ -394,7 +433,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvAdd"
-                        android:layout_width="wrap_content"
+                        android:layout_width="@dimen/_110dp"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:fontFamily="@font/gilroy_semibold"
@@ -410,18 +449,21 @@
                         android:layout_marginRight="@dimen/_5dp"
                         android:layout_toRightOf="@+id/tvAdd"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="                 : "
+                        android:text=" : "
                         android:textColor="@color/back_text_colour"
                         android:textSize="@dimen/_14sp"
                         android:visibility="visible" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
+                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                         android:id="@+id/tvAddValue"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_toRightOf="@+id/tvAddColon"
+                        android:background="@drawable/toggle_editext_salary_color"
                         android:fontFamily="@font/gilroy_semibold"
+                        android:imeOptions="actionDone"
                         android:text=""
+                        android:inputType="numberDecimal"
                         android:textColor="@color/back_text_colour"
                         android:textSize="@dimen/_14sp" />
 
@@ -437,7 +479,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvDed"
-                        android:layout_width="wrap_content"
+                        android:layout_width="@dimen/_110dp"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:fontFamily="@font/gilroy_semibold"
@@ -453,18 +495,21 @@
                         android:layout_marginRight="@dimen/_5dp"
                         android:layout_toRightOf="@+id/tvDed"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="              : "
+                        android:text=" : "
                         android:textColor="@color/back_text_colour"
                         android:textSize="@dimen/_14sp"
                         android:visibility="visible" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
+                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                         android:id="@+id/tvDedValue"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_toRightOf="@+id/tvDedColon"
+                        android:background="@drawable/toggle_editext_salary_color"
                         android:fontFamily="@font/gilroy_semibold"
                         android:text=""
+                        android:inputType="numberDecimal"
+                        android:imeOptions="actionDone"
                         android:textColor="@color/back_text_colour"
                         android:textSize="@dimen/_14sp" />
 
@@ -494,22 +539,27 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="Total charges        :   "
+                        android:text="Total charges       :   "
                         android:textAlignment="center"
                         android:textColor="@color/color_main"
                         android:textSize="@dimen/_14sp" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
+                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                         android:id="@+id/tvTotalValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_toRightOf="@+id/tvBirthName"
+                        android:background="@drawable/toggle_editext_salary_color"
                         android:fontFamily="@font/gilroy_semibold"
                         android:text="@string/scr_lbl_rs_0"
+                        android:inputType="numberDecimal"
+                        android:imeOptions="actionDone"
                         android:textColor="@color/color_main"
                         android:textSize="@dimen/_14sp" />
 
                 </RelativeLayout>
+
+                   </RelativeLayout>
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/addSubmitButton"
@@ -517,12 +567,12 @@
                     android:layout_height="@dimen/_40dp"
                     android:layout_alignParentBottom="true"
                     android:layout_gravity="center_horizontal"
+                    android:layout_marginHorizontal="@dimen/_10dp"
                     android:layout_marginTop="@dimen/_16dp"
-                    android:layout_marginBottom="@dimen/_10dp"
+                    android:layout_marginBottom="@dimen/_16dp"
                     android:background="@drawable/bg_button_round_corner_5"
                     android:fontFamily="@font/gilroy_semibold"
                     android:gravity="center"
-                    android:layout_marginHorizontal="@dimen/_10dp"
                     android:paddingTop="@dimen/_1dp"
                     android:text="@string/scr_lbl_download"
                     android:textColor="@color/white"

@@ -13,10 +13,17 @@
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/bottom_line_textview.xml" value="0.18385416666666668" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/btnselector.xml" value="0.17395833333333333" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/button_round_shape_corners.xml" value="0.19010416666666666" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/calender_square_grey.xml" value="0.16354166666666667" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/call_background_stroke.xml" value="0.18958333333333333" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/default_background_oval.xml" value="0.2203125" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/down_white_customized.xml" value="0.1648148148148148" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/draw_nav_selectore.xml" value="0.2203125" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/employee_gradient_blue.xml" value="0.1824074074074074" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/home_background_oval.xml" value="0.13229166666666667" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/home_gradient_blue.xml" value="0.1648148148148148" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/ic_call.xml" value="0.1171875" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/ic_home.xml" value="0.13229166666666667" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/ic_search.xml" value="0.13229166666666667" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/layout_round_shape_corners.xml" value="0.2046875" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/layout_round_shape_corners_8_grey_view.xml" value="0.2046875" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/layout_round_shape_corners_att_blue.xml" value="0.1648148148148148" />
@@ -25,14 +32,19 @@
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/layout_round_shape_grey_border_small.xml" value="0.2046875" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/layout_round_shape_grey_border_small_blue.xml" value="0.20416666666666666" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/layout_round_shape_status_bar.xml" value="0.2046875" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/like_background_oval.xml" value="0.1328125" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/nav_selectore.xml" value="0.2203125" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/round_corner_shape_without_fill_thin_blue.xml" value="0.2046875" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/round_corner_shape_without_fill_thin_grey.xml" value="0.2046875" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/round_corner_shape_without_fill_thin_trans.xml" value="0.2046875" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/round_corner_shape_without_fill_thin_yellow.xml" value="0.18385416666666668" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/shape_round_white_round_thick_dialog.xml" value="0.1648148148148148" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/state_home.xml" value="0.19947916666666668" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/toggle_add_reminder_edt.xml" value="0.2046875" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/toggle_editext_blue_color.xml" value="0.2046875" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/toggle_editext_color.xml" value="0.18385416666666668" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/toggle_editext_salary_color.xml" value="0.2046875" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/transition_background_drawable_home.xml" value="0.13229166666666667" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/drawable/tst.xml" value="0.19907407407407407" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/absent_view.xml" value="0.15942028985507245" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/activity_add_employee.xml" value="0.25" />
@@ -54,22 +66,25 @@
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/activity_search.xml" value="0.12318840579710146" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/activity_start_attendance.xml" value="0.11730072463768115" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/activity_visit_report.xml" value="0.1" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/activity_welcome.xml" value="0.18" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/calender_layout.xml" value="0.25" />
-        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_add_employee.xml" value="0.16476190476190475" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_add_employee.xml" value="0.25" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_collapse_account_collaps_header.xml" value="0.1381340579710145" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_collapse_account_header.xml" value="0.1" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_collapse_common_header.xml" value="0.5" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_collapse_dashboard_header.xml" value="0.22" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_collapse_filter_header.xml" value="0.1" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_complaints.xml" value="0.1526268115942029" />
-        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_dashboard.xml" value="0.2248263888888889" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_dashboard.xml" value="0.25" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_dispatch_pending.xml" value="0.1" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_employee.xml" value="0.18" />
-        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_employee_leave_list.xml" value="0.18" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_employee_leave_list.xml" value="0.33" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_empty_activity_layout.xml" value="0.1" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_empty_enquiry_layout.xml" value="0.25" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_enquiry_report.xml" value="0.1308876811594203" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_header_login.xml" value="0.33" />
-        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_leave.xml" value="0.16077898550724637" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_leave.xml" value="0.2969647251845775" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_leave_list.xml" value="0.12952898550724637" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_login.xml" value="0.25" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_my_account.xml" value="0.25" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/content_notifications.xml" value="0.16077898550724637" />
@@ -130,7 +145,7 @@
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/row_birth_day_list.xml" value="0.1802536231884058" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/row_customer_360.xml" value="0.25" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/row_employee.xml" value="0.22" />
-        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/row_employee_leave.xml" value="0.22" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/row_employee_leave.xml" value="0.33" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/row_employee_time_schedule.xml" value="0.33" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/row_images_kata_chithi.xml" value="0.15489130434782608" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/row_leaves.xml" value="0.33" />
@@ -147,9 +162,10 @@
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/row_sales_credit_report.xml" value="0.15489130434782608" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/row_sales_credit_table.xml" value="0.15489130434782608" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/row_trip_awadhi_textview.xml" value="0.15489130434782608" />
-        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/welcome_slide1.xml" value="0.12001811594202899" />
-        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/welcome_slide2.xml" value="0.12001811594202899" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/welcome_slide1.xml" value="0.22" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/welcome_slide2.xml" value="0.18" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/welcome_slide3.xml" value="0.12001811594202899" />
+        <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/layout/welcome_slide4.xml" value="0.12001811594202899" />
         <entry key="..\:/Om_informatic_projects/HR_APP/hr_github/Hr_app/app/src/main/res/menu/menu_bottom_navigation.xml" value="0.1578125" />
       </map>
     </option>

@@ -4,10 +4,18 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,12 +61,17 @@ import com.ominfo.hra_app.ui.salary.adapter.SalarySheetListAdapter;
 import com.ominfo.hra_app.ui.salary.model.SalarySheetList;
 import com.ominfo.hra_app.ui.salary.model.SalarySheetResponse;
 import com.ominfo.hra_app.ui.salary.model.SalarySheetViewModel;
+import com.ominfo.hra_app.ui.salary.model.SalarySlipResponse;
+import com.ominfo.hra_app.ui.salary.model.SalarySlipViewModel;
 import com.ominfo.hra_app.ui.sales_credit.adapter.EnquiryPageAdapter;
 import com.ominfo.hra_app.ui.sales_credit.model.EnquiryPagermodel;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -69,6 +82,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -88,18 +102,37 @@ public class SalarySlipFragment extends BaseFragment {
     AppCompatImageView imgNotify;
     @BindView(R.id.tvTitle)
     AppCompatTextView tvToolbarTitle;
-   /* @BindView(R.id.tv_emptyLayTitle)
-    AppCompatTextView tv_emptyLayTitle;*/
- /*   @BindView(R.id.imgBirthPro)
+    @BindView(R.id.tvCompanyName)
+    AppCompatTextView tvCompanyName;
+    @BindView(R.id.tvEmpName)
+    AppCompatTextView tvEmpName;
+    @BindView(R.id.tvMonth)
+    AppCompatTextView tvMonth;
+    @BindView(R.id.tvDesiValue)
+    AppCompatTextView tvDesiValue;
+    @BindView(R.id.tvPaymentDate)
+    AppCompatTextView tvPaymentDate;
+    @BindView(R.id.tvNoOfLeavesValue)
+    AppCompatTextView tvNoOfLeavesValue;
+    @BindView(R.id.tvSalaryValue)
+    AppCompatTextView tvSalaryValue;
+    @BindView(R.id.tvAddValue)
+    AppCompatAutoCompleteTextView tvAddValue;
+    @BindView(R.id.tvDedValue)
+    AppCompatAutoCompleteTextView tvDedValue;
+    @BindView(R.id.tvTotalValue)
+    AppCompatAutoCompleteTextView tvTotalValue;
+    @BindView(R.id.imgBirthPro)
     CircleImageView imgBirthPro;
     @BindView(R.id.progress_barBirth)
-    ProgressBar progress_barBirth;*/
+    ProgressBar progress_barBirth;
+    @BindView(R.id.imgEdit)
+    AppCompatImageView imgEdit;
     private AppDatabase mDb;
     final Calendar myCalendar = Calendar.getInstance();
     @Inject
     ViewModelFactory mViewModelFactory;
-    private SalarySheetViewModel salarySheetViewModel;
-
+    private SalarySlipViewModel salarySlipViewModel;
     private Dialog mDialogChangePass;
     LinearLayoutCompat layoutLeaveTime;
     AppCompatTextView appcomptextLeaveTime;
@@ -111,12 +144,12 @@ public class SalarySlipFragment extends BaseFragment {
     AppCompatTextView tvDateValueTo,tvTimeValueFrom,tvTimeValueTo ;
     @BindView(R.id.progressBarHolder)
     FrameLayout mProgressBarHolder;
-   /* @BindView(R.id.empty_layoutActivity)
-    LinearLayoutCompat emptyLayout;
-    @BindView(R.id.iv_emptyLayimage)
-    AppCompatImageView iv_emptyLayimage;*/
     @BindView(R.id.tvNotifyCount)
     AppCompatTextView tvNotifyCount;
+    @BindView(R.id.contentPrint)
+    RelativeLayout contentPrint;
+    String empId = "0";
+    double salary = 0.0;
     public SalarySlipFragment() {
         // Required empty public constructor
     }
@@ -142,6 +175,8 @@ public class SalarySlipFragment extends BaseFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.activity_salary_slip, container, false);
         ButterKnife.bind(this, view);
+        empId = getArguments().getString(Constants.edit);
+        //salary = getArguments().getString(Constants.MESSAGE);
         return view;
     }
 
@@ -156,25 +191,97 @@ public class SalarySlipFragment extends BaseFragment {
 
     private void init(){
         setToolbar();
+        callSalarySheetListApi();
+        tvAddValue.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                //if(s.length() != 0) {
+                Double totalSum = salary - Double.parseDouble(tvDedValue.getText().toString()
+                        .equals("")
+                                ||tvDedValue.getText().toString()==null?"0":tvDedValue.getText().toString()) + Double.parseDouble(s.toString().equals("")
+                        ||s.toString()==null?"0":s.toString());
+                tvTotalValue.setText(totalSum+"");
+            }
+        });
+        tvDedValue.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                //if(s.length() != 0) {
+                Double totalSum = salary + Double.parseDouble(tvAddValue.getText().toString().equals("")
+                        ||tvAddValue.getText().toString()==null?"0":tvAddValue.getText().toString()) - Double.parseDouble(s.toString().equals("")
+                        ||s.toString()==null?"0":s.toString());
+                tvTotalValue.setText(totalSum+"");
+              /*  }
+                else{
+
+                }*/
+            }
+        });
     }
 
     private void injectAPI() {
-        salarySheetViewModel = ViewModelProviders.of(this, mViewModelFactory).get(SalarySheetViewModel.class);
-        salarySheetViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_SALARY_SHEET));
+        salarySlipViewModel = ViewModelProviders.of(this, mViewModelFactory).get(SalarySlipViewModel.class);
+        salarySlipViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_SALARY_SLIP));
    }
+    private Bitmap screenShot(View view) {
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),view.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+        return bitmap;
+    }
 
+    private void share(Bitmap bitmap){
+        String pathofBmp=
+                MediaStore.Images.Media.insertImage(mContext.getContentResolver(),
+                        bitmap,"title", null);
+        Uri uri = Uri.parse(pathofBmp);
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("image/*");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Star App");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "");
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        mContext.startActivity(Intent.createChooser(shareIntent, "hello hello"));
+    }
     /* Call Api For Leave Applications */
-    private void callSalarySheetListApi(String pageNo) {
+    private void callSalarySheetListApi() {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
-                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_salary_sheet);
-                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
-                RequestBody mRequestBodyPageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);
-                RequestBody mRequestBodyPageSize = RequestBody.create(MediaType.parse("text/plain"), "8");
+                if(loginTable.getIsadmin().equals("0")){
+                    imgEdit.setVisibility(View.GONE);
+                    tvAddValue.setEnabled(false);
+                    tvDedValue.setEnabled(false);
+                    tvTotalValue.setEnabled(false);
+                }else{
+                    imgEdit.setVisibility(View.VISIBLE);
+                    tvAddValue.setEnabled(false);
+                    tvDedValue.setEnabled(false);
+                    tvTotalValue.setEnabled(false);
+                }
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_emp_sal_slip);
+                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),empId);
 
-                salarySheetViewModel.hitSalarySheetAPI(mRequestBodyAction,mRequestBodyTypeEmpId,
-                        mRequestBodyPageNo,mRequestBodyPageSize);
+                salarySlipViewModel.hitSalarySlipAPI(mRequestBodyAction,mRequestBodyTypeEmpId);
             }
             else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
@@ -258,8 +365,8 @@ public class SalarySlipFragment extends BaseFragment {
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment fragment = new DashboardFragment();
-                ((BaseActivity)mContext).moveFragment(mContext,fragment);
+                SalarySlipFragment myFrag = new SalarySlipFragment();
+                removeFragment(myFrag);
             }
         });
         imgNotify.setOnClickListener(new View.OnClickListener() {
@@ -270,21 +377,22 @@ public class SalarySlipFragment extends BaseFragment {
         });
     }
 
-    /*//perform click actions
-    @OnClick({R.id.btnSubmit})
+    //perform click actions
+    @OnClick({R.id.addSubmitButton,R.id.imgEdit})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
-            case R.id.btnSubmit:
-                SalarySheetFragment myFrag = new SalarySheetFragment();
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                FragmentTransaction trans = manager.beginTransaction();
-                trans.remove(myFrag);
-                trans.commit();
-                manager.popBackStack();
+            case R.id.addSubmitButton:
+                Bitmap bitmap = screenShot(contentPrint);
+                share(bitmap);
                 break;
+            case R.id.imgEdit:
+                imgEdit.setVisibility(View.VISIBLE);
+                tvAddValue.setEnabled(true);
+                tvDedValue.setEnabled(true);
+                tvTotalValue.setEnabled(true);
         }
-    }*/
+    }
 
     //set value to Search dropdown
     private void setDropdownLeaveDuration(AppCompatAutoCompleteTextView mListDropdownView) {
@@ -485,187 +593,12 @@ public class SalarySlipFragment extends BaseFragment {
     }
 
 
-
-    /*private void injectAPI() {
-        mGetVehicleViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetVehicleViewModel.class);
-        mGetVehicleViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_GET_VEHICLE));
-    }*/
-
-  /*  *//* Call Api For Vehicle List *//*
-    private void callVehicleListApi(String fromDate,String toDate) {
-        if (NetworkCheck.isInternetAvailable(mContext)) {
-            GetVehicleListRequest mRequest = new GetVehicleListRequest();
-            mRequest.setUserkey(mUserKey);//mUserKey); //6b07b768-926c-49b6-ac1c-89a9d03d4c3b
-            mRequest.setFromDate(fromDate);
-            mRequest.setToDate(toDate);
-            Gson gson = new Gson();
-            String bodyInStringFormat = gson.toJson(mRequest);
-            mGetVehicleViewModel.hitGetVehicleApi(bodyInStringFormat);
-        } else {
-            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
-        }
-    }*/
-
-
-
-  /*  private void setAdapterForVehicleList() {
-        if (vehicleModelList.size() > 0) {
-            mLrNumberAdapter = new LrNumberAdapter(mContext, vehicleModelList, new LrNumberAdapter.ListItemSelectListener() {
-                @Override
-                public void onItemClick(GetVehicleListResult mDataTicket) {
-                    Intent intent = new Intent(mContext,AddLrActivity.class);
-                    intent.putExtra(Constants.TRANSACTION_ID, mDataTicket.getTransactionID());
-                    intent.putExtra(Constants.FROM_SCREEN, Constants.LIST);
-                    startActivity(intent);
-                }
-            });
-            mRecylerViewLrNumber.setHasFixedSize(true);
-            mRecylerViewLrNumber.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
-            mRecylerViewLrNumber.setAdapter(mLrNumberAdapter);
-            mRecylerViewLrNumber.setVisibility(View.VISIBLE);
-            linearLayoutEmptyActivity.setVisibility(View.GONE);
-            imgEmptyImage.setBackground(getResources().getDrawable(R.drawable.ic_error_load));
-            tvEmptyLayTitle.setText(getString(R.string.scr_lbl_data_loading));
-        } else {
-            mRecylerViewLrNumber.setVisibility(View.GONE);
-            linearLayoutEmptyActivity.setVisibility(View.VISIBLE);
-            imgEmptyImage.setBackground(getResources().getDrawable(R.drawable.ic_error_load));
-            tvEmptyLayTitle.setText(R.string.scr_lbl_no_data_available);
-        }
-    }*/
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mContext = context;
     }
 
-
-  /*  //set date picker view
-    private void openDataPicker(AppCompatTextView datePickerField,int mFrom) {
-        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-                // TODO Auto-generated method stub
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                String myFormat="";
-                if(mFrom==0) {
-                    myFormat = "dd MMM yyyy"; //In which you need put here
-                }
-                else{
-                    myFormat = "dd/MM/yyyy"; //In which you need put here
-                }
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-                datePickerField.setText(sdf.format(myCalendar.getTime()));
-            }
-
-        };
-
-        new DatePickerDialog(this, date, myCalendar
-                .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-
-    }
-
-    //show truck details popup
-    public void showTruckDetailsDialog() {
-        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_truck_details);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-        RelativeLayout relRC = mDialog.findViewById(R.id.relRC);
-        RelativeLayout relPUC = mDialog.findViewById(R.id.relPUC);
-        RelativeLayout relIss = mDialog.findViewById(R.id.relIss);
-
-        relRC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        relPUC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        relIss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                showFullImageDialog();
-            }
-        });
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }
-
-    //show truck details popup
-    public void showFullImageDialog() {
-        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_doc_full_view);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.detailsButton);
-
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }*/
-
-
-    /*//request camera and storage permission
-    private void requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (mContext.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-            ) {
-
-                requestPermissions(new String[]
-                                { Manifest.permission.CAMERA,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                },
-                        1000);
-
-            } else {
-                //createFolder();
-            }
-        } else {
-            //createFolder();
-        }
-    }
-*/
 
     /*
      * ACCESS_FINE_LOCATION permission result
@@ -704,14 +637,22 @@ public class SalarySlipFragment extends BaseFragment {
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
                     try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_SALARY_SHEET)) {
-                            SalarySheetResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SalarySheetResponse.class);
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_SALARY_SLIP)) {
+                            SalarySlipResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SalarySlipResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-
+                                AppUtils.loadImageURL(mContext,responseModel.getResult().getList().get(0).getLogoUrl(),
+                                        imgBirthPro,progress_barBirth);
+                                tvCompanyName.setText(responseModel.getResult().getList().get(0).getName());
+                                tvEmpName.setText(responseModel.getResult().getList().get(0).getEmpName());
+                                tvMonth.setText("Payslip of "+AppUtils.convertIntToMonth(Integer.parseInt(responseModel.getResult().getList().get(0).getMonth())));
+                                tvNoOfLeavesValue.setText(responseModel.getResult().getList().get(0).getLeaves());
+                                tvSalaryValue.setText(responseModel.getResult().getList().get(0).getSalary());
+                                salary = Double.parseDouble(tvSalaryValue.getText().toString());
+                                tvAddValue.setText(responseModel.getResult().getList().get(0).getAddition());
+                                tvDedValue.setText(responseModel.getResult().getList().get(0).getDeduction());
+                                tvTotalValue.setText(responseModel.getResult().getList().get(0).getTotal());
                             }
-
                         }
-
                     }catch (Exception e){
                         e.printStackTrace();
                     }

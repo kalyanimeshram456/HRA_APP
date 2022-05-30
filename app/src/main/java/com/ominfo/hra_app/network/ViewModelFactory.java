@@ -32,19 +32,23 @@ import com.ominfo.hra_app.ui.my_account.model.ProfileViewModel;
 import com.ominfo.hra_app.ui.my_account.model.GetTicketNoViewModel;
 import com.ominfo.hra_app.ui.my_account.model.RaiseTicketViewModel;
 import com.ominfo.hra_app.ui.my_account.model.UpdateTicketViewModel;
+import com.ominfo.hra_app.ui.notifications.model.AbsentMarkCountViewModel;
 import com.ominfo.hra_app.ui.notifications.model.DeleteNotificationViewModel;
 import com.ominfo.hra_app.ui.notifications.model.GetSingleRecordViewModel;
+import com.ominfo.hra_app.ui.notifications.model.LateMarkCountViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LeaveStatusViewModel;
 import com.ominfo.hra_app.ui.notifications.model.NotificationViewModel;
 import com.ominfo.hra_app.ui.registration.model.ApplyCouponViewModel;
 import com.ominfo.hra_app.ui.registration.model.CheckPrefixViewModel;
 import com.ominfo.hra_app.ui.registration.model.RegistrationViewModel;
 import com.ominfo.hra_app.ui.registration.model.SubscriptionViewModel;
+import com.ominfo.hra_app.ui.salary.model.DeductLeaveViewModel;
 import com.ominfo.hra_app.ui.salary.model.MarkNotLateViewModel;
 import com.ominfo.hra_app.ui.salary.model.MarkPresentViewModel;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllListViewModel;
 import com.ominfo.hra_app.ui.salary.model.SalaryDisbursetViewModel;
 import com.ominfo.hra_app.ui.salary.model.SalarySheetViewModel;
+import com.ominfo.hra_app.ui.salary.model.SalarySlipViewModel;
 import com.ominfo.hra_app.ui.salary.model.UnpaidLeaveViewModel;
 import com.ominfo.hra_app.ui.salary.model.UpdateSalaryViewModel;
 import com.ominfo.hra_app.ui.sales_credit.model.SalesCreditViewModel;
@@ -215,6 +219,14 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
              return (T) new UnpaidLeaveViewModel(service);
          }else  if (modelClass.isAssignableFrom(MarkNotLateViewModel.class)) {
              return (T) new MarkNotLateViewModel(service);
+         }else  if (modelClass.isAssignableFrom(DeductLeaveViewModel.class)) {
+             return (T) new DeductLeaveViewModel(service);
+         }else  if (modelClass.isAssignableFrom(SalarySlipViewModel.class)) {
+             return (T) new SalarySlipViewModel(service);
+         }else  if (modelClass.isAssignableFrom(LateMarkCountViewModel.class)) {
+             return (T) new LateMarkCountViewModel(service);
+         }else  if (modelClass.isAssignableFrom(AbsentMarkCountViewModel.class)) {
+             return (T) new AbsentMarkCountViewModel(service);
          }
 
         throw new IllegalArgumentException("Unknown class name");

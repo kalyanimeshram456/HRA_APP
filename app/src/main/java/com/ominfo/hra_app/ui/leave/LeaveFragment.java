@@ -23,6 +23,8 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,6 +32,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
+import com.ominfo.hra_app.MainActivity;
 import com.ominfo.hra_app.R;
 import com.ominfo.hra_app.basecontrol.BaseActivity;
 import com.ominfo.hra_app.basecontrol.BaseApplication;
@@ -53,6 +56,7 @@ import com.ominfo.hra_app.ui.leave.model.LeaveStatusResponse;
 import com.ominfo.hra_app.ui.leave.model.LeaveStatusViewModel;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
+import com.ominfo.hra_app.ui.salary.fragment.SalarySlipFragment;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
 
@@ -102,6 +106,10 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
     @BindView(R.id.tvNotifyCount)
     AppCompatTextView tvNotifyCount;
     final Calendar myCalendar = Calendar.getInstance();
+    @BindView(R.id.tvFilterCount)
+    AppCompatTextView tvFilterCount;
+    @BindView(R.id.imgReport)
+    AppCompatImageView imgReport;
     @Inject
     ViewModelFactory mViewModelFactory;
     private AcceptRejectLeaveListViewModel rejectLeaveListViewModel;
@@ -161,6 +169,7 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
                 .into(iv_emptyLayimage);
         tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
         tv_emptyLayTitle.setText("Search something...");
+        imgReport.setVisibility(View.VISIBLE);
         showFilterDialog(1);
         swipeRefresh.setOnRefreshListener(this);
         rvSalesList.setHasFixedSize(true);
@@ -181,8 +190,18 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
                     }
                     callLeaveStatusApi(employeeList.getId(), changeStatus);
                 }else{
-                    PastLeaveFragment pastLeaveFragment= new PastLeaveFragment();
-                    moveFromFragment(pastLeaveFragment,mContext);
+                    if(employeeList.getEmpId()!=null) {
+                        PastLeaveFragment sheetFragment = new PastLeaveFragment();
+                        FragmentManager fragmentManager = ((MainActivity) mContext).getSupportFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        Bundle args = new Bundle();
+                        args.putString(Constants.edit, employeeList.getEmpId());
+                        args.putString(Constants.FROM_SCREEN, "admin");
+                        sheetFragment.setArguments(args);
+                        fragmentTransaction.add(R.id.framecontainer, sheetFragment);
+                        fragmentTransaction.addToBackStack(null);
+                        fragmentTransaction.commit();
+                    }else{LogUtil.printToastMSG(mContext,"Something went wrong, Record not found!");}
                 }
             }
         });
@@ -241,6 +260,7 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
             @Override
             public void onClick(View v) {
                 mDialog.dismiss();
+                leaveAdapter.clear();
                 callAcceptRejectListApi("0");
                 //doApiCall();
             }
@@ -410,7 +430,13 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
 
     private void setToolbar() {
         //set toolbar title
-        tvToolbarTitle.setText(R.string.scr_lbl_leaves);
+        LoginTable loginTable = mDb.getDbDAO().getLoginData();
+        if (!loginTable.getIsadmin().equals("0")){
+            imgReport.setVisibility(View.VISIBLE);
+            tvFilterCount.setVisibility(View.VISIBLE);
+        }else{imgReport.setVisibility(View.GONE);
+            tvFilterCount.setVisibility(View.GONE);}
+        tvToolbarTitle.setText("Leaves");
         ((BaseActivity)mContext).initToolbar(5, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.imgBack, R.id.imgCall);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -525,7 +551,11 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
                                 if (acceptRejectLeaveArrayList != null) {
                                     //employeeListArrayList= new ArrayList<>();
                                 }
-                                acceptRejectLeaveArrayList = responseModel.getResult().getLeave();
+                                if(responseModel.getResult().getLeave()!=null) {
+                                    acceptRejectLeaveArrayList = responseModel.getResult().getLeave();
+                                    doApiCall();
+                                }
+                                acceptRejectLeaveArrayList.add(new AcceptRejectLeave());
                                 doApiCall();
                             }
                         }

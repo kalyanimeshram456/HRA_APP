@@ -90,7 +90,7 @@
                             android:focusableInTouchMode="true"
                             android:fontFamily="@font/gilroy_semibold"
                             android:hint="@string/scr_lbl_enter_company_name"
-                            android:imeOptions="actionDone"
+                            android:imeOptions="actionNext"
                             android:inputType="textPersonName"
                             android:padding="@dimen/_10dp"
                             android:textColor="@color/black_heading"
@@ -139,7 +139,7 @@
                             android:focusableInTouchMode="true"
                             android:fontFamily="@font/gilroy_semibold"
                             android:hint="@string/scr_lbl_enter_gst_number"
-                            android:imeOptions="actionDone"
+                            android:imeOptions="actionNext"
                             android:inputType="text"
                             android:padding="@dimen/_10dp"
                             android:textColor="@color/black_heading"
@@ -189,7 +189,7 @@
                             android:focusableInTouchMode="true"
                             android:fontFamily="@font/gilroy_semibold"
                             android:hint="@string/scr_lbl_enter_address"
-                            android:imeOptions="actionDone"
+                            android:imeOptions="actionNext"
                             android:inputType="textPostalAddress"
                             android:padding="@dimen/_10dp"
                             android:textColor="@color/black_heading"
@@ -238,7 +238,7 @@
                             android:focusableInTouchMode="true"
                             android:fontFamily="@font/gilroy_semibold"
                             android:hint="@string/scr_lbl_enter_pincode"
-                            android:imeOptions="actionDone"
+                            android:imeOptions="actionNext"
                             android:inputType="number"
                             android:maxLength="6"
                             android:padding="@dimen/_10dp"
@@ -351,7 +351,7 @@
                             android:focusableInTouchMode="true"
                             android:fontFamily="@font/gilroy_semibold"
                             android:hint="abc@mail.com"
-                            android:imeOptions="actionDone"
+                            android:imeOptions="actionNext"
                             android:inputType="textEmailAddress"
                             android:padding="@dimen/_10dp"
                             android:textColor="@color/black_heading"
@@ -400,7 +400,7 @@
                             android:focusableInTouchMode="true"
                             android:fontFamily="@font/gilroy_semibold"
                             android:hint="@string/msg_enter_admin_name"
-                            android:imeOptions="actionDone"
+                            android:imeOptions="actionNext"
                             android:inputType="textPersonName"
                             android:padding="@dimen/_10dp"
                             android:textColor="@color/black_heading"
@@ -448,8 +448,9 @@
                             android:focusableInTouchMode="true"
                             android:fontFamily="@font/gilroy_semibold"
                             android:hint="@string/scr_lbl_enter_mobile_number"
-                            android:imeOptions="actionDone"
+                            android:imeOptions="actionNext"
                             android:inputType="number"
+                            android:maxLength="10"
                             android:padding="@dimen/_10dp"
                             android:textColor="@color/black_heading"
                             android:textColorHint="@color/app_gray"
@@ -725,6 +726,18 @@
                         </RelativeLayout>
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvMissing"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginHorizontal="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_16dp"
+                        android:fontFamily="@font/gilroy_semibold"
+                        android:text="@string/fields_are_missing"
+                        android:textColor="@color/Dark_Red"
+                        android:textSize="@dimen/_12sp" />
+
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnRegister"
                         android:layout_width="match_parent"
@@ -732,7 +745,7 @@
                         android:layout_alignParentBottom="true"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginHorizontal="@dimen/_10dp"
-                        android:layout_marginTop="@dimen/_25dp"
+                        android:layout_marginTop="@dimen/_20dp"
                         android:layout_marginBottom="@dimen/_10dp"
                         android:background="@drawable/bg_button_round_corner_5"
                         android:fontFamily="@font/gilroy_semibold"
@@ -741,6 +754,37 @@
                         android:text="@string/scr_lbl_register"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_16sp" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="@dimen/_16dp"
+                        android:gravity="center_horizontal">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvReg"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:layout_marginTop="@dimen/_16dp"
+                            android:fontFamily="@font/gilroy_regular"
+                            android:text="Already have an Account?"
+                            android:textColor="@color/black_heading"
+                            android:textSize="@dimen/_12sp" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvRegClick"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:layout_marginTop="@dimen/_16dp"
+                            android:layout_toRightOf="@+id/tvReg"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:text=" Login"
+                            android:textColor="@color/color_main"
+                            android:textSize="@dimen/_13sp" />
+                    </RelativeLayout>
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 

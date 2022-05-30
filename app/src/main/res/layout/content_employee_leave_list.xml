@@ -98,7 +98,7 @@
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:id="@+id/layAdd"
-                        android:layout_width="wrap_content"
+                        android:layout_width="@dimen/_80dp"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
@@ -106,7 +106,7 @@
                             android:id="@+id/imgAddLeave"
                             android:layout_width="@dimen/_40dp"
                             android:layout_height="@dimen/_40dp"
-                            android:layout_marginHorizontal="@dimen/_16dp"
+                            android:layout_marginLeft="@dimen/_22dp"
                             android:layout_marginTop="@dimen/_16dp"
                             android:src="@drawable/ic_add_dashboard" />
 
@@ -125,16 +125,17 @@
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:id="@+id/layPast"
-                        android:layout_toRightOf="@+id/layAdd"
-                        android:layout_width="wrap_content"
+                        android:layout_marginTop="@dimen/_2dp"
+                        android:layout_width="@dimen/_85dp"
                         android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/layAdd"
                         android:orientation="vertical">
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:id="@+id/imgPastLeave"
-                            android:layout_width="@dimen/_40dp"
-                            android:layout_height="@dimen/_40dp"
-                            android:layout_marginHorizontal="@dimen/_16dp"
+                            android:layout_width="@dimen/_38dp"
+                            android:layout_height="@dimen/_38dp"
+                            android:layout_marginLeft="@dimen/_28dp"
                             android:layout_marginTop="@dimen/_16dp"
                             android:src="@drawable/ic_past_leaves" />
 
@@ -151,6 +152,7 @@
                             android:textSize="@dimen/_12sp" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
                 </RelativeLayout>
+
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/layBorder"
                     android:layout_width="match_parent"
@@ -161,22 +163,22 @@
                     android:orientation="vertical"
                     android:paddingBottom="@dimen/_10dp">
 
-                        <include layout="@layout/content_empty_activity_layout" />
+                    <include layout="@layout/content_empty_activity_layout" />
 
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rvSalesList"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/_2dp"
-                            android:background="@color/bg_screen"
-                            android:focusable="false"
-                            android:focusableInTouchMode="false"
-                            android:nestedScrollingEnabled="false"
-                            android:paddingBottom="@dimen/_16dp"
-                            android:visibility="visible"
-                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                            tools:listitem="@layout/row_employee_leave" />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvSalesList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/_2dp"
+                        android:background="@color/bg_screen"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:nestedScrollingEnabled="false"
+                        android:paddingBottom="@dimen/_16dp"
+                        android:visibility="visible"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:listitem="@layout/row_employee_leave" />
 
 
                 </androidx.appcompat.widget.LinearLayoutCompat>

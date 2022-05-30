@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -49,6 +50,7 @@ import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.ominfo.hra_app.R;
 import com.ominfo.hra_app.basecontrol.BaseActivity;
@@ -117,7 +119,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
     LocationManager locationManager;
     private static final int REQUEST_LOCATION = 1;
-    String lat = "", lng = "";
+    String offlat = "", offlng = "",currlat = "", currlng = "";
     boolean mStartVisit = false;
     @Inject
     ViewModelFactory mViewModelFactory;
@@ -180,12 +182,12 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
             tvCheckInName.setText("Hi " + loginTable.getName() + " ! \nPlease wait...");
             try {
                 Geocoder geocoder = new Geocoder(StartAttendanceActivity.this);
-                String lat = /*loginTable.getBranchLatitude()==null && loginTable.getBranchLatitude().equals("")
+                 offlat = /*loginTable.getBranchLatitude()==null && loginTable.getBranchLatitude().equals("")
                         ?*/"19.17320224056819"/*:loginTable.getBranchLatitude()*/;
-                String lng = /*loginTable.getBranchLongitute()==null && loginTable.getBranchLongitute().equals("")
+                 offlng = /*loginTable.getBranchLongitute()==null && loginTable.getBranchLongitute().equals("")
                         ?*/"72.95589962509885"/*:loginTable.getBranchLongitute()*/;
-                List<Address> addressList = geocoder.getFromLocation(Double.parseDouble(lat),
-                        Double.parseDouble(lng), 1);
+                List<Address> addressList = geocoder.getFromLocation(Double.parseDouble(offlat),
+                        Double.parseDouble(offlng), 1);
                 if (addressList != null && addressList.size() > 0) {
                     Address address = addressList.get(0);
                     LatLng latLng1 = new LatLng(address.getLatitude(), address.getLongitude());
@@ -596,10 +598,18 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                             addressCurr.equals("Fetching...") || addressCurr.equals("")) {
                         LogUtil.printToastMSG(mContext, "Please wait, Location is getting fetch.");
                     } else {
-                        if (getAttendanceAttList!=null && getAttendanceAttList.size()>0) {
-                            callUpdateAttendanceApi(1);
-                        } else {
-                            callUpdateAttendanceApi(0);
+                        String startlocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
+                        String startlocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
+                        Double distance = AppUtils.meterDistanceBetweenPoints(Float.parseFloat(startlocationLat),
+                                Float.parseFloat(startlocationLng),Float.parseFloat(offlat),Float.parseFloat(offlng));
+                        if(distance<51) {
+                            if (getAttendanceAttList != null && getAttendanceAttList.size() > 0) {
+                                callUpdateAttendanceApi(1);
+                            } else {
+                                callUpdateAttendanceApi(0);
+                            }
+                        }else {
+                            LogUtil.printSnackBar(mContext, Color.RED,findViewById(android.R.id.content), getString(R.string.msg_location_change_in_attendance));
                         }
                     }
                     break;
@@ -697,7 +707,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_ATTENDANCE)) {
                             GetAttendanceResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetAttendanceResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
+                                //LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                                 final Handler handler = new Handler();
                                 getAttendanceAttList = responseModel.getResult().getAtt();
                                 if(responseModel.getResult().getAtt()==null) {
@@ -769,7 +779,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
 
                                     }
                                 }, 1600);
-                                LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
+                                //LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                             }
                         }
                     } catch (Exception e) {

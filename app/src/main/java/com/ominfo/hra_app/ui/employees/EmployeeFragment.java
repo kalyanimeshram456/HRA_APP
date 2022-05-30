@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.ominfo.hra_app.R;
 import com.ominfo.hra_app.basecontrol.BaseActivity;
@@ -73,8 +74,7 @@ import okhttp3.RequestBody;
  * Use the {@link EmployeeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener
-    {
+public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 
     Context mContext;
     EmployeeListRecyclerAdapter employeeAdapter;
@@ -87,6 +87,8 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
     AppCompatImageView imgNotify;
     @BindView(R.id.tvTitle)
     AppCompatTextView tvToolbarTitle;
+    @BindView(R.id.tvEmployeeActive)
+    AppCompatTextView tvEmployeeActive;
     @BindView(R.id.tv_emptyLayTitle)
     AppCompatTextView tv_emptyLayTitle;
     private AppDatabase mDb;
@@ -109,11 +111,13 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
     @Inject
     ViewModelFactory mViewModelFactory;
     private EmployeeListViewModel employeeListViewModel;
-    AppCompatAutoCompleteTextView AutoComFilterStatus,AutoComFilterName,AutoComFilterDesi;
+    AppCompatAutoCompleteTextView AutoComFilterStatus, AutoComFilterName, AutoComFilterDesi;
     @BindView(R.id.swipeRefresh)
     SwipeRefreshLayout swipeRefresh;
-        @BindView(R.id.imgReport)
-        AppCompatImageView imgReport;
+    @BindView(R.id.imgReport)
+    AppCompatImageView imgReport;
+    @BindView(R.id.imgAddEmployee)
+    FloatingActionButton imgAddEmployee;
     private int currentPage = PAGE_START;
     private boolean isLastPage = false;
     private long totalPage = 0;
@@ -151,13 +155,13 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ((BaseActivity)mContext).getDeps().inject(this);
+        ((BaseActivity) mContext).getDeps().inject(this);
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         injectAPI();
         init();
     }
 
-    private void init(){
+    private void init() {
         setToolbar();
         Glide.with(this)
                 .load(R.drawable.img_bg_search)
@@ -171,15 +175,24 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         rvSalesList.setLayoutManager(layoutManager);
 
-        employeeAdapter = new EmployeeListRecyclerAdapter(mContext,new ArrayList<>(), new EmployeeListRecyclerAdapter.ListItemSelectListener() {
+        employeeAdapter = new EmployeeListRecyclerAdapter(mContext, new ArrayList<>(), new EmployeeListRecyclerAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket,EmployeeList employeeList) {
-                Intent add = new Intent(getContext(),AddEmployeeActivity.class);
-                add.putExtra(Constants.FROM_SCREEN,Constants.edit);
-                Gson gson = new Gson();
-                String myJson = gson.toJson(employeeList);
-                add.putExtra(Constants.EMPLOYEE_OBJ, myJson);
-                startActivity(add);
+            public void onItemClick(int mDataTicket, EmployeeList employeeList) {
+                try {
+                    LoginTable loginTable = mDb.getDbDAO().getLoginData();
+                    if (loginTable != null) {
+                        if (!loginTable.getIsadmin().equals("0")) {
+                            Intent add = new Intent(getContext(), AddEmployeeActivity.class);
+                            add.putExtra(Constants.FROM_SCREEN, Constants.edit);
+                            add.putExtra(Constants.TITLE, employeeList.getEmpId());
+                            Gson gson = new Gson();
+                            String myJson = gson.toJson(employeeList);
+                            add.putExtra(Constants.EMPLOYEE_OBJ, myJson);
+                            startActivity(add);
+                        }
+                    }
+                } catch (Exception e) {
+                }
             }
         });
         rvSalesList.setAdapter(employeeAdapter);
@@ -208,38 +221,52 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
         });
         //callEmployeeListApi("0");
         tv_emptyLayTitle.setText("Search something...");
+
+        try {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if (loginTable != null) {
+                if (loginTable.getIsadmin().equals("0")) {
+                    imgAddEmployee.setVisibility(View.GONE);
+                    //tvEmployeeActive.setVisibility(View.VISIBLE);
+                }else {
+                    imgAddEmployee.setVisibility(View.VISIBLE);
+                    //tvEmployeeActive.setVisibility(View.GONE);
+                }
+            }
+        } catch (Exception e) {
+        }
     }
 
-        private void doApiCall() {
-            final ArrayList<EmployeeList> items = new ArrayList<>();
+    private void doApiCall() {
+        final ArrayList<EmployeeList> items = new ArrayList<>();
            /* new Handler().postDelayed(new Runnable() {
 
                 @Override
                 public void run() {*/
-                    for (int i = 0; i < employeeListArrayList.size(); i++) {
-                        items.add(employeeListArrayList.get(i));
-                    }
-                    // do this all stuff on Success of APIs response
-                    /**
-                     * manage progress view
-                     */
-                    if (currentPage != PAGE_START) employeeAdapter.removeLoading();
-                    employeeAdapter.addItems(items);
-                    swipeRefresh.setRefreshing(false);
-
-                    // check weather is last page or not
-                    if (currentPage < totalPage) {
-                        employeeAdapter.addLoading();
-                    } else {
-                        isLastPage = true;
-                    }
-                    isLoading = false;
-              //  }
-           // }, 0);
+        for (int i = 0; i < employeeListArrayList.size(); i++) {
+            items.add(employeeListArrayList.get(i));
         }
-
-
+        // do this all stuff on Success of APIs response
         /**
+         * manage progress view
+         */
+        if (currentPage != PAGE_START) employeeAdapter.removeLoading();
+        employeeAdapter.addItems(items);
+        swipeRefresh.setRefreshing(false);
+
+        // check weather is last page or not
+        if (currentPage < totalPage) {
+            employeeAdapter.addLoading();
+        } else {
+            isLastPage = true;
+        }
+        isLoading = false;
+        //  }
+        // }, 0);
+    }
+
+
+    /**
      * do api call here to fetch data from server
      * In example i'm adding data manually
      */
@@ -255,32 +282,31 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
 
     private void injectAPI() {
         employeeListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EmployeeListViewModel.class);
-        employeeListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_EMPLOYEES_LIST));
-   }
+        employeeListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_EMPLOYEES_LIST));
+    }
+
     /* Call Api For employee list */
     private void callEmployeeListApi(String pageNo) {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
-            if(loginTable!=null) {
+            if (loginTable != null) {
                 RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_employee_list);
-                RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
+                RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
                 RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
-                RequestBody mRequestToken = RequestBody.create(MediaType.parse("text/plain"),  loginTable.getToken());
+                RequestBody mRequestToken = RequestBody.create(MediaType.parse("text/plain"), loginTable.getToken());
                 RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), pageNo);
                 RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
                 RequestBody mRequestfilter_emp_name = RequestBody.create(MediaType.parse("text/plain"), AutoComFilterName.getText().toString());
-                RequestBody mRequestfilter_emp_position = RequestBody.create(MediaType.parse("text/plain"),  AutoComFilterDesi.getText().toString());
+                RequestBody mRequestfilter_emp_position = RequestBody.create(MediaType.parse("text/plain"), AutoComFilterDesi.getText().toString());
                 String status = "";
-                if(AutoComFilterStatus.getText().toString().equals("All")){
+                if (AutoComFilterStatus.getText().toString().equals("All")) {
                     status = "";
-                }
-                else if(AutoComFilterStatus.getText().toString().equals("Active")){
+                } else if (AutoComFilterStatus.getText().toString().equals("Active")) {
                     status = "1";
-                }
-                else{
+                } else {
                     status = "0";
                 }
-                RequestBody filter_emp_isActive = RequestBody.create(MediaType.parse("text/plain"),  status);
+                RequestBody filter_emp_isActive = RequestBody.create(MediaType.parse("text/plain"), status);
 
                 EmployeeListRequest request = new EmployeeListRequest();
                 request.setAction(mRequestAction);
@@ -294,8 +320,7 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
                 request.setFilterEmpIsActive(filter_emp_isActive);
 
                 employeeListViewModel.executeEmployeeListAPI(request);
-            }
-            else {
+            } else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
             }
         } else {
@@ -373,6 +398,7 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
             @Override
             public void onClick(View v) {
                 mDialog.dismiss();
+                employeeAdapter.clear();
                 callEmployeeListApi("0");
                 //doApiCall();
             }
@@ -384,40 +410,46 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
                 mDialog.dismiss();
             }
         });
-        if(val==0) {
+        if (val == 0) {
             mDialog.show();
         }
     }
 
     private void setToolbar() {
         //set toolbar title
-        imgReport.setVisibility(View.VISIBLE);
-        tvFilterCount.setVisibility(View.VISIBLE);
+        LoginTable loginTable = mDb.getDbDAO().getLoginData();
+        if (!loginTable.getIsadmin().equals("0")){
+            imgReport.setVisibility(View.VISIBLE);
+            tvFilterCount.setVisibility(View.VISIBLE);
+        }else{imgReport.setVisibility(View.GONE);
+            tvFilterCount.setVisibility(View.GONE);}
         tvToolbarTitle.setText(R.string.scr_lbl_employees);
-        ((BaseActivity)mContext).initToolbar(5, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.imgBack, R.id.imgCall);
+        ((BaseActivity) mContext).initToolbar(5, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify, tvNotifyCount, R.id.imgBack, R.id.imgCall);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Fragment fragment = new DashboardFragment();
-                ((BaseActivity)mContext).moveFragment(mContext,fragment);
+                ((BaseActivity) mContext).moveFragment(mContext, fragment);
             }
         });
         imgNotify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((BaseActivity)mContext).launchScreen(mContext, NotificationsActivity.class);;
+                ((BaseActivity) mContext).launchScreen(mContext, NotificationsActivity.class);
+                ;
             }
         });
     }
 
     //perform click actions
-    @OnClick({R.id.imgAddEmployee,R.id.imgReport})
+    @OnClick({R.id.imgAddEmployee, R.id.imgReport})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
             case R.id.imgAddEmployee:
-                Intent add = new Intent(getContext(),AddEmployeeActivity.class);
-                add.putExtra(Constants.FROM_SCREEN,Constants.add);
+                Intent add = new Intent(getContext(), AddEmployeeActivity.class);
+                add.putExtra(Constants.FROM_SCREEN, Constants.add);
+                add.putExtra(Constants.TITLE, "");
                 startActivity(add);
                 break;
             case R.id.imgReport:
@@ -427,7 +459,7 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
     }
 
     //set date picker view
-    private void openDataPicker(int val , AppCompatTextView datePickerField) {
+    private void openDataPicker(int val, AppCompatTextView datePickerField) {
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
             @Override
@@ -439,10 +471,9 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 String myFormat = "dd/MM/yyyy"; //In which you need put here
                 SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-                if(val==1){
+                if (val == 1) {
                     datePickerField.setText(sdf.format(myCalendar.getTime()));
-                }
-                else {
+                } else {
                     datePickerField.setText(sdf.format(myCalendar.getTime()));
                 }
             }
@@ -467,7 +498,7 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
     private void consumeResponse(ApiResponse apiResponse, String tag) {
         switch (apiResponse.status) {
             case LOADING:
-                    //((BaseActivity) mContext).showSmallProgressBar(mProgressBarHolder);
+                //((BaseActivity) mContext).showSmallProgressBar(mProgressBarHolder);
                 break;
 
             case SUCCESS:
@@ -483,10 +514,14 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
                                     //employeeListArrayList= new ArrayList<>();
                                 }
                                 employeeListArrayList = responseModel.getResult().getList();
+                                LoginTable loginTable = mDb.getDbDAO().getLoginData();
+                                if (!loginTable.getIsadmin().equals("0")){
+                                    tvEmployeeActive.setText(responseModel.getResult().getTotal_prest_emp() + " / " + responseModel.getResult().getTotalactiveemp() + " Employees active");
+                                   }
                                 doApiCall();
                             }
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }

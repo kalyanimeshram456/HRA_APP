@@ -17,6 +17,11 @@ public class ActiveEmployeeListEmpDatum {
     @SerializedName("isAdmin")
     private String mIsAdmin;
 
+    public ActiveEmployeeListEmpDatum(String mEmpId, String mEmpName) {
+        this.mEmpId = mEmpId;
+        this.mEmpName = mEmpName;
+    }
+
     public String getCompanyId() {
         return mCompanyId;
     }

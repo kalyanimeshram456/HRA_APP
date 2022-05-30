@@ -16,6 +16,7 @@
 
 
     <RelativeLayout
+        android:id="@+id/layClose"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -27,7 +28,7 @@
             android:layout_alignParentLeft="true"
             android:fontFamily="@font/gilroy_bold"
             android:gravity="left"
-            android:text="Absent Mark"
+            android:text="Late Mark"
             android:textColor="@color/color_main"
             android:textSize="@dimen/_16sp" />
 
@@ -84,9 +85,10 @@
                 android:id="@+id/tvEndTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left"
+                android:layout_gravity="right"
                 android:layout_marginHorizontal="@dimen/_10dp"
                 android:layout_weight="1"
+                android:gravity="right"
                 android:fontFamily="@font/gilroy_regular"
                 android:text="@string/scr_lbl_amount"
                 android:textColor="@color/back_text_colour"
@@ -131,6 +133,7 @@
                 android:layout_gravity="left"
                 android:layout_marginHorizontal="@dimen/_10dp"
                 android:layout_weight="1"
+                android:gravity="right"
                 android:fontFamily="@font/gilroy_regular"
                 android:text="@string/scr_lbl_amount"
                 android:textColor="@color/back_text_colour"

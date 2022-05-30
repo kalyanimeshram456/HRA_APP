@@ -28,6 +28,8 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,6 +38,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
+import com.ominfo.hra_app.MainActivity;
 import com.ominfo.hra_app.R;
 import com.ominfo.hra_app.basecontrol.BaseActivity;
 import com.ominfo.hra_app.basecontrol.BaseApplication;
@@ -139,6 +142,7 @@ public class SalarySheetFragment extends BaseFragment {
     RecyclerView rvEnquiryPager;
     private String pagerClicked = "No";
     String empId = "";
+    String pageNoString = "0";
     public SalarySheetFragment() {
         // Required empty public constructor
     }
@@ -252,6 +256,7 @@ public class SalarySheetFragment extends BaseFragment {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
+                pageNoString = pageNo;
                 RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_salary_sheet);
                 RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),empId);
                 RequestBody mRequestBodyPageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);
@@ -309,8 +314,17 @@ public class SalarySheetFragment extends BaseFragment {
         salarySheetListAdapter = new SalarySheetListAdapter(mContext, searchresultList, new SalarySheetListAdapter.ListItemSelectListener() {
             @Override
             public void onItemClick(int mDataTicket,SalarySheetList searchresult) {
-                SalarySlipFragment salarySlipFragment = new SalarySlipFragment();
-               moveFromFragment(salarySlipFragment,mContext);
+                if(pageNoString.equals("0") && mDataTicket==0) {
+                    SalarySlipFragment sheetFragment = new SalarySlipFragment();
+                    FragmentManager fragmentManager = ((MainActivity)mContext).getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    Bundle args = new Bundle();
+                    args.putString(Constants.edit, searchresult.getId());
+                    sheetFragment.setArguments(args);
+                    fragmentTransaction.add(R.id.framecontainer, sheetFragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                }
             }
         });
         //RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecorator(mContext.getDrawable(R.drawable.separator_row_item));
@@ -366,13 +380,13 @@ public class SalarySheetFragment extends BaseFragment {
 
     private void setToolbar() {
         //set toolbar title
-        tvToolbarTitle.setText(R.string.scr_lbl_salary_disbursement);
+        tvToolbarTitle.setText(R.string.scr_lbl_salary_sheet);
         ((BaseActivity)mContext).initToolbar(5, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.imgBack, R.id.imgCall);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment fragment = new DashboardFragment();
-                ((BaseActivity)mContext).moveFragment(mContext,fragment);
+                SalarySheetFragment myFrag = new SalarySheetFragment();
+                removeFragment(myFrag);
             }
         });
         imgNotify.setOnClickListener(new View.OnClickListener() {

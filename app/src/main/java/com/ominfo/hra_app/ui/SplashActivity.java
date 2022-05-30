@@ -15,6 +15,7 @@ import com.ominfo.hra_app.R;
 import com.ominfo.hra_app.basecontrol.BaseActivity;
 import com.ominfo.hra_app.interfaces.Constants;
 import com.ominfo.hra_app.interfaces.SharedPrefKey;
+import com.ominfo.hra_app.splash_slider.WelcomeActivity;
 import com.ominfo.hra_app.ui.login.LoginActivity;
 import com.ominfo.hra_app.ui.registration.RegistrationActivity;
 import com.ominfo.hra_app.util.SharedPref;
@@ -57,7 +58,7 @@ public class SplashActivity extends AppCompatActivity {
                     if (iSLoggedIn){
                         launchScreen(MainActivity.class);
                     }else {
-                        launchScreen(LoginActivity.class);
+                        launchScreen(WelcomeActivity.class);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

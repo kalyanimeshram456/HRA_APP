@@ -32,6 +32,26 @@ public class NotificationDetailsNotify {
     private String mType;
     @SerializedName("updated_on")
     private String mUpdatedOn;
+    @SerializedName("start_time")
+    private String startTime;
+    @SerializedName("stnd_start_tym")
+    private String stnd_start_tym;
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getStnd_start_tym() {
+        return stnd_start_tym;
+    }
+
+    public void setStnd_start_tym(String stnd_start_tym) {
+        this.stnd_start_tym = stnd_start_tym;
+    }
 
     public String getCompanyID() {
         return mCompanyID;

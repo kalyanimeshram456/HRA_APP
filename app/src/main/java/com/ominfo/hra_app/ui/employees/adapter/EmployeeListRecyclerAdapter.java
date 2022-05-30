@@ -8,6 +8,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -106,6 +107,8 @@ public class EmployeeListRecyclerAdapter extends RecyclerView.Adapter<BaseViewHo
     TextView textViewTitle;
     @BindView(R.id.tvDesi)
     TextView textViewDescription;
+    @BindView(R.id.tvStatus)
+    AppCompatTextView tvStatus;
     @BindView(R.id.layCard)
     CardView layCard;
     @BindView(R.id.imgBirthPro)
@@ -124,7 +127,14 @@ public class EmployeeListRecyclerAdapter extends RecyclerView.Adapter<BaseViewHo
     public void onBind(int position) {
       super.onBind(position);
       EmployeeList item = mPostItems.get(position);
-
+      if(item.getIsActive().equals("1")){
+        tvStatus.setTextColor(context.getResources().getColor(R.color.green));
+        tvStatus.setText("Active");
+      }
+      else {
+        tvStatus.setTextColor(context.getResources().getColor(R.color.deep_red));
+        tvStatus.setText("Inactive");
+      }
       textViewTitle.setText(item.getEmpName());
       textViewDescription.setText(item.getEmpPosition());
       AppUtils.loadImageURL(context,"https://ominfo.in/o_hr/"+mPostItems.get(position).getEmpProfilePic(),

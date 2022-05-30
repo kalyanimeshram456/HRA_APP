@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -106,6 +107,8 @@ public class SalaryFragment extends BaseFragment {
     AppCompatImageView iv_emptyLayimage;
     @BindView(R.id.tvNotifyCount)
     AppCompatTextView tvNotifyCount;
+    @BindView(R.id.btnSubmit)
+    AppCompatButton btnSubmit;
     final Calendar myCalendar = Calendar.getInstance();
     @Inject
     ViewModelFactory mViewModelFactory;
@@ -204,6 +207,12 @@ public class SalaryFragment extends BaseFragment {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
+                if(loginTable.getIsadmin().equals("0")){
+                    btnSubmit.setVisibility(View.GONE);
+                }else{
+                    btnSubmit.setVisibility(View.VISIBLE);
+                }
+
                 RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_salary_all_list);
                 RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
                 RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
@@ -236,7 +245,7 @@ public class SalaryFragment extends BaseFragment {
 
     private void setToolbar() {
         //set toolbar title
-        tvToolbarTitle.setText(R.string.scr_lbl_search);
+        tvToolbarTitle.setText(R.string.scr_lbl_salary);
         ((BaseActivity)mContext).initToolbar(5, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.imgBack, R.id.imgCall);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override

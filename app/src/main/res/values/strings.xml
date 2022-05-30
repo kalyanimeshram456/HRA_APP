@@ -336,7 +336,7 @@
     <string name="err_enter_address">Please enter address.</string>
     <string name="err_enter_pincode">Please enter pincode.</string>
     <string name="err_enter_username_prefix">Please enter username prefix</string>
-    <string name="err_enter_email_id">Please enter email id</string>
+    <string name="err_enter_email_id">Please enter valid email id</string>
     <string name="err_enter_admin_name">Please enter admin name.</string>
     <string name="err_enter_mobile_no">Please enter mobile number.</string>
     <string name="err_enter_emp_stregth">Please enter employee strength.</string>
@@ -382,19 +382,24 @@
     <string name="skip">SKIP</string>
     <string name="start">GOT IT</string>
 
-    <string name="slide_1_title">Hello Food!</string>
-    <string name="slide_1_desc">The easiest way to order food from your favourite restaurant!</string>
+    <string name="slide_1_title">Turanth Setup</string>
+    <string name="slide_1_desc">Quick and easy setup your entire team on TuranthHR App!</string>
 
-    <string name="slide_2_title">Movie Tickets</string>
-    <string name="slide_2_desc">Book movie tickets for your family and friends!</string>
+    <string name="slide_2_title">Turanth Salary</string>
+    <string name="slide_2_desc">Single click to generate salary sheet with attendance and leave calculations!</string>
 
-    <string name="slide_3_title">Great Discounts</string>
-    <string name="slide_3_desc">Best discounts on every single service we offer!</string>
+    <string name="slide_3_title">Turanth Manage</string>
+    <string name="slide_3_desc">Simply manage all HR activities using the applications to move ahead TURANTH!</string>
 
     <string name="slide_4_title">World Travel</string>
     <string name="slide_4_desc">Book tickets of any transportation and travel the world!</string>
 
     <string name="play_again_desc">To see the welcome slider again, goto Settings -> apps -> welcome slider -> clear data</string>
     <string name="play_again">Play Again</string>
+    <string name="msg_location_change_in_attendance">Looks like you are far away from work location, Please be at work location to mark your Attendance.</string>
+    <string name="scr_lbl_coupn_msg">Please enter a valid Coupon code to avail great discounts.</string>
+    <string name="scr_lbl_user_name">User Name</string>
+    <string name="fields_are_missing">Please make sure to fill all fields correctly.</string>
+    <string name="scr_lbl_salary_sheet">Salary sheet</string>
 
 </resources>

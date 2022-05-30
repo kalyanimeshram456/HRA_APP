@@ -26,6 +26,26 @@ public class EmployeeListResult {
     private Long mTotalpages;
     @SerializedName("totalrows")
     private Long mTotalrows;
+    @SerializedName("totalactiveemp")
+    private String totalactiveemp;
+    @SerializedName("total_prest_emp")
+    private String total_prest_emp;
+
+    public String getTotalactiveemp() {
+        return totalactiveemp;
+    }
+
+    public void setTotalactiveemp(String totalactiveemp) {
+        this.totalactiveemp = totalactiveemp;
+    }
+
+    public String getTotal_prest_emp() {
+        return total_prest_emp;
+    }
+
+    public void setTotal_prest_emp(String total_prest_emp) {
+        this.total_prest_emp = total_prest_emp;
+    }
 
     public String getCurrentpage() {
         return mCurrentpage;

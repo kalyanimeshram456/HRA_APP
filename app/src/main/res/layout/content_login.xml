@@ -183,7 +183,7 @@
                             android:layout_alignParentBottom="true"
                             android:layout_gravity="center_horizontal"
                             android:layout_marginHorizontal="@dimen/_10dp"
-                            android:layout_marginTop="@dimen/_50dp"
+                            android:layout_marginTop="@dimen/_30dp"
                             android:layout_marginBottom="@dimen/_10dp"
                             android:background="@drawable/bg_button_round_corner_5"
                             android:fontFamily="@font/gilroy_semibold"
@@ -192,6 +192,36 @@
                             android:text="@string/scr_lbl_login"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_16sp" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center_horizontal">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvReg"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="left"
+                                android:layout_marginTop="@dimen/_16dp"
+                                android:fontFamily="@font/gilroy_regular"
+                                android:text="Dont have an Account?"
+                                android:textColor="@color/black_heading"
+                                android:textSize="@dimen/_12sp" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvRegClick"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="left"
+                                android:layout_marginTop="@dimen/_16dp"
+                                android:layout_toRightOf="@+id/tvReg"
+                                android:fontFamily="@font/gilroy_semibold"
+                                android:text=" Register"
+                                android:textColor="@color/color_main"
+                                android:textSize="@dimen/_13sp" />
+                        </RelativeLayout>
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                 </ScrollView>

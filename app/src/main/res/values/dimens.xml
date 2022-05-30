@@ -16,6 +16,7 @@
     <dimen name="_14dp">14dp</dimen>
     <dimen name="_15dp">15dp</dimen>
     <dimen name="_16dp">16dp</dimen>
+    <dimen name="default_corner_radii">16dp</dimen>
     <dimen name="_17dp">17dp</dimen>
     <dimen name="_18dp">18dp</dimen>
     <dimen name="_20dp">20dp</dimen>
@@ -130,8 +131,8 @@
    <!-- <dimen name="fab_margin">16dp</dimen>-->
     <dimen name="dots_height">30dp</dimen>
     <dimen name="dots_margin_bottom">20dp</dimen>
-    <dimen name="img_width_height">120dp</dimen>
-    <dimen name="slide_title">30dp</dimen>
+    <dimen name="img_width_height">200dp</dimen>
+    <dimen name="slide_title">20sp</dimen>
     <dimen name="slide_desc">16dp</dimen>
     <dimen name="desc_padding">40dp</dimen>
 

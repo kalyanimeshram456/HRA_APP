@@ -82,21 +82,21 @@ public class SalarySheetListAdapter extends RecyclerView.Adapter<SalarySheetList
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(1,mListData.get(position));
+                listItemSelectListener.onItemClick(position,mListData.get(position));
             }
         });
         holder.tvRs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(1,mListData.get(position));
+                listItemSelectListener.onItemClick(position,mListData.get(position));
             }
         });
         holder.tvCompanyName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(0,mListData.get(position));
+                listItemSelectListener.onItemClick(position,mListData.get(position));
             }
         });
 

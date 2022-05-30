@@ -223,6 +223,24 @@ public class Service {
         );
     }
 
+    public Observable<JsonElement> executeLateMarkAPI(RequestBody action,
+                                                                RequestBody empId) {
+        return networkAPIServices.lateMarkCount(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_LATE_MARK_COUNT),
+                action,
+                empId
+        );
+    }
+
+    public Observable<JsonElement> executeAbsentMarkAPI(RequestBody action,
+                                                      RequestBody empId) {
+        return networkAPIServices.lateMarkCount(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_LATE_ABSENT_COUNT),
+                action,
+                empId
+        );
+    }
+
     public Observable<JsonElement> executeChangeProfileImageAPI(RequestBody action,
                                                                 RequestBody comId, RequestBody empId,
                                                                 RequestBody image) {
@@ -289,6 +307,11 @@ public class Service {
             ,RequestBody date,RequestBody status,RequestBody leave_type,RequestBody leave_days) {
         return networkAPIServices.deductLeave(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_MARK_NOT_LATE),act,emp_id,date,status,leave_type,leave_days
+        );
+    }
+    public Observable<JsonElement> executeSalarySlipAPI(RequestBody act,RequestBody emp_id) {
+        return networkAPIServices.salarySlip(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_SALARY_SLIP),act,emp_id
         );
     }
     public Observable<JsonElement> executeUnpaidLeaveAPI(RequestBody act,RequestBody id) {

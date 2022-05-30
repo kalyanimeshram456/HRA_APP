@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -24,6 +25,7 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -37,7 +39,6 @@ import android.widget.DatePicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -105,7 +106,6 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
     ViewModelFactory mViewModelFactory;
 
     Dialog mDialog;
-    MeowBottomNavigation meowBottomNavigation;
     public static SSCustomBottomNavigation ssCustomBottomNavigation;
     LoginTable loginTable;
 
@@ -133,13 +133,62 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
         }
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         loginTable = mDb.getDbDAO().getLoginData();
+
+       /* bubbleNavigationLinearView = findViewById(R.id.bottom_navigation_view_linear);
+        //.setTypeface(Typeface.createFromAsset(getAssets(), "rubik.ttf"));
+
+        bubbleNavigationLinearView.setBadgeValue(0, null);
+        bubbleNavigationLinearView.setBadgeValue(1, null); //invisible badge
+        bubbleNavigationLinearView.setBadgeValue(2, null);
+        bubbleNavigationLinearView.setBadgeValue(3, null);
+        bubbleNavigationLinearView.setBadgeValue(4, null); //empty badge*/
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.framecontainer, new DashboardFragment()).commit();
+
+     /*   bubbleNavigationLinearView.setNavigationChangeListener(new BubbleNavigationChangeListener() {
+            @Override
+            public void onNavigationChanged(View view, int position) {
+                //viewPager.setCurrentItem(position, true);
+                Fragment temp = null;
+                switch (position) {
+                    case 0:
+                        temp = new DashboardFragment();
+                        break;
+                    case 1:
+                        temp = new EmployeeFragment();
+                        break;
+                    case 2:
+                        if(loginTable!=null) {
+                            if(loginTable.getIsadmin().equals("0")){
+                                temp = new EmployeeLeaveListFragment();
+                            } else{
+                                temp = new LeaveFragment();
+                            }
+                        }
+                        else{
+                            temp = new LeaveFragment();
+                        }
+                        break;
+                    case 3:
+                        temp = new SalaryFragment();
+                        break;
+                    case 4:
+                        temp = new MyAccountFragment();
+                }
+
+                getSupportFragmentManager().beginTransaction().add(R.id.framecontainer, temp).addToBackStack(null).commit();
+
+                //return null;
+            }
+        });
+*/
         ssCustomBottomNavigation = findViewById(R.id.bottomNavigationN);
         //ssCustomBottomNavigation.change
-        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(1, R.drawable.ic_home_grad,"Home"));
-        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(2, R.drawable.ic_employee_white,"Employee"));
-        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(3, R.drawable.ic_leave_white,"Leave"));
-        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(4, R.drawable.ic_salary_white,"Salary"));
-        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(5, R.drawable.ic_account_white,"Profile"));
+        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(1, R.drawable.ic_home,"Home"));
+        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(2, R.drawable.ic_employee,"Employee"));
+        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(3, R.drawable.ic_lev,"Leave"));
+        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(4, R.drawable.ic_sal,"Salary"));
+        ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(5, R.drawable.ic_acc,"Profile"));
         ssCustomBottomNavigation.show(1,true);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.framecontainer, new DashboardFragment()).commit();

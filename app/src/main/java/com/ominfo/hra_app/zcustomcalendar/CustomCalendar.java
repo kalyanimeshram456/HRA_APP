@@ -184,6 +184,7 @@ public class CustomCalendar extends LinearLayout {
 				((Button)btn).setText("" + (previousMonth.getActualMaximum(Calendar.DAY_OF_MONTH)-(j-i-1)));
 			}
 			btn.setLayoutParams(new LayoutParams(0, LayoutParams.MATCH_PARENT, 1));
+			btn.setBackgroundColor(context.getResources().getColor(R.color.white));
 			llWeek.addView(btn);
 			btn.setEnabled(false);
 		}
@@ -220,14 +221,22 @@ public class CustomCalendar extends LinearLayout {
 			View btn = null;
 			if(mapDescToProp != null && mapDescToProp.get("disabled") != null) {
 				Property prop = mapDescToProp.get("disabled");
-				//btn =  LayoutInflater.from(context).inflate(prop.layoutResource, null);
-				//if(prop.dateTextViewResource != -1 && btn.findViewById(prop.dateTextViewResource) != null) ((TextView)btn.findViewById(prop.dateTextViewResource)).setText("" + k);
+				btn =  LayoutInflater.from(context).inflate(prop.layoutResource, null);
+				if(prop.dateTextViewResource != -1 && btn.findViewById(prop.dateTextViewResource) != null) ((TextView)btn.findViewById(prop.dateTextViewResource)).setText("" + k);
 			}
 			else {
 				btn = new Button(context);
 				((Button)btn).setText("" + k);
 			}
-			btn.setLayoutParams(new LayoutParams(0, LayoutParams.MATCH_PARENT, 1));
+
+			LinearLayout ll = new LinearLayout(context);
+			ll.setOrientation(LinearLayout.VERTICAL);
+
+			LinearLayout.LayoutParams layoutParams = new LayoutParams(0, LayoutParams.MATCH_PARENT, 1);
+			//layoutParams.setMargins(15, 17, 15, 0);
+			btn.setLayoutParams(layoutParams);
+			btn.setBackgroundColor(context.getResources().getColor(R.color.white));
+			//btn.setBackground(context.getResources().getDrawable(R.drawable.calender_square_grey));
 			llWeek.addView(btn);
 			btn.setEnabled(false);
 		}

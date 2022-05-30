@@ -1,5 +1,6 @@
 package com.ominfo.hra_app.ui.my_account;
 
+import static com.ominfo.hra_app.util.AppUtils.dateConvertYYYYToDD;
 import static com.ominfo.hra_app.util.AppUtils.getChangeDateForHisab;
 
 import android.Manifest;
@@ -361,7 +362,7 @@ public class MyAccountFragment extends BaseFragment {
                 RequestBody mRequestBodyTypeAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_edit_employee);
                 RequestBody mRequestBodyTypeEmpName = RequestBody.create(MediaType.parse("text/plain"),tvEmpName.getText().toString().trim());//loginTable.getCompanyId());
                 RequestBody mRequestBodyTypeEmpMob = RequestBody.create(MediaType.parse("text/plain"), AutoComEMobile.getText().toString().trim());//loginTable.getCompanyId());
-                RequestBody mRequestBodyTypeEmpEmail = RequestBody.create(MediaType.parse("text/plain"), AutoComEmailId.getText().toString().trim());//loginTable.getCompanyId());
+                RequestBody mRequestBodyTypeEmpEmail = RequestBody.create(MediaType.parse("text/plain"), AutoComtEEmail.getText().toString().trim());//loginTable.getCompanyId());
                 RequestBody mRequestBodyTypeEmpAddr = RequestBody.create(MediaType.parse("text/plain"), etDescr.getText().toString().trim());//loginTable.getCompanyId());
                 String dob = AppUtils.changeToSlashToDash(tvDateValue.getText().toString().trim());
                 RequestBody mRequestBodyTypeEmpDob = RequestBody.create(MediaType.parse("text/plain"), dob);//loginTable.getCompanyId());
@@ -375,8 +376,8 @@ public class MyAccountFragment extends BaseFragment {
                 RequestBody mRequestBodyOtherLeave = RequestBody.create(MediaType.parse("text/plain"), employeeListResData.getOtherLeaves()==null?"":employeeListResData.getOtherLeaves());//loginTable.getCompanyId());
                 RequestBody mRequestBodyCasualLeave = RequestBody.create(MediaType.parse("text/plain"), employeeListResData.getCasualLeaves()==null?"":employeeListResData.getCasualLeaves());//loginTable.getCompanyId());
                 RequestBody mRequestBodySickLeave = RequestBody.create(MediaType.parse("text/plain"), employeeListResData.getSickLeaves()==null?"":employeeListResData.getSickLeaves());//loginTable.getCompanyId());
-                //String join = AppUtils.changeToSlashToDash(employeeListResData.getJoiningDate());
-                RequestBody mRequestBodyJoiningDate = RequestBody.create(MediaType.parse("text/plain"),employeeListResData.getJoiningDate()==null?"":employeeListResData.getJoiningDate());//loginTable.getCompanyId());
+                String join = AppUtils.changeToSlashToDash(employeeListResData.getJoiningDate()==null?"":employeeListResData.getJoiningDate());
+                RequestBody mRequestBodyJoiningDate = RequestBody.create(MediaType.parse("text/plain"),join);//loginTable.getCompanyId());
                 RequestBody mRequestBodyTypeToken = RequestBody.create(MediaType.parse("text/plain"), loginTable.getToken());//loginTable.getCompanyId());
                 RequestBody mRequestAddr = RequestBody.create(MediaType.parse("text/plain"),AutoComOfficeLocation.getText().toString());//loginTable.getCompanyId());
                 RequestBody mRequestLat = RequestBody.create(MediaType.parse("text/plain"),officeLat);//loginTable.getCompanyId());
@@ -708,20 +709,20 @@ public class MyAccountFragment extends BaseFragment {
         LoginTable loginTable = mDb.getDbDAO().getLoginData();
         if(loginTable!=null){
             isAdmin = loginTable.getIsadmin();
-            //if(isAdmin.equals("0")){
+            if(isAdmin.equals("0")){
                 laySubmit.setVisibility(View.GONE);
                 layUser.setVisibility(View.VISIBLE);
                 layAdmin.setVisibility(View.GONE);
                 setAllDisabled(0,false);
                 callEmployeeListApi();
-           /* }
+            }
             else{
                 laySubmit.setVisibility(View.GONE);
                 layUser.setVisibility(View.GONE);
                 layAdmin.setVisibility(View.VISIBLE);
                 setAllDisabled(1,false);
                 callCompanyListApi();
-            }*/
+            }
         }
         Window window = getActivity().getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -819,6 +820,8 @@ public class MyAccountFragment extends BaseFragment {
             case R.id.imgEdit:
                 tvEmpName.setEnabled(true);
                 tvEmpName.setBackground(mContext.getDrawable(R.drawable.round_corner_shape_without_fill_thin_yellow));
+                btnSubmit.setVisibility(View.VISIBLE);
+                btnESubmit.setVisibility(View.VISIBLE);
                 break;
             case R.id.imgCall:
                 //edit all
@@ -848,7 +851,7 @@ public class MyAccountFragment extends BaseFragment {
                 laySubmit.setVisibility(View.GONE);
                 layUser.setVisibility(View.GONE);
                 setAllDisabled(1,false);
-                callCompanyListApi();
+                callEditCompanyApi();
                 break;
             case R.id.btnESubmit:
                 layAdmin.setVisibility(View.GONE);
@@ -1616,6 +1619,8 @@ private void setTermsAndPolicy(String webUrl){
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EMPLOYEES_LIST)) {
                             EmployeeListResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), EmployeeListResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                btnSubmit.setVisibility(View.GONE);
+                                btnESubmit.setVisibility(View.GONE);
                                 employeeListResData = responseModel.getResult().getList().get(0);
                                 tvEmpName.setText(employeeListResData.getEmpName());
                                 AutoComtEEmail.setText(employeeListResData.getEmpEmail());
@@ -1623,7 +1628,7 @@ private void setTermsAndPolicy(String webUrl){
                                 AutoComEDesi.setText(employeeListResData.getEmpPosition());
                                 AutoComtEGender.setText(employeeListResData.getEmpGender());
                                 setDropdownGender();
-                                tvDateValue.setText(employeeListResData.getEmpDob());
+                                tvDateValue.setText(dateConvertYYYYToDD(employeeListResData.getEmpDob()));
                                 AutoComOfficeLocation.setText(employeeListResData.getOfficeAddress());
                                 etDescr.setText(employeeListResData.getEmpAddr());
                                 AutoComPincode.setText(employeeListResData.getEmpPincode());
@@ -1655,6 +1660,8 @@ private void setTermsAndPolicy(String webUrl){
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_COMPANY)) {
                             GetCompanyResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetCompanyResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                btnSubmit.setVisibility(View.GONE);
+                                btnESubmit.setVisibility(View.GONE);
                                 GetCompanyList employeeList = responseModel.getResult().getList().get(0);
                                 AutoComEmailId.setText(employeeList.getEmailId());
                                 AutoComMobile.setText(employeeList.getContactNo());
@@ -1760,8 +1767,7 @@ private void setTermsAndPolicy(String webUrl){
                 officeLat = locationLat;
                 officeLong = locationLng;
                 //tvAddLocation.setText(location);
-                /*double km = distance(Double.parseDouble(locationLat),Double.parseDouble(startlocationLat),
-                        Double.parseDouble(locationLng),Double.parseDouble(startlocationLng));*/
+
                 //LogUtil.printToastMSG(mContext,km+" K.M.");
             }
             if (resultCode == Activity.RESULT_CANCELED) {
@@ -1931,6 +1937,7 @@ private void setTermsAndPolicy(String webUrl){
             layCalender.setEnabled(state);
             etDescr.setEnabled(state);
             AutoComPincode.setEnabled(state);
+            tvDateValue.setEnabled(state);
             if(state){
             btnESubmit.setVisibility(View.VISIBLE);}
             setTimeDisabled(type);
@@ -1941,6 +1948,7 @@ private void setTermsAndPolicy(String webUrl){
             AutoComOPincode.setEnabled(state);
             AutoComMobile.setEnabled(state);
             AutoComEmailId.setEnabled(state);
+            //if(!state){tvDateValue.setTextColor(mContext.getResources().getColor(R.color.light_grey_30));}else{}
             AutoComStaff.setEnabled(state);
             if(state){
             btnSubmit.setVisibility(View.VISIBLE);}

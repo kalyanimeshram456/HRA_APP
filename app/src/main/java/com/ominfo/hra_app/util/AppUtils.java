@@ -177,7 +177,21 @@ public class AppUtils {
         catch(Exception e) { }
         return monthName;
     }
+    public static double meterDistanceBetweenPoints(float lat_a, float lng_a, float lat_b, float lng_b) {
+        float pk = (float) (180.f/Math.PI);
 
+        float a1 = lat_a / pk;
+        float a2 = lng_a / pk;
+        float b1 = lat_b / pk;
+        float b2 = lng_b / pk;
+
+        double t1 = Math.cos(a1) * Math.cos(a2) * Math.cos(b1) * Math.cos(b2);
+        double t2 = Math.cos(a1) * Math.sin(a2) * Math.cos(b1) * Math.sin(b2);
+        double t3 = Math.sin(a1) * Math.sin(b1);
+        double tt = Math.acos(t1 + t2 + t3);
+
+        return 6366000 * tt;
+    }
     public static int getChangeDateForHisab(String start,String end)
     {
         try {
@@ -434,6 +448,30 @@ public class AppUtils {
         return sDateFormate;
     }
 
+    public static String dateConvertYYYYToDD(String sDate) {
+        String sDateFormate = "";
+        try {
+            String pattern = "dd/MM/yyyy";
+            String inputPattern = "yyyy-MM-dd";
+            /*SimpleDateFormat simpleDateFormat = new SimpleDateFormat(inputPattern);
+            Date date = simpleDateFormat.parse(sDate);
+            SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+            sDateFormate = sdf.format(date.getTime());
+            System.out.println(sDateFormate);*/
+
+            SimpleDateFormat fmt = new SimpleDateFormat(inputPattern);
+            Date date = fmt.parse(sDate);
+
+            SimpleDateFormat fmtOut = new SimpleDateFormat(pattern);
+            sDateFormate = fmtOut.format(date);
+
+            LogUtil.printLog(TAG, "sDateFormate: " + sDateFormate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sDateFormate;
+    }
+
     public static String convertyyyytodd(String sDate) {
         String sDateFormate = "";
         try {
@@ -452,6 +490,26 @@ public class AppUtils {
         }
         return sDateFormate;
     }
+
+    public static String convertyyyytoddLeave(String sDate) {
+        String sDateFormate = "";
+        try {
+            String pattern = "dd MMM";
+            String inputPattern = "yyyy-MM-dd HH:mm:ss";
+
+            SimpleDateFormat fmt = new SimpleDateFormat(inputPattern);
+            Date date = fmt.parse(sDate);
+
+            SimpleDateFormat fmtOut = new SimpleDateFormat(pattern);
+            sDateFormate = fmtOut.format(date);
+
+            LogUtil.printLog(TAG, "sDateFormate: " + sDateFormate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sDateFormate;
+    }
+
     public static String convertIntToMonth(String sDate) {
         String sDateFormate = "";
         try {
