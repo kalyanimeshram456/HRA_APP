@@ -4,11 +4,14 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.View;
@@ -46,6 +49,9 @@ import com.ominfo.hra_app.ui.registration.model.SubscriptionResponse;
 import com.ominfo.hra_app.ui.registration.model.SubscriptionViewModel;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -142,7 +148,197 @@ public class RegistrationActivity extends BaseActivity {
         mContext = this;
         injectAPI();
         init();
+        setClickListener();
         tvMissing.setVisibility(View.GONE);
+    }
+
+    private void setClickListener(){
+        AutoComUsernamePrefix.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                if(s.length() != 0) {
+                    callUserPrefixApi();
+                }
+                else{
+                    input_textUsernamePrefix.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                    int color=Color.RED;
+                    input_textUsernamePrefix.setEndIconTintList(ColorStateList.valueOf(color));
+                    setError(0, input_textUsernamePrefix, getString(R.string.err_enter_username_prefix));
+                }
+            }
+        });
+        AutoComEmailId.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+
+                      if(s.length()>5) {
+                        if(!TextUtils.isEmpty(AutoComEmailId.getText().toString().trim()) &&
+                            Patterns.EMAIL_ADDRESS.matcher(AutoComEmailId.getText().toString().trim()).matches()){
+                            input_textEmailId.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_right_accept));
+                            int color=Color.GREEN;
+                            input_textEmailId.setEndIconTintList(ColorStateList.valueOf(color));
+                            setError(1, input_textEmailId, "Entered email is valid.");
+                        }
+                        else {
+                            input_textEmailId.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                            int color=Color.RED;
+                            input_textEmailId.setEndIconTintList(ColorStateList.valueOf(color));
+                            setError(0, input_textEmailId, getString(R.string.err_enter_email_id));
+                        }
+                    }
+                if(s.length()==0){
+                    input_textEmailId.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                    int color=Color.RED;
+                    input_textEmailId.setEndIconTintList(ColorStateList.valueOf(color));
+                    setError(0, input_textEmailId, getString(R.string.err_enter_email_id));
+                }
+            }
+        });
+        AutoComGstNo.setAllCaps(true);
+        AutoComGstNo.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                if(s.length() > 13) {
+                    if(TextUtils.isEmpty(AutoComGstNo.getText().toString().trim()) ||
+                            !isValidGSTNo(AutoComGstNo.getText().toString().trim())){
+                        input_textGstNo.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                        int color=Color.RED;
+                        input_textGstNo.setEndIconTintList(ColorStateList.valueOf(color));
+                        setError(0, input_textGstNo, getString(R.string.scr_lbl_enter_gst_number));
+                    }
+                    else{
+                        input_textGstNo.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_right_accept));
+                        int color=Color.GREEN;
+                        input_textGstNo.setEndIconTintList(ColorStateList.valueOf(color));
+                        setError(1, input_textGstNo, "Entered Gst number is valid.");
+                    }
+                }
+                if(s.length() == 0){
+                  /*  input_textGstNo.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                    int color=Color.RED;
+                    input_textGstNo.setEndIconTintList(ColorStateList.valueOf(color));
+                    setError(0, input_textGstNo, getString(R.string.scr_lbl_enter_gst_number));
+              */  }
+            }
+        });
+        AutoComMobileNo.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                if(s.length() > 9) {
+                        input_textMobileNo.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                        int color=Color.RED;
+                        input_textMobileNo.setEndIconTintList(ColorStateList.valueOf(color));
+                        setError(0, input_textMobileNo, getString(R.string.scr_lbl_enter_mobile_number));
+                    }
+                if(s.length() == 0){
+                    input_textMobileNo.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                    int color=Color.RED;
+                    input_textMobileNo.setEndIconTintList(ColorStateList.valueOf(color));
+                    setError(0, input_textMobileNo, getString(R.string.scr_lbl_enter_mobile_number));
+                }
+            }
+        });
+        AutoComMobileNo.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!b){
+                    if(AutoComMobileNo.getText().toString().length()<10){
+                        input_textMobileNo.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                        int color=Color.RED;
+                        input_textMobileNo.setEndIconTintList(ColorStateList.valueOf(color));
+                        setError(0, input_textMobileNo, getString(R.string.scr_lbl_enter_mobile_number));
+                    }
+                }
+            }
+        });
+        AutoComEmpStrength.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                if(s.length() != 0) {
+                    if(radioYear.isChecked()){
+                       callSubscriptionChargesApi();
+                    }
+                    if(radioTrial.isChecked()) {
+                        setDiscountChargesTrial();
+                    }
+                }
+                else{
+                   // AutoComEmpStrength.setText("1");
+                    //setError(1, input_textEmpStrength, "You should have minimum 1 employee");
+                }
+            }
+        });
+        AutoComEmpStrength.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!b){
+                    if(AutoComEmpStrength.getText().toString().trim().equals("") || AutoComEmpStrength.getText().toString().trim().equals("0")) {
+                        AutoComEmpStrength.setText("1");
+                    }
+                }
+            }
+        });
+        AutoComEmpStrength.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
+                    if(AutoComEmpStrength.getText().toString().trim().equals("") || AutoComEmpStrength.getText().toString().trim().equals("0")) {
+                        AutoComEmpStrength.setText("1");
+                    }
+                }
+                return false;
+            }
+        });
     }
 
     private void injectAPI() {
@@ -159,9 +355,24 @@ public class RegistrationActivity extends BaseActivity {
         applyCouponViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_check_coupon_validity));
     }
 
+    public static boolean isValidGSTNo(String str)
+    { String regex = "^[0-9]{2}[A-Za-z]{5}[0-9]{4}"
+                + "[A-Za-z]{1}[1-9A-Za-z]{1}"
+                + "Z[0-9A-Za-z]{1}$";
+        Pattern p = Pattern.compile(regex);
+
+        if (str == null)
+        {
+            return false;
+        }
+        Matcher m = p.matcher(str);
+        return m.matches();
+    }
+
     /* Call Api For Login user and get user details */
     private void callRegisterUserApi() {
         if (NetworkCheck.isInternetAvailable(RegistrationActivity.this)) {
+            showProgressLoader(getString(R.string.scr_message_please_wait));
             RegistrationRequest request = new RegistrationRequest();
             RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_register);
             RequestBody mRequestBodyName = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewName.getText().toString().trim());
@@ -181,7 +392,7 @@ public class RegistrationActivity extends BaseActivity {
             RequestBody mRequestgst_no = RequestBody.create(MediaType.parse("text/plain"), AutoComGstNo.getText().toString().trim());
 
             String plan = "";
-            if(radioYear.isChecked()){plan="Yearly";} if(radioTrial.isChecked()){plan="Trial";}
+            if(radioYear.isChecked()){plan="yearly";} if(radioTrial.isChecked()){plan="trial";}
             RequestBody mRequestplan_type = RequestBody.create(MediaType.parse("text/plain"), plan);
 
             request.setAction(mRequestBodyAction);
@@ -356,44 +567,8 @@ public class RegistrationActivity extends BaseActivity {
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         //editTextEmail.setText("hd001");
         //editTextPassword.setText("2437");
-        radioYear.setChecked(true);
+        radioTrial.setChecked(true);
         setErrorMSG();
-        AutoComUsernamePrefix.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (!b) {
-                    //callUserPrefixApi();
-                }
-            }
-        });
-        AutoComUsernamePrefix.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
-                    if(!TextUtils.isEmpty(AutoComUsernamePrefix.getText().toString().trim())){
-                    callUserPrefixApi();}
-                    else{setError(0, input_textUsernamePrefix, getString(R.string.err_enter_username_prefix));}
-                }
-                return false;
-            }
-        });
-        AutoComEmpStrength.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (!b) {
-                    setSubCharges();
-                }
-            }
-        });
-        AutoComEmpStrength.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
-                    setSubCharges();
-                }
-                return false;
-            }
-        });
         radioTrial.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -412,7 +587,8 @@ public class RegistrationActivity extends BaseActivity {
                 }
             }
         });
-        callSubscriptionChargesApi();
+        //callSubscriptionChargesApi();
+        setDiscountChargesTrial();
     }
 
     // set error if input field is blank
@@ -448,6 +624,9 @@ public class RegistrationActivity extends BaseActivity {
                 }
                 break;
             case R.id.removeButton:
+                input_textCoupon.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                int color=Color.TRANSPARENT;
+                input_textCoupon.setEndIconTintList(ColorStateList.valueOf(color));
                 removeButton.setVisibility(View.GONE);
                 applyButton.setVisibility(View.VISIBLE);
                 AutoComCoupon.setText("");
@@ -547,15 +726,15 @@ public class RegistrationActivity extends BaseActivity {
         switch (apiResponse.status) {
 
             case LOADING:
-                showProgressLoader(getString(R.string.scr_message_please_wait));
+                //
                 break;
 
             case SUCCESS:
-                dismissLoader();
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
                     if (tag.equalsIgnoreCase(DynamicAPIPath.action_register)) {
                         RegisterResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), RegisterResponse.class);
+                        dismissLoader();
                         if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                             showThanksForRegisterDialog();
                         } else {
@@ -567,11 +746,17 @@ public class RegistrationActivity extends BaseActivity {
                         if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                             tvEx.setVisibility(View.GONE);
                             statusPrefix = true;
+                            input_textUsernamePrefix.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_right_accept));
+                            int color=Color.GREEN;
+                            input_textUsernamePrefix.setEndIconTintList(ColorStateList.valueOf(color));
                             setError(1, input_textUsernamePrefix, responseModel.getResult().getMessage());
                         } else {
                             tvEx.setVisibility(View.GONE);
+                            input_textUsernamePrefix.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                            int color=Color.RED;
+                            input_textUsernamePrefix.setEndIconTintList(ColorStateList.valueOf(color));
                             setError(0, input_textUsernamePrefix, responseModel.getResult().getMessage());
-                            LogUtil.printToastMSG(RegistrationActivity.this, responseModel.getResult().getMessage());
+                            //LogUtil.printToastMSG(RegistrationActivity.this, responseModel.getResult().getMessage());
                         }
                     }
                     if (tag.equalsIgnoreCase(DynamicAPIPath.action_get_subs_price)) {
@@ -592,10 +777,16 @@ public class RegistrationActivity extends BaseActivity {
                         if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 if(responseModel.getResult().getMessage().equals("No record found.")){
+                                    input_textCoupon.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                                    int color=Color.TRANSPARENT;
+                                    input_textCoupon.setEndIconTintList(ColorStateList.valueOf(color));
                                     AutoComCoupon.setError("Coupon code is not valid!");
                                     LogUtil.printSnackBar(mContext,Color.YELLOW,findViewById(android.R.id.content),getString(R.string.scr_lbl_coupn_msg));
                                 }
                                 else{
+                                    input_textCoupon.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_right_accept));
+                                    int color=Color.GREEN;
+                                    input_textCoupon.setEndIconTintList(ColorStateList.valueOf(color));
                                     discountAmount = responseModel.getResult().getList().getDiscountAmt();
                                     couponCode = responseModel.getResult().getList().getCode();
                                     LogUtil.printSnackBar(mContext, Color.GREEN,findViewById(android.R.id.content),"Congrats! You have got Rs"+discountAmount+" Discount on Coupon code -"+
@@ -616,12 +807,18 @@ public class RegistrationActivity extends BaseActivity {
                             }
                             else{ //AutoComCoupon.setError("Coupon is not valid.");
                                 AutoComCoupon.setError("Coupon code is not valid!");
+                                input_textCoupon.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                                int color=Color.TRANSPARENT;
+                                input_textCoupon.setEndIconTintList(ColorStateList.valueOf(color));
                                 LogUtil.printSnackBar(mContext,Color.YELLOW,findViewById(android.R.id.content),getString(R.string.scr_lbl_coupn_msg));
 
                             }
                         }
                         else{ //AutoComCoupon.setError("Coupon is not valid.");
                             AutoComCoupon.setError("Coupon code is not valid!");
+                            input_textCoupon.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                            int color=Color.TRANSPARENT;
+                            input_textCoupon.setEndIconTintList(ColorStateList.valueOf(color));
                             LogUtil.printSnackBar(mContext,Color.YELLOW,findViewById(android.R.id.content),getString(R.string.scr_lbl_coupn_msg));
                         }
                     }
@@ -635,7 +832,8 @@ public class RegistrationActivity extends BaseActivity {
     }
 
     private void setSubCharges(){
-        int strength = AutoComEmpStrength.getText().toString().equals("")?1:
+        int strength = AutoComEmpStrength.getText().toString().equals("")
+                ||AutoComEmpStrength.getText().toString().equals("0")?1:
                 Integer.parseInt(AutoComEmpStrength.getText().toString());
         Double price = Double.parseDouble(subCharges);
         subChargeApi = String.valueOf(strength*price);

@@ -128,13 +128,13 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvAmount"
-                        android:layout_below="@+id/tvDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_below="@+id/tvDate"
                         android:layout_alignParentRight="true"
                         android:layout_gravity="center"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="@string/scr_lbl_rs_0"
+                        android:hint="@string/scr_lbl_unavailable"
                         android:textAlignment="center"
                         android:textColor="@color/black_heading"
                         android:textSize="@dimen/_13sp" />

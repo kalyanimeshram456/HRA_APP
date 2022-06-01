@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -186,8 +187,8 @@ public class LoginActivity extends BaseActivity {
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         tvTitle.setText(getString(R.string.scr_lbl_login));
         setErrorMSG();
-        editTextEmail.setText("KAL025");
-        editTextPassword.setText("3486");
+        //editTextEmail.setText("KAL025");
+        //editTextPassword.setText("3486");
         /*Window window = getWindow();
         View view = window.getDecorView();
         DarkStatusBar.setLightStatusBar(view,this);*/
@@ -277,6 +278,19 @@ public class LoginActivity extends BaseActivity {
                         if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                             finish();
                             launchScreen(mContext, MainActivity.class);
+                            try {
+                                mDb.getDbDAO().deleteLoginData();
+                                mDb.getDbDAO().deleteLocationData();
+                                mDb.getDbDAO().deleteAttendanceData();
+                                AsyncTask.execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        //deleteReminderViewModel.DeleteReminder();
+                                    }
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             LogUtil.printSnackBar(mContext, Color.GREEN,findViewById(android.R.id.content),responseModel.getResult().getMessage());
                             //LogUtil.printToastMSG(LoginActivity.this, responseModel.getResult().getMessage());
                             SharedPref.getInstance(this).write(SharedPrefKey.IS_LOGGED_IN, true);

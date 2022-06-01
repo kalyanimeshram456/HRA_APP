@@ -1,7 +1,7 @@
 package com.ominfo.hra_app.basecontrol;
 
 //import static com.ominfo.hra_app.MainActivity.ssCustomBottomNavigation;
-import static com.ominfo.hra_app.MainActivity.ssCustomBottomNavigation;
+import static com.ominfo.hra_app.MainActivity.bottomNavigationView;
 import static com.ominfo.hra_app.ui.attendance.StartAttendanceActivity.tvCurrLocation;
 
 import android.app.Activity;
@@ -25,6 +25,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -417,6 +418,11 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
             ColorStateList csl = ColorStateList.valueOf(colorInt);
            textInputLayout.setErrorTextColor(csl);
         }
+        else{
+            int colorInt = getResources().getColor(R.color.notify_red);
+            ColorStateList csl = ColorStateList.valueOf(colorInt);
+            textInputLayout.setErrorTextColor(csl);
+        }
         textInputLayout.setError(error);
         textInputLayout.requestFocus();
         if (customAnimationUtil == null) {
@@ -529,17 +535,33 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         mDialog.setCanceledOnTouchOutside(true);
         AppCompatTextView mTextViewTitle = mDialog.findViewById(R.id.tv_dialogTitle);
         AppCompatButton button = mDialog.findViewById(R.id.okayButton);
+        AppCompatImageView imgError= mDialog.findViewById(R.id.imgError);
         mTextViewTitle.setText(msg);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mDialog.dismiss();
-                if(!status) {
-                    activity.finish();
+        if(status) {
+            imgError.setImageDrawable(context.getDrawable(R.drawable.ic_error_load_grey));
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mDialog.dismiss();
+                    if(status) {
+                        activity.finish();
+                    }
                 }
-            }
-        }, 1100);
+            }, 2500);
+        }
+        else{
+            imgError.setImageDrawable(context.getDrawable(R.drawable.ic_done));
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mDialog.dismiss();
+                    if(!status) {
+                        activity.finish();
+                    }
+                }
+            }, 1100);
+        }
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -850,11 +872,13 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                                     if(responseModel.getResult().getLevCountEmp()!=null &&
                                             !responseModel.getResult().getLevCountEmp().equals("0") &&
                                             !responseModel.getResult().getLevCountEmp().equals("")){
-                                        ssCustomBottomNavigation.setCount(3, responseModel.getResult().getLevCountEmp());
+                                        bottomNavigationView.getOrCreateBadge(R.id.leave).setNumber(Integer.parseInt(responseModel.getResult().getLevCountEmp()));
+                                        bottomNavigationView.getOrCreateBadge(R.id.leave).setBackgroundColor(getResources().getColor(R.color.notify_red));
+                                        //bottomNavigationView.getOrCreateBadge(R.id.home).setBadgeGravity(Gravity.TOP_END);
+                                       // bottomNavigationView.setBad(3, responseModel.getResult().getLevCountEmp());
                                     }
                                     else{
-                                        ssCustomBottomNavigation.clearCount(3);
-
+                                        bottomNavigationView.getOrCreateBadge(R.id.leave).clearNumber();
                                     }
                                 }catch (Exception e){
                                     LogUtil.printToastMSG(this,e.getMessage());

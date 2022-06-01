@@ -148,6 +148,26 @@ public class AppUtils {
         }
     }
 
+    public static String getDayToday(String Date1){
+        try {
+            String dt = Date1;  // Start date
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyy");
+            Calendar c = Calendar.getInstance();
+            try {
+                c.setTime(sdf.parse(dt));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            //c.add(Calendar.DATE, 40);  // number of days to add, can also use Calendar.DAY_OF_MONTH in place of Calendar.DATE
+            SimpleDateFormat sdf1 = new SimpleDateFormat("dd");
+            String output = sdf1.format(c.getTime());
+            return output;
+        }catch (Exception e){
+            e.printStackTrace();
+            return Date1;
+        }
+    }
+
     public static String  convertIntToMonth(int monthnum){
         try{
         Calendar cal=Calendar.getInstance();
@@ -177,6 +197,19 @@ public class AppUtils {
         catch(Exception e) { }
         return monthName;
     }
+
+    public static String convertMonthToIntMMM(String monthName){
+        try{
+            Date date = new SimpleDateFormat("MMM", Locale.ENGLISH).parse(monthName);//put your month name in english here
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            int val = cal.get(Calendar.MONTH)+1;
+            return String.valueOf(val).length()==1?"0"+val:String.valueOf(val);
+        }
+        catch(Exception e) { }
+        return monthName;
+    }
+
     public static double meterDistanceBetweenPoints(float lat_a, float lng_a, float lat_b, float lng_b) {
         float pk = (float) (180.f/Math.PI);
 

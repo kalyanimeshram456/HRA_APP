@@ -13,9 +13,9 @@
     <!-- Base application theme. -->
     <style name="AppThemeSlider" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/color_main</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/color_main</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
@@ -128,12 +128,12 @@
         <item name="colorPrimary">@color/Light_Yellow</item>
     </style>
 
-    <style name="BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+  <!--  <style name="BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
         <item name="colorPrimary">@android:color/transparent</item>
         <item name="colorPrimaryDark">@android:color/transparent</item>
         <item name="colorAccent">@android:color/transparent</item>
         <item name="iconSize">@dimen/_80dp</item>
-    </style>
+    </style>-->
 
     <style name="TextAppearance.BottomNavigation.Overline" parent="TextAppearance.MaterialComponents.Overline">
         <item name="android:textSize">8sp</item>
@@ -318,4 +318,11 @@
         <item name="colorPrimaryDark">@android:color/transparent</item>
         <item name="colorAccent">@android:color/transparent</item>
     </style>
-</resources>
+
+    <!-- Base application theme. -->
+    <style name="AppThemeBottomTest" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/color_main</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/color_main</item>
+    </style></resources>

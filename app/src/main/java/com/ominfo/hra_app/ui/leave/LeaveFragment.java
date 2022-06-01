@@ -168,7 +168,8 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
                 .load(R.drawable.img_bg_search)
                 .into(iv_emptyLayimage);
         tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
-        tv_emptyLayTitle.setText("Search something...");
+        //tv_emptyLayTitle.setText("Search something...");
+        emptyLayout.setVisibility(View.VISIBLE);
         imgReport.setVisibility(View.VISIBLE);
         showFilterDialog(1);
         swipeRefresh.setOnRefreshListener(this);
@@ -548,15 +549,11 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
                             LeaveAcceptRejectResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LeaveAcceptRejectResponse.class);
                             totalPage = responseModel.getResult().getTotalrows();
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                if (acceptRejectLeaveArrayList != null) {
-                                    //employeeListArrayList= new ArrayList<>();
-                                }
-                                if(responseModel.getResult().getLeave()!=null) {
+                                if(responseModel.getResult().getLeave()!=null && responseModel.getResult().getLeave().size()>0) {
                                     acceptRejectLeaveArrayList = responseModel.getResult().getLeave();
+                                    emptyLayout.setVisibility(View.GONE);
                                     doApiCall();
                                 }
-                                acceptRejectLeaveArrayList.add(new AcceptRejectLeave());
-                                doApiCall();
                             }
                         }
                     }catch (Exception e){

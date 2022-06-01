@@ -30,17 +30,6 @@
                 android:visibility="visible"
                 android:orientation="vertical">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvEmployeeActive"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:layout_marginTop="@dimen/_22dp"
-                    android:fontFamily="@font/gilroy_semibold"
-                    android:text="1 / 1 Employees active"
-                    android:textColor="@color/gray"
-                    android:textSize="@dimen/_14sp" />
-
                 <androidx.appcompat.widget.SearchView
                     android:id="@+id/searchView"
                     style="@style/AppSearchView"
@@ -72,10 +61,23 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_marginHorizontal="@dimen/_10dp"
-                            android:layout_marginTop="@dimen/_50dp"
+                            android:layout_marginTop="@dimen/_16dp"
                             android:orientation="vertical">
 
-                        <androidx.recyclerview.widget.RecyclerView
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvEmployeeActive"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_6dp"
+                                android:layout_marginBottom="@dimen/_16dp"
+                                android:visibility="visible"
+                                android:fontFamily="@font/gilroy_semibold"
+                                android:text="1 / 1 Employees active"
+                                android:textColor="@color/gray"
+                                android:textSize="@dimen/_14sp" />
+
+
+                            <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvSalesList"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

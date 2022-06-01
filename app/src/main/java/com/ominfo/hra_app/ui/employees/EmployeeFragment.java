@@ -196,8 +196,7 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
             }
         });
         rvSalesList.setAdapter(employeeAdapter);
-        callEmployeeListApi("0");
-
+        //callEmployeeListApi("0");
         /**
          * add scroll listener while user reach in bottom load more will call
          */
@@ -261,6 +260,7 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
             isLastPage = true;
         }
         isLoading = false;
+        employeeAdapter.removeLoading();
         //  }
         // }, 0);
     }
@@ -367,6 +367,11 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
     @Override
     public void onResume() {
         super.onResume();
+        itemCount = 0;
+        currentPage = PAGE_START;
+        isLastPage = false;
+        employeeAdapter.clear();
+        callEmployeeListApi("0");
     }
 
     @Override
@@ -398,6 +403,9 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
             @Override
             public void onClick(View v) {
                 mDialog.dismiss();
+                itemCount = 0;
+                currentPage = PAGE_START;
+                isLastPage = false;
                 employeeAdapter.clear();
                 callEmployeeListApi("0");
                 //doApiCall();
@@ -510,15 +518,16 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
                             EmployeeListResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), EmployeeListResponse.class);
                             totalPage = responseModel.getResult().getTotalrows();
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                if (employeeListArrayList != null) {
-                                    //employeeListArrayList= new ArrayList<>();
+                                if (responseModel.getResult().getList() != null && responseModel.getResult().getList().size()>0) {
+                                    employeeListArrayList = responseModel.getResult().getList();
+                                    doApiCall();
                                 }
-                                employeeListArrayList = responseModel.getResult().getList();
                                 LoginTable loginTable = mDb.getDbDAO().getLoginData();
                                 if (!loginTable.getIsadmin().equals("0")){
+                                    tvEmployeeActive.setVisibility(View.VISIBLE);
                                     tvEmployeeActive.setText(responseModel.getResult().getTotal_prest_emp() + " / " + responseModel.getResult().getTotalactiveemp() + " Employees active");
                                    }
-                                doApiCall();
+
                             }
                         }
                     } catch (Exception e) {

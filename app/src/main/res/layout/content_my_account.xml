@@ -117,16 +117,17 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginLeft="@dimen/_10dp"
                             android:layout_toRightOf="@+id/frameLayout"
+                            android:background="@drawable/toggle_editext_color"
+                            android:enabled="false"
                             android:fontFamily="@font/gilroy_bold"
                             android:gravity="left"
                             android:imeOptions="actionDone"
                             android:inputType="text"
                             android:text=""
-                            android:enabled="false"
-                            android:background="@drawable/toggle_editext_color"
+                            android:hint="Add"
                             android:textColor="@color/white"
-                            android:textColorHint="@color/white"
-                            android:textSize="@dimen/_16dp" />
+                            android:textColorHint="@color/yellow_active"
+                            android:textSize="@dimen/_16sp" />
                         <androidx.appcompat.widget.AppCompatImageView
                             android:id="@+id/imgEdit"
                             android:layout_width="@dimen/_25dp"
@@ -169,12 +170,16 @@
                android:layout_height="wrap_content"
                android:layout_marginBottom="@dimen/_16dp"
                android:paddingBottom="@dimen/_10dp"
+               android:focusable="true"
+               android:focusableInTouchMode="true"
                android:background="@drawable/layout_round_shape_corners"
                >
 
                <androidx.appcompat.widget.LinearLayoutCompat
                    android:id="@+id/laySubmit"
                    android:visibility="gone"
+                   android:focusable="true"
+                   android:focusableInTouchMode="true"
                    android:layout_width="match_parent"
                    android:layout_height="match_parent"
                    android:orientation="vertical">
@@ -184,6 +189,8 @@
                        android:layout_width="wrap_content"
                        android:layout_height="wrap_content"
                        android:layout_gravity="left"
+                       android:focusable="true"
+                       android:focusableInTouchMode="true"
                        android:layout_marginHorizontal="@dimen/_10dp"
                        android:layout_marginTop="@dimen/_16dp"
                        android:fontFamily="@font/gilroy_semibold"
@@ -353,6 +360,8 @@
                    android:layout_height="match_parent"
                    android:layout_below="@+id/laySubmit"
                    android:visibility="gone"
+                   android:focusable="true"
+                   android:focusableInTouchMode="true"
                    android:orientation="vertical">
 
                    <androidx.appcompat.widget.AppCompatTextView
@@ -363,6 +372,8 @@
                        android:layout_marginTop="@dimen/_16dp"
                        android:fontFamily="@font/gilroy_semibold"
                        android:text="@string/scr_lbl_email_id"
+                       android:focusable="true"
+                       android:focusableInTouchMode="true"
                        android:textColor="@color/black_heading"
                        android:textSize="@dimen/_14sp" />
 
@@ -703,6 +714,8 @@
                    android:layout_width="match_parent"
                    android:layout_height="match_parent"
                    android:visibility="gone"
+                   android:focusable="true"
+                   android:focusableInTouchMode="true"
                    android:orientation="vertical">
 
                    <androidx.appcompat.widget.AppCompatTextView
@@ -712,13 +725,15 @@
                        android:layout_gravity="left"
                        android:layout_marginHorizontal="@dimen/_10dp"
                        android:layout_marginTop="@dimen/_16dp"
+                       android:focusable="true"
+                       android:focusableInTouchMode="true"
                        android:fontFamily="@font/gilroy_semibold"
                        android:text="@string/scr_lbl_gst_number"
                        android:textColor="@color/black_heading"
                        android:textSize="@dimen/_14sp" />
 
                    <com.google.android.material.textfield.TextInputLayout
-                       android:id="@+id/input_text"
+                       android:id="@+id/input_textGstNo"
                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                        android:layout_width="match_parent"
                        android:layout_height="wrap_content"
@@ -941,7 +956,8 @@
                        android:layout_marginTop="@dimen/_16dp"
                        android:fontFamily="@font/gilroy_semibold"
                        android:text="Staff strength"
-                       android:textColor="@color/black_heading"
+                       android:enabled="false"
+                       android:textColor="@color/text_disabled"
                        android:textSize="@dimen/_14sp" />
 
                    <com.google.android.material.textfield.TextInputLayout
@@ -955,7 +971,9 @@
                        app:boxCornerRadiusBottomStart="@dimen/_10dp"
                        app:boxCornerRadiusTopEnd="@dimen/_10dp"
                        app:boxCornerRadiusTopStart="@dimen/_10dp"
+                       app:endIconDrawable="@android:color/transparent"
                        app:hintEnabled="false"
+                       android:enabled="false"
                        app:hintTextAppearance="@style/Editext.Theme"
                        app:placeholderTextAppearance="@style/Editext.Theme"
                        app:startIconContentDescription="$">
@@ -972,6 +990,7 @@
                            android:imeOptions="actionDone"
                            android:inputType="text"
                            android:padding="@dimen/_10dp"
+                           android:enabled="false"
                            android:text=""
                            android:textColor="@color/text_disabled"
                            android:textColorHint="@color/app_gray"

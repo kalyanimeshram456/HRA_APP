@@ -127,25 +127,26 @@ public class EmployeeListRecyclerAdapter extends RecyclerView.Adapter<BaseViewHo
     public void onBind(int position) {
       super.onBind(position);
       EmployeeList item = mPostItems.get(position);
-      if(item.getIsActive().equals("1")){
-        tvStatus.setTextColor(context.getResources().getColor(R.color.green));
-        tvStatus.setText("Active");
-      }
-      else {
-        tvStatus.setTextColor(context.getResources().getColor(R.color.deep_red));
-        tvStatus.setText("Inactive");
-      }
-      textViewTitle.setText(item.getEmpName());
-      textViewDescription.setText(item.getEmpPosition());
-      AppUtils.loadImageURL(context,"https://ominfo.in/o_hr/"+mPostItems.get(position).getEmpProfilePic(),
-              imgBirthPro,progress_barBirth);
-
-      layCard.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          listItemSelectListener.onItemClick(0,mPostItems.get(position));
+      if (item != null) {
+        if (item.getIsActive()!=null && item.getIsActive().equals("1")) {
+          tvStatus.setTextColor(context.getResources().getColor(R.color.green));
+          tvStatus.setText("Active");
+        } else {
+          tvStatus.setTextColor(context.getResources().getColor(R.color.deep_red));
+          tvStatus.setText("Inactive");
         }
-      });
+        textViewTitle.setText(item.getEmpName());
+        textViewDescription.setText(item.getEmpPosition());
+        AppUtils.loadImageURL(context, "https://ominfo.in/o_hr/" + mPostItems.get(position).getEmpProfilePic(),
+                imgBirthPro, progress_barBirth);
+
+        layCard.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            listItemSelectListener.onItemClick(0, mPostItems.get(position));
+          }
+        });
+      }
     }
   }
 

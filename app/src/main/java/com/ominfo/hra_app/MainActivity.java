@@ -31,6 +31,7 @@ import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -66,7 +67,6 @@ import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.my_account.MyAccountFragment;
 import com.ominfo.hra_app.ui.salary.SalaryFragment;
 import com.ominfo.hra_app.util.AppUtils;
-import com.simform.custombottomnavigation.SSCustomBottomNavigation;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -86,7 +86,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
     AppCompatAutoCompleteTextView AutoComTextViewRM,tvSearchView
             ,AutoComTextViewName,AutoComTextViewMobile,AutoComTextViewPOI
             ,AutoComTextViewEnquiry;
-    AppCompatEditText etDescr;    BottomNavigationView bottomNavigationView;
+    AppCompatEditText etDescr;
 
     String mRmId = "";
     private boolean status = false;
@@ -106,7 +106,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
     ViewModelFactory mViewModelFactory;
 
     Dialog mDialog;
-    public static SSCustomBottomNavigation ssCustomBottomNavigation;
+    public static BottomNavigationView bottomNavigationView;
     LoginTable loginTable;
 
     @Override
@@ -134,54 +134,8 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         loginTable = mDb.getDbDAO().getLoginData();
 
-       /* bubbleNavigationLinearView = findViewById(R.id.bottom_navigation_view_linear);
-        //.setTypeface(Typeface.createFromAsset(getAssets(), "rubik.ttf"));
+     /*   getSupportFragmentManager().beginTransaction().replace(R.id.framecontainer, new DashboardFragment()).commit();
 
-        bubbleNavigationLinearView.setBadgeValue(0, null);
-        bubbleNavigationLinearView.setBadgeValue(1, null); //invisible badge
-        bubbleNavigationLinearView.setBadgeValue(2, null);
-        bubbleNavigationLinearView.setBadgeValue(3, null);
-        bubbleNavigationLinearView.setBadgeValue(4, null); //empty badge*/
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.framecontainer, new DashboardFragment()).commit();
-
-     /*   bubbleNavigationLinearView.setNavigationChangeListener(new BubbleNavigationChangeListener() {
-            @Override
-            public void onNavigationChanged(View view, int position) {
-                //viewPager.setCurrentItem(position, true);
-                Fragment temp = null;
-                switch (position) {
-                    case 0:
-                        temp = new DashboardFragment();
-                        break;
-                    case 1:
-                        temp = new EmployeeFragment();
-                        break;
-                    case 2:
-                        if(loginTable!=null) {
-                            if(loginTable.getIsadmin().equals("0")){
-                                temp = new EmployeeLeaveListFragment();
-                            } else{
-                                temp = new LeaveFragment();
-                            }
-                        }
-                        else{
-                            temp = new LeaveFragment();
-                        }
-                        break;
-                    case 3:
-                        temp = new SalaryFragment();
-                        break;
-                    case 4:
-                        temp = new MyAccountFragment();
-                }
-
-                getSupportFragmentManager().beginTransaction().add(R.id.framecontainer, temp).addToBackStack(null).commit();
-
-                //return null;
-            }
-        });
-*/
         ssCustomBottomNavigation = findViewById(R.id.bottomNavigationN);
         //ssCustomBottomNavigation.change
         ssCustomBottomNavigation.add(new SSCustomBottomNavigation.Model(1, R.drawable.ic_home,"Home"));
@@ -228,19 +182,13 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
                 return null;
             }
         });
-      /*  ViewGroup.LayoutParams params = coordinator.getLayoutParams();
-        int marginInDp = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 95, getResources()
-                        .getDisplayMetrics());
-        params.height = marginInDp;
-        params.width = ViewGroup.LayoutParams.MATCH_PARENT;
-        coordinator.setLayoutParams(params);*/
-        /*bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomnavigationbar);
+   */
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavigationView);
 
         bottomNavigationView.setBackground(null);
 
         //bottomNavigationView.getMenu().getItem(2).setEnabled(false);
-
+        bottomNavigationView.setSelectedItemId(R.id.home);
         getSupportFragmentManager().beginTransaction().replace(R.id.framecontainer, new DashboardFragment()).commit();
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -255,12 +203,21 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
                     case R.id.Search:
                         temp = new EmployeeFragment();
                         break;
-                    case R.id.placeholder:
-                        temp = new SalaryFragment();
+                    case R.id.leave:
+                        if(loginTable!=null) {
+                            if(loginTable.getIsadmin().equals("0")){
+                                temp = new EmployeeLeaveListFragment();
+                            } else{
+                                temp = new LeaveFragment();
+                            }
+                        }
+                        else{
+                            temp = new LeaveFragment();
+                        }
                         break;
 
                     case R.id.Profile:
-                        temp = new LeaveFragment();
+                        temp = new SalaryFragment();
                         break;
 
                     case R.id.Settings:
@@ -270,7 +227,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
                 getSupportFragmentManager().beginTransaction().add(R.id.framecontainer, temp).addToBackStack(null).commit();
                 return true;
             }
-        });*/
+        });
     }
 
     private void initToolbar() {

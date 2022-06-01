@@ -28,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="visible"
-                android:layout_marginBottom="@dimen/_50dp"
+                android:layout_marginBottom="@dimen/_20dp"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -66,7 +66,7 @@
                     android:layout_gravity="bottom"
                     android:layout_marginHorizontal="@dimen/_10dp"
                     android:layout_marginTop="@dimen/_20dp"
-                    android:layout_marginBottom="@dimen/_80dp"
+                    android:layout_marginBottom="@dimen/_16dp"
                     android:background="@drawable/bg_button_round_corner_5"
                     android:fontFamily="@font/gilroy_semibold"
                     android:gravity="center"

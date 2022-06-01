@@ -36,16 +36,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.model.GradientColor;
 import com.google.gson.Gson;
 import com.ominfo.hra_app.R;
 import com.ominfo.hra_app.basecontrol.BaseActivity;
@@ -122,10 +112,6 @@ public class VisitReportFragment extends BaseFragment {
     LinearLayoutCompat layList;
     @BindView(R.id.layPagination)
     RelativeLayout layPagination;
-    @BindView(R.id.idBarChart)
-    PieChart pieChart;
-    @BindView(R.id.imgTable)
-    AppCompatImageView imgTable;
     @BindView(R.id.imgGraph)
     AppCompatImageView imgGraph;
     @BindView(R.id.imgFilter)
@@ -156,10 +142,7 @@ public class VisitReportFragment extends BaseFragment {
     ViewModelFactory mViewModelFactory;
     private GetVisitViewModel getVisitViewModel;
     private AppDatabase mDb;
-    BarData barData;
-    List<GradientColor> list = new ArrayList<>();
-    // variable for our bar data set.
-    BarDataSet barDataSet;
+
     @BindView(R.id.rvEnquiryPager)
     RecyclerView rvEnquiryPager;
     @BindView(R.id.tvTotalCount)
@@ -262,7 +245,6 @@ public class VisitReportFragment extends BaseFragment {
         layPagination.setVisibility(View.VISIBLE);
         //add_fab.setVisibility(View.VISIBLE);
         imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
-        imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
         imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
         layFilter.setVisibility(View.GONE);
 
@@ -662,58 +644,6 @@ public class VisitReportFragment extends BaseFragment {
 
     }
 
-    private void setGraphData(int initStatus) {
-        if(initStatus!=3) {
-            DAYS = new String[6];
-            DAYSY = new String[6];
-        }
-        if(initStatus==3){
-            DAYS = new String[graphModelsList.size()+1];
-            DAYSY = new String[graphModelsList.size()+1];
-        }
-        if(initStatus!=3) {
-            try {
-                endPos = startPos + 6;
-                if (endPos <= graphModelsList.size()) {
-                    //if(startPos<6) {
-
-                    for (int i = 0; i < graphModelsList.size(); i++) {
-                        if (graphModelsList.get(i).getxValue() != null) {
-                            DAYS[i] = graphModelsList.get(i).getxValue();
-                        }
-                        if (graphModelsList.get(i).getyValue() != null) {
-                            DAYSY[i] = graphModelsList.get(i).getyValue();
-                        }
-                    }
-                    try {
-                        getGraph();
-                        //setAdapterForDashboardList();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    // }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if(initStatus==3){
-            for (int i = 0; i < graphModelsList.size(); i++) {
-                if(graphModelsList.get(i).getxValue()!=null) {
-                    DAYS[i] = graphModelsList.get(i).getxValue();
-                }
-                if(graphModelsList.get(i).getyValue()!=null) {
-                    DAYSY[i] = graphModelsList.get(i).getyValue();
-                }
-            }
-            try {
-                getGraph();
-                //setAdapterForDashboardList();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     //show Quotation popup
     public void showQuotationDialog() {
@@ -740,65 +670,6 @@ public class VisitReportFragment extends BaseFragment {
         mDialog.show();
     }
 
-
-
-    private BarData getBarEntries() {
-
-        barEntriesArrayList = new ArrayList<>();
-        for (int i = 0; i < DAYSY.length; i++) {
-            Random r = new Random();
-            float x = i;
-            if(DAYSY[i]!=null) {
-                float y = Integer.parseInt(DAYSY[i]);
-                barEntriesArrayList.add(new BarEntry(x, y));
-            }
-        }
-
-        MyBarDataSet set1 = new MyBarDataSet(barEntriesArrayList, "Test");
-        set1.setBarBorderColor(Color.YELLOW);
-        String dark_Red ="#A10616";
-        String light_Red = "#FB6571";
-        String Yellow = "#F9B747";
-        String pink = "#e12c2c";
-        String darkPink = "#DD3546";
-
-       /* list.add(new GradientColor(Color.parseColor("#F9B747"),
-                Color.parseColor("#A10616")));*/
-        /*list.add(new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(pink)));*/
-       /* list.add(new GradientColor(Color.parseColor(pink),
-                Color.parseColor(darkPink)));*/
-        list.add(new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(darkPink)));
-        list.add(new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(dark_Red)));
-
-        //set1.setColor(R.drawable.chart_fill);
-        set1.setGradientColors(list);
-        /*set1.setGradientColor(new int[]{new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(dark_Red)),
-                new GradientColor(Color.parseColor(Yellow),
-                        Color.parseColor(dark_Red)),
-                        new GradientColor(Color.parseColor(Yellow),
-                                Color.parseColor(dark_Red))});*/
-        //ArrayList<BarDataSet> dataSets = new ArrayList<>();
-        //dataSets.add(set1);
-
-
-       // BarData data = new BarData(xVals, dataSets);
-
-        //set1.setColor(getResources().getColor(R.color.deep_yellow));
-        set1.setDrawValues(false);
-        ArrayList<IBarDataSet> dataSets = new ArrayList<>();
-
-        set1.setHighlightEnabled(false);
-        set1.setDrawValues(true);
-
-        dataSets.add(set1);
-        // adding color to our bar data set.
-        BarData data = new BarData(dataSets);
-        return data;
-    }
 
     //show Receipt Details popup
     public void showVisitDetailsDialog(GetVisit getEnquiry) {
@@ -867,63 +738,6 @@ public class VisitReportFragment extends BaseFragment {
     }
 
 
-    private void getGraph(){
-
-        ArrayList<PieEntry> pieEntries = new ArrayList<>();
-        String label = "type";
-
-        //initializing data
-        Map<String, Integer> typeAmountMap = new HashMap<>();
-        typeAmountMap.put("Bosch Ltd",50);
-        typeAmountMap.put("Snacks Ltd",50);
-        typeAmountMap.put("Tara Steel Ltd",100);
-        typeAmountMap.put("Alpha Ltd",200);
-
-        //initializing colors for the entries
-        ArrayList<Integer> colors = new ArrayList<>();
-        colors.add(Color.parseColor("#223E6D"));//Blue
-        colors.add(Color.parseColor("#7eb3ff"));//Sky Blue
-        colors.add(Color.parseColor("#38A15E"));//Green
-        colors.add(Color.parseColor("#BB120D"));//RED
-       // colors.add(Color.parseColor("#a35567"));
-       // colors.add(Color.parseColor("#ff5f67"));
-       // colors.add(Color.parseColor("#3ca567"));
-
-        //input data and fit data into pie chart entry
-        for(String type: typeAmountMap.keySet()){
-            pieEntries.add(new PieEntry(typeAmountMap.get(type).floatValue(), type));
-        }
-
-        //collecting the entries with label name
-        PieDataSet pieDataSet = new PieDataSet(pieEntries,label);
-        //setting text size of the value
-        pieDataSet.setValueTextSize(12f);
-        //providing color list for coloring different entries
-        pieDataSet.setColors(colors);
-        pieDataSet.setSliceSpace(4.5f);
-
-        //grouping the data set from entry to chart
-        PieData pieData = new PieData(pieDataSet);
-        //showing the value of the entries, default true if not set
-        Legend l = pieChart.getLegend();
-        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
-        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
-        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
-        l.setWordWrapEnabled(true);
-        l.setDrawInside(false);
-        l.setYOffset(5f);
-        //pieData.setDrawValues(true);
-        pieChart.setDrawSliceText(false);
-        pieChart.getDescription().setEnabled(false);
-        pieData.setDrawValues(false);
-        pieChart.setData(pieData);
-        //pieChart.setDrawSlicesUnderHole(true);
-        //pieChart.setMinAngleForSlices(10);
-        pieChart.setHoleRadius(45f);
-        pieChart.setTransparentCircleRadius(45f);
-        pieChart.invalidate();
-    }
-
     //perform click actions
     @OnClick({R.id.imgGraph,R.id.imgTable,/*,R.id.add_fab,*/R.id.imgFilter,R.id.submitButton
     ,R.id.toDate,R.id.fromDate,R.id.resetButton,R.id.tvCompanyName,R.id.imgCompanySort
@@ -963,14 +777,12 @@ public class VisitReportFragment extends BaseFragment {
                 break;
             case R.id.imgFilter:
                 //add_fab.setVisibility(View.GONE);
-                pieChart.setVisibility(View.GONE);
                 layList.setVisibility(View.GONE);
                 layPagination.setVisibility(View.GONE);
                 layFilter.setVisibility(View.VISIBLE);
                 emptyLayout.setVisibility(View.GONE);
                 submitButton.setVisibility(View.VISIBLE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
-                imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_table_blue));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_blue));
                 //callRMApi();
                 callTourApi();
@@ -978,13 +790,11 @@ public class VisitReportFragment extends BaseFragment {
 
             case R.id.imgGraph:
                 //add_fab.setVisibility(View.GONE);
-                pieChart.setVisibility(View.VISIBLE);
                 layList.setVisibility(View.GONE);
                 layPagination.setVisibility(View.GONE);
                 layFilter.setVisibility(View.GONE);
                 emptyLayout.setVisibility(View.GONE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_blue));
-                imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_table_blue));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
                 submitButton.setVisibility(View.GONE);
                 break;
@@ -992,14 +802,12 @@ public class VisitReportFragment extends BaseFragment {
             case R.id.imgTable:
                 callGetVisitApi("0");
                 //add_fab.setVisibility(View.VISIBLE);
-                pieChart.setVisibility(View.GONE);
                 layList.setVisibility(View.VISIBLE);
                 layPagination.setVisibility(View.VISIBLE);
                 layFilter.setVisibility(View.GONE);
                 emptyLayout.setVisibility(View.GONE);
                 submitButton.setVisibility(View.GONE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
-                imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
                 callGetVisitApi("0");
                 break;
@@ -1012,14 +820,12 @@ public class VisitReportFragment extends BaseFragment {
                 tvPage.setText("Showing " + String.valueOf(0) + " to " +
                         String.valueOf(0) + " of " + String.valueOf(0) + "\nEntries");
                 callGetVisitApi("0");
-                pieChart.setVisibility(View.GONE);
                 layList.setVisibility(View.VISIBLE);
                 layPagination.setVisibility(View.VISIBLE);
                 layFilter.setVisibility(View.GONE);
                 emptyLayout.setVisibility(View.GONE);
                 submitButton.setVisibility(View.GONE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_donut_grey));
-                imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
                 break;
 
@@ -1123,29 +929,6 @@ public class VisitReportFragment extends BaseFragment {
 
     }
 
-    public class MyBarDataSet extends BarDataSet {
-
-
-        public MyBarDataSet(List<BarEntry> yVals, String label) {
-            super(yVals, label);
-        }
-
-        @Override
-        public GradientColor getGradientColor(int index) {
-            if (Integer.parseInt(graphModelsList.get(index).getyValue()) < 75) // less than 95 green
-                return list.get(0);
-            else if (Integer.parseInt(graphModelsList.get(index).getyValue()) > 75
-            ) // less than 100 orange
-                return list.get(1);
-            else if(Integer.parseInt(graphModelsList.get(index).getyValue()) > 75
-                    && Integer.parseInt(graphModelsList.get(index).getyValue()) < 150) // less than 100 orange
-                return list.get(1);
-            else // greater or equal than 100 red
-                return list.get(0);
-        }
-
-
-    }
 
     @Override
     public void onAttach(@NonNull Context context) {

@@ -472,6 +472,9 @@ public class SalaryDisbursementFragment extends BaseFragment {
                         LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
                     }
                 }
+                else {
+                    mDialogSalary.dismiss();
+                }
                 salaryAllresultList.get(pos).setSalary(tvTotalValue.getText().toString());
                 salaryAllresultList.get(pos).setSalaryThisMonth(Double.valueOf(tvTotalValue.getText().toString()));
                 salaryDisbursementAdapter.updateList(salaryAllresultList);
@@ -492,6 +495,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
         if (salaryAllresultList!=null && salaryAllresultList.size() > 0) {
             rvSalesList.setVisibility(View.VISIBLE);
             emptyLayout.setVisibility(View.GONE);
+            btnSubmit.setVisibility(View.VISIBLE);
             total = 0.0;
             for(int i=0;i<salaryAllresultList.size();i++){
                 total = total + (double)(salaryAllresultList.get(i).getSalaryThisMonth());
@@ -502,6 +506,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
                 btnSubmit.setVisibility(View.GONE);
             }else { btnSubmit.setVisibility(View.VISIBLE);}
             } else {
+            btnSubmit.setVisibility(View.GONE);
             rvSalesList.setVisibility(View.GONE);
             emptyLayout.setVisibility(View.VISIBLE);
             Glide.with(this)
@@ -986,10 +991,10 @@ public class SalaryDisbursementFragment extends BaseFragment {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_SALARY_ALL_LIST)) {
                             SalaryAllResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SalaryAllResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                if (salaryAllresultList != null) {
+                                if (responseModel.getResult().getList() != null && responseModel.getResult().getList().size()>0) {
                                     salaryAllresultList= new ArrayList<>();
+                                    salaryAllresultList = responseModel.getResult().getList();
                                 }
-                                salaryAllresultList = responseModel.getResult().getList();
                                 setAdapterForSalaryAllList();
                             }                        }
                     }catch (Exception e){

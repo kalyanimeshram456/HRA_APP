@@ -54,7 +54,6 @@ import com.ominfo.hra_app.ui.salary.model.UpdateSalaryViewModel;
 import com.ominfo.hra_app.ui.sales_credit.model.SalesCreditViewModel;
 import com.ominfo.hra_app.ui.sales_credit.model.View30ViewModel;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
-import com.ominfo.hra_app.ui.top_customer.model.TopCustomerViewModel;
 import com.ominfo.hra_app.ui.visit_report.model.AddVisitViewModel;
 import com.ominfo.hra_app.ui.visit_report.model.EditVisitViewModel;
 import com.ominfo.hra_app.ui.visit_report.model.GetTourViewModel;
@@ -146,9 +145,6 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
          }
          else  if (modelClass.isAssignableFrom(LogoutViewModel.class)) {
              return (T) new LogoutViewModel(service);
-         }
-         else  if (modelClass.isAssignableFrom(TopCustomerViewModel.class)) {
-             return (T) new TopCustomerViewModel(service);
          }
          else  if (modelClass.isAssignableFrom(GetTicketNoViewModel.class)) {
              return (T) new GetTicketNoViewModel(service);

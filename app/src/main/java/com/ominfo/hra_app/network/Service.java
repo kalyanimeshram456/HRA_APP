@@ -22,7 +22,6 @@ import com.ominfo.hra_app.ui.salary.model.SalaryAllListRequest;
 import com.ominfo.hra_app.ui.salary.model.UpdateSalaryRequest;
 import com.ominfo.hra_app.ui.sales_credit.model.GetView360Request;
 import com.ominfo.hra_app.ui.sales_credit.model.SalesCreditRequest;
-import com.ominfo.hra_app.ui.top_customer.model.TopCustomerRequest;
 import com.ominfo.hra_app.ui.visit_report.model.AddVisitRequest;
 import com.ominfo.hra_app.ui.visit_report.model.GetVisitRequest;
 import com.ominfo.hra_app.ui.visit_report.model.PhpEditVisitRequest;
@@ -447,15 +446,6 @@ public class Service {
         );
     }
 
-
-    public Observable<JsonElement> executeGetTopCustomerAPI(TopCustomerRequest topCustomerRequest) {
-        return networkAPIServices.getTopCustomer(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_TOP_CUST),
-                topCustomerRequest.getAction(),topCustomerRequest.getPageNo(),
-                topCustomerRequest.getPageSize(),topCustomerRequest.getRmId(),
-                topCustomerRequest.getCustName(), topCustomerRequest.getInvMax(), topCustomerRequest.getInvMin(),
-                topCustomerRequest.getSaleMinAmt(), topCustomerRequest.getSaleMaxAmt(), topCustomerRequest.getFromDate(),
-                topCustomerRequest.getEndDate());
-    }
 
     public Observable<JsonElement> executeGetView360API(GetView360Request getView360Request) {
         return networkAPIServices.getView360(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_LEAVE_COUNT),

@@ -11,6 +11,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -25,13 +26,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -56,7 +62,6 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.github.mikephil.charting.data.BarData;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.textfield.TextInputLayout;
@@ -127,6 +132,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -174,23 +181,20 @@ public class MyAccountFragment extends BaseFragment {
     ProgressBar progressBar;
     @BindView(R.id.app_bar_layout)
     AppBarLayout app_bar_layout;
-
+    @BindView(R.id.layAddLocation)
+    LinearLayoutCompat layAddLocation;
     @BindView(R.id.tvSearchView)
     AppCompatTextView tvToolbarTitle;
     @BindView(R.id.imgBack)
     LinearLayoutCompat imgBack;
     @BindView(R.id.imgNotify)
     AppCompatImageView imgNotify;
-    BarData barData;
     private boolean isUpload = false;
     @Inject
     ViewModelFactory mViewModelFactory;
-    private ProfileViewModel profileViewModel;
     private GetProfileImageViewModel getProfileImageViewModel;
-    private ChangePasswordViewModel changePasswordViewModel;
     private ApplyLeaveViewModel applyLeaveViewModel;
     private ChangeProfileImageViewModel changeProfileImageViewModel;
-    private LogoutViewModel logoutViewModel;
     private EmployeeListViewModel employeeListViewModel;
     private GetCompanyViewModel getCompanyViewModel;
     private EditEmployeeViewModel editEmployeeViewModel;
@@ -240,6 +244,12 @@ public class MyAccountFragment extends BaseFragment {
     AppCompatAutoCompleteTextView AutoComMobile;
     @BindView(R.id.AutoComEmailId)
     AppCompatAutoCompleteTextView AutoComEmailId;
+    @BindView(R.id.input_textEmailId)
+    TextInputLayout input_textEmailId;
+    @BindView(R.id.input_textGstNo)
+    TextInputLayout input_textGstNo;
+    @BindView(R.id.input_textEEmail)
+    TextInputLayout input_textEEmail;
     @BindView(R.id.AutoComStaff)
     AppCompatAutoCompleteTextView AutoComStaff;
     @BindView(R.id.AutoComOfficeLocation)
@@ -299,6 +309,12 @@ public class MyAccountFragment extends BaseFragment {
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         injectAPI();
         init();
+        //done + multiple
+        etOfAddress.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        etOfAddress.setRawInputType(InputType.TYPE_CLASS_TEXT);
+        AutoComOfficeLocation.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        AutoComOfficeLocation.setRawInputType(InputType.TYPE_CLASS_TEXT);
+
         app_bar_layout.addOnOffsetChangedListener(new   AppBarLayout.OnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
@@ -322,23 +338,14 @@ public class MyAccountFragment extends BaseFragment {
 
     private void injectAPI() {
 
-        profileViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ProfileViewModel.class);
-        profileViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_PROFILE));
-
         getProfileImageViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetProfileImageViewModel.class);
         getProfileImageViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_PROFILE));
 
         changeProfileImageViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ChangeProfileImageViewModel.class);
         changeProfileImageViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_CHANGE_PROFILE));
 
-        changePasswordViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ChangePasswordViewModel.class);
-        changePasswordViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_CHANGE_PASS));
-
         applyLeaveViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ApplyLeaveViewModel.class);
         applyLeaveViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_APPLY_LEAVE));
-
-        logoutViewModel = ViewModelProviders.of(this, mViewModelFactory).get(LogoutViewModel.class);
-        logoutViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_LOGOUT));
 
         employeeListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EmployeeListViewModel.class);
         employeeListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_EMPLOYEES_LIST));
@@ -380,8 +387,8 @@ public class MyAccountFragment extends BaseFragment {
                 RequestBody mRequestBodyJoiningDate = RequestBody.create(MediaType.parse("text/plain"),join);//loginTable.getCompanyId());
                 RequestBody mRequestBodyTypeToken = RequestBody.create(MediaType.parse("text/plain"), loginTable.getToken());//loginTable.getCompanyId());
                 RequestBody mRequestAddr = RequestBody.create(MediaType.parse("text/plain"),AutoComOfficeLocation.getText().toString());//loginTable.getCompanyId());
-                RequestBody mRequestLat = RequestBody.create(MediaType.parse("text/plain"),officeLat);//loginTable.getCompanyId());
-                RequestBody mRequestLong = RequestBody.create(MediaType.parse("text/plain"),officeLong);//loginTable.getCompanyId());
+                RequestBody mRequestLat = RequestBody.create(MediaType.parse("text/plain"),officeLat==null?"0.0":officeLat);//loginTable.getCompanyId());
+                RequestBody mRequestLong = RequestBody.create(MediaType.parse("text/plain"),officeLong==null?"0.0":officeLong);//loginTable.getCompanyId());
                 RequestBody mRequestMon = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(0).getMonWorking());//loginTable.getCompanyId());
                 RequestBody mRequestTue = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(1).getMonWorking());//loginTable.getCompanyId());
                 RequestBody mRequestWed = RequestBody.create(MediaType.parse("text/plain"),workTimingLists.get(2).getMonWorking());//loginTable.getCompanyId());
@@ -456,13 +463,147 @@ public class MyAccountFragment extends BaseFragment {
             LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
         }
     }
+    public static boolean isValidGSTNo(String str)
+    { String regex = "^[0-9]{2}[A-Z]{5}[0-9]{4}"
+            + "[A-Z]{1}[1-9A-Z]{1}"
+            + "Z[0-9A-Z]{1}$";
+        Pattern p = Pattern.compile(regex);
 
+        if (str == null)
+        {
+            return false;
+        }
+        Matcher m = p.matcher(str);
+        return m.matches();
+    }
+    private void setClickListener(){
+      /*  input_textEmailId.setErrorEnabled(true);
+        input_textEEmail.setErrorEnabled(true);
+        input_textGstNo.setErrorEnabled(true);*/
+        AutoComEmailId.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+
+                if(s.length()>5) {
+                    if(!TextUtils.isEmpty(AutoComEmailId.getText().toString().trim()) &&
+                            Patterns.EMAIL_ADDRESS.matcher(AutoComEmailId.getText().toString().trim()).matches()){
+                        input_textEmailId.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_right_accept));
+                        int color=Color.GREEN;
+                        input_textEmailId.setEndIconTintList(ColorStateList.valueOf(color));
+                        ((BaseActivity)mContext).setError(1, input_textEmailId, "Entered email is valid.");
+                    }
+                    else {
+                        input_textEmailId.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                        int color=Color.RED;
+                        input_textEmailId.setEndIconTintList(ColorStateList.valueOf(color));
+                        ((BaseActivity)mContext).setError(0, input_textEmailId, getString(R.string.err_enter_email_id));
+                    }
+                }
+                if(s.length()==0){
+                    input_textEmailId.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                    int color=Color.RED;
+                    input_textEmailId.setEndIconTintList(ColorStateList.valueOf(color));
+                    ((BaseActivity)mContext).setError(0, input_textEmailId, getString(R.string.err_enter_email_id));
+                }
+            }
+        });
+        AutoComtEEmail.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+
+                if(s.length()>5) {
+                    if(!TextUtils.isEmpty(AutoComtEEmail.getText().toString().trim()) &&
+                            Patterns.EMAIL_ADDRESS.matcher(AutoComtEEmail.getText().toString().trim()).matches()){
+                        input_textEEmail.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_right_accept));
+                        int color=Color.GREEN;
+                        input_textEEmail.setEndIconTintList(ColorStateList.valueOf(color));
+                        ((BaseActivity)mContext).setError(1, input_textEEmail, "Entered email is valid.");
+                    }
+                    else {
+                        input_textEEmail.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                        int color=Color.RED;
+                        input_textEEmail.setEndIconTintList(ColorStateList.valueOf(color));
+                        ((BaseActivity)mContext).setError(0, input_textEEmail, getString(R.string.err_enter_email_id));
+                    }
+                }
+                if(s.length()==0){
+                    input_textEEmail.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                    int color=Color.RED;
+                    input_textEEmail.setEndIconTintList(ColorStateList.valueOf(color));
+                    ((BaseActivity)mContext).setError(0, input_textEEmail, getString(R.string.err_enter_email_id));
+                }
+            }
+        });
+        AutoComGstNo.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                if(s.length() > 13) {
+                    if(TextUtils.isEmpty(AutoComGstNo.getText().toString().trim()) ||
+                            !isValidGSTNo(AutoComGstNo.getText().toString().trim())){
+                        input_textGstNo.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                        int color=Color.RED;
+                        input_textGstNo.setEndIconTintList(ColorStateList.valueOf(color));
+                        ((BaseActivity)mContext).setError(0, input_textGstNo, getString(R.string.scr_lbl_enter_gst_number));
+                    }
+                    else{
+                        input_textGstNo.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_right_accept));
+                        int color=Color.GREEN;
+                        input_textGstNo.setEndIconTintList(ColorStateList.valueOf(color));
+                        ((BaseActivity)mContext).setError(1, input_textGstNo, "Entered Gst number is valid.");
+                    }
+                }
+                if(s.length() == 0){
+                    input_textGstNo.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                    int color=Color.RED;
+                    input_textGstNo.setEndIconTintList(ColorStateList.valueOf(color));
+                    ((BaseActivity)mContext).setError(0, input_textGstNo, getString(R.string.scr_lbl_enter_gst_number));
+                }
+            }
+        });
+        int color=Color.TRANSPARENT;
+        input_textEmailId.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+        input_textEmailId.setEndIconTintList(ColorStateList.valueOf(color));
+        input_textEEmail.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_right_accept));
+        input_textEEmail.setEndIconTintList(ColorStateList.valueOf(color));
+        input_textGstNo.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_right_accept));
+        input_textGstNo.setEndIconTintList(ColorStateList.valueOf(color));
+    }
     /* Call Api For edit Company */
     private void callEditCompanyApi() {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
-                RequestBody mRequestBodyTypeAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_edit_employee);
+                RequestBody mRequestBodyTypeAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_edit_company);
                 RequestBody mRequestBodyComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
                 RequestBody mRequestBodyName = RequestBody.create(MediaType.parse("text/plain"), tvEmpName.getText().toString().trim());//loginTable.getCompanyId());
                 RequestBody mRequestBodyContact = RequestBody.create(MediaType.parse("text/plain"), AutoComMobile.getText().toString().trim());//loginTable.getCompanyId());
@@ -603,51 +744,13 @@ public class MyAccountFragment extends BaseFragment {
             employeeTimeAdapter = new EmployeeTimeAdapter(isToggle,mContext, workTimingLists, new EmployeeTimeAdapter.ListItemSelectListener() {
                 @Override
                 public void onItemClick(WorkTimingList mDataTicket, List<WorkTimingList> notificationResultListAdapter, boolean status) {
+                    workTimingLists = notificationResultListAdapter;
                 }
             });
             rvSalesList.setHasFixedSize(true);
             rvSalesList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
             rvSalesList.setAdapter(employeeTimeAdapter);
             rvSalesList.setVisibility(View.VISIBLE);
-        }
-    }
-
-    /* Call Api For change password */
-    private void callChangePassApi(String oldPass , String newPass) {
-        if (NetworkCheck.isInternetAvailable(mContext)) {
-            LoginTable loginTable = mDb.getDbDAO().getLoginData();
-            if(loginTable!=null) {
-                RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_change_pass);
-                RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
-                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
-                RequestBody mRequestBodyTypeOld = RequestBody.create(MediaType.parse("text/plain"), oldPass);
-                RequestBody mRequestBodyTypeNew = RequestBody.create(MediaType.parse("text/plain"), newPass);
-
-                changePasswordViewModel.executeChangePasswordAPI(mRequestBodyType,mRequestBodyTypeCompId,
-                        mRequestBodyTypeEmployee,mRequestBodyTypeOld,mRequestBodyTypeNew);
-            }
-            else {
-                LogUtil.printToastMSG(mContext, "Something is wrong.");
-            }
-        } else {
-            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
-        }
-    }
-
-    /* Call Api For Logout */
-    private void callLogoutApi() {
-        if (NetworkCheck.isInternetAvailable(mContext)) {
-            LoginTable loginTable = mDb.getDbDAO().getLoginData();
-            if(loginTable!=null) {
-                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_logout);
-                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
-                logoutViewModel.hitLogoutApi(mRequestBodyAction,mRequestBodyTypeEmployee);
-            }
-            else {
-                LogUtil.printToastMSG(mContext, "Something is wrong.");
-            }
-        } else {
-            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
         }
     }
 
@@ -732,7 +835,6 @@ public class MyAccountFragment extends BaseFragment {
         cam=2;
         requestPermission();
         callProfileImageApi();
-        callProfileApi();
     }
     //request camera and storage permission
     private void requestPermission() {
@@ -990,6 +1092,7 @@ public class MyAccountFragment extends BaseFragment {
     private void callProfileImageApi() {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             progressBar.setVisibility(View.VISIBLE);
+            isUpload = true;
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
                 RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_profile_img);
@@ -1033,141 +1136,6 @@ public class MyAccountFragment extends BaseFragment {
         }
     }
 
-
-    //show Change password popup
-    public void showChangePassDialog() {
-        mDialogChangePass = new Dialog(mContext, R.style.ThemeDialogCustom);
-        mDialogChangePass.setContentView(R.layout.dialog_change_password);
-        mDialogChangePass.setCanceledOnTouchOutside(true);
-        AppCompatImageView mClose = mDialogChangePass.findViewById(R.id.imgCancel);
-        AppCompatButton addReceiptButton = mDialogChangePass.findViewById(R.id.addReceiptButton);
-        AppCompatAutoCompleteTextView oldPass = mDialogChangePass.findViewById(R.id.AutoComOldPass);
-        AppCompatAutoCompleteTextView newPass = mDialogChangePass.findViewById(R.id.AutoComNewPass);
-        AppCompatAutoCompleteTextView ConfPass = mDialogChangePass.findViewById(R.id.AutoComConfirmPass);
-        TextInputLayout input_textOldPass = mDialogChangePass.findViewById(R.id.input_textOldPass);
-        TextInputLayout input_textNewPass = mDialogChangePass.findViewById(R.id.input_textNewPass);
-        TextInputLayout input_textConfirmPass = mDialogChangePass.findViewById(R.id.input_textConfirmPass);
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialogChangePass.dismiss();
-            }
-        });
-        addReceiptButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(isDetailsValid(oldPass,input_textOldPass,newPass,input_textNewPass
-                        ,ConfPass,input_textConfirmPass)){
-                    callChangePassApi(oldPass.getText().toString(),newPass.getText().toString());
-                }
-            }
-        });
-        mDialogChangePass.show();
-    }
-
-    //show leave form popup
-    public void showLeaveFormDialog() {
-        mDialogChangePass = new Dialog(mContext, R.style.ThemeDialogCustom);
-        mDialogChangePass.setContentView(R.layout.dialog_add_leave_form);
-        mDialogChangePass.setCanceledOnTouchOutside(true);
-        AutoComTextViewDuration = mDialogChangePass.findViewById(R.id.AutoComTextViewDuration);
-        AutoComTextViewLeaveType = mDialogChangePass.findViewById(R.id.AutoComTextViewLeaveType);
-        AppCompatImageView mClose = mDialogChangePass.findViewById(R.id.imgCancel);
-        AppCompatButton addReceiptButton = mDialogChangePass.findViewById(R.id.addReceiptButton);
-        viewToDate = mDialogChangePass.findViewById(R.id.view);
-        layToDate = mDialogChangePass.findViewById(R.id.layToDate);
-        layoutLeaveTime = mDialogChangePass.findViewById(R.id.layoutLeaveTime);
-        appcomptextLeaveTime = mDialogChangePass.findViewById(R.id.appcomptextLeaveTime);
-         appcomptextNoOfDays = mDialogChangePass.findViewById(R.id.appcomptextNoOfDays);
-        AppCompatImageView imgFromDate  = mDialogChangePass.findViewById(R.id.imgFromDate);
-        AppCompatImageView imgToDate  = mDialogChangePass.findViewById(R.id.imgToDate);
-        ImageView imgFromTime  = mDialogChangePass.findViewById(R.id.imgToTime);
-        ImageView imgToTime  = mDialogChangePass.findViewById(R.id.imgTime);
-         tvDateValueFrom = mDialogChangePass.findViewById(R.id.tvDateValueFrom);
-         tvDateValueTo = mDialogChangePass.findViewById(R.id.tvDateValue);
-        tvTimeValueFrom = mDialogChangePass.findViewById(R.id.tvTimeValueFrom);
-        tvTimeValueTo = mDialogChangePass.findViewById(R.id.tvTimeValue);
-        AutoComTextViewComment = mDialogChangePass.findViewById(R.id.AutoComTextViewComment);
-        TextInputLayout input_textDuration = mDialogChangePass.findViewById(R.id.input_textDuration);
-        TextInputLayout input_textType = mDialogChangePass.findViewById(R.id.input_textType);
-        layoutLeaveTime.setVisibility(View.GONE);
-        appcomptextLeaveTime.setVisibility(View.GONE);
-        String mDate = AppUtils.getCurrentDateTime_();//SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.KATA_CHITTI_DATE, AppUtils.getCurrentDateTime_());
-        tvDateValueFrom.setText(mDate);
-        tvDateValueTo.setText(mDate);
-        String mTime = AppUtils.getCurrentTime();
-        tvTimeValueFrom.setText(mTime);
-        tvTimeValueTo.setText(mTime);
-        int diff = AppUtils.getChangeDateForHisab(tvDateValueFrom.getText().toString(),tvDateValueTo.getText().toString());
-        appcomptextNoOfDays.setText("Number of days : "+diff +" Days");
-        noOFDays = diff;
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialogChangePass.dismiss();
-            }
-        });
-        setDropdownLeaveDuration(AutoComTextViewDuration);
-        setDropdownType(AutoComTextViewLeaveType);
-        tvDateValueFrom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDataPicker(1);
-            }
-        });
-        imgFromDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDataPicker(1);
-            }
-        });
-        tvDateValueTo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDataPicker(0);
-            }
-        });imgToDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDataPicker(0);
-            }
-        });
-        tvTimeValueFrom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                OpenTimePicker(1);
-            }
-        });imgFromTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                OpenTimePicker(1);
-            }
-        });
-        tvTimeValueTo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                OpenTimePicker(0);
-            }
-        });imgToTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                OpenTimePicker(0);
-            }
-        });
-
-        addReceiptButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(isAttendanceDetailsValid(AutoComTextViewDuration,input_textDuration,AutoComTextViewLeaveType,input_textType
-                        )){
-                    callApplyLeaveApi();
-                }
-
-            }
-        });
-        mDialogChangePass.show();
-    }
 
     private void OpenTimePicker(int val){
         // TODO Auto-generated method stub
@@ -1331,34 +1299,6 @@ private void setTermsAndPolicy(String webUrl){
         Fragment fragment = new LeaveListFragment();
         moveFromFragment(fragment,mContext);
     }
-    public void showLogoutDialog(Context mContext) {
-        mDialogLogout = new Dialog(mContext, R.style.ThemeDialogCustom);
-        mDialogLogout.setContentView(R.layout.dialog_logout);
-        mDialogLogout.setCanceledOnTouchOutside(true);
-        AppCompatImageView mClose = mDialogLogout.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialogLogout.findViewById(R.id.uploadButton);
-        AppCompatButton cancelButton = mDialogLogout.findViewById(R.id.cancelButton);
-
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                callLogoutApi();
-            }
-        });
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialogLogout.dismiss();
-            }
-        });
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialogLogout.dismiss();
-            }
-        });
-        mDialogLogout.show();
-    }
 
     //set date picker view
     private void openDataPicker(int val) {
@@ -1401,23 +1341,6 @@ private void setTermsAndPolicy(String webUrl){
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mContext = context;
-    }
-
-    /* Call Api For RM */
-    private void callProfileApi() {
-        if (NetworkCheck.isInternetAvailable(mContext)) {
-            LoginTable loginTable = mDb.getDbDAO().getLoginData();
-            if(loginTable!=null) {
-                ProfileRequest profileRequest = new ProfileRequest();
-                profileRequest.setEmpId(loginTable.getEmployeeId());
-                profileViewModel.hitProfileApi(profileRequest);
-            }
-            else {
-                LogUtil.printToastMSG(mContext, "Something is wrong.");
-            }
-        } else {
-            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
-        }
     }
 
 
@@ -1482,17 +1405,6 @@ private void setTermsAndPolicy(String webUrl){
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
                     try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_PROFILE)) {
-                            ProfileResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ProfileResponse.class);
-                            if (responseModel != null && responseModel.getStatus()==1) {
-                                tvEmpName.setText(responseModel.getResult().get(0).getEmpUsername());
-
-                            }
-                        }
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.action_edit_employee)) {
                             EditEmployeeResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), EditEmployeeResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
@@ -1505,6 +1417,8 @@ private void setTermsAndPolicy(String webUrl){
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        showSuccessDialogFragment(mContext,"Something went wrong.",false, null);
+                        callEmployeeListApi();
                     }
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EDIT_COMPANY)) {
@@ -1519,6 +1433,8 @@ private void setTermsAndPolicy(String webUrl){
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        showSuccessDialogFragment(mContext,"Something went wrong.",false, null);
+                        callCompanyListApi();
                     }
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_APPLY_LEAVE)) {
@@ -1541,27 +1457,10 @@ private void setTermsAndPolicy(String webUrl){
                         e.printStackTrace();
                     }
                     try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_CHANGE_PASS)) {
-                            ChangePasswordResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ChangePasswordResponse.class);
-                            if (responseModel != null/* && responseModel.getStatus()==1*/) {
-                                mDialogChangePass.dismiss();
-                                ((BaseActivity) mContext).errorMessage(responseModel.getResult().getMessage(), new ErrorCallbacks() {
-                                    @Override
-                                    public void onOkClick() {
-                                        //DO something;
-                                    }
-                                });
-                            }
-                        }
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    //mDialogChangePass.dismiss();
-                    try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_PROFILE)) {
                             ProfileImageResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ProfileImageResponse.class);
+                            isUpload = false;
                             if (responseModel != null/* && responseModel.getStatus()==1*/) {
-                                isUpload = false;
                                 AppUtils.loadImageURL(mContext,responseModel.getResult().getProfileurl(),imgEmp, progressBar);
                                 //LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
                             }
@@ -1575,38 +1474,11 @@ private void setTermsAndPolicy(String webUrl){
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_CHANGE_PROFILE)) {
                             ChangeProfileImageResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ChangeProfileImageResponse.class);
+                            isUpload = false;
                             if (responseModel != null/* && responseModel.getStatus()==1*/) {
                                 AppUtils.loadImageURL(mContext,"https://ominfo.in/o_hr/"+responseModel.getResult().getProfileurl(),imgEmp,progressBar);
                                 //LogUtil.printLog("url_test","https://ominfo.in/crm/"+responseModel.getResult().getProfileurl());
                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
-                            }
-                            else{
-                                progressBar.setVisibility(View.GONE);
-                            }
-                        }
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_LOGOUT)) {
-                            LogoutResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LogoutResponse.class);
-                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                //LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
-                                mDialogLogout.dismiss();
-                                getActivity().finishAffinity();
-                                launchScreen(getActivity(), LoginActivity.class);
-                                SharedPref.getInstance(mContext).write(SharedPrefKey.IS_LOGGED_IN, false);
-                                try{
-                                    mDb.getDbDAO().deleteLoginData();
-                                    mDb.getDbDAO().deleteLocationData();
-                                    mDb.getDbDAO().deleteAttendanceData();
-                                    AsyncTask.execute(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            //deleteReminderViewModel.DeleteReminder();
-                                        }
-                                    });
-                                }catch (Exception e){e.printStackTrace();}
                             }
                             else{
                                 progressBar.setVisibility(View.GONE);
@@ -1651,6 +1523,7 @@ private void setTermsAndPolicy(String webUrl){
                                 workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun), employeeListResData.getSunWorking()==null?"no":employeeListResData.getSunWorking(),
                                         employeeListResData.getSunStartTime()==null?getString(R.string.scr_lbl_start_time):employeeListResData.getSunStartTime(), employeeListResData.getSunEndTime()==null?getString(R.string.scr_lbl_end_time):employeeListResData.getSunEndTime()));
                                 setTimeDisabled(Integer.parseInt(isAdmin));
+                                setDis();
                             }
                         }
                     }catch (Exception e){
@@ -1663,6 +1536,7 @@ private void setTermsAndPolicy(String webUrl){
                                 btnSubmit.setVisibility(View.GONE);
                                 btnESubmit.setVisibility(View.GONE);
                                 GetCompanyList employeeList = responseModel.getResult().getList().get(0);
+                                tvEmpName.setText(employeeList.getName());
                                 AutoComEmailId.setText(employeeList.getEmailId());
                                 AutoComMobile.setText(employeeList.getContactNo());
                                 etOfAddress.setText(employeeList.getOfficeAddress());
@@ -1689,6 +1563,7 @@ private void setTermsAndPolicy(String webUrl){
                                 workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun), employeeList.getSunWorking()==null?"no":employeeList.getSunWorking(),
                                         employeeList.getSunStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getSunStartTime(), employeeList.getSunEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getSunEndTime()));
                                 setTimeDisabled(Integer.parseInt(isAdmin));
+                                setDis();
                             }
                         }
                     }catch (Exception e){
@@ -1925,11 +1800,36 @@ private void setTermsAndPolicy(String webUrl){
         }
     }
 
+    private void setDis(){
+        try {
+            int color = Color.WHITE;
+            input_textEmailId.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+            input_textEmailId.setEndIconTintList(ColorStateList.valueOf(color));
+           /* ((BaseActivity)mContext).setError(1, input_textEmailId, "");
+            ((BaseActivity)mContext).setError(1, input_textEEmail, "");
+            ((BaseActivity)mContext).setError(1, input_textGstNo, "");*/
+            input_textEEmail.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_right_accept));
+            input_textEEmail.setEndIconTintList(ColorStateList.valueOf(color));
+            input_textGstNo.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_right_accept));
+            input_textGstNo.setEndIconTintList(ColorStateList.valueOf(color));
+            input_textEmailId.setErrorEnabled(false);
+            input_textEEmail.setErrorEnabled(false);
+            input_textGstNo.setErrorEnabled(false);
+        }catch (Exception e){e.printStackTrace();}
+    }
+
     private void setAllDisabled(int type,boolean state){
         //all
         AutoComOfficeLocation.setEnabled(state);
+        if(state){ setClickListener();}
+        if(!state){
+            setDis();
+        }
         if(type==0) {
             //employee
+            if(!state){
+            tvEmpName.setEnabled(state);}
+            layAddLocation.setEnabled(state);
             AutoComtEEmail.setEnabled(state);
             AutoComEMobile.setEnabled(state);
             AutoComEDesi.setEnabled(state);
@@ -1943,13 +1843,16 @@ private void setTermsAndPolicy(String webUrl){
             setTimeDisabled(type);
         }else {
             //company
+            if(!state){
+                tvEmpName.setEnabled(state);}
+            layAddLocation.setEnabled(state);
             AutoComGstNo.setEnabled(state);
             etOfAddress.setEnabled(state);
             AutoComOPincode.setEnabled(state);
             AutoComMobile.setEnabled(state);
             AutoComEmailId.setEnabled(state);
             //if(!state){tvDateValue.setTextColor(mContext.getResources().getColor(R.color.light_grey_30));}else{}
-            AutoComStaff.setEnabled(state);
+            //AutoComStaff.setEnabled(state);
             if(state){
             btnSubmit.setVisibility(View.VISIBLE);}
             setTimeDisabled(type);

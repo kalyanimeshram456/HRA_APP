@@ -26,9 +26,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.model.GradientColor;
 import com.google.gson.Gson;
 import com.ominfo.hra_app.MainActivity;
 import com.ominfo.hra_app.R;
@@ -168,9 +165,15 @@ public class SalaryFragment extends BaseFragment {
     }
 
     private void setAdapterForSalaryList() {
+        LoginTable loginTable = mDb.getDbDAO().getLoginData();
         if (salaryAllresultList!=null && salaryAllresultList.size() > 0) {
             rvSalesList.setVisibility(View.VISIBLE);
             emptyLayout.setVisibility(View.GONE);
+            if(loginTable!=null){
+                if(!loginTable.getIsadmin().equals("0")){
+                    btnSubmit.setVisibility(View.VISIBLE);
+                }
+            }
         } else {
             rvSalesList.setVisibility(View.GONE);
             emptyLayout.setVisibility(View.VISIBLE);
@@ -207,12 +210,7 @@ public class SalaryFragment extends BaseFragment {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
-                if(loginTable.getIsadmin().equals("0")){
-                    btnSubmit.setVisibility(View.GONE);
-                }else{
-                    btnSubmit.setVisibility(View.VISIBLE);
-                }
-
+                btnSubmit.setVisibility(View.GONE);
                 RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_salary_all_list);
                 RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
                 RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
@@ -327,10 +325,10 @@ public class SalaryFragment extends BaseFragment {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_SALARY_ALL_LIST)) {
                             SalaryAllResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SalaryAllResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                    if (salaryAllresultList != null) {
+                                    if (responseModel.getResult().getList() != null && responseModel.getResult().getList().size()>0) {
                                         salaryAllresultList= new ArrayList<>();
+                                        salaryAllresultList = responseModel.getResult().getList();
                                     }
-                                    salaryAllresultList = responseModel.getResult().getList();
                                     setAdapterForSalaryList();
                                 }
                         }

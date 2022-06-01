@@ -25,6 +25,7 @@ import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -339,6 +340,18 @@ public class DashboardFragment extends BaseFragment {
         setAdapterForUpcomingBirthDayList();
         loginTable = mDb.getDbDAO().getLoginData();
         if(loginTable!=null){
+            if(!loginTable.getIsadmin().equals("0")) {
+                tvAttendanceTitle.setText("Today's Attendance");
+                tvAttendanceValue.setText("0 / 0");
+                tvLeaveTitle.setText("Today's Late Marks");
+                tvLeaveValue.setText("0");
+            }
+            else{
+                tvAttendanceTitle.setText("Attendance - monthly");
+                tvAttendanceValue.setText("0 / 0");
+                tvLeaveTitle.setText("Late mark - monthly");
+                tvLeaveValue.setText("0 / 0");
+            }
             tvNameTitle.setText(loginTable.getName());
             tvAdminTitle.setText(loginTable.getDesignation());
             //LogUtil.printLog("testimage","https://ominfo.in/o_hr/"+loginTable.getProfilePicture());
@@ -1100,6 +1113,17 @@ public class DashboardFragment extends BaseFragment {
         return returnVal;
     }
 
+    private void setDefaultCalender(){
+        TextView current_date = custom_calendar.getMonthYearTextView();
+        String calMon = AppUtils.convertMonthToIntMMM(current_date.getText().toString());
+        String[] strDate = AppUtils.getCurrentDateInyyyymmdd().split("-");
+        if (Integer.parseInt(calMon)==Integer.parseInt(strDate[1])) {
+            String day = AppUtils.getDayToday(AppUtils.getCurrentDateTime_());
+            dateHashmap.put(Integer.parseInt(day.equals("") && day == null ? "0" : day), "current");
+            custom_calendar.setDate(calendar, dateHashmap);
+        }
+    }
+
     /*Api response */
     private void consumeResponse(ApiResponse apiResponse, String tag) {
         switch (apiResponse.status) {
@@ -1189,13 +1213,16 @@ public class DashboardFragment extends BaseFragment {
                                         e.printStackTrace();
                                     }
                                 }
+                                else{  setDefaultCalender();}
                                // LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                             } else {
+                                setDefaultCalender();
                                 LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                             }
                         }
                     } catch (Exception e) {
                         progressBar.setVisibility(View.GONE);
+                        setDefaultCalender();
                         e.printStackTrace();
                     }
                     try {

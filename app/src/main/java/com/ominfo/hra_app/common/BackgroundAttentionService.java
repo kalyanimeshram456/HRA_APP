@@ -165,7 +165,7 @@ public class BackgroundAttentionService extends Service implements GoogleApiClie
         //builder.setSound(notificationSound);
         builder.setNotificationSilent();
         builder.setAutoCancel(true);
-        builder.setSmallIcon(R.drawable.ic_attendance_black);
+        builder.setSmallIcon(R.drawable.ic_attendance_green);
         builder.setContentIntent(pendingIntent);
         Notification notification = builder.build();
         startForeground(102, notification);

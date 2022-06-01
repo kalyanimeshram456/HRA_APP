@@ -24,6 +24,7 @@
             android:layout_gravity="center"
             android:elevation="6dp">
 
+<!--
             <com.simform.custombottomnavigation.CellImageView
                 android:id="@+id/iv"
                 android:layout_width="wrap_content"
@@ -33,6 +34,7 @@
                 android:paddingTop="12dp"
                 android:paddingEnd="10dp"
                 app:icon_imageview_size="24dp" />
+-->
 
             <TextView
                 android:id="@+id/tv_count"

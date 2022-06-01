@@ -3,27 +3,27 @@
 
     <item
         android:id="@+id/home"
-        android:icon="@drawable/employee_gradient_blue"
-        android:title="Dashboard" />
+        android:icon="@drawable/ic_home_white"
+        android:title="Home" />
 
     <item
         android:id="@+id/Search"
-        android:icon="@drawable/employee_gradient_blue"
+        android:icon="@drawable/ic_employee"
         android:title="Employees" />
 
     <item
-        android:id="@+id/placeholder"
-        android:icon="@drawable/employee_gradient_blue"
-        android:title="Salary" />
+        android:id="@+id/leave"
+        android:icon="@drawable/ic_leave_white"
+        android:title="Leave" />
 
     <item
         android:id="@+id/Profile"
-        android:icon="@drawable/employee_gradient_blue"
-        android:title="Leaves" />
+        android:icon="@drawable/ic_salary_white"
+        android:title="Salary" />
 
     <item
         android:id="@+id/Settings"
-        android:icon="@drawable/employee_gradient_blue"
+        android:icon="@drawable/ic_acc_white"
         android:title="My Profile" />
 
     <!--<item

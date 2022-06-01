@@ -22,7 +22,6 @@ import com.ominfo.hra_app.ui.salary.fragment.SalarySlipFragment;
 import com.ominfo.hra_app.ui.sales_credit.activity.View360Activity;
 import com.ominfo.hra_app.ui.sales_credit.fragment.SalesCreditFragment;
 import com.ominfo.hra_app.ui.employees.AddEmployeeActivity;
-import com.ominfo.hra_app.ui.top_customer.TopCustomerFragment;
 import com.ominfo.hra_app.ui.visit_report.VisitReportFragment;
 
 import javax.inject.Singleton;
@@ -56,8 +55,6 @@ public interface Deps
     void inject(StartAttendanceActivity startAttendanceActivity);
 
     void inject(View360Activity view360Activity);
-
-    void inject(TopCustomerFragment topCustomerFragment);
 
     void inject(RegistrationActivity registrationActivity);
 

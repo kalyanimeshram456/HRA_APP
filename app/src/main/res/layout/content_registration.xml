@@ -140,8 +140,10 @@
                             android:fontFamily="@font/gilroy_semibold"
                             android:hint="@string/scr_lbl_enter_gst_number"
                             android:imeOptions="actionNext"
-                            android:inputType="text"
+                            android:inputType="text|textCapCharacters"
                             android:padding="@dimen/_10dp"
+                            android:maxLength="15"
+                            android:textAllCaps="true"
                             android:textColor="@color/black_heading"
                             android:textColorHint="@color/app_gray"
                             android:textSize="@dimen/_14sp" />
@@ -335,7 +337,8 @@
                         app:boxCornerRadiusBottomStart="@dimen/_10dp"
                         app:boxCornerRadiusTopEnd="@dimen/_10dp"
                         app:boxCornerRadiusTopStart="@dimen/_10dp"
-                        app:endIconDrawable="@android:color/transparent"
+                        app:endIconDrawable="@drawable/ic_right_accept"
+                        app:endIconTint="@color/white"
                         app:hintEnabled="false"
                         app:hintTextAppearance="@style/Editext.Theme"
                         app:placeholderTextAppearance="@style/Editext.Theme"
@@ -499,6 +502,7 @@
                             android:hint="@string/msg_enter_no_of_employees"
                             android:imeOptions="actionDone"
                             android:inputType="number"
+                            android:text="1"
                             android:padding="@dimen/_10dp"
                             android:textColor="@color/black_heading"
                             android:textColorHint="@color/app_gray"
@@ -518,7 +522,7 @@
                             android:layout_weight="2">
 
                             <androidx.appcompat.widget.AppCompatRadioButton
-                                android:id="@+id/radioYear"
+                                android:id="@+id/radioTrial"
                                 android:layout_width="wrap_content"
                                 android:layout_height="@dimen/_20dp"
                                 android:layout_centerVertical="true"
@@ -531,10 +535,10 @@
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
                                 android:layout_marginLeft="@dimen/_0dp"
-                                android:layout_toRightOf="@+id/radioYear"
+                                android:layout_toRightOf="@+id/radioTrial"
                                 android:fontFamily="@font/gilroy_semibold"
                                 android:inputType="textMultiLine"
-                                android:text="@string/scr_lbl_yearly_plan"
+                                android:text="@string/scr_lbl_trial_plan"
                                 android:textColor="@color/black_heading"
                                 android:textSize="@dimen/_14sp" />
 
@@ -546,7 +550,7 @@
                             android:layout_weight="1">
 
                             <androidx.appcompat.widget.AppCompatRadioButton
-                                android:id="@+id/radioTrial"
+                                android:id="@+id/radioYear"
                                 android:layout_width="wrap_content"
                                 android:layout_height="@dimen/_20dp"
                                 android:layout_centerVertical="true"
@@ -559,10 +563,10 @@
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
                                 android:layout_marginLeft="@dimen/_0dp"
-                                android:layout_toRightOf="@+id/radioTrial"
+                                android:layout_toRightOf="@+id/radioYear"
                                 android:fontFamily="@font/gilroy_semibold"
                                 android:inputType="textMultiLine"
-                                android:text="@string/scr_lbl_trial_plan"
+                                android:text="@string/scr_lbl_yearly_plan"
                                 android:textColor="@color/black_heading"
                                 android:textSize="@dimen/_14sp" />
 

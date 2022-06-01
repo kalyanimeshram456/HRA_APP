@@ -82,12 +82,6 @@
             android:theme="@style/AppTheme.FullScreen"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="com.ominfo.hra_app.ui.sales_credit.activity.GraphActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.FullScreen"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
             android:name="com.ominfo.hra_app.ui.attendance.StartAttendanceActivity"
             android:exported="true"
             android:screenOrientation="portrait"

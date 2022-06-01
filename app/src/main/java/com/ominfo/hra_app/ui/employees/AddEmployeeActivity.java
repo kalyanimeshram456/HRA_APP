@@ -7,9 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -193,6 +195,10 @@ public class AddEmployeeActivity extends BaseActivity {
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         // initialise tha layout
         setToolbar();
+        //multiple line with done
+        AutoComAddress.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        AutoComAddress.setRawInputType(InputType.TYPE_CLASS_TEXT);
+
         timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_mon),getString(R.string.scr_lbl_yes),"09:30:00","18:30:00"));
         timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_tue),getString(R.string.scr_lbl_yes),"09:30:00","18:30:00"));
         timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_wed),getString(R.string.scr_lbl_yes),"09:30:00","18:30:00"));
@@ -733,6 +739,13 @@ public class AddEmployeeActivity extends BaseActivity {
     }
     /*check validations on field*/
     private boolean isDetailsValid() {
+        setError(0, input_textName, "");  setError(0, input_textEmailId, "");
+        setError(0, input_textAddress, ""); setError(0, input_textGender, "");
+        setError(0, input_textPincode, "");setError(0, input_textCurrSalary, "");
+        setError(0, input_textDesi, ""); setError(0, input_textMobile, "");
+        setError(0, input_textCasualLeave, "");setError(0, input_textSickLeave, "");
+        setError(0, input_textOtherLeave,"");
+        //tvDateValue.setError("Please select date of birth.",getDrawable(R.drawable.ic_calendar));
         if (TextUtils.isEmpty(AutoComName.getText().toString().trim())) {
             setError(0, input_textName, getString(R.string.err_enter_name));
             return false;
@@ -830,7 +843,8 @@ public class AddEmployeeActivity extends BaseActivity {
                                 showSuccessDialog("Employee Added successfully !",false,AddEmployeeActivity.this);
                                   }
                             else {
-                                LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
+                                showSuccessDialog(responseModel.getResult().getMessage(),true,AddEmployeeActivity.this);
+                                //LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                             }
                         }
                     } catch (Exception e) {

@@ -33,16 +33,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.formatter.ValueFormatter;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.model.GradientColor;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.gson.Gson;
 import com.ominfo.hra_app.R;
 import com.ominfo.hra_app.basecontrol.BaseActivity;
@@ -118,10 +108,6 @@ public class SalesCreditFragment extends BaseFragment {
     LinearLayoutCompat layList;
     @BindView(R.id.layPagination)
     RelativeLayout layPagination;
-    @BindView(R.id.idBarChart)
-    BarChart barChart;
-    @BindView(R.id.imgTable)
-    AppCompatImageView imgTable;
     @BindView(R.id.imgGraph)
     AppCompatImageView imgGraph;
     @BindView(R.id.imgFilter)
@@ -144,10 +130,7 @@ public class SalesCreditFragment extends BaseFragment {
     CompanyTagAdapter addTagAdapter;
     RmTagAdapter addRmTagAdapter;
     EnquiryPageAdapter enquiryPageAdapter;
-    BarData barData;
-    List<GradientColor> list = new ArrayList<>();
     // variable for our bar data set.
-    BarDataSet barDataSet;
     // array list for storing entries.
     ArrayList barEntriesArrayList;
     //private static final String[] DATA_BAR_GRAPH = new String[6];//{"","09:00",
@@ -250,7 +233,6 @@ public class SalesCreditFragment extends BaseFragment {
         layPagination.setVisibility(View.VISIBLE);
         imgGraph.setVisibility(View.GONE);
         imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_bar_graph));
-        imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
         imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
         layFilter.setVisibility(View.GONE);
 
@@ -269,21 +251,6 @@ public class SalesCreditFragment extends BaseFragment {
                 return false;
             }
         });
-
-        graphModelsList.removeAll(graphModelsList);
-        graphModelsList.add(new GraphModel("State C1", "Company Test 1", "5"));
-        graphModelsList.add(new GraphModel("State C2", "Company Test 2", "60"));
-        graphModelsList.add(new GraphModel("State C3", "Company Test 3", "15"));
-        graphModelsList.add(new GraphModel("State C4", "Company Test 4", "90"));
-        graphModelsList.add(new GraphModel("State C5", "Company Test 5", "25"));
-        graphModelsList.add(new GraphModel("State C6", "Company Test 6", "10"));
-        graphModelsList.add(new GraphModel("State C7", "Company Test 7", "45"));
-        graphModelsList.add(new GraphModel("State C8", "Company Test 8", "90"));
-        graphModelsList.add(new GraphModel("State C9", "Company Test 9", "95"));
-        graphModelsList.add(new GraphModel("State C10", "Company Test 10", "50"));
-        graphModelsList.add(new GraphModel("State C11", "Company Test 11", "55"));
-        graphModelsList.add(new GraphModel("State C12", "Company Test 12", "60"));
-        setGraphData(3);
 
         setAddTagList();
         rvImages.setOnTouchListener(new View.OnTouchListener() {
@@ -347,224 +314,6 @@ public class SalesCreditFragment extends BaseFragment {
         rvImages.setAdapter(addTagAdapter);
         final boolean[] check = {false};
 
-    }
-
-    private void setGraphData(int initStatus) {
-        if(initStatus!=3) {
-            DAYS = new String[6];
-            DAYSY = new String[6];
-        }
-        if(initStatus==3){
-            DAYS = new String[graphModelsList.size()+1];
-            DAYSY = new String[graphModelsList.size()+1];
-        }
-        if(initStatus!=3) {
-            try {
-                endPos = startPos + 6;
-                if (endPos <= graphModelsList.size()) {
-                    //if(startPos<6) {
-
-                    for (int i = 0; i < graphModelsList.size(); i++) {
-                        if (graphModelsList.get(i).getxValue() != null) {
-                            DAYS[i] = graphModelsList.get(i).getxValue();
-                        }
-                        if (graphModelsList.get(i).getyValue() != null) {
-                            DAYSY[i] = graphModelsList.get(i).getyValue();
-                        }
-                    }
-                    try {
-                        getGraph();
-                        //setAdapterForDashboardList();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    // }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if(initStatus==3){
-            for (int i = 0; i < graphModelsList.size(); i++) {
-                if(graphModelsList.get(i).getxValue()!=null) {
-                    DAYS[i] = graphModelsList.get(i).getxValue();
-                }
-                if(graphModelsList.get(i).getyValue()!=null) {
-                    DAYSY[i] = graphModelsList.get(i).getyValue();
-                }
-            }
-            try {
-                getGraph();
-                //setAdapterForDashboardList();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void getGraph() {
-        // initializing variable for bar chart.
-
-        barChart.getDescription().setEnabled(false);
-        barChart.getDescription().setTextAlign(Paint.Align.LEFT);
-        barChart.setDrawValueAboveBar(true);
-        barChart.animateY(1000);
-        barChart.getLegend().setEnabled(false);
-
-        // calling method to get bar entries.
-        BarData data = getBarEntries();
-
-        // creating a new bar data set.
-        barDataSet = new BarDataSet(barEntriesArrayList, "");
-        // creating a new bar data and
-        // passing our bar data set.
-        barData = new BarData(barDataSet);
-
-        // below line is to set data
-        // to our bar chart.
-
-        barChart.setData(data);
-
-        data.setBarWidth(0.5f);
-
-        // adding color to our bar data set.
-        barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-
-        // setting text color.
-        barDataSet.setValueTextColor(Color.BLACK);
-
-        // setting text size
-        barDataSet.setValueTextSize(16f);
-        XAxis xAxis = barChart.getXAxis();
-        //set labels des to bottom
-        xAxis.setLabelCount(DAYSY.length, false);
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-
-        xAxis.setDrawGridLines(false);
-        //set x axis label values
-        xAxis.setLabelRotationAngle(-70);
-        try {
-            xAxis.setValueFormatter(new ValueFormatter() {
-                @Override
-                public String getFormattedValue(float value) {
-                    try {
-                        return DAYS[(int) Math.floor(value)];
-                    }catch (Exception e){
-                        return "";
-                    }
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        YAxis axisLeft = barChart.getAxisLeft();
-        //axisLeft.setGranularity(0.6f);
-        axisLeft.setAxisMinimum((int) Math.floor(0));
-        axisLeft.setAxisMaximum((int) Math.floor(100));
-        ArrayList<String> yAxisVals = new ArrayList<>();
-        for(int i=0;i<graphModelsList.size();i++){
-            yAxisVals.add(graphModelsList.get(i).getyValue());
-        }
-        axisLeft.setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getFormattedValue(float value) {
-                return "₹"+(int)value;
-            }
-        });
-       /* barChart.getAxisLeft().setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getFormattedValue(float value) {
-                return "₹"+(int)value;
-            }
-    });*/
-        //barChart.getAxisLeft().setValueFormatter(new IndexAxisValueFormatter(graphModelsList));
-        // left y-axis
-        barChart.getAxisLeft().setTextColor(ContextCompat.getColor(mContext, R.color.deep_red));
-        //customize - y axis rows numbers
-        axisLeft.setLabelCount(5, true);
-        axisLeft.setDrawGridLines(true);
-        //set right side
-        YAxis axisRight = barChart.getAxisRight();
-        //axisRight.setGranularity(0.6f);
-        axisRight.setAxisMinimum(0);
-        axisRight.setAxisMaximum(0);
-        axisRight.setLabelCount(0, false);
-        axisRight.setDrawGridLines(false);
-        axisRight.setAxisMaximum(0);
-        barChart.setDrawValueAboveBar(true);
-        barChart.getXAxis().setGranularity(1);
-        barChart.getXAxis().setGranularityEnabled(true);
-        barChart.getDescription().setEnabled(false);
-        //barChart.fitScreen();
-        barChart.zoomOut();
-        //barChart.zoomIn();
-        //barChart.fitScreen();
-        //barChart.setFitBars(true);
-
-        barChart.setVisibleXRangeMaximum(6);
-        barChart.moveViewToX(0);
-        barChart.setVisibleXRangeMaximum(12);
-        barChart.invalidate();
-    }
-
-
-    private BarData getBarEntries() {
-
-        barEntriesArrayList = new ArrayList<>();
-        for (int i = 0; i < DAYSY.length; i++) {
-            Random r = new Random();
-            float x = i;
-            if(DAYSY[i]!=null) {
-                float y = Integer.parseInt(DAYSY[i]);
-                barEntriesArrayList.add(new BarEntry(x, y));
-            }
-        }
-
-        MyBarDataSet set1 = new MyBarDataSet(barEntriesArrayList, "Test");
-        set1.setBarBorderColor(Color.YELLOW);
-        String dark_Red ="#A10616";
-        String light_Red = "#FB6571";
-        String Yellow = "#F9B747";
-        String pink = "#e12c2c";
-        String darkPink = "#DD3546";
-
-       /* list.add(new GradientColor(Color.parseColor("#F9B747"),
-                Color.parseColor("#A10616")));*/
-        /*list.add(new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(pink)));*/
-       /* list.add(new GradientColor(Color.parseColor(pink),
-                Color.parseColor(darkPink)));*/
-        list.add(new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(darkPink)));
-        list.add(new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(dark_Red)));
-
-        //set1.setColor(R.drawable.chart_fill);
-        set1.setGradientColors(list);
-        /*set1.setGradientColor(new int[]{new GradientColor(Color.parseColor(Yellow),
-                Color.parseColor(dark_Red)),
-                new GradientColor(Color.parseColor(Yellow),
-                        Color.parseColor(dark_Red)),
-                        new GradientColor(Color.parseColor(Yellow),
-                                Color.parseColor(dark_Red))});*/
-        //ArrayList<BarDataSet> dataSets = new ArrayList<>();
-        //dataSets.add(set1);
-
-
-       // BarData data = new BarData(xVals, dataSets);
-
-        //set1.setColor(getResources().getColor(R.color.deep_yellow));
-        set1.setDrawValues(false);
-        ArrayList<IBarDataSet> dataSets = new ArrayList<>();
-
-        set1.setHighlightEnabled(false);
-        set1.setDrawValues(true);
-
-        dataSets.add(set1);
-        // adding color to our bar data set.
-        BarData data = new BarData(dataSets);
-        return data;
     }
 
     private void setAdapterForSalesCreditList() {
@@ -673,38 +422,32 @@ public class SalesCreditFragment extends BaseFragment {
                 break;
             case R.id.imgFilter:
                 //add_fab.setVisibility(View.GONE);
-                barChart.setVisibility(View.GONE);
                 layList.setVisibility(View.GONE);
                 layPagination.setVisibility(View.GONE);
                 submitButton.setVisibility(View.VISIBLE);
                 layFilter.setVisibility(View.VISIBLE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_bar_graph));
-                imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_table_blue));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_blue));
                 //callRMApi();
                 break;
 
             case R.id.imgGraph:
                 //add_fab.setVisibility(View.GONE);
-                barChart.setVisibility(View.VISIBLE);
                 layList.setVisibility(View.GONE);
                 layPagination.setVisibility(View.GONE);
                 layFilter.setVisibility(View.GONE);
                 submitButton.setVisibility(View.GONE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_bar_graph_blue));
-                imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_table_blue));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
                 break;
 
             case R.id.imgTable:
                 //add_fab.setVisibility(View.VISIBLE);
-                barChart.setVisibility(View.GONE);
                 layList.setVisibility(View.VISIBLE);
                 layPagination.setVisibility(View.VISIBLE);
                 layFilter.setVisibility(View.GONE);
                 submitButton.setVisibility(View.GONE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_bar_graph));
-                imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
                 callGetSalesCreditApi("0");
                 break;
@@ -719,13 +462,11 @@ public class SalesCreditFragment extends BaseFragment {
                 try {
                     callGetSalesCreditApi("0");
                 }catch (Exception e){e.printStackTrace();}
-                barChart.setVisibility(View.GONE);
                 layList.setVisibility(View.VISIBLE);
                 layPagination.setVisibility(View.VISIBLE);
                 layFilter.setVisibility(View.GONE);
                 submitButton.setVisibility(View.GONE);
                 imgGraph.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_bar_graph));
-                imgTable.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_table));
                 imgFilter.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_om_filter_grey));
                 break;
             case R.id.resetButton:
@@ -984,29 +725,6 @@ public class SalesCreditFragment extends BaseFragment {
 
     }
 
-    public class MyBarDataSet extends BarDataSet {
-
-
-        public MyBarDataSet(List<BarEntry> yVals, String label) {
-            super(yVals, label);
-        }
-
-        @Override
-        public GradientColor getGradientColor(int index) {
-            if (Integer.parseInt(graphModelsList.get(index).getyValue()) < 75) // less than 95 green
-                return list.get(0);
-            else if (Integer.parseInt(graphModelsList.get(index).getyValue()) > 75
-            ) // less than 100 orange
-                return list.get(1);
-            else if(Integer.parseInt(graphModelsList.get(index).getyValue()) > 75
-                    && Integer.parseInt(graphModelsList.get(index).getyValue()) < 150) // less than 100 orange
-                return list.get(1);
-            else // greater or equal than 100 red
-                return list.get(0);
-        }
-
-
-    }
 
 
     @Override
