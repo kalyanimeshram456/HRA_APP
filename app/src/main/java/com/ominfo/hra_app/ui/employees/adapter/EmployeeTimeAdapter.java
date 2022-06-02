@@ -33,17 +33,17 @@ public class EmployeeTimeAdapter extends RecyclerView.Adapter<EmployeeTimeAdapte
     private Context mContext;
     private String mDate;
     final Calendar myCalendar = Calendar.getInstance();
-    boolean isShowToggle = false;
+    boolean isShowToggle = false,account = false;
 
     public EmployeeTimeAdapter(Context mContext) {
         this.mContext = mContext;
     }
 
-    public EmployeeTimeAdapter(boolean isShowToggle,Context context, List<WorkTimingList> listData, ListItemSelectListener itemClickListener) {
+    public EmployeeTimeAdapter(boolean account,boolean isShowToggle,Context context, List<WorkTimingList> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
-        this.isShowToggle = isShowToggle;
+        this.isShowToggle = isShowToggle; this.account = account;
     }
 
     @NonNull
@@ -87,6 +87,15 @@ public class EmployeeTimeAdapter extends RecyclerView.Adapter<EmployeeTimeAdapte
                 holder.layTime.setEnabled(true);
             }else{
                 holder.switchDay.setVisibility(View.INVISIBLE);
+                holder.layFromTime.setEnabled(false);
+                holder.layTime.setEnabled(false);
+            }
+            if(account){ //true
+                holder.switchDay.setEnabled(true);
+                holder.layFromTime.setEnabled(true);
+                holder.layTime.setEnabled(true);
+            }else{
+                holder.switchDay.setEnabled(false);
                 holder.layFromTime.setEnabled(false);
                 holder.layTime.setEnabled(false);
             }

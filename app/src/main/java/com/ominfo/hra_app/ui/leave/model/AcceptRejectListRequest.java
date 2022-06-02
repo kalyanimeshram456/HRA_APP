@@ -35,6 +35,16 @@ public class AcceptRejectListRequest {
     @SerializedName("searched_emp")
     private RequestBody searchedEmp;
 
+    @SerializedName("company_id")
+    private RequestBody company_id;
+
+    public RequestBody getCompany_id() {
+        return company_id;
+    }
+
+    public void setCompany_id(RequestBody company_id) {
+        this.company_id = company_id;
+    }
 
     public RequestBody getSearchedEmp() {
         return searchedEmp;

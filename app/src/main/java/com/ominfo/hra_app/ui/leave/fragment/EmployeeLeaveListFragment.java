@@ -603,6 +603,7 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
                 RequestBody mRequestName = RequestBody.create(MediaType.parse("text/plain"),loginTable.getName());
                 RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), pageNo);
                 RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
+                RequestBody mRequestcom_id = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
 
                 AcceptRejectListRequest request = new AcceptRejectListRequest();
                 request.setAction(mRequestAction);
@@ -613,6 +614,7 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
                 request.setEndDate(mRequestend_date);
                 request.setPageNo(mRequestpage_number);
                 request.setPageSize(mRequestpage_size);
+                request.setCompany_id(mRequestcom_id);
 
                 rejectLeaveListViewModel.hitAcceptRejectLeaveAPI(request);
             }

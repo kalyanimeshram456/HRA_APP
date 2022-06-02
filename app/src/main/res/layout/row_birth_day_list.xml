@@ -8,7 +8,7 @@
         android:orientation="vertical">
     <View
         android:layout_width="match_parent"
-        android:layout_height="1.4dp"
+        android:layout_height="1dp"
         android:layout_marginTop="@dimen/_6dp"
         android:background="@color/light_grey_30" />
 
@@ -21,24 +21,25 @@
         <RelativeLayout
             android:id="@+id/layBirthPro"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/_45dp"
             android:layout_gravity="center_vertical"
+            android:layout_marginTop="@dimen/_4dp"
             android:layout_weight="1.5">
 
             <LinearLayout
-                android:layout_width="@dimen/_25dp"
-                android:layout_height="@dimen/_25dp"
+                android:layout_width="@dimen/_35dp"
+                android:layout_height="@dimen/_35dp"
                 android:background="@android:color/transparent"
+                android:gravity="center_vertical"
+                android:layout_centerVertical="true"
                 android:orientation="horizontal">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/imgBirthPro"
-                    android:layout_width="@dimen/_25dp"
-                    android:layout_height="@dimen/_25dp"
+                    android:layout_width="@dimen/_35dp"
+                    android:layout_height="@dimen/_35dp"
                     android:layout_gravity="left|center"
-                    android:clickable="true"
-                    android:gravity="left"
-                    android:onClick="onClick"
+                    android:gravity="left|center"
                     android:src="@drawable/ic_user"
                     android:visibility="visible"
                     app:civ_border_color="@color/pink"
@@ -49,9 +50,10 @@
             <!-- android:indeterminateTintMode="src_atop"-->
             <ProgressBar
                 android:id="@+id/progress_barBirth"
-                android:layout_width="@dimen/_25dp"
-                android:layout_height="@dimen/_25dp"
+                android:layout_width="@dimen/_35dp"
+                android:layout_height="@dimen/_35dp"
                 android:indeterminate="true"
+                android:layout_marginTop="@dimen/_4dp"
                 android:indeterminateDrawable="@drawable/progress_bar_color" />
 
         </RelativeLayout>

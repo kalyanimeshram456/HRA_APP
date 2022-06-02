@@ -45,8 +45,8 @@ public class LogUtil {
         if (isEnableToast && object!=null) {
             Snackbar.make(id, object, Snackbar.LENGTH_LONG)
                     .setActionTextColor(Color.WHITE)
-                    .setTextColor(colour)
-                    .setBackgroundTint(context.getResources().getColor(R.color.black))
+                    .setTextColor(context.getResources().getColor(R.color.white))
+                    .setBackgroundTint(context.getResources().getColor(R.color.color_main))
                     .setTextMaxLines(3)
                     .setAction("Ok", new View.OnClickListener() {
                 @Override

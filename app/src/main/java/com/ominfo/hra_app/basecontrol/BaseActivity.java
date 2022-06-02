@@ -418,6 +418,11 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
             ColorStateList csl = ColorStateList.valueOf(colorInt);
            textInputLayout.setErrorTextColor(csl);
         }
+        else if(val==2){
+            int colorInt = getResources().getColor(R.color.deep_yellow);
+            ColorStateList csl = ColorStateList.valueOf(colorInt);
+            textInputLayout.setErrorTextColor(csl);
+        }
         else{
             int colorInt = getResources().getColor(R.color.notify_red);
             ColorStateList csl = ColorStateList.valueOf(colorInt);
@@ -544,7 +549,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                 public void run() {
                     mDialog.dismiss();
                     if(status) {
-                        activity.finish();
+                        //activity.finish();
                     }
                 }
             }, 2500);
@@ -556,7 +561,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                 public void run() {
                     mDialog.dismiss();
                     if(!status) {
-                        activity.finish();
+                        //activity.finish();
                     }
                 }
             }, 1100);
@@ -879,6 +884,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                                     }
                                     else{
                                         bottomNavigationView.getOrCreateBadge(R.id.leave).clearNumber();
+                                        bottomNavigationView.getOrCreateBadge(R.id.leave).setBackgroundColor(getResources().getColor(R.color.bg_calender_screen));
                                     }
                                 }catch (Exception e){
                                     LogUtil.printToastMSG(this,e.getMessage());

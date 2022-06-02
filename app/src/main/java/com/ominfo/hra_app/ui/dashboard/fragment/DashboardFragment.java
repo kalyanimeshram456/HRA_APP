@@ -149,6 +149,8 @@ public class DashboardFragment extends BaseFragment {
     AppCompatTextView tvTodaysTitle;
     @BindView(R.id.tvAttendance)
     AppCompatTextView tvAttendanceTitle;
+    @BindView(R.id.imgProfileDash)
+    AppCompatTextView imgProfileDash;
     @BindView(R.id.tvAttendanceValue)
     AppCompatTextView tvAttendanceValue;
     @BindView(R.id.tvLeave)
@@ -157,7 +159,7 @@ public class DashboardFragment extends BaseFragment {
     AppCompatTextView tvLeaveValue;
     @BindView(R.id.tvAdmin)
     AppCompatTextView tvAdminTitle;
-    @BindView(R.id.tvName)
+    @BindView(R.id.tvNameTitle)
     AppCompatTextView tvNameTitle;
     @BindView(R.id.tvUpcomingTitle)
     AppCompatTextView tvUpcomingTitle;
@@ -260,12 +262,12 @@ public class DashboardFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        callLeaveCountApi();
         setToolbar();
         mFromDate = AppUtils.startMonth(); mToDate = AppUtils.endMonth();
+        callProfileImageApi();
+        callLeaveCountApi();
         callCalenderHolidaysApi();
         callDashboardApi();
-        //tvHighlight.setText("Today's Highlights");
     }
 
     private void injectAPI() {
@@ -921,7 +923,7 @@ public class DashboardFragment extends BaseFragment {
         AppCompatTextView tvName = mDialogEditHoliday.findViewById(R.id.tvName);
         tvDate.setText("Date : "+AppUtils.convertDobDate(date));
         tvName.setText("Title : "+name);
-        tvStart.setText("Do you want to disable this holiday ?");
+        tvStart.setText("You want to cancel this holiday ?");
         if(loginTable!=null){
             if(loginTable.getIsadmin().equals("0")){
                 okayButton.setVisibility(View.GONE);
@@ -1172,12 +1174,18 @@ public class DashboardFragment extends BaseFragment {
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_PROFILE)) {
                             ProfileImageResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ProfileImageResponse.class);
-                            if (responseModel != null/* && responseModel.getStatus()==1*/) {
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 //isUpload = false;
-                                //AppUtils.loadImageURL(mContext, responseModel.getResult().getProfileurl(), imgProfileDash, progressBar);
-                                //LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                                AppUtils.loadImageURL(mContext, responseModel.getResult().getProfileurl(), imgBirthPro, progressBar);
+                                tvAdminTitle.setText(responseModel.getResult().getEmp_position());
+                                tvNameTitle.setText(responseModel.getResult().getEmp_username());
+                                try {
+                                    String[] str = responseModel.getResult().getEmp_name().split(" ");
+                                    imgProfileDash.setText("Hello " + str[0] + " !");
+                                }catch (Exception e){}
                             } else {
                                 progressBar.setVisibility(View.GONE);
+                                //LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
                             }
                         }
                     } catch (Exception e) {

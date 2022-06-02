@@ -32,6 +32,7 @@ import com.google.gson.Gson;
 import com.ominfo.hra_app.R;
 import com.ominfo.hra_app.basecontrol.BaseActivity;
 import com.ominfo.hra_app.basecontrol.BaseApplication;
+import com.ominfo.hra_app.common.customui.OtpEditText;
 import com.ominfo.hra_app.database.AppDatabase;
 import com.ominfo.hra_app.network.ApiResponse;
 import com.ominfo.hra_app.network.DynamicAPIPath;
@@ -134,6 +135,12 @@ public class RegistrationActivity extends BaseActivity {
     totalAmountCharges= "";
     int gstPer = 18;
     boolean statusPrefix = false;
+    @BindView(R.id.edtOpt)
+    OtpEditText edtOpt;
+    @BindView(R.id.tvResendOtp)
+    AppCompatTextView tvResendOtp;
+    @BindView(R.id.btnGetOtp)
+    AppCompatButton btnGetOtp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,7 +174,14 @@ public class RegistrationActivity extends BaseActivity {
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
                 if(s.length() != 0) {
-                    callUserPrefixApi();
+                    if(s.length()>2 && s.length()<=5) {
+                        callUserPrefixApi();
+                    }else{
+                        input_textUsernamePrefix.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                    int color=Color.RED;
+                    input_textUsernamePrefix.setEndIconTintList(ColorStateList.valueOf(color));
+                    setError(0, input_textUsernamePrefix, getString(R.string.err_enter_username_prefix));
+             }
                 }
                 else{
                     input_textUsernamePrefix.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
@@ -244,11 +258,12 @@ public class RegistrationActivity extends BaseActivity {
                     }
                 }
                 if(s.length() == 0){
-                  /*  input_textGstNo.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
-                    int color=Color.RED;
+                    input_textGstNo.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                    int color=Color.TRANSPARENT;
                     input_textGstNo.setEndIconTintList(ColorStateList.valueOf(color));
-                    setError(0, input_textGstNo, getString(R.string.scr_lbl_enter_gst_number));
-              */  }
+                    input_textGstNo.setErrorEnabled(false);
+                    //setError(0, input_textGstNo, getString(R.string.scr_lbl_enter_gst_number));
+                }
             }
         });
         AutoComMobileNo.addTextChangedListener(new TextWatcher() {
@@ -265,11 +280,16 @@ public class RegistrationActivity extends BaseActivity {
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
                 if(s.length() > 9) {
-                        input_textMobileNo.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
-                        int color=Color.RED;
-                        input_textMobileNo.setEndIconTintList(ColorStateList.valueOf(color));
-                        setError(0, input_textMobileNo, getString(R.string.scr_lbl_enter_mobile_number));
-                    }
+                    input_textMobileNo.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_right_accept));
+                    int color=getResources().getColor(R.color.green);
+                    input_textMobileNo.setEndIconTintList(ColorStateList.valueOf(color));
+                    setError(1, input_textMobileNo, "Entered mobile number is valid.");
+                }else{
+                    input_textMobileNo.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_info_check));
+                    int color=getResources().getColor(R.color.deep_yellow);
+                    input_textMobileNo.setEndIconTintList(ColorStateList.valueOf(color));
+                    setError(2, input_textMobileNo, "10 digit mobile number is needed.");
+                }
                 if(s.length() == 0){
                     input_textMobileNo.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
                     int color=Color.RED;
@@ -324,6 +344,7 @@ public class RegistrationActivity extends BaseActivity {
                 if(!b){
                     if(AutoComEmpStrength.getText().toString().trim().equals("") || AutoComEmpStrength.getText().toString().trim().equals("0")) {
                         AutoComEmpStrength.setText("1");
+                        AutoComEmpStrength.setSelection(AutoComEmpStrength.getText().length());
                     }
                 }
             }
@@ -337,6 +358,38 @@ public class RegistrationActivity extends BaseActivity {
                     }
                 }
                 return false;
+            }
+        });
+        AutoComPincode.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                if(s.length() > 5) {
+                    input_textPincode.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_right_accept));
+                    int color=getResources().getColor(R.color.green);
+                    input_textPincode.setEndIconTintList(ColorStateList.valueOf(color));
+                    setError(1, input_textPincode, "Entered pincode is valid.");
+                }else{
+                    input_textPincode.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_info_check));
+                    int color=getResources().getColor(R.color.deep_yellow);
+                    input_textPincode.setEndIconTintList(ColorStateList.valueOf(color));
+                    setError(2, input_textPincode, "6 digit pincode is needed.");
+                }
+                if(s.length() == 0){
+                    input_textPincode.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                    int color=Color.RED;
+                    input_textPincode.setEndIconTintList(ColorStateList.valueOf(color));
+                    setError(0, input_textPincode, getString(R.string.scr_lbl_enter_pincode));
+                }
             }
         });
     }
@@ -673,23 +726,22 @@ public class RegistrationActivity extends BaseActivity {
 
     /*check validations on field*/
     private boolean isDetailsValid() {
-        setError(0, input_textName, ""); setError(0, input_textAdminName, "");
-        setError(0, input_textAddress, "");
-        setError(0, input_textPincode, "");
-        setError(0, input_textUsernamePrefix, "");
-        setError(0, input_textEmailId, "");
-        setError(0, input_textMobileNo, "");
-        setError(0, input_textEmpStrength, "");
+        input_textName.setErrorEnabled(false);input_textAdminName.setErrorEnabled(false);
+        input_textAddress.setErrorEnabled(false);input_textPincode.setErrorEnabled(false);
+        input_textUsernamePrefix.setErrorEnabled(false);input_textEmailId.setErrorEnabled(false);
+        input_textMobileNo.setErrorEnabled(false);input_textEmpStrength.setErrorEnabled(false);
         if (TextUtils.isEmpty(AutoComTextViewName.getText().toString().trim())) {
             setError(0, input_textName, getString(R.string.err_enter_company_name));
             return false;
         } else if (TextUtils.isEmpty(AutoComAddress.getText().toString().trim())) {
             setError(0, input_textAddress, getString(R.string.err_enter_address));
             return false;
-        } else if (TextUtils.isEmpty(AutoComPincode.getText().toString().trim())) {
+        } else if (TextUtils.isEmpty(AutoComPincode.getText().toString().trim()) ||
+                AutoComPincode.getText().toString().trim().length()<6) {
             setError(0, input_textPincode, getString(R.string.err_enter_pincode));
             return false;
-        } else if (TextUtils.isEmpty(AutoComUsernamePrefix.getText().toString().trim())|| !statusPrefix) {
+        } else if (TextUtils.isEmpty(AutoComUsernamePrefix.getText().toString().trim())|| !statusPrefix ||
+                !(AutoComUsernamePrefix.getText().toString().trim().length()>2 && AutoComUsernamePrefix.getText().toString().trim().length()<=5)) {
             setError(0, input_textUsernamePrefix, getString(R.string.err_enter_username_prefix));
             return false;
         } else if (TextUtils.isEmpty(AutoComEmailId.getText().toString().trim()) || !Patterns.EMAIL_ADDRESS.matcher(AutoComEmailId.getText().toString().trim()).matches()) {
@@ -698,7 +750,7 @@ public class RegistrationActivity extends BaseActivity {
         } else if (TextUtils.isEmpty(AutoComAdminName.getText().toString().trim())) {
             setError(0, input_textAdminName, getString(R.string.err_enter_admin_name));
             return false;
-        } else if (TextUtils.isEmpty(AutoComMobileNo.getText().toString().trim())) {
+        } else if (TextUtils.isEmpty(AutoComMobileNo.getText().toString().trim()) || AutoComMobileNo.getText().toString().trim().length()<10) {
             setError(0, input_textMobileNo, getString(R.string.err_enter_mobile_no));
             return false;
         } else if (TextUtils.isEmpty(AutoComEmpStrength.getText().toString().trim())) {
@@ -747,7 +799,7 @@ public class RegistrationActivity extends BaseActivity {
                             tvEx.setVisibility(View.GONE);
                             statusPrefix = true;
                             input_textUsernamePrefix.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_right_accept));
-                            int color=Color.GREEN;
+                            int color=getResources().getColor(R.color.green);
                             input_textUsernamePrefix.setEndIconTintList(ColorStateList.valueOf(color));
                             setError(1, input_textUsernamePrefix, responseModel.getResult().getMessage());
                         } else {
@@ -785,11 +837,11 @@ public class RegistrationActivity extends BaseActivity {
                                 }
                                 else{
                                     input_textCoupon.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_right_accept));
-                                    int color=Color.GREEN;
+                                    int color=getResources().getColor(R.color.green);
                                     input_textCoupon.setEndIconTintList(ColorStateList.valueOf(color));
                                     discountAmount = responseModel.getResult().getList().getDiscountAmt();
                                     couponCode = responseModel.getResult().getList().getCode();
-                                    LogUtil.printSnackBar(mContext, Color.GREEN,findViewById(android.R.id.content),"Congrats! You have got Rs"+discountAmount+" Discount on Coupon code -"+
+                                    LogUtil.printSnackBar(mContext, getResources().getColor(R.color.green),findViewById(android.R.id.content),"Congratulations! You have got a Rs"+discountAmount+" Discount on Coupon code -"+
                                             couponCode+".");
                                     //AutoComCoupon.setError(getString(R.string.scr_lbl_coupon_applid));
                                     //setError(1, input_textCoupon, getString(R.string.scr_lbl_coupon_applid));

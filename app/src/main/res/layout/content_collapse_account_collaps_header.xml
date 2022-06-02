@@ -87,7 +87,6 @@
                 android:layout_marginHorizontal="@dimen/_20dp"
                 android:clickable="true"
                 android:onClick="onClick"
-                android:src="@drawable/ic_edit_all"
                 android:visibility="visible" />
 
 

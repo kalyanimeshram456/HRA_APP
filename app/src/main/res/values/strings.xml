@@ -291,7 +291,7 @@
     <string name="msg_ex_if_prefix_is_eo_user_id_will_be_eo0001">Ex : If prefix is EOO, User id will be EOO001</string>
     <string name="scr_lbl_admin_name">Admin Name</string>
     <string name="msg_enter_admin_name">Enter admin name</string>
-    <string name="scr_lbl_enter_mobile_number">Enter valid mobile number</string>
+    <string name="scr_lbl_enter_mobile_number">Please enter valid mobile number</string>
     <string name="scr_lbl_employee_strength">Employee Strength</string>
     <string name="msg_enter_no_of_employees">Enter no of employees</string>
     <string name="scr_lbl_register">Register</string>
@@ -331,11 +331,11 @@
     <string name="scr_lbl_username_prefix">Username prefix</string>
     <string name="scr_lbl_my_profile">My Profile</string>
     <string name="scr_lbl_enter_address">Enter address</string>
-    <string name="scr_lbl_enter_pincode">Enter pincode</string>
+    <string name="scr_lbl_enter_pincode">Please enter valid pincode</string>
     <string name="err_enter_company_name">Please enter company name.</string>
     <string name="err_enter_address">Please enter address.</string>
-    <string name="err_enter_pincode">Please enter pincode.</string>
-    <string name="err_enter_username_prefix">Please enter username prefix</string>
+    <string name="err_enter_pincode">Please enter valid pincode.</string>
+    <string name="err_enter_username_prefix">Please enter username prefix of minimum 2 characters</string>
     <string name="err_enter_email_id">Please enter valid email id</string>
     <string name="err_enter_admin_name">Please enter admin name.</string>
     <string name="err_enter_mobile_no">Please enter mobile number.</string>
@@ -367,8 +367,8 @@
     <string name="scr_lbl_deduction">Deduction</string>
     <string name="scr_lbl_coupon_applid">Coupon applied successfully.</string>
     <string name="scr_lbl_registered_address">Registered address</string>
-    <string name="scr_lbl_start_time">09:30:00</string>
-    <string name="scr_lbl_end_time">17:30:00</string>
+    <string name="scr_lbl_start_time">10:00:00</string>
+    <string name="scr_lbl_end_time">19:00:00</string>
     <string name="scr_lbl_upcoming_birthdays">Upcoming Birthdays</string>
     <string name="scr_lbl_today_s_birthday">Today\'s Birthday</string>
     <string name="scr_lbl_add_holiday">Add Holiday</string>
@@ -396,10 +396,13 @@
 
     <string name="play_again_desc">To see the welcome slider again, goto Settings -> apps -> welcome slider -> clear data</string>
     <string name="play_again">Play Again</string>
-    <string name="msg_location_change_in_attendance">Looks like you are far away from work location, Please be at work location to mark your Attendance.</string>
-    <string name="scr_lbl_coupn_msg">Please enter a valid Coupon code to avail great discounts.</string>
+    <string name="msg_location_change_in_attendance">Please mark your attendance from your office location only.</string>
+    <string name="scr_lbl_coupn_msg">Oops! The coupon you entered is no longer valid.</string>
     <string name="scr_lbl_user_name">User Name</string>
     <string name="fields_are_missing">Please make sure to fill all fields correctly.</string>
     <string name="scr_lbl_salary_sheet">Salary sheet</string>
+    <string name="scr_lbl_start_time_values">10:00:00</string>
+    <string name="scr_lbl_end_start_value">19:00:00</string>
+    <string name="scr_lbl_resent_otp">Resent OTP</string>
 
 </resources>

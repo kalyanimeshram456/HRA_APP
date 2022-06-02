@@ -79,6 +79,12 @@ public class Service {
                 action,comId,pageNo,pageS
         );
     }
+    /*public Observable<JsonElement> executeGetCompanyTimingsAPI(RequestBody action,RequestBody comId,
+                                                        RequestBody pageNo,RequestBody pageS) {
+        return networkAPIServices.getCompany(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_COMPANY),
+                action,comId,pageNo,pageS
+        );
+    }*/
 
     public Observable<JsonElement> executeGetTicketNoAPI(RequestBody action) {
         return networkAPIServices.getTicketNo(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_COMPANY),
@@ -342,7 +348,7 @@ public class Service {
     public Observable<JsonElement> executeAcceptRejectListAPI(AcceptRejectListRequest request) {
         return networkAPIServices.acceptRejectList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_ACCEPT_REJECT_LIST),
-                request.getAction(),request.getEmpId(),
+                request.getAction(),request.getCompany_id(),request.getEmpId(),
                 request.getLeaveType(),request.getFromDate(),
                 request.getEndDate(),request.getPageNo(),request.getPageSize()
                 ,request.getSearchedEmp()

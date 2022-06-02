@@ -225,6 +225,7 @@ public class PastLeaveFragment extends BaseFragment {
         setEnquiryPagerList(1);
         setAdapterForLeaveList();
         setDropdownMonth();
+        AutoComAddEmp.setText("All");
         callGetActiveEmployeeListApi();
         callGetPastLeaveApi("0");
     }
@@ -716,6 +717,10 @@ public class PastLeaveFragment extends BaseFragment {
     private void setDropdownActiveEmpList() {
         try {
             int pos = 0;
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null){
+                activeEmployeeList.add(0,new ActiveEmployeeListEmpDatum(loginTable.getEmployeeId(),"All"));
+            }
             if (activeEmployeeList != null && activeEmployeeList.size() > 0) {
                 String[] mDropdownList = new String[activeEmployeeList.size()];
                 for (int i = 0; i < activeEmployeeList.size(); i++) {
@@ -736,6 +741,10 @@ public class PastLeaveFragment extends BaseFragment {
                             { selectedActiveEmpid = activeEmployeeList.get(i).getEmpId();
                         }
                     }
+                        totalPage = 0;
+                        pastLeaveList.clear();
+                        setEnquiryPagerList(totalPage);
+                        setAdapterForLeaveList();
                         callGetPastLeaveApi("0");
                     }
                 });
@@ -782,7 +791,11 @@ public class PastLeaveFragment extends BaseFragment {
                 AutoComMonth.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                     callGetPastLeaveApi("0");
+                        totalPage = 0;
+                        pastLeaveList.clear();
+                        setEnquiryPagerList(totalPage);
+                        setAdapterForLeaveList();
+                        callGetPastLeaveApi("0");
                     }
                 });
 
@@ -924,10 +937,12 @@ public class PastLeaveFragment extends BaseFragment {
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 mDialogChangePass.dismiss();
                                 ((BaseActivity)mContext).showSuccessDialog(responseModel.getResult().getMessage(),
-                                        true,getActivity());
+                                        false,getActivity());
                                 //((BaseActivity)mContext).setRateUsCounter(mContext);
-                                try{setEnquiryPagerList(1);
-                                setAdapterForLeaveList();
+                                try{  totalPage = 0;
+                                    pastLeaveList.clear();
+                                    setEnquiryPagerList(totalPage);
+                                    setAdapterForLeaveList();
                                 callGetPastLeaveApi("0");}catch (Exception e){}
                             }
                             else {
@@ -966,7 +981,7 @@ public class PastLeaveFragment extends BaseFragment {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_PAST_LEAVE)) {
                             PastLeaveListResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), PastLeaveListResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                pastLeaveList.clear();
+                                pastLeaveList.removeAll(pastLeaveList);
                                 try {
                                     if (responseModel.getResult().getLeave() != null && responseModel.getResult().getLeave().size()>0) {
                                         pastLeaveList = responseModel.getResult().getLeave();

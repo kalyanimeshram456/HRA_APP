@@ -210,7 +210,12 @@ public class SalaryDisbursementFragment extends BaseFragment {
                 .into(iv_emptyLayimage);
         tv_emptyLayTitle.setText(R.string.scr_message_please_wait);
         tv_emptyLayTitle.setText("Search something...");
+        LoginTable loginTable = mDb.getDbDAO().getLoginData();
+        if(loginTable!=null) {
+            selectedActiveEmpid = loginTable.getEmployeeId();
+        }
         setDropdownMonth();
+        AutoComAddEmp.setText("All");
         callGetActiveEmployeeListApi();
         setAdapterForSalaryAllList();
         callSalaryAllListApi();
@@ -912,6 +917,10 @@ public class SalaryDisbursementFragment extends BaseFragment {
     private void setDropdownActiveEmpList() {
         try {
             int pos = 0;
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null){
+                activeEmployeeList.add(0,new ActiveEmployeeListEmpDatum(loginTable.getEmployeeId(),"All"));
+            }
             if (activeEmployeeList != null && activeEmployeeList.size() > 0) {
                 String[] mDropdownList = new String[activeEmployeeList.size()];
                 for (int i = 0; i < activeEmployeeList.size(); i++) {

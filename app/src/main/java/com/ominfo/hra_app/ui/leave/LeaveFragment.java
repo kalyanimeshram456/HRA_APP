@@ -39,6 +39,7 @@ import com.ominfo.hra_app.basecontrol.BaseApplication;
 import com.ominfo.hra_app.basecontrol.BaseFragment;
 import com.ominfo.hra_app.database.AppDatabase;
 import com.ominfo.hra_app.interfaces.Constants;
+import com.ominfo.hra_app.interfaces.SharedPrefKey;
 import com.ominfo.hra_app.network.ApiResponse;
 import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
@@ -59,6 +60,7 @@ import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.salary.fragment.SalarySlipFragment;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
+import com.ominfo.hra_app.util.SharedPref;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -253,14 +255,34 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
         AppCompatImageView imgToDate = mDialog.findViewById(R.id.imgToDate);;
         tvDateValueFrom = mDialog.findViewById(R.id.tvDateValueFrom);
         tvDateValue = mDialog.findViewById(R.id.tvDateValue);
-        tvDateValueFrom.setText(AppUtils.getCurrentDateInyyyymmdd());
-        tvDateValue.setText(AppUtils.getTommarowdaysDate());
-        AutoComFilterStatus.setText("All");
-        setDropdownStatus();
+        if (val == 1) {
+            tvDateValueFrom.setText(AppUtils.getCurrentDateTime_());
+            tvDateValue.setText(AppUtils.getCurrentDateTime_());
+            AutoComFilterStatus.setText("All");
+            setDropdownStatus();
+        }
+        else{
+            String name = SharedPref.getInstance(mContext).read(SharedPrefKey.FILTER_LEAVE_NAME, "");
+            String type = SharedPref.getInstance(mContext).read(SharedPrefKey.FILTER_TYPE, "All");
+            String from = SharedPref.getInstance(mContext).read(SharedPrefKey.FILTER_FROM, AppUtils.getCurrentDateTime_());
+            String to = SharedPref.getInstance(mContext).read(SharedPrefKey.FILTER_TO, AppUtils.getCurrentDateTime_());
+
+            AutoComFilterStatus.setText(type);  setDropdownStatus();
+            AutoComFilterName.setText(name);tvDateValueFrom.setText(from);
+            tvDateValue.setText(to);
+        }
+
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDialog.dismiss();
+                SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_LEAVE_NAME, AutoComFilterName.getText().toString().trim());
+                SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_TYPE, AutoComFilterStatus.getText().toString().trim());
+                SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_FROM, tvDateValueFrom.getText().toString().trim());
+                SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_TO, tvDateValue.getText().toString().trim());
+                itemCount = 0;
+                currentPage = PAGE_START;
+                isLastPage = false;
                 leaveAdapter.clear();
                 callAcceptRejectListApi("0");
                 //doApiCall();
@@ -345,6 +367,7 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
             if(loginTable!=null) {
                 RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_accept_reject_List);
                 RequestBody mRequestemp_id = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
+                RequestBody mRequestcom_id = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
                 String status = AutoComFilterStatus.getText().toString().equals("All")?"": AutoComFilterStatus.getText().toString();
                 RequestBody mRequestleave_type = RequestBody.create(MediaType.parse("text/plain"),status);
                 String startD = AppUtils.changeToSlashToDash(tvDateValueFrom.getText().toString());
@@ -364,6 +387,7 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
                 request.setEndDate(mRequestend_date);
                 request.setPageNo(mRequestpage_number);
                 request.setPageSize(mRequestpage_size);
+                request.setCompany_id(mRequestcom_id);
 
                 rejectLeaveListViewModel.hitAcceptRejectLeaveAPI(request);
             }
@@ -435,8 +459,8 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
         if (!loginTable.getIsadmin().equals("0")){
             imgReport.setVisibility(View.VISIBLE);
             tvFilterCount.setVisibility(View.VISIBLE);
-        }else{imgReport.setVisibility(View.GONE);
-            tvFilterCount.setVisibility(View.GONE);}
+        }else{imgReport.setVisibility(View.INVISIBLE);
+            tvFilterCount.setVisibility(View.INVISIBLE);}
         tvToolbarTitle.setText("Leaves");
         ((BaseActivity)mContext).initToolbar(5, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.imgBack, R.id.imgCall);
         imgBack.setOnClickListener(new View.OnClickListener() {

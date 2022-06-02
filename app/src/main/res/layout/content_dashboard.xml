@@ -119,24 +119,25 @@
                                 android:paddingVertical="@dimen/_6dp">
 
                                 <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/tvName"
+                                    android:id="@+id/tvNameTitle"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_gravity="center"
                                     android:fontFamily="@font/gilroy_semibold"
-                                    android:hint="@string/scr_lbl_user_name"
-                                    android:textAlignment="center"
-                                    android:textColorHint="@color/white"
+                                    android:hint="@string/scr_lbl_unavailable"
+                                    android:text=""
+                                    android:textAlignment="viewStart"
                                     android:textColor="@color/white"
+                                    android:textColorHint="@color/white"
                                     android:textSize="@dimen/_16sp" />
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:id="@+id/tvAdmin"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@+id/tvName"
+                                    android:layout_below="@+id/tvNameTitle"
                                     android:fontFamily="@font/gilroy_regular"
-                                    android:hint="@string/scr_lbl_designation"
+                                    android:hint="@string/scr_lbl_unavailable"
+                                    android:text=""
                                     android:textAlignment="viewStart"
                                     android:textColor="@color/white"
                                     android:textColorHint="@color/white"
@@ -336,10 +337,110 @@
                                     android:gravity="center_horizontal"
                                     app:day_of_week_start_from="sunday"
                                     android:background="@drawable/layout_round_shape_grey_border_small"
-                                    android:layout_marginVertical="@dimen/_10dp"
+                                    android:layout_marginTop="@dimen/_10dp"
+                                    android:layout_marginBottom="@dimen/_4dp"
                                     android:layout_marginHorizontal="@dimen/_10dp"
                                     android:paddingBottom="@dimen/_3dp"
                                  />
+
+                                <androidx.appcompat.widget.LinearLayoutCompat
+                                    android:id="@+id/layIndicators"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="@dimen/_0dp"
+                                    android:layout_marginBottom="@dimen/_10dp"
+                                    android:layout_marginRight="@dimen/_10dp"
+                                    android:orientation="horizontal"
+                                    android:visibility="visible">
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerVertical="true"
+                                        android:layout_gravity="center"
+                                        android:layout_marginLeft="@dimen/_10dp"
+                                        android:layout_weight="1.2"
+                                        android:drawableStart="@drawable/square_indicators"
+                                        android:drawablePadding="@dimen/_1dp"
+                                        android:fontFamily="@font/gilroy_semibold"
+                                        android:paddingLeft="@dimen/_0dp"
+                                        android:singleLine="true"
+                                        android:text="Accepted"
+                                        android:textColor="@color/gray"
+                                        android:textSize="@dimen/_12sp"
+                                        android:visibility="invisible" />
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/tvAcc"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerVertical="true"
+                                        android:layout_gravity="center"
+                                        android:layout_marginLeft="@dimen/_10dp"
+                                        android:layout_weight="1"
+                                        android:drawableStart="@drawable/square_indicators_green"
+                                        android:drawablePadding="@dimen/_1dp"
+                                        android:fontFamily="@font/gilroy_semibold"
+                                        android:gravity="center"
+                                        android:paddingLeft="@dimen/_0dp"
+                                        android:text="Accepted"
+                                        android:visibility="invisible"
+                                        android:textColor="@color/gray"
+                                        android:textSize="@dimen/_10sp" />
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/tvInProc"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerVertical="true"
+                                        android:layout_gravity="center"
+                                        android:layout_marginLeft="@dimen/_10dp"
+                                        android:layout_weight="1"
+                                        android:drawableStart="@drawable/square_indicators_yellow"
+                                        android:drawablePadding="@dimen/_1dp"
+                                        android:fontFamily="@font/gilroy_semibold"
+                                        android:gravity="center"
+                                        android:paddingLeft="@dimen/_0dp"
+                                        android:text="In Process"
+                                        android:visibility="invisible"
+                                        android:textColor="@color/gray"
+                                        android:textSize="@dimen/_10sp" />
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/tvRejected"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerVertical="true"
+                                        android:layout_gravity="center"
+                                        android:layout_marginLeft="@dimen/_10dp"
+                                        android:layout_weight="1.1"
+                                        android:drawableStart="@drawable/square_indicators_red"
+                                        android:drawablePadding="@dimen/_1dp"
+                                        android:fontFamily="@font/gilroy_semibold"
+                                        android:gravity="center"
+                                        android:paddingLeft="@dimen/_0dp"
+                                        android:text="Today"
+                                        android:textColor="@color/gray"
+                                        android:textSize="@dimen/_10sp" />
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/tvCancelled"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerVertical="true"
+                                        android:layout_gravity="center"
+                                        android:layout_marginLeft="@dimen/_10dp"
+                                        android:layout_weight="1.1"
+                                        android:drawableStart="@drawable/square_indicators"
+                                        android:drawablePadding="@dimen/_1dp"
+                                        android:fontFamily="@font/gilroy_semibold"
+                                        android:gravity="center"
+                                        android:paddingLeft="@dimen/_0dp"
+                                        android:text="Holiday"
+                                        android:textColor="@color/gray"
+                                        android:textSize="@dimen/_10sp" />
+
+                                </androidx.appcompat.widget.LinearLayoutCompat>
                             </androidx.appcompat.widget.LinearLayoutCompat>
 
                                 </androidx.cardview.widget.CardView>
@@ -374,7 +475,7 @@
                                     android:layout_marginTop="@dimen/_2dp"
                                     android:fontFamily="@font/gilroy_semibold"
                                     android:text="@string/scr_lbl_today_s_birthday"
-                                    android:textColor="@color/black_heading"
+                                    android:textColor="@color/color_main"
                                     android:textSize="@dimen/_16sp" />
 
                                 <androidx.recyclerview.widget.RecyclerView
@@ -423,7 +524,7 @@
                                     android:layout_marginTop="@dimen/_2dp"
                                     android:fontFamily="@font/gilroy_semibold"
                                     android:text="@string/scr_lbl_upcoming_birthdays"
-                                    android:textColor="@color/black_heading"
+                                    android:textColor="@color/color_main"
                                     android:textSize="@dimen/_16sp" />
 
                                 <androidx.recyclerview.widget.RecyclerView
@@ -471,8 +572,8 @@
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/add_attendance"
-                    android:layout_width="@dimen/_40dp"
-                    android:layout_height="@dimen/_40dp"
+                    android:layout_width="@dimen/_50dp"
+                    android:layout_height="@dimen/_50dp"
                     android:layout_centerInParent="true"
                     android:contentDescription="TODO"
                     android:foreground="@drawable/attention_gradient_blue"

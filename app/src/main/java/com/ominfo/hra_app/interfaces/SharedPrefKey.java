@@ -29,6 +29,15 @@ public interface SharedPrefKey {
     String IS_LOGGED_IN = "is_logged_in";
     String FROM_DATE = "FROM_DATE";
     String ATTENDANCE_START_TIME = "ATTENDANCE_START_TIME";
+    String FILTER_NAME = "FILTER_NAME";
+    String FILTER_DESI = "FILTER_DESI";
+    String FILTER_STATUS = "FILTER_STATUS";
+
+    String FILTER_LEAVE_NAME = "FILTER_LEAVE_NAME";
+    String FILTER_TYPE = "FILTER_TYPE";
+    String FILTER_FROM = "FILTER_FROM";
+    String FILTER_TO = "FILTER_TO";
+
     String CHECK_IN_BUTTON = "CHECK_IN_BUTTON";
     String CHECK_OUT_TIME = "CHECK_OUT_TIME";
     String CHECK_OUT_ENABLED = "CHECK_OUT_ENABLED";

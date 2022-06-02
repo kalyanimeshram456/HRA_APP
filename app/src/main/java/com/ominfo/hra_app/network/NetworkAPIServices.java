@@ -476,6 +476,7 @@ public interface NetworkAPIServices {
     @POST()
     Observable<JsonElement> acceptRejectList(@Url String url,
                                              @Part("action") RequestBody uploadType,
+                                             @Part("company_id") RequestBody company_id,
                                              @Part("emp_id") RequestBody emp_id,
                                              @Part("leave_type") RequestBody leave_type,
                                              @Part("from_date") RequestBody from_date,

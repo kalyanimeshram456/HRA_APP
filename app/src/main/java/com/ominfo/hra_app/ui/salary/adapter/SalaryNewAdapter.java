@@ -58,7 +58,7 @@ public class SalaryNewAdapter extends RecyclerView.Adapter<SalaryNewAdapter.View
 
         if(mListData.size()>0) {
             SalaryAllList item = mListData.get(position);
-            holder.tvAmount.setText(AppUtils.convertyyyytodd(item.getLastSalpaidDate()));
+            holder.tvAmount.setText(AppUtils.dateConvertYYYYToDD(item.getLastSalpaidDate()));
             holder.textViewTitle.setText(item.getEmpName());
             holder.textViewDescription.setText(item.getEmpPosition());
             AppUtils.loadImageURL(mContext,mListData.get(position).getEmpProfilePic(),

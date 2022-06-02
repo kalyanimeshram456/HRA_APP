@@ -50,6 +50,7 @@
                         android:textColor="@color/black_heading"
                         android:textSize="@dimen/_14sp" />
 
+
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/appcomptext"
                         android:layout_width="wrap_content"
@@ -58,7 +59,7 @@
                         android:layout_marginHorizontal="@dimen/_10dp"
                         android:layout_marginTop="@dimen/_10dp"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="@string/scr_lbl_company_name_no_line"
+                        android:text="@string/scr_lbl_company_name_new"
                         android:textColor="@color/black_heading"
                         android:textSize="@dimen/_14sp" />
 
@@ -77,8 +78,7 @@
                         app:endIconDrawable="@android:color/transparent"
                         app:hintEnabled="false"
                         app:hintTextAppearance="@style/Editext.Theme"
-                        app:placeholderTextAppearance="@style/Editext.Theme"
-                        app:startIconContentDescription="$">
+                        app:placeholderTextAppearance="@style/Editext.Theme">
 
                         <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                             android:id="@+id/AutoComTextViewName"
@@ -141,8 +141,8 @@
                             android:hint="@string/scr_lbl_enter_gst_number"
                             android:imeOptions="actionNext"
                             android:inputType="text|textCapCharacters"
-                            android:padding="@dimen/_10dp"
                             android:maxLength="15"
+                            android:padding="@dimen/_10dp"
                             android:textAllCaps="true"
                             android:textColor="@color/black_heading"
                             android:textColorHint="@color/app_gray"
@@ -293,7 +293,7 @@
                             android:hint="@string/msg_enter_username_prefix"
                             android:imeOptions="actionDone"
                             android:inputType="text"
-                            android:maxLength="3"
+                            android:maxLength="5"
                             android:padding="@dimen/_10dp"
                             android:textColor="@color/black_heading"
                             android:textColorHint="@color/app_gray"
@@ -502,8 +502,8 @@
                             android:hint="@string/msg_enter_no_of_employees"
                             android:imeOptions="actionDone"
                             android:inputType="number"
-                            android:text="1"
                             android:padding="@dimen/_10dp"
+                            android:text="1"
                             android:textColor="@color/black_heading"
                             android:textColorHint="@color/app_gray"
                             android:textSize="@dimen/_14sp" />
@@ -741,6 +741,59 @@
                         android:text="@string/fields_are_missing"
                         android:textColor="@color/Dark_Red"
                         android:textSize="@dimen/_12sp" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnGetOtp"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_45dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginHorizontal="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_20dp"
+                        android:layout_marginBottom="@dimen/_10dp"
+                        android:background="@drawable/bg_button_round_corner_5"
+                        android:fontFamily="@font/gilroy_semibold"
+                        android:gravity="center"
+                        android:paddingTop="@dimen/_1dp"
+                        android:text="get otp"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_16sp" />
+
+                    <com.ominfo.hra_app.common.customui.OtpEditText
+                        android:id="@+id/edtOpt"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_45dp"
+                        android:layout_marginHorizontal="@dimen/_40dp"
+                        android:layout_marginTop="@dimen/_10dp"
+                        android:digits="1234567890"
+                        android:drawableBottom="@android:color/transparent"
+                        android:drawableTint="@color/white"
+                        android:foregroundTint="@android:color/transparent"
+                        android:gravity="center_vertical"
+                        android:inputType="number"
+                        android:maxLength="4"
+                        android:maxLines="1"
+                        android:outlineAmbientShadowColor="@color/white"
+                        android:outlineSpotShadowColor="@color/white"
+                        android:singleLine="true"
+                        android:textColor="@color/back_text_colour"
+                        android:textColorHint="@color/back_text_colour"
+                        android:textSize="@dimen/_18sp">
+
+                    </com.ominfo.hra_app.common.customui.OtpEditText>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvResendOtp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginHorizontal="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_10dp"
+                        android:fontFamily="@font/gilroy_semibold"
+                        android:gravity="center_horizontal"
+                        android:text="@string/scr_lbl_resent_otp"
+                        android:textColor="@color/color_main"
+                        android:textSize="@dimen/_14sp" />
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnRegister"

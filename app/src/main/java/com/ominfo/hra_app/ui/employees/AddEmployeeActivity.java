@@ -5,10 +5,14 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -198,18 +202,103 @@ public class AddEmployeeActivity extends BaseActivity {
         //multiple line with done
         AutoComAddress.setImeOptions(EditorInfo.IME_ACTION_DONE);
         AutoComAddress.setRawInputType(InputType.TYPE_CLASS_TEXT);
-
-        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_mon),getString(R.string.scr_lbl_yes),"09:30:00","18:30:00"));
-        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_tue),getString(R.string.scr_lbl_yes),"09:30:00","18:30:00"));
-        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_wed),getString(R.string.scr_lbl_yes),"09:30:00","18:30:00"));
-        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_thur),getString(R.string.scr_lbl_yes),"09:30:00","18:30:00"));
-        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_fri),getString(R.string.scr_lbl_yes),"09:30:00","18:30:00"));
-        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_sat),getString(R.string.scr_lbl_yes),"09:30:00","18:30:00"));
-        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_sun),getString(R.string.scr_lbl_yes),"09:30:00","18:30:00"));
+        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_mon),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
+        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_tue),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
+        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_wed),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
+        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_thur),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
+        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_fri),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
+        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_sat),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
+        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_sun),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
         setAdapterForTimingList();
         getIntentData();
         tvMissing.setVisibility(View.GONE);
         setDropdownGender();
+        setOnListener();
+    }
+
+    private void setOnListener(){
+        AutoComEmailId.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+
+                if(s.length()>5) {
+                    if(!TextUtils.isEmpty(AutoComEmailId.getText().toString().trim()) &&
+                            Patterns.EMAIL_ADDRESS.matcher(AutoComEmailId.getText().toString().trim()).matches()){
+                        input_textEmailId.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_right_accept));
+                        int color= Color.GREEN;
+                        input_textEmailId.setEndIconTintList(ColorStateList.valueOf(color));
+                        setError(1, input_textEmailId, "Entered email is valid.");
+                    }
+                    else {
+                        input_textEmailId.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                        int color=Color.RED;
+                        input_textEmailId.setEndIconTintList(ColorStateList.valueOf(color));
+                        setError(0, input_textEmailId, getString(R.string.err_enter_email_id));
+                    }
+                }
+                if(s.length()==0){
+                    input_textEmailId.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                    int color=Color.RED;
+                    input_textEmailId.setEndIconTintList(ColorStateList.valueOf(color));
+                    setError(0, input_textEmailId, getString(R.string.err_enter_email_id));
+                }
+            }
+        });
+        AutoComMobile.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                if(s.length() > 9) {
+                    input_textMobile.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_right_accept));
+                    int color=getResources().getColor(R.color.green);
+                    input_textMobile.setEndIconTintList(ColorStateList.valueOf(color));
+                    setError(1, input_textMobile, "Entered mobile number is valid.");
+                }else{
+                    input_textMobile.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_info_check));
+                    int color=getResources().getColor(R.color.deep_yellow);
+                    input_textMobile.setEndIconTintList(ColorStateList.valueOf(color));
+                    setError(2, input_textMobile, "10 digit mobile number is needed.");
+                }
+                if(s.length() == 0){
+                    input_textMobile.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                    int color=Color.RED;
+                    input_textMobile.setEndIconTintList(ColorStateList.valueOf(color));
+                    setError(0, input_textMobile, getString(R.string.scr_lbl_enter_mobile_number));
+                }
+            }
+        });
+        AutoComMobile.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!b){
+                    if(AutoComMobile.getText().toString().length()<10){
+                        input_textMobile.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                        int color=Color.RED;
+                        input_textMobile.setEndIconTintList(ColorStateList.valueOf(color));
+                        setError(0, input_textMobile, getString(R.string.scr_lbl_enter_mobile_number));
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -224,6 +313,10 @@ public class AddEmployeeActivity extends BaseActivity {
             empId = intent.getStringExtra(Constants.TITLE);
 
             if(from.equals(Constants.add)){
+                tvJoiningDate.setText(AppUtils.getCurrentDateTime_());
+                tvDateValue.setText(AppUtils.getCurrentDateTime_());
+                AutoComSickLeave.setText("0"); AutoComCasualLeave.setText("0");
+                AutoComOtherLeave.setText("0");
                 tvToolbarTitle.setText(R.string.scr_lbl_add_employees);
                 btnDeactivate.setVisibility(View.GONE);
                 callCompanyListApi();
@@ -318,7 +411,7 @@ public class AddEmployeeActivity extends BaseActivity {
 
     private void setAdapterForTimingList() {
             if (timingList!=null && timingList.size() > 0) {
-            employeeTimeAdapter = new EmployeeTimeAdapter(true,mContext, timingList, new EmployeeTimeAdapter.ListItemSelectListener() {
+            employeeTimeAdapter = new EmployeeTimeAdapter(true,true,mContext, timingList, new EmployeeTimeAdapter.ListItemSelectListener() {
                 @Override
                 public void onItemClick(WorkTimingList mDataTicket, List<WorkTimingList> workTimingListList, boolean status) {
                     timingList = workTimingListList;
@@ -739,12 +832,12 @@ public class AddEmployeeActivity extends BaseActivity {
     }
     /*check validations on field*/
     private boolean isDetailsValid() {
-        setError(0, input_textName, "");  setError(0, input_textEmailId, "");
-        setError(0, input_textAddress, ""); setError(0, input_textGender, "");
-        setError(0, input_textPincode, "");setError(0, input_textCurrSalary, "");
-        setError(0, input_textDesi, ""); setError(0, input_textMobile, "");
-        setError(0, input_textCasualLeave, "");setError(0, input_textSickLeave, "");
-        setError(0, input_textOtherLeave,"");
+        input_textName.setErrorEnabled(false);input_textEmailId.setErrorEnabled(false);
+        input_textAddress.setErrorEnabled(false);input_textGender.setErrorEnabled(false);
+        input_textPincode.setErrorEnabled(false);input_textCurrSalary.setErrorEnabled(false);
+        input_textDesi.setErrorEnabled(false);input_textMobile.setErrorEnabled(false);
+        input_textCasualLeave.setErrorEnabled(false);input_textSickLeave.setErrorEnabled(false);
+        input_textOtherLeave.setErrorEnabled(false);
         //tvDateValue.setError("Please select date of birth.",getDrawable(R.drawable.ic_calendar));
         if (TextUtils.isEmpty(AutoComName.getText().toString().trim())) {
             setError(0, input_textName, getString(R.string.err_enter_name));
@@ -752,15 +845,15 @@ public class AddEmployeeActivity extends BaseActivity {
         } else if (TextUtils.isEmpty(AutoComAddress.getText().toString().trim())) {
             setError(0, input_textAddress, getString(R.string.err_enter_address));
             return false;
-        } else if (TextUtils.isEmpty(AutoComPincode.getText().toString().trim())) {
+        } else if (TextUtils.isEmpty(AutoComPincode.getText().toString().trim()) ||
+                AutoComPincode.getText().toString().trim().length()<6) {
             setError(0, input_textPincode, getString(R.string.err_enter_pincode));
             return false;
         } else if (TextUtils.isEmpty(AutoComDesi.getText().toString().trim())) {
             setError(0, input_textDesi, getString(R.string.err_enter_designation));
             return false;
-        } else if (TextUtils.isEmpty(AutoComEmailId.getText().toString().trim()) || !Patterns.EMAIL_ADDRESS.matcher(AutoComEmailId.getText().toString().trim()).matches())
-         {
-            setError(0, input_textEmailId, getString(R.string.err_enter_email_id));
+        } else if(TextUtils.isEmpty(AutoComEmailId.getText().toString().trim()) || !Patterns.EMAIL_ADDRESS.matcher(AutoComEmailId.getText().toString().trim()).matches())
+        {   setError(0, input_textEmailId, getString(R.string.err_enter_email_id));
             return false;
         } else if (TextUtils.isEmpty(AutoComGender.getText().toString().trim())) {
             setError(0, input_textGender, getString(R.string.err_select_gender));
@@ -768,7 +861,7 @@ public class AddEmployeeActivity extends BaseActivity {
         } else if (TextUtils.isEmpty(AutoComCurrSalary.getText().toString().trim())) {
             setError(0, input_textCurrSalary, getString(R.string.err_enter_current_salary));
             return false;
-        }  else if (TextUtils.isEmpty(AutoComMobile.getText().toString().trim())) {
+        }  else if (TextUtils.isEmpty(AutoComMobile.getText().toString().trim()) || AutoComMobile.getText().toString().trim().length()<10) {
             setError(0, input_textMobile, getString(R.string.err_enter_mobile_no));
             return false;
         } else if (TextUtils.isEmpty(tvDateValue.getText().toString().trim())) {

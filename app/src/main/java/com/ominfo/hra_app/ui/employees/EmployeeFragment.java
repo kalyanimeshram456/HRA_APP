@@ -39,6 +39,7 @@ import com.ominfo.hra_app.basecontrol.BaseApplication;
 import com.ominfo.hra_app.basecontrol.BaseFragment;
 import com.ominfo.hra_app.database.AppDatabase;
 import com.ominfo.hra_app.interfaces.Constants;
+import com.ominfo.hra_app.interfaces.SharedPrefKey;
 import com.ominfo.hra_app.network.ApiResponse;
 import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
@@ -53,6 +54,7 @@ import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
+import com.ominfo.hra_app.util.SharedPref;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -397,12 +399,24 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
         AutoComFilterStatus = mDialog.findViewById(R.id.AutoComFilterStatus);
         AutoComFilterName = mDialog.findViewById(R.id.AutoComFilterName);
         AutoComFilterDesi = mDialog.findViewById(R.id.AutoComFilterDesi);
-        AutoComFilterStatus.setText("All");
-        setDropdownStatus();
+        if (val == 1) {
+            AutoComFilterStatus.setText("All");
+            setDropdownStatus();
+        }
+        else{
+            String name = SharedPref.getInstance(mContext).read(SharedPrefKey.FILTER_NAME, "");
+            String desi = SharedPref.getInstance(mContext).read(SharedPrefKey.FILTER_DESI, "");
+            String status = SharedPref.getInstance(mContext).read(SharedPrefKey.FILTER_STATUS, "All");
+            AutoComFilterStatus.setText(status);   setDropdownStatus();
+            AutoComFilterName.setText(name);AutoComFilterDesi.setText(desi);
+        }
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDialog.dismiss();
+                SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_NAME, AutoComFilterName.getText().toString().trim());
+                SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_DESI, AutoComFilterDesi.getText().toString().trim());
+                SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_STATUS, AutoComFilterStatus.getText().toString().trim());
                 itemCount = 0;
                 currentPage = PAGE_START;
                 isLastPage = false;

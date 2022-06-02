@@ -163,6 +163,8 @@ public class MyAccountFragment extends BaseFragment {
     AppCompatButton btnNext;
     @BindView(R.id.btnSubmit)
     AppCompatButton btnSubmit;
+    @BindView(R.id.imgCall)
+    AppCompatImageView imgEdit;
     @BindView(R.id.layAdmin)
     LinearLayoutCompat layAdmin;
     @BindView(R.id.layCalender)
@@ -274,6 +276,7 @@ public class MyAccountFragment extends BaseFragment {
     AppCompatEditText etOfAddress;
     List<WorkTimingList> workTimingLists = new ArrayList<>();
     String officeLat = "",officeLong="";
+    boolean editClick = false;
     public MyAccountFragment() {
         // Required empty public constructor
     }
@@ -314,7 +317,7 @@ public class MyAccountFragment extends BaseFragment {
         etOfAddress.setRawInputType(InputType.TYPE_CLASS_TEXT);
         AutoComOfficeLocation.setImeOptions(EditorInfo.IME_ACTION_DONE);
         AutoComOfficeLocation.setRawInputType(InputType.TYPE_CLASS_TEXT);
-
+        imgEdit.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_edit_all));
         app_bar_layout.addOnOffsetChangedListener(new   AppBarLayout.OnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
@@ -741,7 +744,7 @@ public class MyAccountFragment extends BaseFragment {
 
     private void setAdapterForTimingList(boolean isToggle) {
         if (workTimingLists!=null && workTimingLists.size() > 0) {
-            employeeTimeAdapter = new EmployeeTimeAdapter(isToggle,mContext, workTimingLists, new EmployeeTimeAdapter.ListItemSelectListener() {
+            employeeTimeAdapter = new EmployeeTimeAdapter(editClick,isToggle,mContext, workTimingLists, new EmployeeTimeAdapter.ListItemSelectListener() {
                 @Override
                 public void onItemClick(WorkTimingList mDataTicket, List<WorkTimingList> notificationResultListAdapter, boolean status) {
                     workTimingLists = notificationResultListAdapter;
@@ -827,6 +830,16 @@ public class MyAccountFragment extends BaseFragment {
                 callCompanyListApi();
             }
         }
+
+        workTimingLists.add(new WorkTimingList(true,getString(R.string.scr_lbl_mon),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
+        workTimingLists.add(new WorkTimingList(true,getString(R.string.scr_lbl_tue),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
+        workTimingLists.add(new WorkTimingList(true,getString(R.string.scr_lbl_wed),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
+        workTimingLists.add(new WorkTimingList(true,getString(R.string.scr_lbl_thur),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
+        workTimingLists.add(new WorkTimingList(true,getString(R.string.scr_lbl_fri),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
+        workTimingLists.add(new WorkTimingList(true,getString(R.string.scr_lbl_sat),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
+        workTimingLists.add(new WorkTimingList(true,getString(R.string.scr_lbl_sun),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
+        setAdapterForTimingList(false);
+
         Window window = getActivity().getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -927,7 +940,14 @@ public class MyAccountFragment extends BaseFragment {
                 break;
             case R.id.imgCall:
                 //edit all
-                setAllDisabled(Integer.parseInt(isAdmin),true);
+                if(!editClick) {
+                    editClick = true;
+                    setAllDisabled(Integer.parseInt(isAdmin), true);
+                }
+                else{
+                    editClick = false;
+                    setAllDisabled(Integer.parseInt(isAdmin), false);
+                }
                 break;
             case R.id.imgAdd:
                 showChooseCameraDialog();
@@ -1824,6 +1844,9 @@ private void setTermsAndPolicy(String webUrl){
         if(state){ setClickListener();}
         if(!state){
             setDis();
+            imgEdit.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_edit_all));
+        }else{
+            imgEdit.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_edit_close));
         }
         if(type==0) {
             //employee

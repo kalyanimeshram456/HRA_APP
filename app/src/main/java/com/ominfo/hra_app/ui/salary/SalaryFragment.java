@@ -164,6 +164,13 @@ public class SalaryFragment extends BaseFragment {
         callSalaryAllListApi();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        setAdapterForSalaryList();
+        callSalaryAllListApi();
+    }
+
     private void setAdapterForSalaryList() {
         LoginTable loginTable = mDb.getDbDAO().getLoginData();
         if (salaryAllresultList!=null && salaryAllresultList.size() > 0) {
@@ -215,7 +222,7 @@ public class SalaryFragment extends BaseFragment {
                 RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
                 RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
                 RequestBody mRequestisAd = RequestBody.create(MediaType.parse("text/plain"),  loginTable.getIsadmin());
-               // RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), pageNo);
+                //RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), pageNo);
                // RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
                 String mon = AppUtils.convertMonthSalary();
                 RequestBody mRequestMonth = RequestBody.create(MediaType.parse("text/plain"), mon);
@@ -226,7 +233,9 @@ public class SalaryFragment extends BaseFragment {
                 request.setYear(mRequestYear);
                 request.setAction(mRequestAction);
                 request.setCompany_ID(mRequestComId);
+               // if(!loginTable.getIsadmin().equals("0")) {
                 request.setEmp_id(mRequestEmployee);
+                //}
                 request.setIsAdmin(mRequestisAd);
                 //request.setPageNumber(mRequestpage_number);
                 //request.setPageSize(mRequestpage_size);

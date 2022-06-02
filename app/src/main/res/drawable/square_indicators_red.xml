@@ -6,7 +6,7 @@
             android:shape="rectangle"
             android:thickness="0dp"
             android:useLevel="false">
-            <solid android:color="@color/Light_Red"/>
+            <solid android:color="@color/pink"/>
             <size android:width="@dimen/_10dp"
                 android:height="@dimen/_10dp"/>
         </shape>
