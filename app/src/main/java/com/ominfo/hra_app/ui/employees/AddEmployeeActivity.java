@@ -9,6 +9,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -20,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.AppCompatButton;
@@ -50,6 +52,8 @@ import com.ominfo.hra_app.ui.employees.adapter.EmployeeTimeAdapter;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeRequest;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeResponse;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeViewModel;
+import com.ominfo.hra_app.ui.employees.model.ChangePasswordResponse;
+import com.ominfo.hra_app.ui.employees.model.ChangePasswordViewModel;
 import com.ominfo.hra_app.ui.employees.model.DeactivateEmployeeResponse;
 import com.ominfo.hra_app.ui.employees.model.DeactivateEmployeeViewModel;
 import com.ominfo.hra_app.ui.employees.model.EditEmployeeRequest;
@@ -59,6 +63,7 @@ import com.ominfo.hra_app.ui.employees.model.EmployeeList;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListRequest;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListResponse;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
+import com.ominfo.hra_app.ui.employees.model.SingleEmployeeListViewModel;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.my_account.model.GetCompanyList;
 import com.ominfo.hra_app.ui.my_account.model.GetCompanyResponse;
@@ -101,7 +106,8 @@ public class AddEmployeeActivity extends BaseActivity {
     private DeactivateEmployeeViewModel deactivateEmployeeViewModel;
     private EditEmployeeViewModel editEmployeeViewModel;
     private GetCompanyViewModel getCompanyViewModel;
-    private EmployeeListViewModel employeeListViewModel;
+    private SingleEmployeeListViewModel employeeListViewModel;
+    private ChangePasswordViewModel changePasswordViewModel;
     @BindView(R.id.tvTitle)
     AppCompatTextView tvToolbarTitle;
     @BindView(R.id.imgBack)
@@ -207,8 +213,8 @@ public class AddEmployeeActivity extends BaseActivity {
         timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_wed),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
         timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_thur),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
         timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_fri),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
-        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_sat),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
-        timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_sun),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
+        timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sat),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
+        timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
         setAdapterForTimingList();
         getIntentData();
         tvMissing.setVisibility(View.GONE);
@@ -345,40 +351,56 @@ public class AddEmployeeActivity extends BaseActivity {
         editEmployeeViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EditEmployeeViewModel.class);
         editEmployeeViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_edit_employee));
 
-        employeeListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EmployeeListViewModel.class);
-        employeeListViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_EMPLOYEES_LIST));
+        employeeListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(SingleEmployeeListViewModel.class);
+        employeeListViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_SINLE_EMPLOYEES_LIST));
+
+        changePasswordViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ChangePasswordViewModel.class);
+        changePasswordViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_CHANGE_PASSWORD));
 
         getCompanyViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetCompanyViewModel.class);
         getCompanyViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_COMPANY));
+    }
+
+     /* Call Api For employee list */
+    private void callChangePassApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if (loginTable != null) {
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_changecrmemppassword);
+                RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
+                RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), empId);
+                changePasswordViewModel.hitChangePasswordAPI(mRequestAction,mRequestComId,mRequestEmployee);
+            }
+        }
     }
     /* Call Api For employee list */
     private void callEmployeeListApi() {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
-                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_employee_list);
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_single_employee_list);
                 RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
                 RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), empId);
-                RequestBody mRequestToken = RequestBody.create(MediaType.parse("text/plain"),  loginTable.getToken());
+                /*RequestBody mRequestToken = RequestBody.create(MediaType.parse("text/plain"),  loginTable.getToken());
                 RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), "0");
                 RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
                 RequestBody mRequestfilter_emp_name = RequestBody.create(MediaType.parse("text/plain"), "");
                 RequestBody mRequestfilter_emp_position = RequestBody.create(MediaType.parse("text/plain"),  "");
                 String status = "1";
                 RequestBody filter_emp_isActive = RequestBody.create(MediaType.parse("text/plain"),  status);
-
+*/
                 EmployeeListRequest request = new EmployeeListRequest();
                 request.setAction(mRequestAction);
                 request.setCompanyId(mRequestComId);
                 request.setEmployee(mRequestEmployee);
-                request.setToken(mRequestToken);
+               /* request.setToken(mRequestToken);
                 request.setPageNumber(mRequestpage_number);
                 request.setPageSize(mRequestpage_size);
                 request.setFilterEmpName(mRequestfilter_emp_name);
                 request.setFilterEmpPosition(mRequestfilter_emp_position);
                 request.setFilterEmpIsActive(filter_emp_isActive);
-
-                employeeListViewModel.executeEmployeeListAPI(request);
+*/
+                employeeListViewModel.hitSingleEmployeeList(request);
             }
             else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
@@ -430,6 +452,7 @@ public class AddEmployeeActivity extends BaseActivity {
         if (NetworkCheck.isInternetAvailable(this)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
+                LogUtil.printLog("Token_check",loginTable.getToken());
                 RequestBody mRequestBodyTypeAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_add_employee);
                 RequestBody mRequestBodyTypeEmpName = RequestBody.create(MediaType.parse("text/plain"),AutoComName.getText().toString().trim());//loginTable.getCompanyId());
                 RequestBody mRequestBodyTypeEmpMob = RequestBody.create(MediaType.parse("text/plain"), AutoComMobile.getText().toString().trim());//loginTable.getCompanyId());
@@ -450,8 +473,8 @@ public class AddEmployeeActivity extends BaseActivity {
                 String join = AppUtils.changeToSlashToDash(tvJoiningDate.getText().toString().trim());
                 RequestBody mRequestBodyJoiningDate = RequestBody.create(MediaType.parse("text/plain"),join);//loginTable.getCompanyId());
                 RequestBody mRequestAddr = RequestBody.create(MediaType.parse("text/plain"),AutoComOfficeLocation.getText().toString());//loginTable.getCompanyId());
-                RequestBody mRequestLat = RequestBody.create(MediaType.parse("text/plain"),officeLat);//loginTable.getCompanyId());
-                RequestBody mRequestLong = RequestBody.create(MediaType.parse("text/plain"),officeLong);//loginTable.getCompanyId());
+                RequestBody mRequestLat = RequestBody.create(MediaType.parse("text/plain"),officeLat==null?"0.0":officeLat);//loginTable.getCompanyId());
+                RequestBody mRequestLong = RequestBody.create(MediaType.parse("text/plain"),officeLong==null?"0.0":officeLong);//loginTable.getCompanyId());
                 RequestBody mRequestMon = RequestBody.create(MediaType.parse("text/plain"),timingList.get(0).getMonWorking());//loginTable.getCompanyId());
                 RequestBody mRequestTue = RequestBody.create(MediaType.parse("text/plain"),timingList.get(1).getMonWorking());//loginTable.getCompanyId());
                 RequestBody mRequestWed = RequestBody.create(MediaType.parse("text/plain"),timingList.get(2).getMonWorking());//loginTable.getCompanyId());
@@ -656,14 +679,13 @@ public class AddEmployeeActivity extends BaseActivity {
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               finish();
+                showDiscardDialog();
             }
         });
         imgNotify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ((BaseActivity) mContext).launchScreen(mContext, NotificationsActivity.class);
-                ;
             }
         });
     }
@@ -694,7 +716,7 @@ public class AddEmployeeActivity extends BaseActivity {
                 openDataPicker(1);
                 break;
             case R.id.btnCancel:
-                showDiscardDialog();
+                callChangePassApi();
                 break;
             case R.id.btnDeactivate:
                 showDeactivateAccountDialog(this);
@@ -917,6 +939,30 @@ public class AddEmployeeActivity extends BaseActivity {
 
     }
 
+    //show Succes register popup
+    public void showThanksForRegisterDialog(String msg) {
+        Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialog.setContentView(R.layout.dialog_thanks_for_registering);
+        //mDialog.setCanceledOnTouchOutside(true);
+        RelativeLayout mClose = mDialog.findViewById(R.id.imgCancel);
+        AppCompatTextView appcomptext = mDialog.findViewById(R.id.appcomptext);
+        appcomptext.setText(msg);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mDialog.dismiss();
+                finish();
+            }
+        }, 2500);
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+        mDialog.show();
+    }
+
     /*Api response */
     private void consumeResponse(ApiResponse apiResponse, String tag) {
         switch (apiResponse.status) {
@@ -933,10 +979,10 @@ public class AddEmployeeActivity extends BaseActivity {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.action_add_employee)) {
                             AddEmployeeResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), AddEmployeeResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                showSuccessDialog("Employee Added successfully !",false,AddEmployeeActivity.this);
+                                showSuccessDialogEmp("Employee Added successfully !",false,AddEmployeeActivity.this);
                                   }
                             else {
-                                showSuccessDialog(responseModel.getResult().getMessage(),true,AddEmployeeActivity.this);
+                                showSuccessDialogEmp(responseModel.getResult().getMessage(),true,AddEmployeeActivity.this);
                                 //LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                             }
                         }
@@ -947,10 +993,23 @@ public class AddEmployeeActivity extends BaseActivity {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.action_edit_employee)) {
                             EditEmployeeResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), EditEmployeeResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                showSuccessDialog("Employee Edited successfully !",false,AddEmployeeActivity.this);
+                                showSuccessDialogEmp("Employee Edited successfully !",false,AddEmployeeActivity.this);
                             }
                             else {
-                                LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
+                                showSuccessDialogEmp(responseModel.getResult().getMessage(),true,AddEmployeeActivity.this);
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_CHANGE_PASSWORD)) {
+                            ChangePasswordResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ChangePasswordResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                showThanksForRegisterDialog(responseModel.getResult().getMessage());
+                            }
+                            else {
+                                showSuccessDialogEmp(responseModel.getResult().getMessage(),true,AddEmployeeActivity.this);
                             }
                         }
                     } catch (Exception e) {
@@ -961,7 +1020,7 @@ public class AddEmployeeActivity extends BaseActivity {
                             DeactivateEmployeeResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), DeactivateEmployeeResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 mDialogDeactivate.dismiss();
-                                showSuccessDialog("Account deactived successfully.",false,AddEmployeeActivity.this);
+                                showSuccessDialogEmp("Account deactived successfully.",false,AddEmployeeActivity.this);
                             }
                             else {
                                 LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
@@ -979,7 +1038,7 @@ public class AddEmployeeActivity extends BaseActivity {
                                 AutoComOfficeLocation.setText(employeeList.getOfficeAddress());
                                 officeLat = employeeList.getOfficeLatitude();
                                 officeLong = employeeList.getOfficeLongitude();
-                                try{ timingList.clear();}catch (Exception e){}
+                                try{ timingList.removeAll(timingList);}catch (Exception e){}
                                 timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_mon), employeeList.getMonWorking()==null?"no":employeeList.getMonWorking(),
                                         employeeList.getMonStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getMonStartTime(), employeeList.getMonEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getMonEndTime()));
                                 timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_tue), employeeList.getTueWorking()==null?"no":employeeList.getTueWorking(),
@@ -995,14 +1054,17 @@ public class AddEmployeeActivity extends BaseActivity {
                                 timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun), employeeList.getSunWorking()==null?"no":employeeList.getSunWorking(),
                                         employeeList.getSunStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getSunStartTime(), employeeList.getSunEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getSunEndTime()));
                                 setAdapterForTimingList();
+                            } else{
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
                             }
                         }
                     }catch (Exception e){
+                        LogUtil.printLog("wow_company_error",e.getMessage());
                         e.printStackTrace();
                     }
 
                     try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EMPLOYEES_LIST)) {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_SINLE_EMPLOYEES_LIST)) {
                             EmployeeListResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), EmployeeListResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 EmployeeList employeeResList = responseModel.getResult().getList().get(0);
@@ -1024,7 +1086,7 @@ public class AddEmployeeActivity extends BaseActivity {
                                 AutoComOfficeLocation.setText(employeeResList.getOfficeAddress());
                                 officeLat = employeeResList.getOfficeLatitude();
                                 officeLong = employeeResList.getOfficeLongitude();
-                                try{ timingList.clear();}catch (Exception e){}
+                                try{ timingList.removeAll(timingList);}catch (Exception e){}
                                 timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_mon), employeeResList.getMonWorking()==null?"no":employeeResList.getMonWorking(),
                                         employeeResList.getMonStartTime()==null?getString(R.string.scr_lbl_start_time):employeeResList.getMonStartTime(), employeeResList.getMonEndTime()==null?getString(R.string.scr_lbl_end_time):employeeResList.getMonEndTime()));
                                 timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_tue), employeeResList.getTueWorking()==null?"no":employeeResList.getTueWorking(),
@@ -1041,8 +1103,12 @@ public class AddEmployeeActivity extends BaseActivity {
                                         employeeResList.getSunStartTime()==null?getString(R.string.scr_lbl_start_time):employeeResList.getSunStartTime(), employeeResList.getSunEndTime()==null?getString(R.string.scr_lbl_end_time):employeeResList.getSunEndTime()));
                                 setAdapterForTimingList();
                             }
+                            else{
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                            }
                         }
                     }catch (Exception e){
+                        LogUtil.printLog("wow_employee_error",e.getMessage());
                         e.printStackTrace();
                     }
                 }

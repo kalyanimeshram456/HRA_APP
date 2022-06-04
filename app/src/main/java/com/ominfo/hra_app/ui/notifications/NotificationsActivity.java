@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.gson.Gson;
+import com.ominfo.hra_app.MainActivity;
 import com.ominfo.hra_app.R;
 import com.ominfo.hra_app.basecontrol.BaseActivity;
 import com.ominfo.hra_app.basecontrol.BaseApplication;
@@ -145,20 +146,6 @@ public class NotificationsActivity extends BaseActivity {
         //set toolbar
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         setToolbar();
-        Boolean iSLoggedIn = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.IS_LOGGED_IN, false);
-        if (iSLoggedIn){
-            //launchScreen(MainActivity.class);
-           /* imgBack.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //finishAffinity();
-                    //launchScreen(mContext,MainActivity.class);
-                }*/
-            //});
-        }else {
-            finishAffinity();
-            launchScreen(mContext, LoginActivity.class);
-        }
         SharedPref.getInstance(getApplicationContext()).write(SharedPrefKey.IS_NOTIFY, false);
         SharedPref.getInstance(mContext).write(SharedPrefKey.IS_NOTIFY_COUNT,"0");
         //initToolbar(1,mContext,R.id.imgBack,R.id.imgReport,R.id.tvComplaintCount,R.id.imgNotify,R.id.tvNotifyCount,0,R.id.imgCall);
@@ -192,17 +179,20 @@ public class NotificationsActivity extends BaseActivity {
         //set toolbar title
         toolbarTitle.setText("Notifications");
         initToolbar(1,mContext,R.id.imgBack,R.id.imgReport,R.id.imgNotify,tvNotifyCount,0,R.id.imgCall);
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+                launchScreen(mContext, MainActivity.class);
+            }
+        });
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Boolean iSLoggedIn = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.IS_LOGGED_IN, false);
-        /*if (!iSLoggedIn){
-            //launchScreen(MainActivity.class);
-            finishAffinity();
-            launchScreen(mContext,MainActivity.class);
-        }*/
+        finish();
+        launchScreen(mContext, MainActivity.class);
     }
 
     private void injectAPI() {
@@ -886,18 +876,18 @@ public class NotificationsActivity extends BaseActivity {
                             ApplyLeaveResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ApplyLeaveResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 mDialogPaidLeave.dismiss();
-                                ((BaseActivity)mContext).showSuccessDialog(responseModel.getResult().getMessage(),
-                                        true,NotificationsActivity.this);
+                                showSuccessDialog(responseModel.getResult().getMessage(),
+                                        false,NotificationsActivity.this);
                                 callDeleteNotificationApi(record_id);
                             }
                             else {
                                 mDialogPaidLeave.dismiss();
-                                ((BaseActivity)mContext).showSuccessDialog(responseModel.getResult().getMessage(),
-                                        true,NotificationsActivity.this);
+                                showSuccessDialog(responseModel.getResult().getMessage(),
+                                        false,NotificationsActivity.this);
                             }
                         }
                     }catch (Exception e){
-                        ((BaseActivity)mContext).showSuccessDialog("Leave application upload failed.",
+                        showSuccessDialog("Leave application upload failed.",
                                 true,NotificationsActivity.this);
                         e.printStackTrace();
                     }

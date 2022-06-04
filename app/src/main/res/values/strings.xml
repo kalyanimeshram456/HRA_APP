@@ -404,5 +404,7 @@
     <string name="scr_lbl_start_time_values">10:00:00</string>
     <string name="scr_lbl_end_start_value">19:00:00</string>
     <string name="scr_lbl_resent_otp">Resent OTP</string>
+    <string name="scr_lbl_renew_plan">Renew plan</string>
+    <string name="scr_lbl_my_planes">My Plan</string>
 
 </resources>

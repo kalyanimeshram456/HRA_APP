@@ -33,6 +33,8 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -42,7 +44,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TimePicker;
@@ -55,6 +56,7 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
@@ -72,15 +74,12 @@ import com.ominfo.hra_app.basecontrol.BaseApplication;
 import com.ominfo.hra_app.basecontrol.BaseFragment;
 import com.ominfo.hra_app.database.AppDatabase;
 import com.ominfo.hra_app.interfaces.Constants;
-import com.ominfo.hra_app.interfaces.ErrorCallbacks;
 import com.ominfo.hra_app.interfaces.SharedPrefKey;
 import com.ominfo.hra_app.network.ApiResponse;
 import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
-import com.ominfo.hra_app.ui.dashboard.model.DashModel;
-import com.ominfo.hra_app.ui.employees.AddEmployeeActivity;
 import com.ominfo.hra_app.ui.employees.adapter.EmployeeTimeAdapter;
 import com.ominfo.hra_app.ui.employees.model.EditEmployeeRequest;
 import com.ominfo.hra_app.ui.employees.model.EditEmployeeResponse;
@@ -91,15 +90,12 @@ import com.ominfo.hra_app.ui.employees.model.EmployeeListResponse;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
 import com.ominfo.hra_app.ui.login.LoginActivity;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
+import com.ominfo.hra_app.ui.login.model.LogoutMobileTokenViewModel;
 import com.ominfo.hra_app.ui.login.model.LogoutResponse;
 import com.ominfo.hra_app.ui.login.model.LogoutViewModel;
 import com.ominfo.hra_app.ui.my_account.adapter.AccountAdapter;
 import com.ominfo.hra_app.ui.my_account.leave.LeaveListFragment;
-import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveRequest;
-import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveResponse;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveViewModel;
-import com.ominfo.hra_app.ui.my_account.model.ChangePasswordResponse;
-import com.ominfo.hra_app.ui.my_account.model.ChangePasswordViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ChangeProfileImageResponse;
 import com.ominfo.hra_app.ui.my_account.model.ChangeProfileImageViewModel;
 import com.ominfo.hra_app.ui.my_account.model.EditCompanyRequest;
@@ -110,13 +106,10 @@ import com.ominfo.hra_app.ui.my_account.model.GetCompanyResponse;
 import com.ominfo.hra_app.ui.my_account.model.GetCompanyViewModel;
 import com.ominfo.hra_app.ui.my_account.model.GetProfileImageViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ProfileImageResponse;
-import com.ominfo.hra_app.ui.my_account.model.ProfileRequest;
-import com.ominfo.hra_app.ui.my_account.model.ProfileResponse;
-import com.ominfo.hra_app.ui.my_account.model.ProfileViewModel;
 import com.ominfo.hra_app.ui.my_account.model.WorkTimingList;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
+import com.ominfo.hra_app.ui.payment.PaymentFragment;
 import com.ominfo.hra_app.ui.sales_credit.activity.PdfPrintActivity;
-import com.ominfo.hra_app.ui.sales_credit.model.GraphModel;
 import com.ominfo.hra_app.ui.visit_report.activity.AddLocationActivity;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
@@ -201,7 +194,8 @@ public class MyAccountFragment extends BaseFragment {
     private GetCompanyViewModel getCompanyViewModel;
     private EditEmployeeViewModel editEmployeeViewModel;
     private EditCompanyViewModel editCompanyViewModel;
-
+    private LogoutViewModel logoutViewModel;
+    private LogoutMobileTokenViewModel logoutMobileTokenViewModel;
     EmployeeList employeeListResData;
     final Calendar myCalendar = Calendar.getInstance();
     private AppDatabase mDb;
@@ -274,9 +268,13 @@ public class MyAccountFragment extends BaseFragment {
     AppCompatEditText etDescr;
     @BindView(R.id.etOfAddress)
     AppCompatEditText etOfAddress;
+    @BindView(R.id.imgDots)
+    AppCompatImageView imgDots;
+    @BindView(R.id.imgDotsLogout)
+    AppCompatImageView imgDotsLogout;
     List<WorkTimingList> workTimingLists = new ArrayList<>();
     String officeLat = "",officeLong="";
-    boolean editClick = false;
+    boolean editClick = false,editNAME = false;
     public MyAccountFragment() {
         // Required empty public constructor
     }
@@ -339,6 +337,71 @@ public class MyAccountFragment extends BaseFragment {
         });
     }
 
+    private void showPopup(View v) {
+        PopupMenu popup = new PopupMenu(mContext, v);
+        MenuInflater inflater = popup.getMenuInflater();
+        popup.getMenu().clear();
+        inflater.inflate(R.menu.menu_account, popup.getMenu());
+        LoginTable loginTable =mDb.getDbDAO().getLoginData();
+        if(loginTable!=null) {
+            if(loginTable.equals("0")) {
+            MenuItem item = popup.getMenu().findItem(R.id.myPlan);
+            item.setVisible(false);
+            popup.getMenu().clear();
+        }}
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.myPlan:
+                        moveFromFragment(new PaymentFragment(),mContext);
+                        // Not implemented here
+                        return false;
+                    case R.id.logout:
+                        showLogoutDialog(mContext);
+                        // Do Fragment menu item stuff here
+                        return true;
+
+                    default:
+                        break;
+                }
+                return false;
+            }
+        });
+        popup.show();
+
+    }
+
+    public void showLogoutDialog(Context mContext) {
+        mDialogLogout = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialogLogout.setContentView(R.layout.dialog_logout);
+        mDialogLogout.setCanceledOnTouchOutside(true);
+        AppCompatImageView mClose = mDialogLogout.findViewById(R.id.imgCancel);
+        AppCompatButton okayButton = mDialogLogout.findViewById(R.id.uploadButton);
+        AppCompatButton cancelButton = mDialogLogout.findViewById(R.id.cancelButton);
+
+        okayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+             callLogoutMobileTokenApi();
+            }
+        });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogLogout.dismiss();
+            }
+        });
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogLogout.dismiss();
+            }
+        });
+        mDialogLogout.show();
+    }
+
+
     private void injectAPI() {
 
         getProfileImageViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetProfileImageViewModel.class);
@@ -362,6 +425,11 @@ public class MyAccountFragment extends BaseFragment {
         editCompanyViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EditCompanyViewModel.class);
         editCompanyViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_EDIT_COMPANY));
 
+        logoutViewModel = ViewModelProviders.of(this, mViewModelFactory).get(LogoutViewModel.class);
+        logoutViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_logout));
+
+        logoutMobileTokenViewModel = ViewModelProviders.of(this, mViewModelFactory).get(LogoutMobileTokenViewModel.class);
+        logoutMobileTokenViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_logout_mt_update));
     }
 
     /* Call Api For edit employee */
@@ -466,6 +534,39 @@ public class MyAccountFragment extends BaseFragment {
             LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
         }
     }
+
+    /* Call Api For Logout */
+    private void callLogoutApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if (loginTable != null) {
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_logout);
+                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getToken());
+                logoutViewModel.hitLogoutApi(mRequestBodyAction, mRequestBodyTypeEmployee);
+            } else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    /* Call Api For Logout */
+    private void callLogoutMobileTokenApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if (loginTable != null) {
+                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_logout_mt_update);
+                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                logoutMobileTokenViewModel.hitLogoutMobileTokenApi(mRequestBodyAction, mRequestBodyTypeEmployee);
+            } else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
     public static boolean isValidGSTNo(String str)
     { String regex = "^[0-9]{2}[A-Z]{5}[0-9]{4}"
             + "[A-Z]{1}[1-9A-Z]{1}"
@@ -758,56 +859,6 @@ public class MyAccountFragment extends BaseFragment {
     }
 
 
-    /* Call Api For Apply Leave */
-    private void callApplyLeaveApi() {
-        if (NetworkCheck.isInternetAvailable(mContext)) {
-            LoginTable loginTable = mDb.getDbDAO().getLoginData();
-            if(loginTable!=null) {
-                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_apply_leave);
-                RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
-                RequestBody mRequestBodyDuration = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewDuration.getText().toString());
-                String startTimeStamp = "",endTimeStamp = "",
-                        startDateTimeStamp = AppUtils.changeToSlashToDash(tvDateValueFrom.getText().toString()),
-                        endDateTimeStamp = AppUtils.changeToSlashToDash(tvDateValueTo.getText().toString());
-
-                if(AutoComTextViewDuration.getText().toString().equals("Half Day"))
-                {
-                    startTimeStamp = AppUtils.convert12to24ForAttention(tvTimeValueFrom.getText().toString());
-                    endTimeStamp = AppUtils.convert12to24ForAttention(tvTimeValueTo.getText().toString());
-                } else  if(AutoComTextViewDuration.getText().toString().equals("Full Day"))
-                {
-                    startTimeStamp = "00:00:00";endTimeStamp = "23:59:00";
-                }else {
-                    startTimeStamp = "00:00:00";endTimeStamp = "23:59:00";
-                }
-
-                RequestBody mRequestBodyStartTime = RequestBody.create(MediaType.parse("text/plain"), startDateTimeStamp+" "+startTimeStamp);
-                RequestBody mRequestBodyEndTime = RequestBody.create(MediaType.parse("text/plain"), endDateTimeStamp+" "+endTimeStamp);
-                RequestBody mRequestBodyLeaveType = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewLeaveType.getText().toString());
-                RequestBody mRequestBodyComment = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewComment.getText().toString());
-               // RequestBody mRequestBodyLeaveStatus = RequestBody.create(MediaType.parse("text/plain") , "approved");
-                ///RequestBody mRequestBodyUpdatedBy = RequestBody.create(MediaType.parse("text/plain"),"12"  /*loginTable.getManagerId()*/);
-
-                ApplyLeaveRequest applyLeaveRequest = new ApplyLeaveRequest();
-                applyLeaveRequest.setAction(mRequestBodyAction);
-                applyLeaveRequest.setEmpId(mRequestBodyTypeEmpId);
-                applyLeaveRequest.setDuration(mRequestBodyDuration);
-                applyLeaveRequest.setStartTime(mRequestBodyStartTime);
-                applyLeaveRequest.setEndTime(mRequestBodyEndTime);
-                applyLeaveRequest.setLeaveType(mRequestBodyLeaveType);
-                applyLeaveRequest.setComment(mRequestBodyComment);
-               // applyLeaveRequest.setLeaveStatus(mRequestBodyLeaveStatus);
-                //applyLeaveRequest.setUpdatedBy(mRequestBodyUpdatedBy);
-                applyLeaveViewModel.hitApplyLeaveApi(applyLeaveRequest);
-            }
-            else {
-                LogUtil.printToastMSG(mContext, "Something is wrong.");
-            }
-        } else {
-            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
-        }
-    }
-
     private void init(){
         tvEmpName.setEnabled(false);
         btnSubmit.setVisibility(View.GONE);
@@ -933,10 +984,8 @@ public class MyAccountFragment extends BaseFragment {
                 openDataPicker(0);
                 break;
             case R.id.imgEdit:
-                tvEmpName.setEnabled(true);
-                tvEmpName.setBackground(mContext.getDrawable(R.drawable.round_corner_shape_without_fill_thin_yellow));
-                btnSubmit.setVisibility(View.VISIBLE);
-                btnESubmit.setVisibility(View.VISIBLE);
+                tvEmpName.setEnabled(false);
+                showProfileNameDialog();
                 break;
             case R.id.imgCall:
                 //edit all
@@ -1033,6 +1082,43 @@ public class MyAccountFragment extends BaseFragment {
         });
         mDialog.show();
     }
+
+    private void showProfileNameDialog() {
+        Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialog.setContentView(R.layout.dialog_profile_name);
+        mDialog.setCanceledOnTouchOutside(true);
+        RelativeLayout mClose = mDialog.findViewById(R.id.imgCancel);
+        AppCompatAutoCompleteTextView AutoComNameDialog = mDialog.findViewById(R.id.AutoComNameDialog);
+        AppCompatButton doneButton = mDialog.findViewById(R.id.doneButton);
+        AutoComNameDialog.setText(""+tvEmpName.getText().toString());
+        doneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+              tvEmpName.setText(""+AutoComNameDialog.getText().toString());
+               mDialog.dismiss();
+                if(isAdmin.equals("1")) {
+                    layAdmin.setVisibility(View.VISIBLE);
+                    laySubmit.setVisibility(View.GONE);
+                    layUser.setVisibility(View.GONE);
+                    setAllDisabled(1,false);
+                    callEditCompanyApi();
+                } if(isAdmin.equals("0")) {
+                    layAdmin.setVisibility(View.GONE);
+                    laySubmit.setVisibility(View.GONE);
+                    layUser.setVisibility(View.VISIBLE);
+                    setAllDisabled(0,false);
+                    callEditEmployeeApi();}
+            }
+        });
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+        mDialog.show();
+    }
+
     private void deleteImagesFolder() {
         try {
             //private void deleteImagesFolder(){
@@ -1296,6 +1382,28 @@ public class MyAccountFragment extends BaseFragment {
                 ((BaseActivity)mContext).launchScreen(mContext, NotificationsActivity.class);;
             }
         });
+
+            if(isAdmin.equals("0")){
+                imgDots.setVisibility(View.GONE);
+                imgDotsLogout.setVisibility(View.VISIBLE);
+                imgDotsLogout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showLogoutDialog(mContext);
+                    }
+                });
+            }else{
+                imgDotsLogout.setVisibility(View.GONE);
+                imgDots.setVisibility(View.VISIBLE);
+                imgDots.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showPopup(view);
+                        //showLogoutDialog(mContext);
+                    }
+                });
+            }
+
     }
 
 private void setTermsAndPolicy(String webUrl){
@@ -1456,26 +1564,7 @@ private void setTermsAndPolicy(String webUrl){
                         showSuccessDialogFragment(mContext,"Something went wrong.",false, null);
                         callCompanyListApi();
                     }
-                    try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_APPLY_LEAVE)) {
-                            ApplyLeaveResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ApplyLeaveResponse.class);
-                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                mDialogChangePass.dismiss();
-                                ((BaseActivity)mContext).showSuccessDialog(responseModel.getResult().getMessage(),
-                                        true,getActivity());
-                                ((BaseActivity)mContext).setRateUsCounter(mContext);
-                            }
-                            else {
-                                mDialogChangePass.dismiss();
-                                ((BaseActivity)mContext).showSuccessDialog(responseModel.getResult().getMessage(),
-                                        true,getActivity());
-                            }
-                        }
-                    }catch (Exception e){
-                        ((BaseActivity)mContext).showSuccessDialog("Leave application upload failed.",
-                                true,getActivity());
-                        e.printStackTrace();
-                    }
+
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_PROFILE)) {
                             ProfileImageResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ProfileImageResponse.class);
@@ -1489,6 +1578,53 @@ private void setTermsAndPolicy(String webUrl){
                             }
                         }
                     }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.action_logout)) {
+                            LogoutResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LogoutResponse.class);
+                            //if (responseModel != null && responseModel.getResult().getStatus().equals("Success")) {
+                            //LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                            mDialogLogout.dismiss();
+                            getActivity().finishAffinity();
+                            launchScreen(getActivity(), LoginActivity.class);
+                            SharedPref.getInstance(mContext).write(SharedPrefKey.IS_LOGGED_IN, false);
+                            try {
+                                mDb.getDbDAO().deleteLoginData();
+                                mDb.getDbDAO().deleteLocationData();
+                                mDb.getDbDAO().deleteAttendanceData();
+                                AsyncTask.execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        //deleteReminderViewModel.DeleteReminder();
+                                    }
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            progressBar.setVisibility(View.GONE);
+                            /*}
+                            else{
+
+                            }*/
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.action_logout_mt_update)) {
+                            LogoutResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LogoutResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                               callLogoutApi();
+                            }
+                            else{
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                            }
+
+                        }
+
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     try {
@@ -1862,7 +1998,7 @@ private void setTermsAndPolicy(String webUrl){
             AutoComPincode.setEnabled(state);
             tvDateValue.setEnabled(state);
             if(state){
-            btnESubmit.setVisibility(View.VISIBLE);}
+            btnESubmit.setVisibility(View.VISIBLE);}else{btnESubmit.setVisibility(View.GONE);}
             setTimeDisabled(type);
         }else {
             //company
@@ -1877,7 +2013,7 @@ private void setTermsAndPolicy(String webUrl){
             //if(!state){tvDateValue.setTextColor(mContext.getResources().getColor(R.color.light_grey_30));}else{}
             //AutoComStaff.setEnabled(state);
             if(state){
-            btnSubmit.setVisibility(View.VISIBLE);}
+            btnSubmit.setVisibility(View.VISIBLE);}else{btnSubmit.setVisibility(View.GONE);}
             setTimeDisabled(type);
         }
     }

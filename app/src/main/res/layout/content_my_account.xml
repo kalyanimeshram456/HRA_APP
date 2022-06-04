@@ -121,12 +121,12 @@
                             android:enabled="false"
                             android:fontFamily="@font/gilroy_bold"
                             android:gravity="left"
+                            android:hint="Name"
                             android:imeOptions="actionDone"
                             android:inputType="text"
                             android:text=""
-                            android:hint="Add"
                             android:textColor="@color/white"
-                            android:textColorHint="@color/yellow_active"
+                            android:textColorHint="@color/white"
                             android:textSize="@dimen/_16sp" />
                         <androidx.appcompat.widget.AppCompatImageView
                             android:id="@+id/imgEdit"

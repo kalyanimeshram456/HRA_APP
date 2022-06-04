@@ -203,7 +203,7 @@ public class DashboardFragment extends BaseFragment {
     @BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout mSwipeRefreshLayout;
     Dialog mDialogLogout,dialogAddHoliday,mDialogEditHoliday;
-    private LogoutViewModel logoutViewModel;
+
     private LeaveCountViewModel leaveCountViewModel;
     private AddHolidayViewModel addHolidayViewModel;
     AppCompatTextView tvDateValueFrom;
@@ -279,9 +279,6 @@ public class DashboardFragment extends BaseFragment {
 
         getProfileImageViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetProfileImageViewModel.class);
         getProfileImageViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_GET_PROFILE));
-
-        logoutViewModel = ViewModelProviders.of(this, mViewModelFactory).get(LogoutViewModel.class);
-        logoutViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_logout));
 
         leaveCountViewModel = ViewModelProviders.of(this, mViewModelFactory).get(LeaveCountViewModel.class);
         leaveCountViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_LEAVE_COUNT));
@@ -735,6 +732,7 @@ public class DashboardFragment extends BaseFragment {
 
     private void setToolbar() {
         ((BaseActivity) mContext).initToolbar(0, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify, tvNotifyCount, 0, R.id.imgCall);
+        imgLogout.setVisibility(View.INVISIBLE);
         imgLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -824,21 +822,7 @@ public class DashboardFragment extends BaseFragment {
         }
     }
 
-    /* Call Api For Logout */
-    private void callLogoutApi() {
-        if (NetworkCheck.isInternetAvailable(mContext)) {
-            LoginTable loginTable = mDb.getDbDAO().getLoginData();
-            if (loginTable != null) {
-                RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_logout);
-                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getToken());
-                logoutViewModel.hitLogoutApi(mRequestBodyAction, mRequestBodyTypeEmployee);
-            } else {
-                LogUtil.printToastMSG(mContext, "Something is wrong.");
-            }
-        } else {
-            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
-        }
-    }
+
     /* Call Api For Logout */
     private void callAddHolidayApi() {
         if (NetworkCheck.isInternetAvailable(mContext)) {
@@ -893,7 +877,7 @@ public class DashboardFragment extends BaseFragment {
         okayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callLogoutApi();
+
             }
         });
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -926,6 +910,7 @@ public class DashboardFragment extends BaseFragment {
         tvStart.setText("You want to cancel this holiday ?");
         if(loginTable!=null){
             if(loginTable.getIsadmin().equals("0")){
+                tvStart.setText("Holiday Details");
                 okayButton.setVisibility(View.GONE);
                 cancelButton.setText("Okay");
             }}
@@ -1017,8 +1002,9 @@ public class DashboardFragment extends BaseFragment {
                 String[] mon=mFromDate.split("-");
                 RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_birth_day);
                 RequestBody mRequestMon = RequestBody.create(MediaType.parse("text/plain"), mon[1].length()==1?"0"+mon[1]:mon[1]);
+                RequestBody mRequestComID = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
 
-                getBirthDayListViewModel.hitGetBirthDayListApi(mRequestAction, mRequestMon);
+                getBirthDayListViewModel.hitGetBirthDayListApi(mRequestAction, mRequestMon,mRequestComID);
             } else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
             }
@@ -1181,7 +1167,7 @@ public class DashboardFragment extends BaseFragment {
                                 tvNameTitle.setText(responseModel.getResult().getEmp_username());
                                 try {
                                     String[] str = responseModel.getResult().getEmp_name().split(" ");
-                                    imgProfileDash.setText("Hello " + str[0] + " !");
+                                    imgProfileDash.setText("Hello " + str[0] + "!");
                                 }catch (Exception e){}
                             } else {
                                 progressBar.setVisibility(View.GONE);
@@ -1233,61 +1219,30 @@ public class DashboardFragment extends BaseFragment {
                         setDefaultCalender();
                         e.printStackTrace();
                     }
-                    try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.action_logout)) {
-                            LogoutResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LogoutResponse.class);
-                            //if (responseModel != null && responseModel.getResult().getStatus().equals("Success")) {
-                            //LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
-                            mDialogLogout.dismiss();
-                            getActivity().finishAffinity();
-                            launchScreen(getActivity(), LoginActivity.class);
-                            SharedPref.getInstance(mContext).write(SharedPrefKey.IS_LOGGED_IN, false);
-                            try {
-                                mDb.getDbDAO().deleteLoginData();
-                                mDb.getDbDAO().deleteLocationData();
-                                mDb.getDbDAO().deleteAttendanceData();
-                                AsyncTask.execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        //deleteReminderViewModel.DeleteReminder();
+                    try{
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_LEAVE_COUNT)) {
+                            LeaveCountResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LeaveCountResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                LoginTable loginTable = mDb.getDbDAO().getLoginData();
+                                if(loginTable!=null){
+                                    int totA = Integer.parseInt(responseModel.getResult().getCurent_month_days());
+                                    int absA = Integer.parseInt(responseModel.getResult().getTotal_absent_late());
+                                    if(!loginTable.getIsadmin().equals("0")) {
+                                        tvAttendanceTitle.setText("Today's Attendance");
+                                        tvAttendanceValue.setText(Math.abs(totA-absA)+" / "+totA);
+                                        tvLeaveTitle.setText("Today's Late Marks");
+                                        tvLeaveValue.setText(responseModel.getResult().getLate_mark());
                                     }
-                                });
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            progressBar.setVisibility(View.GONE);
-                            /*}
-                            else{
-
-                            }*/
-                        }
-                        try{
-                            if (tag.equalsIgnoreCase(DynamicAPIPath.POST_LEAVE_COUNT)) {
-                                LeaveCountResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LeaveCountResponse.class);
-                                if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                    LoginTable loginTable = mDb.getDbDAO().getLoginData();
-                                    if(loginTable!=null){
-                                        int totA = Integer.parseInt(responseModel.getResult().getCurent_month_days());
-                                        int absA = Integer.parseInt(responseModel.getResult().getTotal_absent_late());
-                                        if(!loginTable.getIsadmin().equals("0")) {
-                                            tvAttendanceTitle.setText("Today's Attendance");
-                                             tvAttendanceValue.setText(Math.abs(totA-absA)+" / "+totA);
-                                            tvLeaveTitle.setText("Today's Late Marks");
-                                            tvLeaveValue.setText(responseModel.getResult().getLate_mark());
-                                        }
-                                        else{
-                                            tvAttendanceTitle.setText("Attendance - monthly");
-                                            tvAttendanceValue.setText(absA+" / "+totA);
-                                            tvLeaveTitle.setText("Late mark - monthly");
-                                            tvLeaveValue.setText(responseModel.getResult().getLate_mark()+" / "+totA);
-                                        }
+                                    else{
+                                        tvAttendanceTitle.setText("Attendance - monthly");
+                                        tvAttendanceValue.setText(absA+" / "+totA);
+                                        tvLeaveTitle.setText("Late mark - monthly");
+                                        tvLeaveValue.setText(responseModel.getResult().getLate_mark()+" / "+totA);
                                     }
                                 }
                             }
-                        }catch (Exception e){e.printStackTrace();}
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                        }
+                    }catch (Exception e){e.printStackTrace();}
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_ADD_HOLIDAY)) {
                             AddHolidayResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), AddHolidayResponse.class);

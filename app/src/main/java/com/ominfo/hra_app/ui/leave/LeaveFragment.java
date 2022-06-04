@@ -249,28 +249,38 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
         mDialog.setCanceledOnTouchOutside(true);
         RelativeLayout mClose = mDialog.findViewById(R.id.imgCancel);
         AppCompatButton submitButton = mDialog.findViewById(R.id.submitButton);
+        AppCompatButton resetButton = mDialog.findViewById(R.id.resetButton);
         AutoComFilterStatus = mDialog.findViewById(R.id.AutoComFilterStatus);
         AutoComFilterName = mDialog.findViewById(R.id.AutoComFilterName);
         AppCompatImageView imgFromDate = mDialog.findViewById(R.id.imgFromDate);
         AppCompatImageView imgToDate = mDialog.findViewById(R.id.imgToDate);;
         tvDateValueFrom = mDialog.findViewById(R.id.tvDateValueFrom);
         tvDateValue = mDialog.findViewById(R.id.tvDateValue);
-        if (val == 1) {
-            tvDateValueFrom.setText(AppUtils.getCurrentDateTime_());
-            tvDateValue.setText(AppUtils.getCurrentDateTime_());
-            AutoComFilterStatus.setText("All");
-            setDropdownStatus();
-        }
-        else{
+        String[] strData = AppUtils.getCurrentDateTime_().split("/");
+        String[] getMonth = AppUtils.startEndMonthfromInt(Integer.parseInt(strData[1])).split("~");
+
+
             String name = SharedPref.getInstance(mContext).read(SharedPrefKey.FILTER_LEAVE_NAME, "");
             String type = SharedPref.getInstance(mContext).read(SharedPrefKey.FILTER_TYPE, "All");
-            String from = SharedPref.getInstance(mContext).read(SharedPrefKey.FILTER_FROM, AppUtils.getCurrentDateTime_());
-            String to = SharedPref.getInstance(mContext).read(SharedPrefKey.FILTER_TO, AppUtils.getCurrentDateTime_());
+            String from = SharedPref.getInstance(mContext).read(SharedPrefKey.FILTER_FROM, AppUtils.dateConvertYYYYToDD(getMonth[0]));
+            String to = SharedPref.getInstance(mContext).read(SharedPrefKey.FILTER_TO, AppUtils.dateConvertYYYYToDD(getMonth[1]));
 
             AutoComFilterStatus.setText(type);  setDropdownStatus();
             AutoComFilterName.setText(name);tvDateValueFrom.setText(from);
             tvDateValue.setText(to);
-        }
+
+        resetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AutoComFilterStatus.setText("All");  setDropdownStatus();
+                AutoComFilterName.setText("");tvDateValueFrom.setText(AppUtils.dateConvertYYYYToDD(getMonth[0]));
+                tvDateValue.setText(AppUtils.dateConvertYYYYToDD(getMonth[1]));
+                SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_LEAVE_NAME, AutoComFilterName.getText().toString().trim());
+                SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_TYPE, AutoComFilterStatus.getText().toString().trim());
+                SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_FROM, tvDateValueFrom.getText().toString().trim());
+                SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_TO, tvDateValue.getText().toString().trim());
+            }
+            });
 
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -552,6 +562,7 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
             isLastPage = true;
         }
         isLoading = false;
+        if(acceptRejectLeaveArrayList.size()>1){leaveAdapter.removeLoading();}
         //  }
         // }, 0);
     }
@@ -588,6 +599,11 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
                             LeaveStatusResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LeaveStatusResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),true,null);
+                                itemCount = 0;
+                                currentPage = PAGE_START;
+                                isLastPage = false;
+                                leaveAdapter.clear();
+                                callAcceptRejectListApi("0");
                             }
                             else{
                                 showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),false,null);

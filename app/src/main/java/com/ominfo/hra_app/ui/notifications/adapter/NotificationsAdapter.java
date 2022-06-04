@@ -63,7 +63,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
 
             holder.tvTitle.setText(mListData.get(position).getHeading());
             holder.tvDescription.setText(mListData.get(position).getText());
-            if(mListData.get(position).getType().equals("INFO")){
+            if(mListData.get(position).getType().equals("INFO") || mListData.get(position).getType().equals("Leave Application")){
                 holder.viewColour.setBackground(mContext.getResources().getDrawable(R.drawable.layout_round_shape_corners_8_grey_view));
                 holder.layCross.setVisibility(View.VISIBLE);
             }else{

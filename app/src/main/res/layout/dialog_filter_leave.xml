@@ -292,10 +292,10 @@
                 android:textAllCaps="false"
                 android:textSize="@dimen/_16sp" />
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/dismissButton"
+                android:id="@+id/resetButton"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_45dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_weight="1"
                 android:layout_alignParentBottom="true"
                 android:layout_gravity="center_horizontal"
@@ -307,7 +307,7 @@
                 android:textAllCaps="false"
                 android:layout_marginLeft="@dimen/_6dp"
                 android:paddingTop="@dimen/_1dp"
-                android:text="@string/scr_lbl_close"
+                android:text="@string/scr_lbl_reset"
                 android:textColor="@color/color_main"
                 android:textSize="@dimen/_16sp" />
         </androidx.appcompat.widget.LinearLayoutCompat>

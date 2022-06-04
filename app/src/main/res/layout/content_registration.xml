@@ -759,6 +759,21 @@
                         android:textColor="@color/white"
                         android:textSize="@dimen/_16sp" />
 
+                    <Chronometer
+                        android:id="@+id/chronometer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginTop="@dimen/_10dp"
+                        android:fontFamily="@font/gilroy_bold"
+                        android:gravity="center_horizontal"
+                        android:text="00:00:00"
+                        android:visibility="gone"
+                        android:textColor="@color/deep_yellow"
+                        android:textSize="@dimen/_13sp" />
+
                     <com.ominfo.hra_app.common.customui.OtpEditText
                         android:id="@+id/edtOpt"
                         android:layout_width="match_parent"
@@ -773,6 +788,7 @@
                         android:inputType="number"
                         android:maxLength="4"
                         android:maxLines="1"
+                        android:visibility="gone"
                         android:outlineAmbientShadowColor="@color/white"
                         android:outlineSpotShadowColor="@color/white"
                         android:singleLine="true"
@@ -786,6 +802,7 @@
                         android:id="@+id/tvResendOtp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:visibility="gone"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginHorizontal="@dimen/_10dp"
                         android:layout_marginTop="@dimen/_10dp"
@@ -804,6 +821,7 @@
                         android:layout_marginHorizontal="@dimen/_10dp"
                         android:layout_marginTop="@dimen/_20dp"
                         android:layout_marginBottom="@dimen/_10dp"
+                        android:visibility="gone"
                         android:background="@drawable/bg_button_round_corner_5"
                         android:fontFamily="@font/gilroy_semibold"
                         android:gravity="center"

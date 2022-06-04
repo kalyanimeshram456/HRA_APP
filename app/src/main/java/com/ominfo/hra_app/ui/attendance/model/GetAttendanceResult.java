@@ -15,6 +15,44 @@ public class GetAttendanceResult {
     private String mMessage;
     @SerializedName("status")
     private String mStatus;
+    @SerializedName("office_address")
+    private String office_address;
+    @SerializedName("office_longitude")
+    private String office_longitude;
+    @SerializedName("office_latitude")
+    private String office_latitude;
+
+    public List<GetAttendanceAtt> getmAtt() {
+        return mAtt;
+    }
+
+    public void setmAtt(List<GetAttendanceAtt> mAtt) {
+        this.mAtt = mAtt;
+    }
+
+    public String getOffice_address() {
+        return office_address;
+    }
+
+    public void setOffice_address(String office_address) {
+        this.office_address = office_address;
+    }
+
+    public String getOffice_longitude() {
+        return office_longitude;
+    }
+
+    public void setOffice_longitude(String office_longitude) {
+        this.office_longitude = office_longitude;
+    }
+
+    public String getOffice_latitude() {
+        return office_latitude;
+    }
+
+    public void setOffice_latitude(String office_latitude) {
+        this.office_latitude = office_latitude;
+    }
 
     public List<GetAttendanceAtt> getAtt() {
         return mAtt;

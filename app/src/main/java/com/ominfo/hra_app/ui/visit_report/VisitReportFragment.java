@@ -397,7 +397,7 @@ public class VisitReportFragment extends BaseFragment {
                     }
                     if (mDataTicket == 1) {
                         try {
-                            showVisitDetailsDialog(getEnquiry);//getEnquiry);
+                            //showVisitDetailsDialog(getEnquiry);//getEnquiry);
                         }catch (Exception e){LogUtil.printToastMSG(mContext,"Something went wrong.");}
                     }
                 }
@@ -671,7 +671,7 @@ public class VisitReportFragment extends BaseFragment {
     }
 
 
-    //show Receipt Details popup
+  /*  //show Receipt Details popup
     public void showVisitDetailsDialog(GetVisit getEnquiry) {
         Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialog.setContentView(R.layout.dialog_visit_details);
@@ -701,7 +701,7 @@ public class VisitReportFragment extends BaseFragment {
             }
         });
         mDialog.show();
-    }
+    }*/
 
     private void deleteDir(){
         File dir = new File(Environment.getExternalStoragePublicDirectory(

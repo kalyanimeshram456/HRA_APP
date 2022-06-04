@@ -168,6 +168,7 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
         Glide.with(this)
                 .load(R.drawable.img_bg_search)
                 .into(iv_emptyLayimage);
+        emptyLayout.setVisibility(View.VISIBLE);
         tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
         showFilterEmployeeDialog(1);
         swipeRefresh.setOnRefreshListener(this);
@@ -198,7 +199,6 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
             }
         });
         rvSalesList.setAdapter(employeeAdapter);
-        //callEmployeeListApi("0");
         /**
          * add scroll listener while user reach in bottom load more will call
          */
@@ -262,7 +262,9 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
             isLastPage = true;
         }
         isLoading = false;
-        employeeAdapter.removeLoading();
+        if(employeeAdapter.getItemCount()>1) {
+            employeeAdapter.removeLoading();
+        }
         //  }
         // }, 0);
     }
@@ -396,20 +398,28 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
         mDialog.setCanceledOnTouchOutside(true);
         RelativeLayout mClose = mDialog.findViewById(R.id.imgCancel);
         AppCompatButton submitButton = mDialog.findViewById(R.id.submitButton);
+        AppCompatButton resetButton = mDialog.findViewById(R.id.resetButton);
         AutoComFilterStatus = mDialog.findViewById(R.id.AutoComFilterStatus);
         AutoComFilterName = mDialog.findViewById(R.id.AutoComFilterName);
         AutoComFilterDesi = mDialog.findViewById(R.id.AutoComFilterDesi);
-        if (val == 1) {
-            AutoComFilterStatus.setText("All");
-            setDropdownStatus();
-        }
-        else{
+
             String name = SharedPref.getInstance(mContext).read(SharedPrefKey.FILTER_NAME, "");
             String desi = SharedPref.getInstance(mContext).read(SharedPrefKey.FILTER_DESI, "");
             String status = SharedPref.getInstance(mContext).read(SharedPrefKey.FILTER_STATUS, "All");
             AutoComFilterStatus.setText(status);   setDropdownStatus();
             AutoComFilterName.setText(name);AutoComFilterDesi.setText(desi);
-        }
+
+        resetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AutoComFilterStatus.setText("All");   setDropdownStatus();
+                AutoComFilterName.setText("");AutoComFilterDesi.setText("");
+                SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_NAME, AutoComFilterName.getText().toString().trim());
+                SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_DESI, AutoComFilterDesi.getText().toString().trim());
+                SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_STATUS, AutoComFilterStatus.getText().toString().trim());
+            }
+        });
+
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -443,8 +453,8 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
         if (!loginTable.getIsadmin().equals("0")){
             imgReport.setVisibility(View.VISIBLE);
             tvFilterCount.setVisibility(View.VISIBLE);
-        }else{imgReport.setVisibility(View.GONE);
-            tvFilterCount.setVisibility(View.GONE);}
+        }else{imgReport.setVisibility(View.INVISIBLE);
+            tvFilterCount.setVisibility(View.INVISIBLE);}
         tvToolbarTitle.setText(R.string.scr_lbl_employees);
         ((BaseActivity) mContext).initToolbar(5, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify, tvNotifyCount, R.id.imgBack, R.id.imgCall);
         imgBack.setOnClickListener(new View.OnClickListener() {
@@ -534,6 +544,7 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 if (responseModel.getResult().getList() != null && responseModel.getResult().getList().size()>0) {
                                     employeeListArrayList = responseModel.getResult().getList();
+                                    emptyLayout.setVisibility(View.GONE);
                                     doApiCall();
                                 }
                                 LoginTable loginTable = mDb.getDbDAO().getLoginData();
@@ -542,6 +553,8 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
                                     tvEmployeeActive.setText(responseModel.getResult().getTotal_prest_emp() + " / " + responseModel.getResult().getTotalactiveemp() + " Employees active");
                                    }
 
+                            }else{
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
                             }
                         }
                     } catch (Exception e) {

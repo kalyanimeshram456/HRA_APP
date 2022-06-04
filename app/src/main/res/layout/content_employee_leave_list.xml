@@ -125,16 +125,16 @@
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:id="@+id/layPast"
-                        android:layout_marginTop="@dimen/_2dp"
                         android:layout_width="@dimen/_85dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_2dp"
                         android:layout_toRightOf="@+id/layAdd"
                         android:orientation="vertical">
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:id="@+id/imgPastLeave"
-                            android:layout_width="@dimen/_38dp"
-                            android:layout_height="@dimen/_38dp"
+                            android:layout_width="@dimen/_40dp"
+                            android:layout_height="@dimen/_40dp"
                             android:layout_marginLeft="@dimen/_28dp"
                             android:layout_marginTop="@dimen/_16dp"
                             android:src="@drawable/ic_past_leaves" />

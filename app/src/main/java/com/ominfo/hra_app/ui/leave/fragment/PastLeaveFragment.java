@@ -224,6 +224,7 @@ public class PastLeaveFragment extends BaseFragment {
         }
         setEnquiryPagerList(1);
         setAdapterForLeaveList();
+        AutoComMonth.setText(AppUtils.getCurrentMonth());
         setDropdownMonth();
         AutoComAddEmp.setText("All");
         callGetActiveEmployeeListApi();
@@ -492,10 +493,10 @@ public class PastLeaveFragment extends BaseFragment {
         addReceiptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDialogChangePass.dismiss();
                 if(isAttendanceDetailsValid(AutoComTextViewDuration,input_textDuration,AutoComTextViewLeaveType,input_textType
-                )){
-                   callApplyLeaveApi();
+                        ,tvTimeValueFrom)){
+                    mDialogChangePass.dismiss();
+                    callApplyLeaveApi();
                 }
 
             }
@@ -516,10 +517,12 @@ public class PastLeaveFragment extends BaseFragment {
 
                 if(AutoComTextViewDuration.getText().toString().equals("Half Day"))
                 {
+                    endDateTimeStamp = startDateTimeStamp;
                     startTimeStamp = AppUtils.convert12to24ForAttention(tvTimeValueFrom.getText().toString());
                     endTimeStamp = AppUtils.convert12to24ForAttention(tvTimeValueTo.getText().toString());
                 } else  if(AutoComTextViewDuration.getText().toString().equals("Full Day"))
                 {
+                    endDateTimeStamp = startDateTimeStamp;
                     startTimeStamp = "00:00:00";endTimeStamp = "23:59:00";
                 }else {
                     startTimeStamp = "00:00:00";endTimeStamp = "23:59:00";
@@ -604,19 +607,27 @@ public class PastLeaveFragment extends BaseFragment {
     private boolean isAttendanceDetailsValid(AppCompatAutoCompleteTextView duration,
                                              TextInputLayout input_textDuration,
                                              AppCompatAutoCompleteTextView type,
-                                             TextInputLayout input_textType
+                                             TextInputLayout input_textType,
+                                             AppCompatTextView date
     ) {
-        setError(input_textDuration,"");setError(input_textType, "");
-        //setError(AutoComConfirmPass, "");
+        input_textDuration.setErrorEnabled(false);
+        input_textType.setErrorEnabled(false);
+       // date.setError("");
         if (TextUtils.isEmpty(duration.getText().toString().trim())) {
             setError(input_textDuration, "Select Duration");
-            LogUtil.printToastMSG(mContext,"Select Duration");
+            //duration.setError("Select Duration");
+            LogUtil.printToastMSGCenter(mContext,"Select Duration");
             return false;
         } else if (TextUtils.isEmpty(type.getText().toString().trim())) {
             setError(input_textType, "Select Leave Type");
-            LogUtil.printToastMSG(mContext,"Select Leave Type");
+            //type.setError("Select Duration");
+            LogUtil.printToastMSGCenter(mContext,"Select Leave Type");
             return false;
-        }
+        }/*else if (TextUtils.isEmpty(date.getText().toString().trim())) {
+            date.setError("Select Duration");
+            LogUtil.printToastMSGCenter(mContext,"Select Date");
+            return false;
+        }*/
         return true;
     }
     //set value to Search dropdown
@@ -781,7 +792,7 @@ public class PastLeaveFragment extends BaseFragment {
                     mDropdownList[i] = String.valueOf(monthsLists.get(i).getName());
                     //pos = i;
                 }
-                AutoComMonth.setText(mDropdownList[pos]);
+                //AutoComMonth.setText(mDropdownList[pos]);
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(
                         mContext,
                         R.layout.row_dropdown_item,
@@ -936,8 +947,8 @@ public class PastLeaveFragment extends BaseFragment {
                             ApplyLeaveResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ApplyLeaveResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 mDialogChangePass.dismiss();
-                                ((BaseActivity)mContext).showSuccessDialog(responseModel.getResult().getMessage(),
-                                        false,getActivity());
+                                showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),
+                                        true,null);
                                 //((BaseActivity)mContext).setRateUsCounter(mContext);
                                 try{  totalPage = 0;
                                     pastLeaveList.clear();
@@ -947,13 +958,13 @@ public class PastLeaveFragment extends BaseFragment {
                             }
                             else {
                                 mDialogChangePass.dismiss();
-                                ((BaseActivity)mContext).showSuccessDialog(responseModel.getResult().getMessage(),
-                                        true,getActivity());
+                                showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),
+                                        false,null);
                             }
                         }
                     }catch (Exception e){
-                        ((BaseActivity)mContext).showSuccessDialog("Leave application upload failed.",
-                                true,getActivity());
+                        showSuccessDialogFragment(mContext,"Leave application upload failed.",
+                                false,null);
                         e.printStackTrace();
                     }
 
@@ -973,9 +984,7 @@ public class PastLeaveFragment extends BaseFragment {
                             }
                         }
                     }catch (Exception e){
-                        ((BaseActivity)mContext).showSuccessDialog("Leave application upload failed.",
-                                true,getActivity());
-                        e.printStackTrace();
+
                     }
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_PAST_LEAVE)) {

@@ -640,7 +640,7 @@ public class SalarySlipFragment extends BaseFragment {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_SALARY_SLIP)) {
                             SalarySlipResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), SalarySlipResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                AppUtils.loadImageURL(mContext,responseModel.getResult().getList().get(0).getLogoUrl(),
+                                AppUtils.loadImageURL(mContext,"https://ominfo.in/o_hr/"+responseModel.getResult().getList().get(0).getLogoUrl(),
                                         imgBirthPro,progress_barBirth);
                                 tvCompanyName.setText(responseModel.getResult().getList().get(0).getName());
                                 tvEmpName.setText(responseModel.getResult().getList().get(0).getEmpName());

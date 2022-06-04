@@ -113,7 +113,7 @@
                     android:paddingTop="@dimen/_0dp">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvDate"
+                        android:id="@+id/tvDateACC"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
@@ -125,10 +125,10 @@
                         android:textSize="@dimen/_13sp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvDateValue"
+                        android:id="@+id/tvDiffACC"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/tvDate"
+                        android:layout_below="@+id/tvDateACC"
                         android:layout_alignParentRight="true"
                         android:layout_gravity="right"
                         android:fontFamily="@font/gilroy_regular"

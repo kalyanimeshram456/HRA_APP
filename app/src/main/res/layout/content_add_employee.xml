@@ -819,7 +819,7 @@
                         android:fontFamily="@font/gilroy_semibold"
                         android:gravity="center"
                         android:paddingTop="@dimen/_1dp"
-                        android:text="@string/scr_lbl_cancel"
+                        android:text="@string/scr_lbl_change_password"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_14sp" />
 

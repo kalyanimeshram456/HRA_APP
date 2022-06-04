@@ -280,25 +280,21 @@ public class LoginActivity extends BaseActivity {
                             launchScreen(mContext, MainActivity.class);
                             try {
                                 mDb.getDbDAO().deleteLoginData();
+                                mDb.getDbDAO().insertLoginData(responseModel.getDetails());
                                 mDb.getDbDAO().deleteLocationData();
                                 mDb.getDbDAO().deleteAttendanceData();
-                                AsyncTask.execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        //deleteReminderViewModel.DeleteReminder();
-                                    }
-                                });
+                                AttendanceDaysTable daysTable = new AttendanceDaysTable();
+                                daysTable.setLoginDays(responseModel.getResult().getDayData());
+                                mDb.getDbDAO().insertAttendanceData(daysTable);
+
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            LogUtil.printSnackBar(mContext, Color.GREEN,findViewById(android.R.id.content),responseModel.getResult().getMessage());
-                            //LogUtil.printToastMSG(LoginActivity.this, responseModel.getResult().getMessage());
+
                             SharedPref.getInstance(this).write(SharedPrefKey.IS_LOGGED_IN, true);
-                            //responseModel.getDetails().setIsadmin("1");
-                            mDb.getDbDAO().insertLoginData(responseModel.getDetails());
-                            AttendanceDaysTable daysTable = new AttendanceDaysTable();
-                            daysTable.setLoginDays(responseModel.getResult().getDayData());
-                            mDb.getDbDAO().insertAttendanceData(daysTable);
+                            //LogUtil.printSnackBar(mContext, Color.GREEN,findViewById(android.R.id.content),responseModel.getResult().getMessage());
+                            LogUtil.printToastMSG(LoginActivity.this, responseModel.getResult().getMessage());
+
                         } else {
                             LogUtil.printToastMSG(LoginActivity.this, responseModel.getResult().getMessage());
                         }

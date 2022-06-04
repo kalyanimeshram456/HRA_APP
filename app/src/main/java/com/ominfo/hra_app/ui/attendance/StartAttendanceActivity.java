@@ -180,37 +180,14 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
         LoginTable loginTable = mDb.getDbDAO().getLoginData();
         if (loginTable != null) {
             tvCheckInName.setText("Hi " + loginTable.getName() + " ! \nPlease wait...");
-            try {
-                Geocoder geocoder = new Geocoder(StartAttendanceActivity.this);
-                 offlat = /*loginTable.getBranchLatitude()==null && loginTable.getBranchLatitude().equals("")
-                        ?*/"19.17320224056819"/*:loginTable.getBranchLatitude()*/;
-                 offlng = /*loginTable.getBranchLongitute()==null && loginTable.getBranchLongitute().equals("")
-                        ?*/"72.95589962509885"/*:loginTable.getBranchLongitute()*/;
-                List<Address> addressList = geocoder.getFromLocation(Double.parseDouble(offlat),
-                        Double.parseDouble(offlng), 1);
-                if (addressList != null && addressList.size() > 0) {
-                    Address address = addressList.get(0);
-                    LatLng latLng1 = new LatLng(address.getLatitude(), address.getLongitude());
-                    String locality = addressList.get(0).getAddressLine(0);
-                    String country = addressList.get(0).getCountryName();
-                    //mLocTitle = addressList.get(0).getFeatureName();
-                /*if (!locality.isEmpty() && !country.isEmpty())
-                    mLocDesc = locality + "  " + country;*/
-                    addressOff = locality;
-                    tvOfcLocation.setText("Office Location : " + locality);
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
 
         String dataDate = AppUtils.getCurrentDateTime();
         String mDate = AppUtils.convertAlarmDate(dataDate);
         textViewVisit.setText(AppUtils.getCurrentTime());
         String startTime = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENDANCE_CHECKIN_TIME, "00:00:00");
-        tvCheckInTime.setText(AppUtils.convert24to12Attendance(startTime));
-        tvCheckOutTime.setText(AppUtils.getCurrentTime());
+        //tvCheckInTime.setText(AppUtils.convert24to12Attendance(startTime));
+        //tvCheckOutTime.setText(AppUtils.getCurrentTime());
         textVisitNo.setText(mDate);
     }
 
@@ -596,20 +573,20 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                     addressCurr = curr[1];
                     if (addressOff.equals("Fetching...") || addressOff.equals("") ||
                             addressCurr.equals("Fetching...") || addressCurr.equals("")) {
-                        LogUtil.printToastMSG(mContext, "Please wait, Location is getting fetch.");
+                        LogUtil.printToastMSG(mContext, "Please wait, Location is getting fetched.");
                     } else {
                         String startlocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
                         String startlocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
                         Double distance = AppUtils.meterDistanceBetweenPoints(Float.parseFloat(startlocationLat),
                                 Float.parseFloat(startlocationLng),Float.parseFloat(offlat),Float.parseFloat(offlng));
-                        if(distance<51) {
+                        if(Math.floor(distance)<51) {
                             if (getAttendanceAttList != null && getAttendanceAttList.size() > 0) {
                                 callUpdateAttendanceApi(1);
                             } else {
                                 callUpdateAttendanceApi(0);
                             }
                         }else {
-                            LogUtil.printSnackBar(mContext, Color.RED,findViewById(android.R.id.content), getString(R.string.msg_location_change_in_attendance));
+                            LogUtil.printSnackBar(mContext, Color.RED,findViewById(android.R.id.content), getString(R.string.msg_location_change_in_attendance) + distance);
                         }
                     }
                     break;
@@ -703,9 +680,30 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    try {
+                   try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_ATTENDANCE)) {
                             GetAttendanceResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetAttendanceResponse.class);
+                            if(responseModel.getResult()!=null){
+                                try {
+                                    Geocoder geocoder = new Geocoder(StartAttendanceActivity.this);
+                                    offlat = responseModel.getResult().getOffice_latitude()+"";
+                                    offlng = responseModel.getResult().getOffice_longitude()+"";
+                                    //LogUtil.printToastMSG(mContext,offlat +"-"+offlng);
+                                    List<Address> addressList = geocoder.getFromLocation(Double.parseDouble(offlat),
+                                            Double.parseDouble(offlng), 1);
+                                    if (addressList != null && addressList.size() > 0) {
+                                        Address address = addressList.get(0);
+                                        LatLng latLng1 = new LatLng(address.getLatitude(), address.getLongitude());
+                                        String locality = addressList.get(0).getAddressLine(0);
+                                        String country = addressList.get(0).getCountryName();
+                                        addressOff = locality;
+                                        tvOfcLocation.setText("Office Location : " + locality);
+                                    }
+
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 //LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                                 final Handler handler = new Handler();
@@ -740,6 +738,8 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                                         tvCurrLocation.setText("Current Location : " + address);
                                     } catch (Exception e) {
                                     }
+                                    tvCheckInTime.setText(AppUtils.convert24to12Attendance(responseModel.getResult().getAtt().get(0).getStartTime()));
+                                    tvCheckOutTime.setText(AppUtils.convert24to12Attendance(responseModel.getResult().getAtt().get(0).getEndTime()));
                                     layBottomCheckOut.setVisibility(View.VISIBLE);
                                     handler.postDelayed(new Runnable() {
                                         @Override

@@ -25,8 +25,8 @@ public class GetBirthDayListViewModel extends ViewModel {
         return responseLiveData;
     }
 
-    public void hitGetBirthDayListApi(RequestBody action,RequestBody mon) {
-        disposables.add(service.executeGetBirthDayListAPI(action,mon)
+    public void hitGetBirthDayListApi(RequestBody action,RequestBody mon,RequestBody comId) {
+        disposables.add(service.executeGetBirthDayListAPI(action,mon,comId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe((d) -> responseLiveData.setValue(ApiResponse.loading()))

@@ -57,16 +57,20 @@ import com.ominfo.hra_app.basecontrol.BaseApplication;
 import com.ominfo.hra_app.common.BackgroundLocationUpdateService;
 import com.ominfo.hra_app.database.AppDatabase;
 import com.ominfo.hra_app.interfaces.Constants;
+import com.ominfo.hra_app.interfaces.SharedPrefKey;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.ui.dashboard.model.DashModel;
 import com.ominfo.hra_app.ui.employees.EmployeeFragment;
 import com.ominfo.hra_app.ui.leave.LeaveFragment;
 import com.ominfo.hra_app.ui.leave.fragment.EmployeeLeaveListFragment;
+import com.ominfo.hra_app.ui.login.LoginActivity;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.my_account.MyAccountFragment;
+import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.salary.SalaryFragment;
 import com.ominfo.hra_app.util.AppUtils;
+import com.ominfo.hra_app.util.SharedPref;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -126,6 +130,27 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
         getDeps().inject(this);
         injectAPI();
         initToolbar();
+        Intent intent = getIntent();
+        if(intent!=null){
+            String noti = intent.getStringExtra("Noti");
+            if(noti!=null && noti.equals("1")){
+                Boolean iSLoggedIn = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.IS_LOGGED_IN, false);
+                if (!iSLoggedIn){
+                    finishAffinity();
+                    launchScreen(mContext,LoginActivity.class);
+                }else {
+                    finishAffinity();
+                    launchScreen(mContext, NotificationsActivity.class);
+                }
+            }
+            else{
+                Boolean iSLoggedIn = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.IS_LOGGED_IN, false);
+                if (!iSLoggedIn){
+                    finishAffinity();
+                    launchScreen(mContext,LoginActivity.class);
+                }
+            }
+        }
         if (!isGPSEnabled(mContext)) {
             requestPermission();
         } else {

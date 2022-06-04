@@ -3,12 +3,14 @@ package com.ominfo.hra_app.ui.registration;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -16,6 +18,7 @@ import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Chronometer;
 import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -34,6 +37,7 @@ import com.ominfo.hra_app.basecontrol.BaseActivity;
 import com.ominfo.hra_app.basecontrol.BaseApplication;
 import com.ominfo.hra_app.common.customui.OtpEditText;
 import com.ominfo.hra_app.database.AppDatabase;
+import com.ominfo.hra_app.interfaces.Constants;
 import com.ominfo.hra_app.network.ApiResponse;
 import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
@@ -43,11 +47,15 @@ import com.ominfo.hra_app.ui.registration.model.ApplyCouponResponse;
 import com.ominfo.hra_app.ui.registration.model.ApplyCouponViewModel;
 import com.ominfo.hra_app.ui.registration.model.CheckPrefixResponse;
 import com.ominfo.hra_app.ui.registration.model.CheckPrefixViewModel;
+import com.ominfo.hra_app.ui.registration.model.GetOtpViewModel;
 import com.ominfo.hra_app.ui.registration.model.RegisterResponse;
 import com.ominfo.hra_app.ui.registration.model.RegistrationRequest;
 import com.ominfo.hra_app.ui.registration.model.RegistrationViewModel;
+import com.ominfo.hra_app.ui.registration.model.ResendOtpViewModel;
 import com.ominfo.hra_app.ui.registration.model.SubscriptionResponse;
 import com.ominfo.hra_app.ui.registration.model.SubscriptionViewModel;
+import com.ominfo.hra_app.ui.registration.model.VerifyOtpResponse;
+import com.ominfo.hra_app.ui.registration.model.VerifyOtpViewModel;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
 
@@ -69,9 +77,12 @@ public class RegistrationActivity extends BaseActivity {
     @Inject
     ViewModelFactory mViewModelFactory;
     private RegistrationViewModel registrationViewModel;
+    private GetOtpViewModel getOtpViewModel;
+    private ResendOtpViewModel resendOtpViewModel;
     private CheckPrefixViewModel checkPrefixViewModel;
     private SubscriptionViewModel subscriptionViewModel;
     private ApplyCouponViewModel applyCouponViewModel;
+    private VerifyOtpViewModel verifyOtpViewModel;
     private AppDatabase mDb;
     public static boolean activityVisible; // Variable that will check the
 
@@ -134,13 +145,17 @@ public class RegistrationActivity extends BaseActivity {
     String subCharges = "0",discountAmount = "0",couponCode = "",subChargeApi = "",gstAmount="",
     totalAmountCharges= "";
     int gstPer = 18;
-    boolean statusPrefix = false;
+    boolean statusPrefix = false,statusOtp = false;
     @BindView(R.id.edtOpt)
     OtpEditText edtOpt;
     @BindView(R.id.tvResendOtp)
     AppCompatTextView tvResendOtp;
     @BindView(R.id.btnGetOtp)
     AppCompatButton btnGetOtp;
+    @BindView(R.id.btnRegister)
+    AppCompatButton btnRegister;
+    @BindView(R.id.chronometer)
+    Chronometer tvCounter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -406,6 +421,15 @@ public class RegistrationActivity extends BaseActivity {
 
         applyCouponViewModel = ViewModelProviders.of(RegistrationActivity.this, mViewModelFactory).get(ApplyCouponViewModel.class);
         applyCouponViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_check_coupon_validity));
+
+        getOtpViewModel = ViewModelProviders.of(RegistrationActivity.this, mViewModelFactory).get(GetOtpViewModel.class);
+        getOtpViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_get_sms_otp));
+
+        resendOtpViewModel = ViewModelProviders.of(RegistrationActivity.this, mViewModelFactory).get(ResendOtpViewModel.class);
+        resendOtpViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_resend_otp));
+
+        verifyOtpViewModel = ViewModelProviders.of(RegistrationActivity.this, mViewModelFactory).get(VerifyOtpViewModel.class);
+        verifyOtpViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_verify_otp));
     }
 
     public static boolean isValidGSTNo(String str)
@@ -483,6 +507,45 @@ public class RegistrationActivity extends BaseActivity {
             LogUtil.printToastMSG(RegistrationActivity.this, getString(R.string.err_msg_connection_was_refused));
         }
     }
+
+    /* Call Api For Get Otp */
+    private void callGetOtpApi() {
+        if (NetworkCheck.isInternetAvailable(RegistrationActivity.this)) {
+            RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_sms_otp);
+            RequestBody mRequestBodyName = RequestBody.create(MediaType.parse("text/plain"), AutoComMobileNo.getText().toString().trim());
+            getOtpViewModel.hitGetOtpApi(mRequestBodyAction, mRequestBodyName);
+
+        } else {
+            LogUtil.printToastMSG(RegistrationActivity.this, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    /* Call Api For Get Otp */
+    private void callResendOtpApi() {
+        if (NetworkCheck.isInternetAvailable(RegistrationActivity.this)) {
+            RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_resend_otp);
+            RequestBody mRequestBodyName = RequestBody.create(MediaType.parse("text/plain"), AutoComMobileNo.getText().toString().trim());
+            resendOtpViewModel.hitResendOtpApi(mRequestBodyAction, mRequestBodyName);
+
+        } else {
+            LogUtil.printToastMSG(RegistrationActivity.this, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    /* Call Api For Get Otp */
+    private void callVerifyOtpApi() {
+        if (NetworkCheck.isInternetAvailable(RegistrationActivity.this)) {
+            RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_verify_otp);
+            RequestBody mRequestOTP = RequestBody.create(MediaType.parse("text/plain"), edtOpt.getText().toString().trim());
+            RequestBody mRequestBodyName = RequestBody.create(MediaType.parse("text/plain"), AutoComMobileNo.getText().toString().trim());
+            verifyOtpViewModel.hitVerifyOtpApi(mRequestBodyAction, mRequestOTP,mRequestBodyName);
+
+        } else {
+            LogUtil.printToastMSG(RegistrationActivity.this, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+
     /* Call Api For user prefix */
     private void callCheckCouponApi() {
         if (NetworkCheck.isInternetAvailable(RegistrationActivity.this)) {
@@ -604,7 +667,7 @@ public class RegistrationActivity extends BaseActivity {
                 finish();
                 launchScreen(mContext, LoginActivity.class);
             }
-        }, 5000);
+        }, 4300);
         mClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -622,6 +685,29 @@ public class RegistrationActivity extends BaseActivity {
         //editTextPassword.setText("2437");
         radioTrial.setChecked(true);
         setErrorMSG();
+        tvCounter.setText("00:00:00");
+        tvCounter.setBase(SystemClock.elapsedRealtime());
+        tvCounter.stop();
+        setTimerMillis(mContext, 0);
+        edtOpt.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+
+                if(s.length()>3) {
+                   callVerifyOtpApi();
+                }
+            }
+        });
         radioTrial.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -640,7 +726,6 @@ public class RegistrationActivity extends BaseActivity {
                 }
             }
         });
-        //callSubscriptionChargesApi();
         setDiscountChargesTrial();
     }
 
@@ -650,11 +735,102 @@ public class RegistrationActivity extends BaseActivity {
         setErrorMessage(inputPassword, editTextPassword, getString(R.string.val_msg_please_enter_password));*/
     }
 
+    public static void setTimerMillis(Context context, long millis)
+    {
+        SharedPreferences sp = context.getSharedPreferences(Constants.BANK_LIST, Context.MODE_PRIVATE);
+        SharedPreferences.Editor spe = sp.edit();
+        spe.putLong(Constants.BANK_LIST, millis); spe.apply();
+    }
+
+    public static long getTimerMillis(Context context) {
+        SharedPreferences sp = context.getSharedPreferences(Constants.BANK_LIST, Context.MODE_PRIVATE);
+        return sp.getLong(Constants.BANK_LIST, 0);
+    }
+
+    private int getCurrentMiliSecondsOfChronometer(int val) {
+        int stoppedMilliseconds = 0;
+        String chronoText = tvCounter.getText().toString().trim();
+        String array[] = chronoText.split(":");
+
+        try {
+            if (array.length == 2) {
+                stoppedMilliseconds = Integer.parseInt(array[0]) * 60 * 1000 + Integer.parseInt(array[1]) * 1000;
+            } else if (array.length == 3) {
+                stoppedMilliseconds =
+                        Integer.parseInt(array[0]) * 60 * 60 * 1000 + Integer.parseInt(array[1]) * 60 * 1000
+                                + Integer.parseInt(array[2]) * 1000;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return 0;
+        }
+        return Integer.parseInt(String.format("%02d", stoppedMilliseconds));
+    }
+    private void startChronometer(int val) {
+        long stoppedMilliseconds = getTimerMillis(mContext);
+        if(val==0){
+            long preV = getTimerMillis(mContext);
+            tvCounter.setBase(SystemClock.elapsedRealtime() - preV);
+            tvCounter.stop();
+        }
+        else {
+            if (SystemClock.elapsedRealtime() > stoppedMilliseconds) {
+                tvCounter.setBase(SystemClock.elapsedRealtime() - stoppedMilliseconds);
+            } else {
+                tvCounter.setBase(stoppedMilliseconds - SystemClock.elapsedRealtime());
+            }
+        }
+        tvCounter.start();
+    }
+
+    public void setTimerCounter(int val){
+        startChronometer(val);
+        tvCounter.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+            public void onChronometerTick(Chronometer cArg) {
+                long milliseconds = getCurrentMiliSecondsOfChronometer(val);//getTimerMillis(mContext);
+                int seconds = (int) (milliseconds / 1000) % 60 ;
+                int minutes = (int) ((milliseconds / (1000*60)) % 60);
+                int hours   = (int) ((milliseconds / (1000*60*60)) % 24);
+
+                setTimerMillis(mContext, milliseconds);
+                tvCounter.setText(String.format("%02d",hours)+":"+String.format("%02d",minutes)+":"+String.format("%02d",seconds));
+                if(tvCounter.getText().toString().equals("00:02:00")){
+                    tvResendOtp.setVisibility(View.VISIBLE);
+                    //LogUtil.printToastMSG(mContext,"test");
+                }
+                if(tvCounter.getText().toString().equals("00:05:00")){
+                    //tvCounter.setText("00:00:00");
+                    //tvCounter.setBase(SystemClock.elapsedRealtime());
+                    tvCounter.stop();
+                    //setTimerMillis(mContext, 1);
+                    tvResendOtp.setVisibility(View.GONE);
+                    LogUtil.printToastMSG(mContext,"Something went wrong, Please try again later.");
+                }
+            }
+        });
+
+    }
+
     //perform click actions
-    @OnClick({R.id.tvRegClick,R.id.imgInfo, R.id.btnRegister,R.id.applyButton,R.id.removeButton,R.id.radioYear,R.id.radioTrial})
+    @OnClick({R.id.tvResendOtp,R.id.btnGetOtp,R.id.tvRegClick,R.id.imgInfo, R.id.btnRegister,R.id.applyButton,R.id.removeButton,R.id.radioYear,R.id.radioTrial})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
+            case R.id.btnGetOtp:
+                if (isDetailsValid()) {
+                    tvMissing.setVisibility(View.GONE);
+                    callGetOtpApi();
+                    btnGetOtp.setVisibility(View.GONE);
+                    edtOpt.setVisibility(View.VISIBLE);
+                    tvCounter.setVisibility(View.VISIBLE);
+                    setTimerCounter(1);
+                } else{
+                    tvMissing.setVisibility(View.VISIBLE);
+                }
+                break;
+            case R.id.tvResendOtp:
+                callResendOtpApi();
+                break;
             case R.id.tvRegClick:
                 finish();
                 launchScreen(mContext, LoginActivity.class);
@@ -694,7 +870,13 @@ public class RegistrationActivity extends BaseActivity {
                 break;
             case R.id.btnRegister:
                 if (isDetailsValid()) {
-                    callRegisterUserApi();
+                    tvMissing.setVisibility(View.GONE);
+                    if(statusOtp) {
+                        callRegisterUserApi();
+                    }
+                    else{
+                        LogUtil.printToastMSG(mContext,"Please verify your mobile number with OTP.");
+                    }
                 } else{
                     tvMissing.setVisibility(View.VISIBLE);
                 }
@@ -803,6 +985,7 @@ public class RegistrationActivity extends BaseActivity {
                             input_textUsernamePrefix.setEndIconTintList(ColorStateList.valueOf(color));
                             setError(1, input_textUsernamePrefix, responseModel.getResult().getMessage());
                         } else {
+                            statusPrefix = false;
                             tvEx.setVisibility(View.GONE);
                             input_textUsernamePrefix.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
                             int color=Color.RED;
@@ -824,7 +1007,32 @@ public class RegistrationActivity extends BaseActivity {
                             //LogUtil.printToastMSG(RegistrationActivity.this, responseModel.getResult().getMessage());
                         }
                     }
-                    if (tag.equalsIgnoreCase(DynamicAPIPath.action_check_coupon_validity)) {
+                     if (tag.equalsIgnoreCase(DynamicAPIPath.action_get_sms_otp) || tag.equalsIgnoreCase(DynamicAPIPath.action_resend_otp)
+                     ) {
+                        VerifyOtpResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), VerifyOtpResponse.class);
+                        if (responseModel != null && responseModel.getResult().getStatus().equals("Success")) {
+                            LogUtil.printToastMSG(RegistrationActivity.this, responseModel.getResult().getMessage());
+                        }
+                        else { LogUtil.printToastMSG(RegistrationActivity.this, responseModel.getResult().getMessage());
+                        }
+                    }
+                      if (tag.equalsIgnoreCase(DynamicAPIPath.action_verify_otp)) {
+                        VerifyOtpResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), VerifyOtpResponse.class);
+                        if (responseModel != null && responseModel.getResult().getStatus().equals("Success")) {
+                            statusOtp = true;
+                            btnRegister.setVisibility(View.VISIBLE);
+                            tvCounter.setText("00:00:00");
+                            tvCounter.setBase(SystemClock.elapsedRealtime());
+                            tvCounter.stop();
+                            setTimerMillis(mContext, 0);
+                            LogUtil.printToastMSG(RegistrationActivity.this, responseModel.getResult().getMessage());
+                        }
+                        else {
+                            statusOtp = false;
+                            LogUtil.printToastMSG(RegistrationActivity.this, responseModel.getResult().getMessage());
+                        }
+                    }
+                     if (tag.equalsIgnoreCase(DynamicAPIPath.action_check_coupon_validity)) {
                         ApplyCouponResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ApplyCouponResponse.class);
                         if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {

@@ -1,5 +1,5 @@
 
-package com.ominfo.hra_app.ui.my_account.model;
+package com.ominfo.hra_app.ui.employees.model;
 
 import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;

@@ -16,6 +16,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.ominfo.hra_app.MainActivity;
 import com.ominfo.hra_app.R;
 import com.ominfo.hra_app.interfaces.SharedPrefKey;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
@@ -75,7 +76,8 @@ public class MyFirebaseServices extends FirebaseMessagingService {
     }
 
     private void showNotification(String title,String message){
-        Intent intent = new Intent(this, NotificationsActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("Noti","1");
         SharedPref.getInstance(this).write(SharedPrefKey.IS_NOTIFY, true);
         //String iSNotify = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.IS_NOTIFY_COUNT, "0");
         //setAppCommunityMinutes();

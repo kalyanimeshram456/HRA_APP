@@ -12,16 +12,18 @@ import com.ominfo.hra_app.ui.dashboard.model.CalenderHolidaysListViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.EditHolidayViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.GetBirthDayListViewModel;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeViewModel;
+import com.ominfo.hra_app.ui.employees.model.ChangePasswordViewModel;
 import com.ominfo.hra_app.ui.employees.model.DeactivateEmployeeViewModel;
 import com.ominfo.hra_app.ui.employees.model.EditEmployeeViewModel;
+import com.ominfo.hra_app.ui.employees.model.SingleEmployeeListViewModel;
 import com.ominfo.hra_app.ui.leave.model.AcceptRejectLeaveListViewModel;
 import com.ominfo.hra_app.ui.leave.model.ActiveEmployeeListViewModel;
 import com.ominfo.hra_app.ui.leave.model.LeaveCountViewModel;
 import com.ominfo.hra_app.ui.leave.model.PastLeaveListViewModel;
 import com.ominfo.hra_app.ui.login.model.LoginViewModel;
+import com.ominfo.hra_app.ui.login.model.LogoutMobileTokenViewModel;
 import com.ominfo.hra_app.ui.login.model.LogoutViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveViewModel;
-import com.ominfo.hra_app.ui.my_account.model.ChangePasswordViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ChangeProfileImageViewModel;
 import com.ominfo.hra_app.ui.my_account.model.EditCompanyViewModel;
 import com.ominfo.hra_app.ui.my_account.model.GetCompanyViewModel;
@@ -38,10 +40,17 @@ import com.ominfo.hra_app.ui.notifications.model.GetSingleRecordViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LateMarkCountViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LeaveStatusViewModel;
 import com.ominfo.hra_app.ui.notifications.model.NotificationViewModel;
+import com.ominfo.hra_app.ui.payment.model.AddUserViewModel;
+import com.ominfo.hra_app.ui.payment.model.MyPlanViewModel;
+import com.ominfo.hra_app.ui.payment.model.PayRenewPlanViewModel;
+import com.ominfo.hra_app.ui.payment.model.RenewPlanViewModel;
 import com.ominfo.hra_app.ui.registration.model.ApplyCouponViewModel;
 import com.ominfo.hra_app.ui.registration.model.CheckPrefixViewModel;
+import com.ominfo.hra_app.ui.registration.model.GetOtpViewModel;
 import com.ominfo.hra_app.ui.registration.model.RegistrationViewModel;
+import com.ominfo.hra_app.ui.registration.model.ResendOtpViewModel;
 import com.ominfo.hra_app.ui.registration.model.SubscriptionViewModel;
+import com.ominfo.hra_app.ui.registration.model.VerifyOtpViewModel;
 import com.ominfo.hra_app.ui.salary.model.DeductLeaveViewModel;
 import com.ominfo.hra_app.ui.salary.model.MarkNotLateViewModel;
 import com.ominfo.hra_app.ui.salary.model.MarkPresentViewModel;
@@ -100,9 +109,6 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
          }
          else  if (modelClass.isAssignableFrom(ChangeProfileImageViewModel.class)) {
              return (T) new ChangeProfileImageViewModel(service);
-         }
-         else  if (modelClass.isAssignableFrom(ChangePasswordViewModel.class)) {
-             return (T) new ChangePasswordViewModel(service);
          }
          else  if (modelClass.isAssignableFrom(EmployeeListViewModel.class)) {
              return (T) new EmployeeListViewModel(service);
@@ -223,6 +229,29 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
              return (T) new LateMarkCountViewModel(service);
          }else  if (modelClass.isAssignableFrom(AbsentMarkCountViewModel.class)) {
              return (T) new AbsentMarkCountViewModel(service);
+         } else  if (modelClass.isAssignableFrom(GetOtpViewModel.class)) {
+             return (T) new GetOtpViewModel(service);
+         }else  if (modelClass.isAssignableFrom(ResendOtpViewModel.class)) {
+             return (T) new ResendOtpViewModel(service);
+         }else  if (modelClass.isAssignableFrom(VerifyOtpViewModel.class)) {
+             return (T) new VerifyOtpViewModel(service);
+         }else  if (modelClass.isAssignableFrom(VerifyOtpViewModel.class)) {
+             return (T) new VerifyOtpViewModel(service);
+         }else  if (modelClass.isAssignableFrom(MyPlanViewModel.class)) {
+             return (T) new MyPlanViewModel(service);
+         }else  if (modelClass.isAssignableFrom(RenewPlanViewModel.class)) {
+             return (T) new RenewPlanViewModel(service);
+         }else  if (modelClass.isAssignableFrom(PayRenewPlanViewModel.class)) {
+             return (T) new PayRenewPlanViewModel(service);
+         }
+         else  if (modelClass.isAssignableFrom(AddUserViewModel.class)) {
+             return (T) new AddUserViewModel(service);
+         } else  if (modelClass.isAssignableFrom(SingleEmployeeListViewModel.class)) {
+             return (T) new SingleEmployeeListViewModel(service);
+         }else  if (modelClass.isAssignableFrom(ChangePasswordViewModel.class)) {
+             return (T) new ChangePasswordViewModel(service);
+         }else  if (modelClass.isAssignableFrom(LogoutMobileTokenViewModel.class)) {
+             return (T) new LogoutMobileTokenViewModel(service);
          }
 
         throw new IllegalArgumentException("Unknown class name");

@@ -593,6 +593,65 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         mDialog.show();
     }
 
+    public void showSuccessDialogEmp(String msg,boolean status,Activity activity) {
+        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
+        mDialog.setContentView(R.layout.dialog_weight_submitted);
+        mDialog.setCanceledOnTouchOutside(true);
+        AppCompatTextView mTextViewTitle = mDialog.findViewById(R.id.tv_dialogTitle);
+        AppCompatButton button = mDialog.findViewById(R.id.okayButton);
+        AppCompatImageView imgError= mDialog.findViewById(R.id.imgError);
+        mTextViewTitle.setText(msg);
+        if(status) {
+            imgError.setImageDrawable(context.getDrawable(R.drawable.ic_error_load_grey));
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mDialog.dismiss();
+                    if(status) {
+                        activity.finish();
+                    }
+                }
+            }, 2500);
+        }
+        else{
+            imgError.setImageDrawable(context.getDrawable(R.drawable.ic_done));
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mDialog.dismiss();
+                    if(!status) {
+                        activity.finish();
+                    }
+                }
+            }, 1100);
+        }
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDialog.dismiss();
+                finish();
+            }
+        });
+        //AppCompatButton appCompatButton = mDialog.findViewById(R.id.btn_done);
+        //LinearLayoutCompat appCompatLayout = mDialog.findViewById(R.id.layPopup);
+        /*appCompatButton.setVisibility(View.VISIBLE);
+        appCompatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(TextUtils.isEmpty(mEditTextNote.getText().toString()))
+                {
+                    LogUtil.printToastMSG(mContext,getString(R.string.val_msg_please_enter_note));
+                }
+                else {
+                    callUpdateMarkApi(mEditTextNote.getText().toString());
+                    mDialog.dismiss();
+                }
+            }
+        });*/
+        mDialog.show();
+    }
+
 
     public void showUploadDialog() {
         Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
@@ -1017,6 +1076,6 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                 mDialog.dismiss();
             }
         });
-        mDialog.show();
+        //mDialog.show();
     }
 }

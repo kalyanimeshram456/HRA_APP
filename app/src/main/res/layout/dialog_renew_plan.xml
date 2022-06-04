@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/_300dp"
+    android:layout_height="wrap_content"
+    android:fitsSystemWindows="true"
+    android:paddingBottom="@dimen/_10dp"
+    android:paddingTop="@dimen/_12dp"
+    android:paddingHorizontal="@dimen/_12dp"
+    android:gravity="center"
+    android:background="@drawable/shape_round_dialog"
+    android:layout_marginTop="@dimen/_10dp"
+    android:layout_marginHorizontal="@dimen/_10dp"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/layClose"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="1dp"
+            android:fontFamily="@font/gilroy_bold"
+            android:gravity="left"
+            android:text="@string/scr_lbl_renew_plan"
+            android:textColor="@color/color_main"
+            android:textSize="@dimen/_16sp" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgCancel"
+            android:layout_width="@dimen/_16dp"
+            android:layout_height="@dimen/_16dp"
+            android:layout_centerInParent="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/ic_close" />
+
+    </RelativeLayout>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/_10dp"
+        android:background="@drawable/shape_round_white_round_dialog"
+>
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvDateRenew"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/gilroy_semibold"
+            android:gravity="center"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_16dp"
+            android:text="Date : "
+            android:textColor="@color/back_text_colour"
+            android:textSize="@dimen/_14sp" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvNoOfEmployees"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/gilroy_semibold"
+            android:gravity="center"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_10dp"
+            android:text="No of Employees : "
+            android:textColor="@color/back_text_colour"
+            android:textSize="@dimen/_14sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_10dp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvAmount"
+                android:layout_width="@dimen/_110dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/gilroy_regular"
+                android:gravity="left"
+                android:text="@string/scr_lbl_total_employees"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvAmountColon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/tvAmount"
+                android:fontFamily="@font/gilroy_regular"
+                android:gravity="center"
+                android:text="  :  "
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTotalEmp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tvAmountColon"
+                android:fontFamily="@font/gilroy_semibold"
+                android:gravity="start"
+                android:hint="@string/scr_lbl_unavailable"
+                android:inputType="textCapCharacters"
+                android:text=""
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_10dp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvRM"
+                android:layout_width="@dimen/_110dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/gilroy_regular"
+                android:gravity="left"
+                android:text="@string/scr_lbl_charges"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvRMColon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/tvRM"
+                android:fontFamily="@font/gilroy_regular"
+                android:gravity="center"
+                android:text="  :  "
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvCharges"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tvRMColon"
+                android:fontFamily="@font/gilroy_semibold"
+                android:gravity="start"
+                android:hint="@string/scr_lbl_unavailable"
+                android:inputType="textCapCharacters"
+                android:text=""
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:visibility="visible"
+            android:layout_marginTop="@dimen/_10dp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvGstPer"
+                android:layout_width="@dimen/_110dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/gilroy_regular"
+                android:gravity="left"
+                android:text="Gst 18%"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvStateColon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/tvGstPer"
+                android:fontFamily="@font/gilroy_regular"
+                android:gravity="center"
+                android:text="  :  "
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvGstValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tvStateColon"
+                android:fontFamily="@font/gilroy_semibold"
+                android:gravity="start"
+                android:hint="@string/scr_lbl_unavailable"
+                android:inputType="textCapCharacters"
+                android:textColor="@color/back_text_colour"
+                android:textSize="@dimen/_14sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/layBorder"
+            android:layout_width="match_parent"
+            android:layout_height="1.4dp"
+            android:layout_below="@+id/layDed"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_10dp"
+            android:background="@color/light_grey_30" />
+
+        <RelativeLayout
+            android:layout_below="@+id/layBorder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center_vertical"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_10dp"
+            android:gravity="left|center_vertical">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvBirthName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/gilroy_semibold"
+                android:text="Total charges        :  "
+                android:textAlignment="center"
+                android:textColor="@color/color_main"
+                android:textSize="@dimen/_14sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTotalValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tvBirthName"
+                android:background="@drawable/toggle_editext_salary_color"
+                android:fontFamily="@font/gilroy_semibold"
+                android:imeOptions="actionDone"
+                android:inputType="numberDecimal"
+                android:text="@string/scr_lbl_rs_0"
+                android:textColor="@color/color_main"
+                android:textSize="@dimen/_14sp" />
+
+        </RelativeLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/payButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom"
+            android:background="@drawable/bg_button_round_corner_5"
+            android:fontFamily="@font/gilroy_semibold"
+            android:gravity="center"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:paddingTop="@dimen/_2dp"
+            android:layout_marginTop="@dimen/_20dp"
+            android:layout_marginBottom="@dimen/_10dp"
+            android:text="Pay"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_14sp" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+
+</LinearLayout>

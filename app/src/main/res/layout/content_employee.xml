@@ -73,7 +73,7 @@
                         android:text="0 / 0 Employees active"
                         android:textColor="@color/gray"
                         android:textSize="@dimen/_14sp"
-                        android:visibility="visible" />
+                        android:visibility="gone" />
 
 
                     <androidx.recyclerview.widget.RecyclerView

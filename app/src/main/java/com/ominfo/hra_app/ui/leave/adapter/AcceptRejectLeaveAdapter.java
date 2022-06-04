@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -110,6 +111,10 @@ public class AcceptRejectLeaveAdapter extends RecyclerView.Adapter<BaseViewHolde
     TextView textViewDescription;
     @BindView(R.id.layCard)
     CardView layCard;
+    @BindView(R.id.tvDateACC)
+    AppCompatTextView tvDateACC;
+    @BindView(R.id.tvDiffACC)
+    AppCompatTextView tvDiffACC;
     @BindView(R.id.imgBirthPro)
     CircleImageView imgBirthPro;
     @BindView(R.id.progress_barBirth)
@@ -132,10 +137,11 @@ public class AcceptRejectLeaveAdapter extends RecyclerView.Adapter<BaseViewHolde
     public void onBind(int position) {
       super.onBind(position);
       AcceptRejectLeave item = mPostItems.get(position);
-
+      tvDiffACC.setText(item.getDaysDiff()+" Days");
+      tvDateACC.setText(AppUtils.convertyyyytoddLeave(item.getStartTime())+"-"+AppUtils.convertyyyytoddLeave(item.getEndTime()));//"2022-05-17 10:00:00
       textViewTitle.setText(item.getEmpName());
       textViewDescription.setText(item.getLeaveType());
-      AppUtils.loadImageURL(context,"https://ominfo.in/o_hr/"+mPostItems.get(position).getProfilePic(),
+      AppUtils.loadImageURL(context,mPostItems.get(position).getProfilePic(),
               imgBirthPro,progress_barBirth);
 
       layAccept.setOnClickListener(new View.OnClickListener() {

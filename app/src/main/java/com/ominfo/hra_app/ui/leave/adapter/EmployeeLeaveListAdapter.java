@@ -116,7 +116,7 @@ public class EmployeeLeaveListAdapter extends RecyclerView.Adapter<BaseViewHolde
     ProgressBar progress_barBirth;
    @BindView(R.id.tvStatus)
    AppCompatTextView tvStatus;
-    @BindView(R.id.tvDate)
+    @BindView(R.id.tvDateEmp)
     AppCompatTextView tvDate;
     @BindView(R.id.tvDays)
     AppCompatTextView tvDays;

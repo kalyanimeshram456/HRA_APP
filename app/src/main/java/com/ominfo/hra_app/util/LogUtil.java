@@ -3,6 +3,7 @@ package com.ominfo.hra_app.util;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
 
@@ -38,6 +39,14 @@ public class LogUtil {
         if (isEnableToast && object!=null) {
             Toast.makeText(mContext,object, Toast.LENGTH_SHORT).show();
 
+        }
+    }
+    public static void printToastMSGCenter(Context mContext, String object) {
+        if (isEnableToast && object!=null) {
+            Toast toast = Toast.makeText(mContext, object, Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.TOP|Gravity.CENTER, 0, 0);
+            toast.show();
+            //Toast.makeText(mContext,object, Toast.LENGTH_SHORT).show();
         }
     }
     public static void printSnackBar(Context context,int colour,View id, String object) {

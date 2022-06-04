@@ -1,21 +1,21 @@
 
-package com.ominfo.hra_app.ui.my_account.model;
+package com.ominfo.hra_app.ui.payment.model;
 
 import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class ChangePasswordResponse {
+public class MyPlansResponse {
 
     @SerializedName("result")
-    private ChangePasswordResult mResult;
+    private MyPlansResult mResult;
 
-    public ChangePasswordResult getResult() {
+    public MyPlansResult getResult() {
         return mResult;
     }
 
-    public void setResult(ChangePasswordResult result) {
+    public void setResult(MyPlansResult result) {
         mResult = result;
     }
 

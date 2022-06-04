@@ -147,6 +147,19 @@ public interface NetworkAPIServices {
 
     @Multipart
     @POST()
+    Observable<JsonElement> verifyOtp(@Url String url,
+                                        @Part("action") RequestBody uploadType,
+                                        @Part("otp") RequestBody otp,
+                                      @Part("contact_no") RequestBody contact_no);
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> getOtp(@Url String url,
+                                        @Part("action") RequestBody uploadType,
+                                        @Part("contact_no") RequestBody contact_no);
+
+    @Multipart
+    @POST()
     Observable<JsonElement> subCharges(@Url String url,
                                        @Part("action") RequestBody uploadType,
                                        @Part("from_date") RequestBody from_date,
@@ -166,6 +179,12 @@ public interface NetworkAPIServices {
     Observable<JsonElement> logout(@Url String url,
                                    @Part("action") RequestBody uploadType,
                                    @Part("token") RequestBody token);
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> logoutMobileToken(@Url String url,
+                                   @Part("action") RequestBody uploadType,
+                                   @Part("emp_id") RequestBody emp_id);
 
 
     @POST()
@@ -306,7 +325,8 @@ public interface NetworkAPIServices {
     @POST()
     Observable<JsonElement> getBirthDayList(@Url String url,
                                          @Part("action") RequestBody uploadType,
-                                         @Part("month") RequestBody month);
+                                         @Part("month") RequestBody month,
+                                            @Part("company_id") RequestBody company_id);
 
     @Multipart
     @POST()
@@ -386,9 +406,7 @@ public interface NetworkAPIServices {
     Observable<JsonElement> changePassword(@Url String url,
                                            @Part("action") RequestBody uploadType,
                                            @Part("company_id") RequestBody uploadTypeEmployee,
-                                           @Part("employee_id") RequestBody companyId
-            , @Part("password") RequestBody pass
-            , @Part("oldpassword") RequestBody oldPass);
+                                           @Part("employee_id") RequestBody companyId);
 
     @Multipart
     @POST()
@@ -402,6 +420,20 @@ public interface NetworkAPIServices {
                                          @Part("filter_emp_name") RequestBody filter_emp_name,
                                          @Part("filter_emp_position") RequestBody filter_emp_position,
                                          @Part("filter_emp_isActive") RequestBody filter_emp_isActive
+    );
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> singleEmployeeList(@Url String url,
+                                         @Part("action") RequestBody uploadType,
+                                         @Part("company_id") RequestBody company_id,
+                                         @Part("emp_id") RequestBody employee
+                                         /*@Part("token") RequestBody token,
+                                         @Part("page_number") RequestBody page_number,
+                                         @Part("page_size") RequestBody page_size,
+                                         @Part("filter_emp_name") RequestBody filter_emp_name,
+                                         @Part("filter_emp_position") RequestBody filter_emp_position,
+                                         @Part("filter_emp_isActive") RequestBody filter_emp_isActive*/
     );
 
     @Multipart
@@ -453,6 +485,26 @@ public interface NetworkAPIServices {
                                         @Part("status") RequestBody status,
                                         @Part("leave_type") RequestBody leave_type,
                                         @Part("leave_days") RequestBody leave_days
+    );
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> getMyPlan(@Url String url,
+                                        @Part("action") RequestBody uploadType,
+                                        @Part("company_id") RequestBody company_id
+    );
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> addUser(@Url String url,
+                                      @Part("action") RequestBody uploadType,
+                                      @Part("company_id") RequestBody company_id,
+                                    @Part("add_user") RequestBody add_user,
+                                    @Part("emp_id") RequestBody emp_id,
+                                    @Part("gst_percent") RequestBody gst_percent,
+                                    @Part("sub_charge") RequestBody sub_charge,
+                                    @Part("gst_amount") RequestBody gst_amount,
+                                    @Part("total_charge") RequestBody total_charge
     );
 
     @Multipart

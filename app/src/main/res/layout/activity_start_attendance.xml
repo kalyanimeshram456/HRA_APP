@@ -235,6 +235,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:visibility="invisible"
             android:layout_marginBottom="@dimen/_20dp"
             android:layout_alignParentBottom="true"
             >
@@ -265,13 +266,14 @@
                     android:text=""
                     android:textColor="@color/white"
                     android:textSize="@dimen/_17sp" />
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/tvCheckInTime"
                     android:fontFamily="@font/gilroy_regular"
-                    android:text="Check In"
                     android:gravity="center_horizontal"
+                    android:text="Check In"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_13sp" />
 

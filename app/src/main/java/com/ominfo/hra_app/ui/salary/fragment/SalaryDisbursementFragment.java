@@ -199,9 +199,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         injectAPI();
         init();
-        //fromDate.setPaintFlags(fromDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
-        //toDate.setPaintFlags(toDate.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
-    }
+       }
 
     private void init(){
         setToolbar();
@@ -214,6 +212,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
         if(loginTable!=null) {
             selectedActiveEmpid = loginTable.getEmployeeId();
         }
+        AutoComMonth.setText(AppUtils.getCurrentMonth());
         setDropdownMonth();
         AutoComAddEmp.setText("All");
         callGetActiveEmployeeListApi();
@@ -258,8 +257,11 @@ public class SalaryDisbursementFragment extends BaseFragment {
                 for (int i = 0; i < monthsLists.size(); i++) {
                     mDropdownList[i] = String.valueOf(monthsLists.get(i).getName());
                     //pos = i;
+                    if(AutoComMonth.getText().toString().equals(monthsLists.get(i).getName())){
+                        tvTotalDays.setText("Total days of month : "+monthsLists.get(i).getDays());
+                    }
                 }
-                AutoComMonth.setText(mDropdownList[pos]);
+                //AutoComMonth.setText(mDropdownList[pos]);
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(
                         mContext,
                         R.layout.row_dropdown_item,
@@ -1059,8 +1061,6 @@ public class SalaryDisbursementFragment extends BaseFragment {
                             }
                         }
                     }catch (Exception e){
-                        ((BaseActivity)mContext).showSuccessDialog("Leave application upload failed.",
-                                true,getActivity());
                         e.printStackTrace();
                     }
                 }

@@ -562,6 +562,27 @@ public class AppUtils {
         return sDateFormate;
     }
 
+    public static String getCurrentMonth() {
+        String sDateFormate = "";
+        String sDate = getCurrentDateInyyyymmdd();
+        try {
+            String pattern = "MMMM";
+            String inputPattern = "yyyy-MM-dd";
+
+            SimpleDateFormat fmt = new SimpleDateFormat(inputPattern);
+            Date date = fmt.parse(sDate);
+
+            SimpleDateFormat fmtOut = new SimpleDateFormat(pattern);
+            sDateFormate = fmtOut.format(date);
+
+            LogUtil.printLog(TAG, "sDateFormate: " + sDateFormate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sDateFormate;
+    }
+
+
     public static String getOSVersion() {
 
         String os = "";
@@ -916,19 +937,21 @@ public class AppUtils {
 
     public static String startEndMonthfromInt(int month){
         try {
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.MONTH, 0);
-            calendar.set(Calendar.DATE, calendar.getActualMinimum(month));
-            Date monthFirstDay = calendar.getTime();
-            calendar.set(Calendar.DATE, calendar.getActualMaximum(month));
-            Date monthLastDay = calendar.getTime();
+            String[] date = AppUtils.getCurrentDateTime_().split("/");
+            String string = date[2]+"-"+(month-1)+"-01"; //assuming input
+            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date dt = sdf .parse(string);
+            Calendar c = Calendar.getInstance();
+            c.setTime(dt);
+            c.add(Calendar.MONTH, 1);  //adding a month directly - gives the start of next month.
+            String firstDate = sdf.format(c.getTime());
+            System.out.println(firstDate);
 
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            String startDateStr = df.format(monthFirstDay);
-            String endDateStr = df.format(monthLastDay);
-
-            //Log.e("DateFirstLast",);
-            return startDateStr + "~" + endDateStr;
+            c.add(Calendar.MONTH, 1);
+            c.add(Calendar.DAY_OF_MONTH, -1);
+            String lastDate = sdf.format(c.getTime());
+            System.out.println(lastDate);
+            return firstDate + "~" + lastDate;
         }catch (Exception e){}
         return "~";
     }

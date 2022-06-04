@@ -17,6 +17,7 @@ import com.ominfo.hra_app.ui.my_account.model.LeaveApplicationRequest;
 import com.ominfo.hra_app.ui.my_account.model.ProfileRequest;
 import com.ominfo.hra_app.ui.my_account.model.RaiseTicketRequest;
 import com.ominfo.hra_app.ui.my_account.model.UpdateTicketRequest;
+import com.ominfo.hra_app.ui.payment.model.AddUserRequest;
 import com.ominfo.hra_app.ui.registration.model.RegistrationRequest;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllListRequest;
 import com.ominfo.hra_app.ui.salary.model.UpdateSalaryRequest;
@@ -53,6 +54,18 @@ public class Service {
         return networkAPIServices.applyCoupon(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_CHECK_COUPON),
                 action,prefix);
     }
+    public Observable<JsonElement> executeVerifyOtpAPI(RequestBody action, RequestBody otp, RequestBody prefix) {
+        return networkAPIServices.verifyOtp(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_VERIFY_OTP),
+                action,otp,prefix);
+    }
+    public Observable<JsonElement> executeGetOtpAPI(RequestBody action,RequestBody contact_no) {
+        return networkAPIServices.getOtp(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_OTP),
+                action,contact_no);
+    }
+    public Observable<JsonElement> executeResendOtpAPI(RequestBody action,RequestBody contact_no) {
+        return networkAPIServices.getOtp(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_RESEND_OTP),
+                action,contact_no);
+    }
     public Observable<JsonElement> executeSubscriptionAPI(RequestBody action, RequestBody start, RequestBody end) {
         return networkAPIServices.subCharges(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_SUB_CHARGES),
                 action,start,end);
@@ -63,6 +76,9 @@ public class Service {
 
     public Observable<JsonElement> executeLogoutAPI(RequestBody action,RequestBody id) {
         return networkAPIServices.logout(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_LOGOUT),action,id);
+    }
+    public Observable<JsonElement> executeLogoutMobileTokenAPI(RequestBody action,RequestBody id) {
+        return networkAPIServices.logoutMobileToken(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_LOGOUT_MOBILE_TOKEN),action,id);
     }
 
     public Observable<JsonElement> executeApplyLeaveAPI(ApplyLeaveRequest applyLeaveRequest) {
@@ -159,10 +175,10 @@ public class Service {
         return networkAPIServices.getRM(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_RM),mRequestBodyType,mRequestBodyType1,mRequestBodyType2);
     }
 
-    public Observable<JsonElement> executeGetBirthDayListAPI(RequestBody action,RequestBody mon) {
+    public Observable<JsonElement> executeGetBirthDayListAPI(RequestBody action,RequestBody mon,RequestBody comId) {
         return networkAPIServices.getBirthDayList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_BIRTH_DAY_LIST),
-                action,mon
+                action,mon,comId
                );
     }
     public Observable<JsonElement> executeCalenderHolidaysListAPI(RequestBody action,RequestBody cId,RequestBody from
@@ -258,15 +274,13 @@ public class Service {
     }
 
     public Observable<JsonElement> executeChangePasswordAPI(RequestBody action,
-                                                                RequestBody comId, RequestBody empId,
-                                                                RequestBody pass,RequestBody oldPass) {
+                                                                RequestBody comId, RequestBody empId
+                                                               ) {
         return networkAPIServices.changePassword(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
-                DynamicAPIPath.POST_GET_PROFILE),
+                DynamicAPIPath.POST_CHANGE_PASSWORD),
                 action,
                 comId,
-                empId,
-                pass,
-                oldPass
+                empId
         );
     }
 
@@ -278,6 +292,16 @@ public class Service {
                 employeeListRequest.getPageNumber(),employeeListRequest.getPageSize(),
                 employeeListRequest.getFilterEmpName(),employeeListRequest.getFilterEmpPosition(),
                 employeeListRequest.getFilterEmpIsActive()
+        );
+    }
+    public Observable<JsonElement> executeSingleEmployeeListAPI(EmployeeListRequest employeeListRequest) {
+        return networkAPIServices.singleEmployeeList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_SINLE_EMPLOYEES_LIST),
+                employeeListRequest.getAction(),employeeListRequest.getCompanyId(),
+                employeeListRequest.getEmployee()/*,employeeListRequest.getToken(),
+                employeeListRequest.getPageNumber(),employeeListRequest.getPageSize(),
+                employeeListRequest.getFilterEmpName(),employeeListRequest.getFilterEmpPosition(),
+                employeeListRequest.getFilterEmpIsActive()*/
         );
     }
     public Observable<JsonElement> executeAllSalaryListAPI(SalaryAllListRequest salaryAllListRequest) {
@@ -312,6 +336,29 @@ public class Service {
             ,RequestBody date,RequestBody status,RequestBody leave_type,RequestBody leave_days) {
         return networkAPIServices.deductLeave(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_MARK_NOT_LATE),act,emp_id,date,status,leave_type,leave_days
+        );
+    }
+    public Observable<JsonElement> executeGetMyPlanDetailsAPI(RequestBody act,RequestBody com_id) {
+        return networkAPIServices.getMyPlan(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_MY_PLANS),act,com_id
+        );
+    }
+    public Observable<JsonElement> executeRenewPlanDetailsAPI(RequestBody act,RequestBody com_id) {
+        return networkAPIServices.getMyPlan(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_RENEW_PLANS),act,com_id
+        );
+    }
+    public Observable<JsonElement> executeAddUSerPlanAPI(AddUserRequest addUserRequest) {
+        return networkAPIServices.addUser(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_ADD_USER),addUserRequest.getAction(),
+                addUserRequest.getCompany_id(),addUserRequest.getAdd_user(),
+                addUserRequest.getEmp_id(),addUserRequest.getGst_percent(),addUserRequest.getSub_charge(),
+                addUserRequest.getGst_amount(),addUserRequest.getTotal_charge()
+        );
+    }
+    public Observable<JsonElement> executePayRenewPlanAPI(RequestBody act,RequestBody com_id) {
+        return networkAPIServices.getMyPlan(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_PAY_RENEW_PLAN),act,com_id
         );
     }
     public Observable<JsonElement> executeSalarySlipAPI(RequestBody act,RequestBody emp_id) {
@@ -372,6 +419,12 @@ public class Service {
         return networkAPIServices.deactivateEmployee(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_DEACT_EMPLOYEE),
                 action,updateby,empId
+        );
+    }
+    public Observable<JsonElement> executeChangePassAPI(RequestBody action,RequestBody comId,RequestBody empId) {
+        return networkAPIServices.deactivateEmployee(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_DEACT_EMPLOYEE),
+                action,comId,empId
         );
     }
     public Observable<JsonElement> executeAddEmployeeAPI(AddEmployeeRequest addEmployeeRequest) {

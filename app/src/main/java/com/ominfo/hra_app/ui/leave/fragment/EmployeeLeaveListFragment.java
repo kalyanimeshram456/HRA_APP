@@ -187,6 +187,7 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
         tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
         tv_emptyLayTitle.setText("Search something...");
         swipeRefresh.setOnRefreshListener(this);
+        AutoComMonth.setText(AppUtils.getCurrentMonth());
         setDropdownMonth();
         rvSalesList.setHasFixedSize(true);
         // use a linear layout manager
@@ -200,7 +201,7 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
             }
         });
         rvSalesList.setAdapter(leaveAdapter);
-        callAcceptRejectListApi("0");
+        //callAcceptRejectListApi("0");
 
         /**
          * add scroll listener while user reach in bottom load more will call
@@ -236,6 +237,12 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
     @Override
     public void onResume() {
         super.onResume();
+        try{
+            itemCount = 0;
+            currentPage = PAGE_START;
+            isLastPage = false;
+            leaveAdapter.clear();
+            callAcceptRejectListApi("0");}catch (Exception e){}
     }
 
     @Override
@@ -370,9 +377,9 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
         addReceiptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDialogChangePass.dismiss();
                 if(isAttendanceDetailsValid(AutoComTextViewDuration,input_textDuration,AutoComTextViewLeaveType,input_textType
                 )){
+                    mDialogChangePass.dismiss();
                     callApplyLeaveApi();
                 }
 
@@ -396,8 +403,9 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
                 {
                     startTimeStamp = AppUtils.convert12to24ForAttention(tvTimeValueFrom.getText().toString());
                     endTimeStamp = AppUtils.convert12to24ForAttention(tvTimeValueTo.getText().toString());
+                    endDateTimeStamp = startDateTimeStamp;
                 } else  if(AutoComTextViewDuration.getText().toString().equals("Full Day"))
-                {
+                {    endDateTimeStamp = startDateTimeStamp;
                     startTimeStamp = "00:00:00";endTimeStamp = "23:59:00";
                 }else {
                     startTimeStamp = "00:00:00";endTimeStamp = "23:59:00";
@@ -436,15 +444,15 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
                                              AppCompatAutoCompleteTextView type,
                                              TextInputLayout input_textType
     ) {
-        setError(input_textDuration,"");setError(input_textType, "");
-        //setError(AutoComConfirmPass, "");
+        input_textDuration.setErrorEnabled(false);
+        input_textType.setErrorEnabled(false);
         if (TextUtils.isEmpty(duration.getText().toString().trim())) {
             setError(input_textDuration, "Select Duration");
-            LogUtil.printToastMSG(mContext,"Select Duration");
+            LogUtil.printToastMSGCenter(mContext,"Select Duration");
             return false;
         } else if (TextUtils.isEmpty(type.getText().toString().trim())) {
             setError(input_textType, "Select Leave Type");
-            LogUtil.printToastMSG(mContext,"Select Leave Type");
+            LogUtil.printToastMSGCenter(mContext,"Select Leave Type");
             return false;
         }
         return true;
@@ -650,7 +658,7 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
                     mDropdownList[i] = String.valueOf(monthsLists.get(i).getName());
                     //pos = i;
                 }
-                AutoComMonth.setText(mDropdownList[pos]);
+                //AutoComMonth.setText(mDropdownList[pos]);
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(
                         mContext,
                         R.layout.row_dropdown_item,
@@ -660,7 +668,11 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
                 AutoComMonth.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                     callAcceptRejectListApi("0");
+                        itemCount = 0;
+                        currentPage = PAGE_START;
+                        isLastPage = false;
+                        leaveAdapter.clear();
+                        callAcceptRejectListApi("0");
                     }
                 });
 
@@ -795,21 +807,25 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
                             ApplyLeaveResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ApplyLeaveResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 mDialogChangePass.dismiss();
-                                ((BaseActivity)mContext).showSuccessDialog(responseModel.getResult().getMessage(),
-                                        true,getActivity());
+                               showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),
+                                        true,null);
                                 //((BaseActivity)mContext).setRateUsCounter(mContext);
-                                try{callAcceptRejectListApi("0");}catch (Exception e){}
+                                try{
+                                    itemCount = 0;
+                                    currentPage = PAGE_START;
+                                    isLastPage = false;
+                                    leaveAdapter.clear();
+                                    callAcceptRejectListApi("0");}catch (Exception e){}
                             }
                             else {
                                 mDialogChangePass.dismiss();
-                                ((BaseActivity)mContext).showSuccessDialog(responseModel.getResult().getMessage(),
-                                        true,getActivity());
+                                showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),
+                                        false,null);
                             }
                         }
                     }catch (Exception e){
-                        ((BaseActivity)mContext).showSuccessDialog("Leave application upload failed.",
-                                true,getActivity());
-                        e.printStackTrace();
+                        showSuccessDialogFragment(mContext,"Leave application upload failed.",
+                                false,null);
                     }
                 }
                 break;

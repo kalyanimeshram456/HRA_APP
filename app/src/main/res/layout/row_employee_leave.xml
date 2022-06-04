@@ -137,7 +137,7 @@
                     android:paddingTop="@dimen/_0dp">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvDate"
+                    android:id="@+id/tvDateEmp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAlignment="textEnd"
