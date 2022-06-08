@@ -7,6 +7,7 @@
     android:layout_below="@+id/toolbar_layout"
     android:background="@color/bg_screen"
     android:focusable="true"
+    android:id="@+id/imgAccBg"
     android:focusableInTouchMode="true"
     android:orientation="vertical">
 
@@ -36,7 +37,6 @@
                     android:id="@+id/expandedImage"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_140dp"
-                    android:src="@drawable/bg_my_account_2"
                     android:scaleType="fitXY"
                     app:layout_collapseMode="parallax"
                     app:layout_collapseParallaxMultiplier="0.7"
@@ -802,6 +802,55 @@
                        android:textSize="@dimen/_15sp"
                        android:textColor="@color/text_disabled"
                        app:errorEnabled="true" />
+                   <androidx.appcompat.widget.AppCompatTextView
+                       android:id="@+id/tvDistRange"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_gravity="left"
+                       android:layout_marginHorizontal="@dimen/_10dp"
+                       android:layout_marginTop="@dimen/_16dp"
+                       android:fontFamily="@font/gilroy_semibold"
+                       android:text="Distance Range (meters)"
+                       android:textColor="@color/black_heading"
+                       android:textSize="@dimen/_14sp" />
+
+                   <com.google.android.material.textfield.TextInputLayout
+                       android:id="@+id/input_textDistRange"
+                       style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:layout_marginHorizontal="@dimen/_10dp"
+                       android:layout_marginTop="@dimen/_6dp"
+                       app:boxCornerRadiusBottomEnd="@dimen/_10dp"
+                       app:boxCornerRadiusBottomStart="@dimen/_10dp"
+                       app:boxCornerRadiusTopEnd="@dimen/_10dp"
+                       app:boxCornerRadiusTopStart="@dimen/_10dp"
+                       app:endIconDrawable="@android:color/transparent"
+                       app:hintEnabled="false"
+                       app:hintTextAppearance="@style/Editext.Theme"
+                       app:placeholderTextAppearance="@style/Editext.Theme"
+                       app:startIconContentDescription="$">
+
+                       <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                           android:id="@+id/AutoComDistRange"
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content"
+                           android:background="@drawable/toggle_add_reminder_edt"
+                           android:clickable="true"
+                           android:focusable="true"
+                           android:focusableInTouchMode="true"
+                           android:fontFamily="@font/gilroy_semibold"
+                           android:hint="@string/scr_lbl_pincode"
+                           android:imeOptions="actionNext"
+                           android:inputType="number"
+                           android:maxLength="10"
+                           android:padding="@dimen/_10dp"
+                           android:textColor="@color/text_disabled"
+                           android:textColorHint="@color/app_gray"
+                           android:textSize="@dimen/_14sp" />
+
+                   </com.google.android.material.textfield.TextInputLayout>
+
                    <androidx.appcompat.widget.AppCompatTextView
                        android:id="@+id/tvPincode"
                        android:layout_width="wrap_content"

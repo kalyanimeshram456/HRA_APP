@@ -89,6 +89,16 @@ public class EditCompanyRequest {
     private RequestBody mWedStartTime;
     @SerializedName("wed_working")
     private RequestBody mWedWorking;
+    @SerializedName("dist_range")
+    private RequestBody dist_range;
+
+    public RequestBody getDist_range() {
+        return dist_range;
+    }
+
+    public void setDist_range(RequestBody dist_range) {
+        this.dist_range = dist_range;
+    }
 
     public RequestBody getAction() {
         return action;

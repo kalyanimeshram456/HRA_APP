@@ -18,7 +18,26 @@ public class NotificationData {
     private String mText;
     @SerializedName("type")
     private String mType;
+    @SerializedName("created_on")
+    private String created_on;
+    @SerializedName("rmid")
+    private String rmid;
 
+    public String getCreated_on() {
+        return created_on;
+    }
+
+    public void setCreated_on(String created_on) {
+        this.created_on = created_on;
+    }
+
+    public String getRmid() {
+        return rmid;
+    }
+
+    public void setRmid(String rmid) {
+        this.rmid = rmid;
+    }
     public String getHeading() {
         return mHeading;
     }

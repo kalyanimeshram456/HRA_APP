@@ -26,7 +26,7 @@
             android:fontFamily="@font/poppins_semibold"
             android:gravity="left"
             android:text="Select Picture"
-            android:textColor="@color/back_text_colour"
+            android:textColor="@color/color_main"
             android:textSize="@dimen/_16sp"
             android:visibility="visible" />
 

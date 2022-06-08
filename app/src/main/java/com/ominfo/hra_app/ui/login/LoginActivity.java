@@ -15,9 +15,11 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
@@ -68,6 +70,8 @@ public class LoginActivity extends BaseActivity {
     AppCompatTextView tvTitle;
     @BindView(R.id.tvRegClick)
     AppCompatTextView tvRegClick;
+    @BindView(R.id.imgDash)
+    AppCompatImageView imgDash;
 
     Context mContext;
     @Inject
@@ -187,6 +191,9 @@ public class LoginActivity extends BaseActivity {
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         tvTitle.setText(getString(R.string.scr_lbl_login));
         setErrorMSG();
+        Glide.with(this)
+                .load(R.drawable.ic_turanthbiz_name)
+                .into(imgDash);
         //editTextEmail.setText("KAL025");
         //editTextPassword.setText("3486");
         /*Window window = getWindow();

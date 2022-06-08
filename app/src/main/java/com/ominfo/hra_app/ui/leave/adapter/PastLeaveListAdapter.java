@@ -12,9 +12,7 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.hra_app.R;
-import com.ominfo.hra_app.ui.employees.model.EmployeeList;
-import com.ominfo.hra_app.ui.leave.model.PastLeave;
-import com.ominfo.hra_app.ui.my_account.model.ApplicationLeave;
+import com.ominfo.hra_app.ui.leave.model.PastLeaveList;
 import com.ominfo.hra_app.util.AppUtils;
 
 import java.util.List;
@@ -23,7 +21,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PastLeaveListAdapter extends RecyclerView.Adapter<PastLeaveListAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<PastLeave> mListData;
+    private List<PastLeaveList> mListData;
     private Context mContext;
     private String mDate;
 
@@ -31,7 +29,7 @@ public class PastLeaveListAdapter extends RecyclerView.Adapter<PastLeaveListAdap
         this.mContext = mContext;
     }
 
-    public PastLeaveListAdapter(Context context, List<PastLeave> listData, ListItemSelectListener itemClickListener) {
+    public PastLeaveListAdapter(Context context, List<PastLeaveList> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -46,7 +44,7 @@ public class PastLeaveListAdapter extends RecyclerView.Adapter<PastLeaveListAdap
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<PastLeave> list){
+    public void updateList(List<PastLeaveList> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -58,11 +56,11 @@ public class PastLeaveListAdapter extends RecyclerView.Adapter<PastLeaveListAdap
                 holder.setIsRecyclable(false);
                 String start = "00:00:00" ,end = "00:00:00";
                 try{
-                    start = AppUtils.convertyyyytodd(mListData.get(position).getStartTime());
-                    end = AppUtils.convertyyyytodd(mListData.get(position).getEndTime());
+                    start = AppUtils.dateConvertYYYYToDD(mListData.get(position).getDate());
+                    //end = AppUtils.convertyyyytodd(mListData.get(position).getEndTime());
                 }catch (Exception e){
                 }
-                holder.tvCompanyName.setText(start+"-"+end);
+                holder.tvCompanyName.setText(start/*+"-"+end*/);
                 holder.tvState.setText(mListData.get(position).getStatus());
                 holder.tvRs.setText(mListData.get(position).getLeaveType());
                 holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
@@ -149,6 +147,6 @@ public class PastLeaveListAdapter extends RecyclerView.Adapter<PastLeaveListAdap
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(int mData,PastLeave applicationLeave);
+        void onItemClick(int mData,PastLeaveList applicationLeave);
     }
 }

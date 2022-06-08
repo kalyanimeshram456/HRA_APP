@@ -21,7 +21,16 @@ public class GetAttendanceResult {
     private String office_longitude;
     @SerializedName("office_latitude")
     private String office_latitude;
+    @SerializedName("dist_range")
+    private String dist_range;
 
+    public String getDist_range() {
+        return dist_range;
+    }
+
+    public void setDist_range(String dist_range) {
+        this.dist_range = dist_range;
+    }
     public List<GetAttendanceAtt> getmAtt() {
         return mAtt;
     }

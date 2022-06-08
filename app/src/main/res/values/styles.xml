@@ -56,7 +56,7 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/color_main</item>
         <item name="colorAccent">@color/color_main</item>
-        <item name="android:windowBackground">@drawable/bg_login_</item>
+       <!-- <item name="android:windowBackground">@drawable/bg_login_</item>-->
     </style>
 
     <!-- Style For Custom Dialog -->

@@ -56,8 +56,8 @@ public class SalaryNewDisAdapter extends RecyclerView.Adapter<SalaryNewDisAdapte
 
         if(mListData.size()>0) {
             SalaryAllList item = mListData.get(position);
-            holder.tvBirthName.setText(mListData.get(position).getEmpName());
-            holder.tvBirthValue.setText(mListData.get(position).getEmpPosition());
+            holder.tvBirthName.setText(mListData.get(position).getEmpName().trim());
+            holder.tvBirthValue.setText(mListData.get(position).getEmpPosition().trim());
             holder.tvLeave.setText(mListData.get(position).getLeaveCountCurMon());
             holder.tvSalary.setText(mContext.getString(R.string.scr_lbl_rs)+mListData.get(position).getSalaryThisMonth());
             AppUtils.loadImageURL(mContext,mListData.get(position).getEmpProfilePic(),

@@ -20,6 +20,26 @@ public class LeaveCountResult {
     private String mMessage;
     @SerializedName("status")
     private String mStatus;
+    @SerializedName("active_employees")
+    private String active_employees;
+    @SerializedName("total_active")
+    private String total_active;
+
+    public String getActive_employees() {
+        return active_employees;
+    }
+
+    public void setActive_employees(String active_employees) {
+        this.active_employees = active_employees;
+    }
+
+    public String getTotal_active() {
+        return total_active;
+    }
+
+    public void setTotal_active(String total_active) {
+        this.total_active = total_active;
+    }
 
     public String getmLevCountEmp() {
         return mLevCountEmp;

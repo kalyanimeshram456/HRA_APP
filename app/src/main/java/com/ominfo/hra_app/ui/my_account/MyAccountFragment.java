@@ -64,6 +64,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.textfield.TextInputLayout;
@@ -93,8 +94,6 @@ import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.login.model.LogoutMobileTokenViewModel;
 import com.ominfo.hra_app.ui.login.model.LogoutResponse;
 import com.ominfo.hra_app.ui.login.model.LogoutViewModel;
-import com.ominfo.hra_app.ui.my_account.adapter.AccountAdapter;
-import com.ominfo.hra_app.ui.my_account.leave.LeaveListFragment;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ChangeProfileImageResponse;
 import com.ominfo.hra_app.ui.my_account.model.ChangeProfileImageViewModel;
@@ -109,7 +108,6 @@ import com.ominfo.hra_app.ui.my_account.model.ProfileImageResponse;
 import com.ominfo.hra_app.ui.my_account.model.WorkTimingList;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.payment.PaymentFragment;
-import com.ominfo.hra_app.ui.sales_credit.activity.PdfPrintActivity;
 import com.ominfo.hra_app.ui.visit_report.activity.AddLocationActivity;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
@@ -146,7 +144,6 @@ import okhttp3.RequestBody;
 public class MyAccountFragment extends BaseFragment {
 
     Context mContext;
-    AccountAdapter accountAdapter;
     //AddTagAdapter addTagAdapter;
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -230,6 +227,8 @@ public class MyAccountFragment extends BaseFragment {
     EmployeeTimeAdapter employeeTimeAdapter;
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
+    @BindView(R.id.expandedImage)
+    AppCompatImageView imgAccBg;
     @BindView(R.id.AutoComtEEmail)
     AppCompatAutoCompleteTextView AutoComtEEmail;
     @BindView(R.id.AutoComEMobile)
@@ -272,6 +271,10 @@ public class MyAccountFragment extends BaseFragment {
     AppCompatImageView imgDots;
     @BindView(R.id.imgDotsLogout)
     AppCompatImageView imgDotsLogout;
+    @BindView(R.id.AutoComDistRange)
+    AppCompatAutoCompleteTextView AutoComDistRange;
+    @BindView(R.id.input_textDistRange)
+    TextInputLayout input_textDistRange;
     List<WorkTimingList> workTimingLists = new ArrayList<>();
     String officeLat = "",officeLong="";
     boolean editClick = false,editNAME = false;
@@ -716,6 +719,7 @@ public class MyAccountFragment extends BaseFragment {
                 RequestBody mRequestBodyGst = RequestBody.create(MediaType.parse("text/plain"), AutoComGstNo.getText().toString().trim());//loginTable.getCompanyId());
                 RequestBody mRequestBodyPincode = RequestBody.create(MediaType.parse("text/plain"), AutoComOPincode.getText().toString().trim());//loginTable.getCompanyId());
                 RequestBody mRequestRegAddress = RequestBody.create(MediaType.parse("text/plain"), etOfAddress.getText().toString());//loginTable.getCompanyId());
+                RequestBody mRequestdist_range = RequestBody.create(MediaType.parse("text/plain"), AutoComDistRange.getText().toString());//loginTable.getCompanyId());
                 RequestBody mRequestAddr = RequestBody.create(MediaType.parse("text/plain"),AutoComOfficeLocation.getText().toString());//loginTable.getCompanyId());
                 RequestBody mRequestLat = RequestBody.create(MediaType.parse("text/plain"),officeLat==null?"0.0":officeLat);//loginTable.getCompanyId());
                 RequestBody mRequestLong = RequestBody.create(MediaType.parse("text/plain"),officeLong==null?"0.0":officeLong);//loginTable.getCompanyId());
@@ -775,6 +779,8 @@ public class MyAccountFragment extends BaseFragment {
                 request.setFri_end_time(mRequestFriEnd);
                 request.setSatEndTime(mRequestSatEnd);
                 request.setSunEndTime(mRequestSunEnd);
+                request.setDist_range(mRequestdist_range);
+
                 editCompanyViewModel.hitEditCompanyAPI(request);
             }
             else {
@@ -844,8 +850,12 @@ public class MyAccountFragment extends BaseFragment {
     }
 
     private void setAdapterForTimingList(boolean isToggle) {
+        boolean toEnable = editClick;
+        if(isAdmin.equals("0")) {
+            toEnable = false;
+        }
         if (workTimingLists!=null && workTimingLists.size() > 0) {
-            employeeTimeAdapter = new EmployeeTimeAdapter(editClick,isToggle,mContext, workTimingLists, new EmployeeTimeAdapter.ListItemSelectListener() {
+            employeeTimeAdapter = new EmployeeTimeAdapter(toEnable,isToggle,mContext, workTimingLists, new EmployeeTimeAdapter.ListItemSelectListener() {
                 @Override
                 public void onItemClick(WorkTimingList mDataTicket, List<WorkTimingList> notificationResultListAdapter, boolean status) {
                     workTimingLists = notificationResultListAdapter;
@@ -860,6 +870,9 @@ public class MyAccountFragment extends BaseFragment {
 
 
     private void init(){
+        Glide.with(this)
+                .load(R.drawable.bg_my_account_2)
+                .into(imgAccBg);
         tvEmpName.setEnabled(false);
         btnSubmit.setVisibility(View.GONE);
         btnESubmit.setVisibility(View.GONE);
@@ -1324,31 +1337,6 @@ public class MyAccountFragment extends BaseFragment {
     }
 
 
-    //show Receipt Details popup
-    public void showVisitDetailsDialog() {
-        Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.activity_reminder_alert);
-        mDialog.setCanceledOnTouchOutside(true);
-        //AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        //AppCompatButton closeButton = mDialog.findViewById(R.id.closeButton);
-
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-
-        /*closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });*/
-        mDialog.show();
-    }
 
     private void deleteDir(){
         File dir = new File(Environment.getExternalStoragePublicDirectory(
@@ -1406,13 +1394,6 @@ public class MyAccountFragment extends BaseFragment {
 
     }
 
-private void setTermsAndPolicy(String webUrl){
-    Intent iTerms = new Intent(getActivity(), PdfPrintActivity.class);
-    iTerms.putExtra(Constants.URL, webUrl);
-    iTerms.putExtra(Constants.TRANSACTION_ID, "acc");
-    startActivity(iTerms);
-    ((Activity) getActivity()).overridePendingTransition(0, 0);
-}
     private void moveToReportAppList(){
 
     }
@@ -1423,10 +1404,6 @@ private void setTermsAndPolicy(String webUrl){
         window.setStatusBarColor(Color.TRANSPARENT);
     }
 
-    private void moveToAppList(){
-        Fragment fragment = new LeaveListFragment();
-        moveFromFragment(fragment,mContext);
-    }
 
     //set date picker view
     private void openDataPicker(int val) {
@@ -1678,7 +1655,9 @@ private void setTermsAndPolicy(String webUrl){
                                         employeeListResData.getSatStartTime()==null?getString(R.string.scr_lbl_start_time):employeeListResData.getSatStartTime(), employeeListResData.getSatEndTime()==null?getString(R.string.scr_lbl_end_time):employeeListResData.getSatEndTime()));
                                 workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun), employeeListResData.getSunWorking()==null?"no":employeeListResData.getSunWorking(),
                                         employeeListResData.getSunStartTime()==null?getString(R.string.scr_lbl_start_time):employeeListResData.getSunStartTime(), employeeListResData.getSunEndTime()==null?getString(R.string.scr_lbl_end_time):employeeListResData.getSunEndTime()));
-                                setTimeDisabled(Integer.parseInt(isAdmin));
+                                setAllDisabled(Integer.parseInt(isAdmin),false);
+                                editClick = false;
+                                setTimeDisabled(0);
                                 setDis();
                             }
                         }
@@ -1692,16 +1671,17 @@ private void setTermsAndPolicy(String webUrl){
                                 btnSubmit.setVisibility(View.GONE);
                                 btnESubmit.setVisibility(View.GONE);
                                 GetCompanyList employeeList = responseModel.getResult().getList().get(0);
-                                tvEmpName.setText(employeeList.getName());
-                                AutoComEmailId.setText(employeeList.getEmailId());
-                                AutoComMobile.setText(employeeList.getContactNo());
-                                etOfAddress.setText(employeeList.getOfficeAddress());
-                                AutoComOPincode.setText(employeeList.getPincode());
-                                AutoComGstNo.setText(employeeList.getGstNo());
-                                AutoComStaff.setText(employeeList.getStaffStrength());
-                                AutoComPrefix.setText(employeeList.getUserPrefix());
-                                officeLat = employeeList.getOfficeLatitude();
-                                officeLong = employeeList.getOfficeLongitude();
+                                tvEmpName.setText(employeeList.getName()+"");
+                                AutoComEmailId.setText(employeeList.getEmailId()+"");
+                                AutoComMobile.setText(employeeList.getContactNo()+"");
+                                etOfAddress.setText(employeeList.getOfficeAddress()+"");
+                                AutoComDistRange.setText(employeeList.getDist_range()==null?"50":employeeList.getDist_range());
+                                AutoComOPincode.setText(employeeList.getPincode()+"");
+                                AutoComGstNo.setText(employeeList.getGstNo()+"");
+                                AutoComStaff.setText(employeeList.getStaffStrength()+"");
+                                AutoComPrefix.setText(employeeList.getUserPrefix()+"");
+                                officeLat = employeeList.getOfficeLatitude()+"";
+                                officeLong = employeeList.getOfficeLongitude()+"";
                                 AutoComOfficeLocation.setText(employeeList.getOfficeAddress());
                                 try{ workTimingLists.removeAll(workTimingLists);}catch (Exception e){}
                                 workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_mon), employeeList.getMonWorking()==null?"no":employeeList.getMonWorking(),
@@ -1718,7 +1698,9 @@ private void setTermsAndPolicy(String webUrl){
                                         employeeList.getSatStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getSatStartTime(), employeeList.getSatEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getSatEndTime()));
                                 workTimingLists.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun), employeeList.getSunWorking()==null?"no":employeeList.getSunWorking(),
                                         employeeList.getSunStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getSunStartTime(), employeeList.getSunEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getSunEndTime()));
-                                setTimeDisabled(Integer.parseInt(isAdmin));
+                                setAllDisabled(Integer.parseInt(isAdmin),false);
+                                editClick = false;
+                                setTimeDisabled(0);
                                 setDis();
                             }
                         }
@@ -1999,7 +1981,7 @@ private void setTermsAndPolicy(String webUrl){
             tvDateValue.setEnabled(state);
             if(state){
             btnESubmit.setVisibility(View.VISIBLE);}else{btnESubmit.setVisibility(View.GONE);}
-            setTimeDisabled(type);
+            setTimeDisabled(0);
         }else {
             //company
             if(!state){
@@ -2007,6 +1989,7 @@ private void setTermsAndPolicy(String webUrl){
             layAddLocation.setEnabled(state);
             AutoComGstNo.setEnabled(state);
             etOfAddress.setEnabled(state);
+            AutoComDistRange.setEnabled(state);
             AutoComOPincode.setEnabled(state);
             AutoComMobile.setEnabled(state);
             AutoComEmailId.setEnabled(state);
@@ -2020,6 +2003,7 @@ private void setTermsAndPolicy(String webUrl){
 
     private void setTimeDisabled(int type){
         if(type==0) {
+            //editClick = false;
            setAdapterForTimingList(false);
         }else {
             //company

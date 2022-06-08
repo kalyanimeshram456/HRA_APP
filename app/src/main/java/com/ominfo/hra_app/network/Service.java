@@ -188,6 +188,13 @@ public class Service {
                 action,cId,from,to
         );
     }
+    public Observable<JsonElement> executeAttendanceDetailsAPI(RequestBody action,RequestBody date,RequestBody emp_id
+            ,RequestBody company_id) {
+        return networkAPIServices.attendanceDetails(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_ATTENDANCE_DETAILS),
+                action,date,emp_id,company_id
+        );
+    }
     public Observable<JsonElement> executeAddHolidayAPI(AddHolidayRequest addHolidayRequest) {
         return networkAPIServices.addHoliday(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_ADD_HOLIDAY),
@@ -388,7 +395,7 @@ public class Service {
         return networkAPIServices.getPastLeaveList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_GET_PAST_LEAVE),
                 request.getAction(),request.getEmpId(),
-                request.getMonth(),request.getPageNo(),request.getPageSize()
+                request.getMonth(),request.getPageNo(),request.getPageSize(),request.getCompany_id()
         );
     }
 
@@ -501,7 +508,7 @@ public class Service {
                 ,editCompanyRequest.getMonEndTime() ,editCompanyRequest.getTueEndTime()
                 ,editCompanyRequest.getWedEndTime() ,editCompanyRequest.getThursEndTime()
                 ,editCompanyRequest.getFri_end_time() ,editCompanyRequest.getSatEndTime()
-                ,editCompanyRequest.getSunEndTime()
+                ,editCompanyRequest.getSunEndTime(),editCompanyRequest.getDist_range()
         );
     }
 

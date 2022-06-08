@@ -335,6 +335,13 @@ public interface NetworkAPIServices {
                                             @Part("company_id") RequestBody company_id,
                                              @Part("from_date") RequestBody from_date,
                                              @Part("end_date") RequestBody end_date);
+    @Multipart
+    @POST()
+    Observable<JsonElement> attendanceDetails(@Url String url,
+                                             @Part("action") RequestBody uploadType,
+                                             @Part("date") RequestBody date,
+                                             @Part("emp_id") RequestBody emp_id,
+                                             @Part("company_id") RequestBody company_id);
 
     @Multipart
     @POST()
@@ -545,7 +552,8 @@ public interface NetworkAPIServices {
                                              @Part("emp_id") RequestBody emp_id,
                                              @Part("month") RequestBody leave_type,
                                              @Part("pageno") RequestBody pageno,
-                                             @Part("pagesize") RequestBody pagesize
+                                             @Part("pagesize") RequestBody pagesize,
+                                             @Part("company_id") RequestBody company_id
     );
 
 
@@ -652,16 +660,16 @@ public interface NetworkAPIServices {
                                          @Part("office_latitude") RequestBody company_ID,
                                          @Part("office_longitude") RequestBody emp_id,
                                          @Part("mon_working") RequestBody mon_working,@Part("tue_working") RequestBody tue_working,
-                                         @Part("wed_working") RequestBody wed_working,@Part("thrus_working") RequestBody thrus_working,
+                                         @Part("wed_working") RequestBody wed_working,@Part("thurs_working") RequestBody thrus_working,
                                          @Part("fri_working") RequestBody fri_working,@Part("sat_working") RequestBody sat_working,
                                          @Part("sun_working") RequestBody sun_working,@Part("mon_start_time") RequestBody mon_start_time,
                                          @Part("tue_start_time") RequestBody tue_start_time,@Part("wed_start_time") RequestBody wed_start_time,
-                                         @Part("thrus_start_time") RequestBody thrus_start_time,@Part("fri_start_time") RequestBody fri_start_time,
+                                         @Part("thurs_start_time") RequestBody thrus_start_time,@Part("fri_start_time") RequestBody fri_start_time,
                                          @Part("sat_start_time") RequestBody sat_start_time,@Part("sun_start_time") RequestBody sun_start_time,
                                          @Part("mon_end_time") RequestBody mon_end_time,@Part("tue_end_time") RequestBody tue_end_time,
-                                         @Part("wed_end_time") RequestBody wed_end_time,@Part("thrus_end_time") RequestBody thrus_end_time,
+                                         @Part("wed_end_time") RequestBody wed_end_time,@Part("thurs_end_time") RequestBody thrus_end_time,
                                          @Part("fri_end_time") RequestBody fri_end_time,@Part("sat_end_time") RequestBody sat_end_time,
-                                         @Part("sun_end_time") RequestBody sun_end_time
+                                         @Part("sun_end_time") RequestBody sun_end_time,@Part("dist_range") RequestBody dist_range
     );
 
     @Multipart

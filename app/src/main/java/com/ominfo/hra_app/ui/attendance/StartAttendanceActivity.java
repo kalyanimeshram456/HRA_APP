@@ -11,6 +11,8 @@ import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -31,13 +33,18 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -74,6 +81,7 @@ import com.ominfo.hra_app.ui.attendance.model.UpdateAttendanceViewModel;
 import com.ominfo.hra_app.ui.attendance.ripple_effect.RippleBackground;
 import com.ominfo.hra_app.ui.dashboard.model.DashModel;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
+import com.ominfo.hra_app.ui.visit_report.activity.AddLocationActivity;
 import com.ominfo.hra_app.ui.visit_report.model.GetVisitNoViewModel;
 import com.ominfo.hra_app.ui.visit_report.model.VisitNoResponse;
 import com.ominfo.hra_app.util.AppUtils;
@@ -136,9 +144,13 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
     @BindView(R.id.tvOfcLocation)
     AppCompatTextView tvOfcLocation;
     public static AppCompatTextView tvCurrLocation;
-    public String addressCurr = "", addressOff = "";
+    public String addressCurr = "Unknown", addressOff = "";
     @BindView(R.id.layBottomCheckOut)
     LinearLayoutCompat layBottomCheckOut;
+    @BindView(R.id.imgCheckInBg)
+    ConstraintLayout imgCheckInBg;
+    public static  String result = "temp";
+    String distanceInMeters = "51";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,6 +172,20 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         // initialise tha layout
         setToolbar();
+        Glide.with(mContext)
+                .load(R.drawable.attendance_bg)
+                .into(new CustomTarget<Drawable>() {
+                    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        imgCheckInBg.setBackground(resource);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                    }
+                });
         tvCurrLocation = findViewById(R.id.tvCurrLocation);
         final RippleBackground rippleBackground = (RippleBackground) findViewById(R.id.content);
         rippleBackground.startRippleAnimation(0, mContext);
@@ -561,32 +587,40 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
 
 
     //perform click actions
-    @OnClick({R.id.relRound, R.id.imgOfcLocation, R.id.imgBack})
+    @OnClick({R.id.relRound, R.id.imgOfcLocation, R.id.imgBack,R.id.tvCurrLocation})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
             case R.id.relRound:
                 try {
                     String[] loc = tvOfcLocation.getText().toString().split("Office Location : ");
-                    addressOff = loc[1];
+                    if(loc.length>1){
+                    addressOff = loc[1];}
                     String[] curr = tvCurrLocation.getText().toString().split("Current Location : ");
-                    addressCurr = curr[1];
-                    if (addressOff.equals("Fetching...") || addressOff.equals("") ||
-                            addressCurr.equals("Fetching...") || addressCurr.equals("")) {
+                    if(curr.length>1){
+                    addressCurr = curr[1];}
+                    if (addressOff.equals("Fetching...") || addressOff.equals("")) {
+                        LogUtil.printToastMSG(mContext, "Please request Admin to add office location.");
+                    }
+                    else if(addressCurr.equals("Fetching...") || addressCurr.equals("") ||tvCurrLocation.getText().toString().equals("Tap to add your current location")){
                         LogUtil.printToastMSG(mContext, "Please wait, Location is getting fetched.");
                     } else {
                         String startlocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
                         String startlocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
-                        Double distance = AppUtils.meterDistanceBetweenPoints(Float.parseFloat(startlocationLat),
-                                Float.parseFloat(startlocationLng),Float.parseFloat(offlat),Float.parseFloat(offlng));
-                        if(Math.floor(distance)<51) {
+                        String locationLat = SharedPref.getInstance(mContext).read(SharedPrefKey.ENTERED_VISIT_LAT, "0.0");
+                        String locationLng = SharedPref.getInstance(mContext).read(SharedPrefKey.ENTERED_VISIT_LNG, "0.0");
+                        currlat = locationLat;
+                        currlng = locationLng;
+                        Double distance = AppUtils.meterDistanceBetweenPoints(Float.parseFloat(startlocationLat==null || startlocationLat.equals("0.0")?currlat:startlocationLat),
+                                Float.parseFloat(startlocationLng==null || startlocationLng.equals("0.0")?currlng:startlocationLng),Float.parseFloat(offlat),Float.parseFloat(offlng));
+                        if(Math.floor(distance)<Double.parseDouble((distanceInMeters==null||distanceInMeters.equals("")||distanceInMeters.equals("null")?"51":distanceInMeters))) {
                             if (getAttendanceAttList != null && getAttendanceAttList.size() > 0) {
                                 callUpdateAttendanceApi(1);
                             } else {
                                 callUpdateAttendanceApi(0);
                             }
                         }else {
-                            LogUtil.printSnackBar(mContext, Color.RED,findViewById(android.R.id.content), getString(R.string.msg_location_change_in_attendance) + distance);
+                            LogUtil.printSnackBar(mContext, Color.RED,findViewById(android.R.id.content), getString(R.string.msg_location_change_in_attendance) + distance+"--"+Double.parseDouble((distanceInMeters==null||distanceInMeters.equals("")||distanceInMeters.equals("null")?"51":distanceInMeters)));
                         }
                     }
                     break;
@@ -596,10 +630,10 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
             case R.id.imgBack:
                 finish();
                 break;
-            case R.id.imgOfcLocation:
-            /*int LAUNCH_SECOND_ACTIVITY = 1000;
+            case R.id.tvCurrLocation:
+            int LAUNCH_SECOND_ACTIVITY = 10000;
             Intent i = new Intent(this, AddLocationActivity.class);
-            startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);*/
+            startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
                 break;
         }
     }
@@ -610,14 +644,21 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
         stopService(new Intent(mContext, BackgroundAttentionService.class));
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1000) {
+        if (requestCode == 10000) {
             if (resultCode == Activity.RESULT_OK) {
-                String result = data.getStringExtra("result");
+                String locationLat = SharedPref.getInstance(mContext).read(SharedPrefKey.ENTERED_VISIT_LAT, "0.0");
+                String locationLng = SharedPref.getInstance(mContext).read(SharedPrefKey.ENTERED_VISIT_LNG, "0.0");
+                String location = SharedPref.getInstance(mContext).read(SharedPrefKey.LOCATION_ENTERED_TXT, "Not Available");
+                result=location;//data.getStringExtra("result");
                 //String str = "<b>"+result+"</b>";
-
+                //LogUtil.printToastMSG(mContext,result);
+                tvCurrLocation.setText("Current Location : "+result); //Current Location : Fetching...
+                currlat = locationLat;
+                currlng = locationLng;
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 // Write your code if there's no result
@@ -684,6 +725,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_ATTENDANCE)) {
                             GetAttendanceResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetAttendanceResponse.class);
                             if(responseModel.getResult()!=null){
+                                distanceInMeters = responseModel.getResult().getDist_range()+"";
                                 try {
                                     Geocoder geocoder = new Geocoder(StartAttendanceActivity.this);
                                     offlat = responseModel.getResult().getOffice_latitude()+"";
@@ -698,6 +740,8 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                                         String country = addressList.get(0).getCountryName();
                                         addressOff = locality;
                                         tvOfcLocation.setText("Office Location : " + locality);
+                                    }else{
+                                        tvOfcLocation.setText("Office Location : " + responseModel.getResult().getOffice_address());
                                     }
 
                                 } catch (IOException e) {
@@ -729,13 +773,28 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
 
                                     try {
                                         addresses = geocoder.getFromLocation(Double.parseDouble(startlocationLat), Double.parseDouble(startlocationLng), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-                                        String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-                                        String city = addresses.get(0).getLocality();
-                                        String state = addresses.get(0).getAdminArea();
-                                        String country = addresses.get(0).getCountryName();
-                                        String postalCode = addresses.get(0).getPostalCode();
-                                        String knownName = addresses.get(0).getFeatureName();
-                                        tvCurrLocation.setText("Current Location : " + address);
+                                        //addresses = null;
+                                        if((addresses != null && addresses.size()>0) || (!startlocationLat.equals("0.0") && !startlocationLng.equals("0.0"))) {
+                                            String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                                            String city = addresses.get(0).getLocality();
+                                            String state = addresses.get(0).getAdminArea();
+                                            String country = addresses.get(0).getCountryName();
+                                            String postalCode = addresses.get(0).getPostalCode();
+                                            String knownName = addresses.get(0).getFeatureName();
+                                            tvCurrLocation.setText("Current Location : " + address);
+                                            tvCurrLocation.setEnabled(false);
+                                        }else {
+                                            tvCurrLocation.setEnabled(true);
+                                            tvCurrLocation.setPaintFlags(tvCurrLocation.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                                            tvCurrLocation.setText("Tap to add your current location");
+                                             if (result != null && !result.equals("temp") && !result.equals("")) {
+                                                tvCurrLocation.setText("Current Location : " + result);
+                                            }
+                                            if (tvCurrLocation.getText().toString() == null || tvCurrLocation.getText().toString().equals("Tap to add your current location") || tvCurrLocation.getText().toString().equals("Current Location : ")) {
+                                                LogUtil.printSnackBar(getBaseContext(), R.color.white, findViewById(android.R.id.content),
+                                                        "Sorry, We are unable to fetch your location! \nPlease select it manually.");}
+
+                                        }
                                     } catch (Exception e) {
                                     }
                                     tvCheckInTime.setText(AppUtils.convert24to12Attendance(responseModel.getResult().getAtt().get(0).getStartTime()));

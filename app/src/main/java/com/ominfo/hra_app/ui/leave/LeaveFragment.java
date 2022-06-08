@@ -562,7 +562,9 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
             isLastPage = true;
         }
         isLoading = false;
-        if(acceptRejectLeaveArrayList.size()>1){leaveAdapter.removeLoading();}
+        if(leaveAdapter.getItemCount()>1) {
+           // leaveAdapter.removeLoading();
+        }
         //  }
         // }, 0);
     }
@@ -587,6 +589,7 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
                                 if(responseModel.getResult().getLeave()!=null && responseModel.getResult().getLeave().size()>0) {
                                     acceptRejectLeaveArrayList = responseModel.getResult().getLeave();
                                     emptyLayout.setVisibility(View.GONE);
+                                    ((BaseActivity)mContext).initToolbar(5, mContext, R.id.imgBack, R.id.imgReport, R.id.imgNotify,tvNotifyCount, R.id.imgBack, R.id.imgCall);
                                     doApiCall();
                                 }
                             }

@@ -12,10 +12,10 @@
     android:orientation="vertical">
 
     <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/imgDashBg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar_layout"
-        android:background="@drawable/img_bg_bashboard"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:layout_marginBottom="@dimen/_100dp"

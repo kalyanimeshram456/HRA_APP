@@ -27,7 +27,7 @@ public class NotificationDetailsNotify {
     @SerializedName("related_id")
     private String mRelatedId;
     @SerializedName("rm_id")
-    private Object mRmId;
+    private String mRmId;
     @SerializedName("type")
     private String mType;
     @SerializedName("updated_on")
@@ -125,11 +125,11 @@ public class NotificationDetailsNotify {
         mRelatedId = relatedId;
     }
 
-    public Object getRmId() {
+    public String getRmId() {
         return mRmId;
     }
 
-    public void setRmId(Object rmId) {
+    public void setRmId(String rmId) {
         mRmId = rmId;
     }
 

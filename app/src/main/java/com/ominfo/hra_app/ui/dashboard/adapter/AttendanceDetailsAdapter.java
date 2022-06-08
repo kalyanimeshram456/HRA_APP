@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ominfo.hra_app.MainActivity;
 import com.ominfo.hra_app.R;
+import com.ominfo.hra_app.ui.dashboard.model.AttendanceDetailsData;
 import com.ominfo.hra_app.ui.dashboard.model.BirthDayDobdatum;
 import com.ominfo.hra_app.ui.dashboard.model.DashModel;
 import com.ominfo.hra_app.util.AppUtils;
@@ -25,17 +26,17 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class TodayBirthDayAdapter extends RecyclerView.Adapter<TodayBirthDayAdapter.ViewHolder> {
+public class AttendanceDetailsAdapter extends RecyclerView.Adapter<AttendanceDetailsAdapter.ViewHolder> {
     ListItemSelectListener listItemSelectListener;
-    private List<BirthDayDobdatum> mListData;
+    private List<AttendanceDetailsData> mListData;
     private Context mContext;
     private String mDate;
 
-    public TodayBirthDayAdapter(Context mContext) {
+    public AttendanceDetailsAdapter(Context mContext) {
         this.mContext = mContext;
     }
 
-    public TodayBirthDayAdapter(Context context, List<BirthDayDobdatum> listData, ListItemSelectListener itemClickListener) {
+    public AttendanceDetailsAdapter(Context context, List<AttendanceDetailsData> listData, ListItemSelectListener itemClickListener) {
         this.mListData = listData;
         this.mContext = context;
         this.listItemSelectListener = itemClickListener;
@@ -45,12 +46,12 @@ public class TodayBirthDayAdapter extends RecyclerView.Adapter<TodayBirthDayAdap
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View listItem = layoutInflater.inflate(R.layout.row_birth_day_list, parent, false);
+        View listItem = layoutInflater.inflate(R.layout.row_attendance_details, parent, false);
 
         return new ViewHolder(listItem);
     }
 
-    public void updateList(List<BirthDayDobdatum> list){
+    public void updateList(List<AttendanceDetailsData> list){
         mListData = list;
         notifyDataSetChanged();
     }
@@ -59,27 +60,21 @@ public class TodayBirthDayAdapter extends RecyclerView.Adapter<TodayBirthDayAdap
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         if (mListData != null) {
-            AppUtils.loadImageURL(mContext,mListData.get(position).getEmpProfilePic(),
+            AppUtils.loadImageURL(mContext,mListData.get(position).getProfilePic(),
                     holder.imgBirthPro,  holder.progress_barBirth);
-            holder.tvBirthName.setText(mListData.get(position).getEmpName());
-            holder.tvBirthValue.setText(mListData.get(position).getEmpPosition());
-            String mDate = AppUtils.convertDobDate(mListData.get(position).getDob());
-            String[] mArr = mDate.split(",");
-             String[] suffixes =
-                    //    0     1     2     3     4     5     6     7     8     9
-                    { "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th",
-                            //    10    11    12    13    14    15    16    17    18    19
-                            "th", "th", "th", "th", "th", "th", "th", "th", "th", "th",
-                            //    20    21    22    23    24    25    26    27    28    29
-                            "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th",
-                            //    30    31
-                            "th", "st" };
-
-
-            String dayStr = mArr[0] + suffixes[Integer.parseInt(mArr[0])];
-            holder.tvLeaveBirthValue.setText(dayStr+mArr[1]);
-            AppUtils.loadImageURL(mContext,mListData.get(position).getEmpProfilePic(),
-                    holder.imgBirthPro,holder.progress_barBirth);
+            holder.tvEmpName.setText(mListData.get(position).getEmpName());
+            holder.tvDesi.setText(mListData.get(position).getEmpPosition());
+            if(mListData.get(position).getLeaveType()==null || mListData.get(position).getLeaveType().equals("")) {
+                holder.tvInTime.setText("In Time : " + AppUtils.convert24to12Attendance(mListData.get(position).getStartTime()));
+                holder.tvOutTime.setText("Out Time : " + AppUtils.convert24to12Attendance(mListData.get(position).getEndTime()));
+                if(mListData.get(position).getIs_early()!=null && (mListData.get(position).getIs_early().equals("1") || mListData.get(position).getIs_early().equals("1"))){
+                    holder.imgIndicator.setVisibility(View.VISIBLE);
+                }else{ holder.imgIndicator.setVisibility(View.GONE);}
+            }else{
+                holder.tvInTime.setText(mListData.get(position).getLeaveType());
+                holder.tvOutTime.setVisibility(View.GONE);
+                holder.imgIndicator.setVisibility(View.GONE);
+            }
         }
 
     }
@@ -92,33 +87,35 @@ public class TodayBirthDayAdapter extends RecyclerView.Adapter<TodayBirthDayAdap
         fragmentTransaction.commit();
     }
 
-
     @Override
     public int getItemCount() {
         return mListData == null ? 0 : mListData.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        AppCompatTextView tvBirthName;
-        AppCompatTextView tvBirthValue;
+        AppCompatTextView tvEmpName,tvInTime, tvOutTime;
+        AppCompatTextView tvDesi;
         AppCompatTextView tvLeaveBirthValue;
         LinearLayoutCompat layClick;
         AppCompatImageView imgDash;
-        CircleImageView imgBirthPro;
+        CircleImageView imgBirthPro,imgIndicator;
         ProgressBar progress_barBirth;
 
         ViewHolder(View itemView) {
             super(itemView);
-            tvBirthName = itemView.findViewById(R.id.tvBirthName);
-            tvBirthValue = itemView.findViewById(R.id.tvBirthValue);
+            tvEmpName = itemView.findViewById(R.id.tvEmpName);
+            tvInTime = itemView.findViewById(R.id.tvInTime);
+            tvOutTime = itemView.findViewById(R.id.tvOutTime);
+            tvDesi = itemView.findViewById(R.id.tvDesi);
             imgBirthPro = itemView.findViewById(R.id.imgBirthPro);
             progress_barBirth = itemView.findViewById(R.id.progress_barBirth);
-            layClick = itemView.findViewById(R.id.layClick);
-            tvLeaveBirthValue = itemView.findViewById(R.id.tvLeaveBirthValue);
+
+            imgIndicator = itemView.findViewById(R.id.imgIndicator);
+            //tvLeaveBirthValue = itemView.findViewById(R.id.tvLeaveBirthValue);
         }
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(DashModel mData);
+        void onItemClick(AttendanceDetailsData mData);
     }
 }

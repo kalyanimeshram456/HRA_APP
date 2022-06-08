@@ -24,10 +24,17 @@
             of the #00ffffffshape-->
         <gradient
             android:angle="0"
+            android:endColor="@android:color/transparent"
+            android:startColor="@android:color/transparent"
+            android:type="sweep"
+            android:useLevel="false" />
+
+        <!--<gradient
+            android:angle="0"
             android:endColor="#00ffffff"
             android:startColor="@color/color_main"
             android:type="sweep"
-            android:useLevel="false" />
+            android:useLevel="false" />-->
     </shape>
 
 </rotate>

@@ -77,7 +77,7 @@
                 android:layout_marginHorizontal="@dimen/_10dp"
                 android:layout_weight="1"
                 android:fontFamily="@font/gilroy_regular"
-                android:text="@string/scr_lbl_amount"
+                android:text="@string/scr_lbl_unavailable"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
 
@@ -90,7 +90,7 @@
                 android:layout_weight="1"
                 android:gravity="right"
                 android:fontFamily="@font/gilroy_regular"
-                android:text="@string/scr_lbl_amount"
+                android:text="@string/scr_lbl_unavailable"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -135,7 +135,7 @@
                 android:layout_weight="1"
                 android:gravity="right"
                 android:fontFamily="@font/gilroy_regular"
-                android:text="@string/scr_lbl_amount"
+                android:text="@string/scr_lbl_unavailable"
                 android:textColor="@color/back_text_colour"
                 android:textSize="@dimen/_14sp" />
         </androidx.appcompat.widget.LinearLayoutCompat>

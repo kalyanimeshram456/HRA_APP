@@ -32,13 +32,13 @@
                 android:background="@color/white"
                 android:scaleType="fitXY"
                 >
+
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/layImgDash"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
-                    android:layout_marginTop="@dimen/_70dp"
-                    >
+                    android:layout_marginTop="@dimen/_70dp">
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/imgDash"
@@ -46,7 +46,7 @@
                         android:layout_height="@dimen/_165dp"
                         android:layout_gravity="top"
                         android:gravity="top"
-                        android:src="@drawable/img_login" />
+                      />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 

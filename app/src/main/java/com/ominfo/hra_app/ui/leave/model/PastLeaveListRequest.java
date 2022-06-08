@@ -17,6 +17,9 @@ public class PastLeaveListRequest {
     @SerializedName("emp_id")
     private RequestBody empId;
 
+    @SerializedName("company_id")
+    private RequestBody company_id;
+
     @SerializedName("month")
     private RequestBody month;
 
@@ -25,6 +28,14 @@ public class PastLeaveListRequest {
 
     @SerializedName("pagesize")
     private RequestBody pageSize;
+
+    public RequestBody getCompany_id() {
+        return company_id;
+    }
+
+    public void setCompany_id(RequestBody company_id) {
+        this.company_id = company_id;
+    }
 
     public RequestBody getAction() {
         return action;

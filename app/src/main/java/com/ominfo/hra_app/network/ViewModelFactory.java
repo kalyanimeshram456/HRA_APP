@@ -8,6 +8,7 @@ import com.ominfo.hra_app.ui.attendance.model.LocationPerHourViewModel;
 import com.ominfo.hra_app.ui.attendance.model.GetAttendanceViewModel;
 import com.ominfo.hra_app.ui.attendance.model.UpdateAttendanceViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.AddHolidayViewModel;
+import com.ominfo.hra_app.ui.dashboard.model.AttendanceDetailsViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.CalenderHolidaysListViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.EditHolidayViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.GetBirthDayListViewModel;
@@ -252,6 +253,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
              return (T) new ChangePasswordViewModel(service);
          }else  if (modelClass.isAssignableFrom(LogoutMobileTokenViewModel.class)) {
              return (T) new LogoutMobileTokenViewModel(service);
+         }else  if (modelClass.isAssignableFrom(AttendanceDetailsViewModel.class)) {
+             return (T) new AttendanceDetailsViewModel(service);
          }
 
         throw new IllegalArgumentException("Unknown class name");

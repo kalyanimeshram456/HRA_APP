@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/attendance_bg"
-    tools:context="com.ominfo.hra_app.ui.SplashActivity">
+    android:id="@+id/imgCheckInBg"
+   >
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -220,6 +220,7 @@
                     android:layout_marginLeft="@dimen/_45dp"
                     android:layout_marginTop="@dimen/_6dp"
                     android:layout_marginRight="@dimen/_0dp"
+                    android:enabled="false"
                     android:fontFamily="@font/gilroy_semibold"
                     android:text="Current Location : Fetching..."
                     android:textColor="@color/white"

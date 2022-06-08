@@ -1,7 +1,9 @@
 package com.ominfo.hra_app.basecontrol;
 
 //import static com.ominfo.hra_app.MainActivity.ssCustomBottomNavigation;
+
 import static com.ominfo.hra_app.MainActivity.bottomNavigationView;
+import static com.ominfo.hra_app.ui.attendance.StartAttendanceActivity.result;
 import static com.ominfo.hra_app.ui.attendance.StartAttendanceActivity.tvCurrLocation;
 
 import android.app.Activity;
@@ -15,6 +17,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -73,6 +76,7 @@ import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.NetworkModule;
 import com.ominfo.hra_app.network.ViewModelFactory;
+import com.ominfo.hra_app.ui.attendance.StartAttendanceActivity;
 import com.ominfo.hra_app.ui.attendance.model.LocationPerHourResponse;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.ui.leave.model.LeaveCountResponse;
@@ -142,7 +146,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         mDeps.inject(this);
         context = this;
         injectAPI();
-        mDb =BaseApplication.getInstance(this).getAppDatabase();
+        mDb = BaseApplication.getInstance(this).getAppDatabase();
         myReceiver = new MyReceiver();
 
     }
@@ -156,6 +160,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
+
     private void injectAPI() {
         notificationViewModel = ViewModelProviders.of(BaseActivity.this, mViewModelFactory).get(NotificationViewModel.class);
         notificationViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_NOTIFICATION));
@@ -163,6 +168,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         leaveCountViewModel = ViewModelProviders.of(BaseActivity.this, mViewModelFactory).get(LeaveCountViewModel.class);
         leaveCountViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_LEAVE_COUNT));
     }
+
     /**
      * Receiver for broadcasts sent by {@link }.
      */
@@ -170,7 +176,10 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         @Override
         public void onReceive(Context context, Intent intent) {
             Location location = intent.getParcelableExtra(BackgroundAttentionService.EXTRA_LOCATION);
-            try{tvCurrLocation.setText("Current Location : Fetching...");}catch (Exception e){}
+            try {
+                StartAttendanceActivity.tvCurrLocation.setText("Current Location : Fetching...");
+            } catch (Exception e) {
+            }
             if (location != null) {
                 Geocoder geocoder;
                 List<Address> addresses;
@@ -178,17 +187,36 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
 
                 try {
                     addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-                    String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-                    String city = addresses.get(0).getLocality();
-                    String state = addresses.get(0).getAdminArea();
-                    String country = addresses.get(0).getCountryName();
-                    String postalCode = addresses.get(0).getPostalCode();
-                    String knownName = addresses.get(0).getFeatureName();
-                    tvCurrLocation.setText("Current Location : " + address);
-                    SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_LAT, String.valueOf(location.getLatitude()));
-                    SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_LONG, String.valueOf(location.getLongitude()));
-                    SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_TITLE, address);
-                    Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_OUT_ENABLED, false);
+                    //addresses = null;
+                    if (addresses != null && addresses.size() > 0) {
+                        String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                        String city = addresses.get(0).getLocality();
+                        String state = addresses.get(0).getAdminArea();
+                        String country = addresses.get(0).getCountryName();
+                        String postalCode = addresses.get(0).getPostalCode();
+                        String knownName = addresses.get(0).getFeatureName();
+                        //tvCurrLocation.setText("Current Location : " + address);
+                        SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_LAT, String.valueOf(location.getLatitude()));
+                        SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_LONG, String.valueOf(location.getLongitude()));
+                        SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_TITLE, address);
+                        Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_OUT_ENABLED, false);
+                        StartAttendanceActivity.tvCurrLocation.setText("Current Location : " + address);
+                        StartAttendanceActivity.tvCurrLocation.setEnabled(false);
+                    } else {
+                        SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
+                        SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
+                        SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_TITLE, "");
+                        StartAttendanceActivity.tvCurrLocation.setEnabled(true);
+                        StartAttendanceActivity.tvCurrLocation.setPaintFlags(StartAttendanceActivity.tvCurrLocation.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                        StartAttendanceActivity.tvCurrLocation.setText("Tap to add your current location");
+
+                        if (result != null && !result.equals("temp") && !result.equals("")) {
+                            StartAttendanceActivity.tvCurrLocation.setText("Current Location : " + result);
+                        }
+                        if (tvCurrLocation.getText().toString() == null || tvCurrLocation.getText().toString().equals("Tap to add your current location") || tvCurrLocation.getText().toString().equals("Current Location : ")) {
+                        LogUtil.printSnackBar(getBaseContext(), R.color.white, findViewById(android.R.id.content),
+                                "Sorry, We are unable to fetch your location! \nPlease select it manually.");}
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -196,26 +224,28 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
             }
         }
     }
-   /* // Self explanatory method
-    public boolean checkForInternet() {
-        ConnectivityManager cm =
-                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        @SuppressLint("MissingPermission") NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-    }*/
+    /* // Self explanatory method
+     public boolean checkForInternet() {
+         ConnectivityManager cm =
+                 (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+         @SuppressLint("MissingPermission") NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+         return activeNetwork != null &&
+                 activeNetwork.isConnectedOrConnecting();
+     }*/
     //starting foreground service and registering broadcast for lat long
     public void startLocationService() {
         startService(new Intent(this, BackgroundAttentionService.class));
         LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,
                 new IntentFilter(BackgroundAttentionService.ACTION_BROADCAST));
     }
-    void loadData(){
+
+    void loadData() {
         // do sth
     }
 
-    void updateUI(){
+    void updateUI() {
         // No internet connection, update the ui and warn the user
     }
 
@@ -251,6 +281,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
     private void callApplyLeaveApi() {
 
     }
+
     /*  openContactSupportEmail(this, getString(R.string.app_name),
                        "sendbits@gmail.com", "");*/
     /*send email*/
@@ -262,7 +293,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         /*The type of the content is text, obviously.*/
         intent.setType("text/plain");
         /*Applying information Subject and Body.*/
-        intent.putExtra(android.content.Intent.EXTRA_SUBJECT,subject);
+        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
         intent.putExtra(android.content.Intent.EXTRA_TEXT, body);
         /*Fire!*/
         context.startActivity(Intent.createChooser(intent, "Share via"));
@@ -299,9 +330,9 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         }
     };
 
-    public void moveFragment(Context mContext,Fragment fragmentMove){
+    public void moveFragment(Context mContext, Fragment fragmentMove) {
         Fragment fragment = fragmentMove;
-        FragmentManager fragmentManager = ((MainActivity)mContext).getSupportFragmentManager();
+        FragmentManager fragmentManager = ((MainActivity) mContext).getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.framecontainer, fragment);
         fragmentTransaction.addToBackStack(null);
@@ -346,7 +377,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
     }
 
 
-  /*   * call this method to display full screen progress loader
+    /*   * call this method to display full screen progress loader
      * */
     public void showProgressLoader(String message) {
         try {
@@ -398,32 +429,30 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
     }
 
     /*launch screen*/
-    public void launchScreenClear(Context mContext, Class mActivity){
-        Intent intent=new Intent(mContext,mActivity);
+    public void launchScreenClear(Context mContext, Class mActivity) {
+        Intent intent = new Intent(mContext, mActivity);
         startActivity(intent);
         finish();
     }
 
     /*launch screen*/
-    public void launchScreen(Context mContext, Class mActivity){
-        Intent intent=new Intent(mContext,mActivity);
+    public void launchScreen(Context mContext, Class mActivity) {
+        Intent intent = new Intent(mContext, mActivity);
         startActivity(intent);
     }
 
 
     /*set error in input field if invalid*/
-    public void setError(int val,TextInputLayout textInputLayout, String error) {
-        if(val==1){
+    public void setError(int val, TextInputLayout textInputLayout, String error) {
+        if (val == 1) {
             int colorInt = getResources().getColor(R.color.green);
             ColorStateList csl = ColorStateList.valueOf(colorInt);
-           textInputLayout.setErrorTextColor(csl);
-        }
-        else if(val==2){
+            textInputLayout.setErrorTextColor(csl);
+        } else if (val == 2) {
             int colorInt = getResources().getColor(R.color.deep_yellow);
             ColorStateList csl = ColorStateList.valueOf(colorInt);
             textInputLayout.setErrorTextColor(csl);
-        }
-        else{
+        } else {
             int colorInt = getResources().getColor(R.color.notify_red);
             ColorStateList csl = ColorStateList.valueOf(colorInt);
             textInputLayout.setErrorTextColor(csl);
@@ -465,6 +494,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
             }
         });
     }
+
     public boolean isValidateFieldForNoInputLayout(AppCompatEditText editText, String errorMsg) {
         return true;
     }
@@ -502,7 +532,6 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
     }
 
 
-
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     public void appInResumeState() {
 //        Toast.makeText(this,"In Foreground",Toast.LENGTH_LONG).show();
@@ -534,33 +563,32 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
     }
 
 
-    public void showSuccessDialog(String msg,boolean status,Activity activity) {
+    public void showSuccessDialog(String msg, boolean status, Activity activity) {
         Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
         mDialog.setContentView(R.layout.dialog_weight_submitted);
         mDialog.setCanceledOnTouchOutside(true);
         AppCompatTextView mTextViewTitle = mDialog.findViewById(R.id.tv_dialogTitle);
         AppCompatButton button = mDialog.findViewById(R.id.okayButton);
-        AppCompatImageView imgError= mDialog.findViewById(R.id.imgError);
+        AppCompatImageView imgError = mDialog.findViewById(R.id.imgError);
         mTextViewTitle.setText(msg);
-        if(status) {
+        if (status) {
             imgError.setImageDrawable(context.getDrawable(R.drawable.ic_error_load_grey));
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mDialog.dismiss();
-                    if(status) {
+                    if (status) {
                         //activity.finish();
                     }
                 }
             }, 2500);
-        }
-        else{
+        } else {
             imgError.setImageDrawable(context.getDrawable(R.drawable.ic_done));
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mDialog.dismiss();
-                    if(!status) {
+                    if (!status) {
                         //activity.finish();
                     }
                 }
@@ -593,33 +621,32 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         mDialog.show();
     }
 
-    public void showSuccessDialogEmp(String msg,boolean status,Activity activity) {
+    public void showSuccessDialogEmp(String msg, boolean status, Activity activity) {
         Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
         mDialog.setContentView(R.layout.dialog_weight_submitted);
         mDialog.setCanceledOnTouchOutside(true);
         AppCompatTextView mTextViewTitle = mDialog.findViewById(R.id.tv_dialogTitle);
         AppCompatButton button = mDialog.findViewById(R.id.okayButton);
-        AppCompatImageView imgError= mDialog.findViewById(R.id.imgError);
+        AppCompatImageView imgError = mDialog.findViewById(R.id.imgError);
         mTextViewTitle.setText(msg);
-        if(status) {
+        if (status) {
             imgError.setImageDrawable(context.getDrawable(R.drawable.ic_error_load_grey));
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mDialog.dismiss();
-                    if(status) {
+                    if (status) {
                         activity.finish();
                     }
                 }
             }, 2500);
-        }
-        else{
+        } else {
             imgError.setImageDrawable(context.getDrawable(R.drawable.ic_done));
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mDialog.dismiss();
-                    if(!status) {
+                    if (!status) {
                         activity.finish();
                     }
                 }
@@ -653,42 +680,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
     }
 
 
-    public void showUploadDialog() {
-        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_upload_total_hisab);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton okayButton = mDialog.findViewById(R.id.uploadButton);
-        AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-
-        okayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-                //showSuccessDialog(getString(R.string.msg_kharcha_uploaded));
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        finish();
-                    }
-                }, 700);
-            }
-        });
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }
-
-    public void initToolbar(int val,Context mContext,int backId,int complaintId,int NotifyId,AppCompatTextView NotifyCount,int logoutId,int callId) {
+    public void initToolbar(int val, Context mContext, int backId, int complaintId, int NotifyId, AppCompatTextView NotifyCount, int logoutId, int callId) {
         LinearLayoutCompat imgBack = findViewById(backId);
         AppCompatImageView imgComplaint = findViewById(complaintId);
         AppCompatImageView imgNotify = findViewById(NotifyId);
@@ -696,8 +688,9 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         imgNotifyCount = NotifyCount;
         //imgNotifyCount.invalidate();// = null;
         //LogUtil.printToastMSG(mContext,"counttt");
-        if(val!=6){
-        setNotifyCount();}
+        if (val != 6) {
+            setNotifyCount();
+        }
         //showRateUsDialog(mContext);
         /*if(logoutId!=0) {
             LinearLayoutCompat imgLogout = findViewById(logoutId);
@@ -719,22 +712,23 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
             imgBack.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(val==5){
+                    if (val == 5) {
                         Fragment fragment = new DashboardFragment();
-                        FragmentManager fragmentManager = ((MainActivity)mContext).getSupportFragmentManager();
+                        FragmentManager fragmentManager = ((MainActivity) mContext).getSupportFragmentManager();
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                         fragmentTransaction.add(R.id.framecontainer, fragment);
                         fragmentTransaction.addToBackStack(null);
                         fragmentTransaction.commit();
-                    }
-                    else if(val==6){
+                    } else if (val == 6) {
                         showVisitCloseAlertDialog(mContext);
+                    } else {
+                        finish();
                     }
-                    else {
-                    finish();}
                 }
             });
-        }catch (Exception e){e.printStackTrace();}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         try {
             imgCall.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -742,32 +736,39 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                     //showCallManagerDialog(mContext);
                 }
             });
-        }catch (Exception e){e.printStackTrace();}
-        try{
-        imgComplaint.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (val == 1) {
-                    finish();
-                    //launchScreen(mContext, ComplaintsActivity.class);
-                } else {
-                    //launchScreen(mContext, ComplaintsActivity.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            imgComplaint.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (val == 1) {
+                        finish();
+                        //launchScreen(mContext, ComplaintsActivity.class);
+                    } else {
+                        //launchScreen(mContext, ComplaintsActivity.class);
+                    }
                 }
-            }
-        });
-        }catch (Exception e){e.printStackTrace();}
-        try{
-        imgNotify.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (val == 1) {
-                    finish();
-                    launchScreen(mContext, NotificationsActivity.class);
-                } else {
-                    launchScreen(mContext, NotificationsActivity.class);
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            imgNotify.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (val == 1) {
+                        finish();
+                        launchScreen(mContext, NotificationsActivity.class);
+                    } else {
+                        launchScreen(mContext, NotificationsActivity.class);
+                    }
                 }
-            }
-        });}catch (Exception e){e.printStackTrace();}
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         try {
            /* imgLogout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -777,16 +778,17 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                     launchScreen(mContext, LoginActivity.class);
                 }
             });*/
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
 
     }
 
 
-        public void setCallDialor(String number){
-            Intent intent = new Intent(Intent.ACTION_DIAL);
-            intent.setData(Uri.parse("tel:"+number));
-            startActivity(intent);
-        }
+    public void setCallDialor(String number) {
+        Intent intent = new Intent(Intent.ACTION_DIAL);
+        intent.setData(Uri.parse("tel:" + number));
+        startActivity(intent);
+    }
 
 
     @Override
@@ -811,7 +813,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
             public void onClick(View v) {
                 mDialog.dismiss();
                 String visit = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.VISIT_NO, "");
-                SharedPref.getInstance(mContext).write(SharedPrefKey.VISIT_NO,"");
+                SharedPref.getInstance(mContext).write(SharedPrefKey.VISIT_NO, "");
                 finish();
             }
         });
@@ -830,27 +832,29 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         mDialog.show();
     }
 
-    public void setNotifyCount(){
+    public void setNotifyCount() {
         imgNotifyCount.setVisibility(View.INVISIBLE);
-        isNotify=true;
+        isNotify = true;
         callNotificationApi();
         callLeaveCountApi();
     }
+
     /* Call Api Notification */
     private void callNotificationApi() {
         if (NetworkCheck.isInternetAvailable(BaseActivity.this)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if (loginTable != null) {
                 RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_notification);
-                RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
-                RequestBody mRequestBodyDate = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
-                notificationViewModel.hitNotificationApi(mRequestBodyType,mRequestBodyTypeCompId
-                        ,mRequestBodyDate);
+                RequestBody mRequestBodyTypeCompId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                RequestBody mRequestBodyDate = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
+                notificationViewModel.hitNotificationApi(mRequestBodyType, mRequestBodyTypeCompId
+                        , mRequestBodyDate);
             }
         } else {
             LogUtil.printToastMSG(BaseActivity.this, getString(R.string.err_msg_connection_was_refused));
         }
     }
+
     /* Call Api Notification */
     private void callLeaveCountApi() {
         if (NetworkCheck.isInternetAvailable(BaseActivity.this)) {
@@ -861,13 +865,14 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                 RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
                 RequestBody mRequestMon = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getLeaveCountDate());
 
-                leaveCountViewModel.hitLeaveCountApi(mRequestBodyType,mRequestBodyTypeEmployee,
-                        mRequestComId,mRequestMon);
+                leaveCountViewModel.hitLeaveCountApi(mRequestBodyType, mRequestBodyTypeEmployee,
+                        mRequestComId, mRequestMon);
             }
         } else {
             LogUtil.printToastMSG(BaseActivity.this, getString(R.string.err_msg_connection_was_refused));
         }
     }
+
     /**
      * show error message according to error type
      */
@@ -897,7 +902,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         switch (apiResponse.status) {
 
             case LOADING:
-                if(!isNotify) {
+                if (!isNotify) {
                     //showProgressLoader(getString(R.string.scr_message_please_wait));
                 }
                 break;
@@ -906,70 +911,72 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                 //dismissLoader();
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
-                    try{
+                    try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_NOTIFICATION)) {
                             NotificationResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), NotificationResponse.class);
                             if (responseModel != null/* && responseModel.getResult().getStatus().equals("success")*/) {
                                 try {
                                     isNotify = false;
-                                    if(responseModel.getResult().getNotifdata().size()>0){
+                                    if (responseModel.getResult().getNotifdata().size() > 0) {
                                         imgNotifyCount.setVisibility(View.VISIBLE);
-                                    }
-                                    else{
+                                    } else {
                                         imgNotifyCount.setVisibility(View.INVISIBLE);
                                     }
                                     SharedPref.getInstance(this).write(SharedPrefKey.IS_NOTIFY_COUNT, String.valueOf(responseModel.getResult().getNotifdata().size()));
                                     imgNotifyCount.setText(String.valueOf(responseModel.getResult().getNotifdata().size()));
-                                }catch (Exception e){
+                                } catch (Exception e) {
                                     //LogUtil.printToastMSG(this,e.getMessage());
                                     e.printStackTrace();
                                 }
                             }
                         }
-                    }catch (Exception e){e.printStackTrace();}
-                    try{
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_LEAVE_COUNT)) {
                             LeaveCountResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LeaveCountResponse.class);
                             if (responseModel != null/* && responseModel.getResult().getStatus().equals("success")*/) {
                                 try {
                                     isNotify = false;
-                                    if(responseModel.getResult().getLevCountEmp()!=null &&
+                                    if (responseModel.getResult().getLevCountEmp() != null &&
                                             !responseModel.getResult().getLevCountEmp().equals("0") &&
-                                            !responseModel.getResult().getLevCountEmp().equals("")){
+                                            !responseModel.getResult().getLevCountEmp().equals("")) {
                                         bottomNavigationView.getOrCreateBadge(R.id.leave).setNumber(Integer.parseInt(responseModel.getResult().getLevCountEmp()));
                                         bottomNavigationView.getOrCreateBadge(R.id.leave).setBackgroundColor(getResources().getColor(R.color.notify_red));
                                         //bottomNavigationView.getOrCreateBadge(R.id.home).setBadgeGravity(Gravity.TOP_END);
-                                       // bottomNavigationView.setBad(3, responseModel.getResult().getLevCountEmp());
-                                    }
-                                    else{
+                                        // bottomNavigationView.setBad(3, responseModel.getResult().getLevCountEmp());
+                                    } else {
                                         bottomNavigationView.getOrCreateBadge(R.id.leave).clearNumber();
                                         bottomNavigationView.getOrCreateBadge(R.id.leave).setBackgroundColor(getResources().getColor(R.color.bg_calender_screen));
                                     }
-                                }catch (Exception e){
-                                    LogUtil.printToastMSG(this,e.getMessage());
+                                } catch (Exception e) {
+                                    LogUtil.printToastMSG(this, e.getMessage());
                                     e.printStackTrace();
                                 }
                             }
                         }
-                    }catch (Exception e){e.printStackTrace();}
-                    try{
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_LOCATION_PER_HOUR)) {
                             LocationPerHourResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LocationPerHourResponse.class);
                             if (responseModel != null/* && responseModel.getResult().getStatus().equals("success")*/) {
-                               // try {
-                                    LogUtil.printToastMSG(this,responseModel.getResult().getMessage());
-                                    mDb.getDbDAO().deleteLocationById(responseModel.getResult().getRequestedToken());
-                                    //int count = mDb.getDbDAO().getCountLocation();
-                                    //LogUtil.printToastMSG(context,"after "+String.valueOf(count));
+                                // try {
+                                LogUtil.printToastMSG(this, responseModel.getResult().getMessage());
+                                mDb.getDbDAO().deleteLocationById(responseModel.getResult().getRequestedToken());
+                                //int count = mDb.getDbDAO().getCountLocation();
+                                //LogUtil.printToastMSG(context,"after "+String.valueOf(count));
                                /* }catch (Exception e){
                                     LogUtil.printToastMSG(this,responseModel.getResult().getMessage());
                                     e.printStackTrace();
                                 }*/
                             }
-                       }
-                    }catch (Exception e){
-                        LogUtil.printToastMSG(this,"issue");
-                       // e.printStackTrace();
+                        }
+                    } catch (Exception e) {
+                        LogUtil.printToastMSG(this, "issue");
+                        // e.printStackTrace();
                     }
                 }
                 break;
@@ -981,7 +988,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
     }
 
     public static class DarkStatusBar {
-        public static void setLightStatusBar(View view, Activity activity){
+        public static void setLightStatusBar(View view, Activity activity) {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
@@ -993,14 +1000,14 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         }
     }
 
-    public void setRateUsCounter(Context context){
+    public void setRateUsCounter(Context context) {
         boolean boolRated = SharedPref.getInstance(context).read(SharedPrefKey.RATED, false);
-        String RatedDate = SharedPref.getInstance(context).read(SharedPrefKey.RATED_DATE,  AppUtils.getCurrentDateTime_());
+        String RatedDate = SharedPref.getInstance(context).read(SharedPrefKey.RATED_DATE, AppUtils.getCurrentDateTime_());
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         try {
             Date date1 = sdf.parse(AppUtils.getCurrentDateTime_());
             Date date2 = sdf.parse(RatedDate);
-            if(!boolRated && (date1.compareTo(date2) == 1)||(date1.compareTo(date2) == 0)) {
+            if (!boolRated && (date1.compareTo(date2) == 1) || (date1.compareTo(date2) == 0)) {
                 String startRateUs = SharedPref.getInstance(context).read(SharedPrefKey.RATE_US_COUNT, "0");
                 int count = Integer.parseInt(startRateUs) + 1;
                 if (count > 5) {
@@ -1015,9 +1022,10 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
             e.printStackTrace();
         }
     }
+
     //show Receipt Details popup
     public void showRateUsDialog(Context context) {
-        Dialog mDialog = new Dialog(context, R.style.ThemeDialogCustom);
+      /*  Dialog mDialog = new Dialog(context, R.style.ThemeDialogCustom);
         mDialog.setContentView(R.layout.dialog_rate_us);
         mDialog.setCanceledOnTouchOutside(true);
         AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
@@ -1037,15 +1045,15 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
             @Override
             public void onClick(View v) {
                 mDialog.dismiss();
-               /* input_textComment.setVisibility(View.VISIBLE);
+               *//* input_textComment.setVisibility(View.VISIBLE);
                 addRejectButton.setText(R.string.scr_lbl_not_now);
                 appcomptextTitle.setText(R.string.scr_lbl_thanks);
-                appcomptextSubTitle.setText("You can also write a review");*/
-                SharedPref.getInstance(context).write(SharedPrefKey.RATED,true);
-                Uri uri =  Uri.parse("http://play.google.com/store/apps/details?id=" + "com.ominfo.crm_solution");
+                appcomptextSubTitle.setText("You can also write a review");*//*
+                SharedPref.getInstance(context).write(SharedPrefKey.RATED, true);
+                Uri uri = Uri.parse("http://play.google.com/store/apps/details?id=" + "com.ominfo.crm_solution");
                 Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
-                      // To count with Play market backstack, After pressing back button,
-                        // to taken back to our application, we need to add following flags to intent.
+                // To count with Play market backstack, After pressing back button,
+                // to taken back to our application, we need to add following flags to intent.
                 goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
                         Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
                         Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
@@ -1061,7 +1069,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
             @Override
             public void onClick(View v) {
                 mDialog.dismiss();
-                SharedPref.getInstance(context).write(SharedPrefKey.RATED,true);
+                SharedPref.getInstance(context).write(SharedPrefKey.RATED, true);
             }
         });
         addRejectButton.setOnClickListener(new View.OnClickListener() {
@@ -1077,5 +1085,6 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
             }
         });
         //mDialog.show();
+    */
     }
 }

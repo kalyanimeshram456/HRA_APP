@@ -223,7 +223,7 @@ public class AppUtils {
         double t3 = Math.sin(a1) * Math.sin(b1);
         double tt = Math.acos(t1 + t2 + t3);
 
-        return 6366000 * tt;
+        return Double.isNaN(tt)?0.0:6366000 * tt;
     }
     public static int getChangeDateForHisab(String start,String end)
     {
@@ -688,15 +688,19 @@ public class AppUtils {
     }
 
     public static String convert24to12Attendance(String date12){
-        SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm:ss");
-        SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a"/*, Locale.getDefault()*/);
-        Date date = null;
         try {
-            date = displayFormat.parse(date12);
-            return parseFormat.format(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return date12;
+            SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm:ss");
+            SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a"/*, Locale.getDefault()*/);
+            Date date = null;
+            try {
+                date = displayFormat.parse(date12);
+                return parseFormat.format(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return date12;
+            }
+        }catch (Exception e){
+            return date12==null?"--:--":date12;
         }
     }
 

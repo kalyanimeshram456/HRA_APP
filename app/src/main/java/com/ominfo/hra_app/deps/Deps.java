@@ -12,7 +12,6 @@ import com.ominfo.hra_app.ui.leave.fragment.EmployeeLeaveListFragment;
 import com.ominfo.hra_app.ui.leave.fragment.PastLeaveFragment;
 import com.ominfo.hra_app.ui.login.LoginActivity;
 import com.ominfo.hra_app.ui.my_account.MyAccountFragment;
-import com.ominfo.hra_app.ui.my_account.leave.LeaveListFragment;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.payment.PaymentFragment;
 import com.ominfo.hra_app.ui.registration.RegistrationActivity;
@@ -20,10 +19,7 @@ import com.ominfo.hra_app.ui.salary.SalaryFragment;
 import com.ominfo.hra_app.ui.salary.fragment.SalaryDisbursementFragment;
 import com.ominfo.hra_app.ui.salary.fragment.SalarySheetFragment;
 import com.ominfo.hra_app.ui.salary.fragment.SalarySlipFragment;
-import com.ominfo.hra_app.ui.sales_credit.activity.View360Activity;
-import com.ominfo.hra_app.ui.sales_credit.fragment.SalesCreditFragment;
 import com.ominfo.hra_app.ui.employees.AddEmployeeActivity;
-import com.ominfo.hra_app.ui.visit_report.VisitReportFragment;
 
 import javax.inject.Singleton;
 
@@ -53,17 +49,11 @@ public interface Deps
 
     void inject(PastLeaveFragment pastLeaveFragment);
 
-    void inject(LeaveListFragment leaveListFragment);
-
     void inject(StartAttendanceActivity startAttendanceActivity);
-
-    void inject(View360Activity view360Activity);
 
     void inject(RegistrationActivity registrationActivity);
 
     void inject(AddEmployeeActivity addEmployeeActivity);
-
-    void inject(SalesCreditFragment salesCreditFragment);
 
     void inject(NotificationsActivity notificationsActivity);
 
@@ -75,6 +65,5 @@ public interface Deps
 
     void inject(MainActivity mainActivity);
 
-    void inject(VisitReportFragment visitReportFragment);
 
 }

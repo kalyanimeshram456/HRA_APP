@@ -772,6 +772,9 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
             isLastPage = true;
         }
         isLoading = false;
+        if(leaveAdapter.getItemCount()>1) {
+           // leaveAdapter.removeLoading();
+        }
         //  }
         // }, 0);
     }

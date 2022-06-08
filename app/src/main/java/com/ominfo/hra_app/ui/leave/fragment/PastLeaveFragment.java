@@ -43,13 +43,12 @@ import com.ominfo.hra_app.network.ApiResponse;
 import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
-import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.ui.leave.adapter.PastLeaveListAdapter;
 import com.ominfo.hra_app.ui.leave.model.ActiveEmployeeListEmpDatum;
 import com.ominfo.hra_app.ui.leave.model.ActiveEmployeeListResponse;
 import com.ominfo.hra_app.ui.leave.model.ActiveEmployeeListViewModel;
 import com.ominfo.hra_app.ui.leave.model.EmployeeLeaveMonthsList;
-import com.ominfo.hra_app.ui.leave.model.PastLeave;
+import com.ominfo.hra_app.ui.leave.model.PastLeaveList;
 import com.ominfo.hra_app.ui.leave.model.PastLeaveListRequest;
 import com.ominfo.hra_app.ui.leave.model.PastLeaveListResponse;
 import com.ominfo.hra_app.ui.leave.model.PastLeaveListViewModel;
@@ -97,7 +96,7 @@ public class PastLeaveFragment extends BaseFragment {
     @BindView(R.id.tv_emptyLayTitle)
     AppCompatTextView tv_emptyLayTitle;
     private AppDatabase mDb;
-    List<PastLeave> pastLeaveList = new ArrayList<>();
+    List<PastLeaveList> pastLeaveList = new ArrayList<>();
     @BindView(R.id.progressBarHolder)
     FrameLayout mProgressBarHolder;
     @BindView(R.id.empty_layoutActivity)
@@ -211,6 +210,7 @@ public class PastLeaveFragment extends BaseFragment {
             input_textAddEmp.setVisibility(View.GONE);
             tvAddLeave.setVisibility(View.VISIBLE);
             imgAddLeave.setVisibility(View.VISIBLE);
+            selectedActiveEmpid = loginTable.getEmployeeId();
         }
         else {
             selectedActiveEmpid = loginTable.getEmployeeId();
@@ -317,31 +317,6 @@ public class PastLeaveFragment extends BaseFragment {
         super.onPause();
     }
 
-    //show Quotation popup
-    public void showQuotationDialog() {
-        Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.dialog_single_quotation);
-        mDialog.setCanceledOnTouchOutside(true);
-        AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        AppCompatButton downloadButton = mDialog.findViewById(R.id.downloadButton);
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-
-        downloadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-        mDialog.show();
-    }
-
 
     private void setAdapterForLeaveList() {
         if (pastLeaveList !=null && pastLeaveList.size() > 0) {
@@ -357,7 +332,7 @@ public class PastLeaveFragment extends BaseFragment {
         }
         leaveAdapter = new PastLeaveListAdapter(mContext, pastLeaveList, new PastLeaveListAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket,PastLeave searchresult) {
+            public void onItemClick(int mDataTicket,PastLeaveList searchresult) {
 
             }
         });
@@ -562,6 +537,7 @@ public class PastLeaveFragment extends BaseFragment {
             if(loginTable!=null) {
                 RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_past_leave);
                 RequestBody mRequestBodyTypeEmpId = RequestBody.create(MediaType.parse("text/plain"),selectedActiveEmpid);
+                RequestBody mRequestBodyComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
                 String monthNumber  =  AppUtils.convertMonthToInt(AutoComMonth.getText().toString().trim());
                 RequestBody mRequestBodyMonth = RequestBody.create(MediaType.parse("text/plain"), monthNumber);
                 RequestBody mRequestPageNo = RequestBody.create(MediaType.parse("text/plain"), pageNo);
@@ -570,6 +546,7 @@ public class PastLeaveFragment extends BaseFragment {
                 PastLeaveListRequest request = new PastLeaveListRequest();
                 request.setAction(mRequestBodyAction);
                 request.setEmpId(mRequestBodyTypeEmpId);
+                request.setCompany_id(mRequestBodyComId);
                 request.setMonth(mRequestBodyMonth);
                 request.setPageNo(mRequestPageNo);
                 request.setPageSize(mRequestPageSize);

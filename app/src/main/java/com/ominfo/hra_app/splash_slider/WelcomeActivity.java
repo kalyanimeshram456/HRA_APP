@@ -12,17 +12,22 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bumptech.glide.Glide;
 import com.ominfo.hra_app.MainActivity;
 import com.ominfo.hra_app.R;
 import com.ominfo.hra_app.basecontrol.BaseActivity;
 import com.ominfo.hra_app.ui.login.LoginActivity;
+import com.ominfo.hra_app.util.LogUtil;
 
 public class WelcomeActivity extends AppCompatActivity {
 
@@ -185,8 +190,31 @@ public class WelcomeActivity extends AppCompatActivity {
             layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             View view = layoutInflater.inflate(layouts[position], container, false);
-            container.addView(view);
+            switch (position) {
+                case 0:
+                    view = layoutInflater.inflate(layouts[position], null);
+                    AppCompatImageView img = view.findViewById(R.id.imgSlides);
+                    Glide.with(WelcomeActivity.this)
+                            .load(R.drawable.ic_turanth_setup)
+                            .into(img);
+                    break;
+                case 1:
+                    view = layoutInflater.inflate(layouts[position], null);
+                    AppCompatImageView img1 = view.findViewById(R.id.imgSlides);
+                    Glide.with(WelcomeActivity.this)
+                            .load(R.drawable.ic_turanth_salary)
+                            .into(img1);
+                    break;
+                case 2:
+                    view = layoutInflater.inflate(layouts[position], null);
+                    AppCompatImageView img2 = view.findViewById(R.id.imgSlides);
+                    Glide.with(WelcomeActivity.this)
+                            .load(R.drawable.ic_turanth_manage)
+                            .into(img2);
+                    break;
 
+            }
+            container.addView(view);
             return view;
         }
 

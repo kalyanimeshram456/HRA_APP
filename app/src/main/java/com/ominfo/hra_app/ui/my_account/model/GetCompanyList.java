@@ -86,6 +86,16 @@ public class GetCompanyList {
     private String mWedStartTime;
     @SerializedName("wed_working")
     private String mWedWorking;
+    @SerializedName("dist_range")
+    private String dist_range;
+
+    public String getDist_range() {
+        return dist_range;
+    }
+
+    public void setDist_range(String dist_range) {
+        this.dist_range = dist_range;
+    }
 
     public String getCompanyID() {
         return mCompanyID;

@@ -534,31 +534,6 @@ public class SalaryDisbursementFragment extends BaseFragment {
 
     }
 
-    //show Receipt Details popup
-    public void showVisitDetailsDialog() {
-        Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
-        mDialog.setContentView(R.layout.activity_reminder_alert);
-        mDialog.setCanceledOnTouchOutside(true);
-        //AppCompatImageView mClose = mDialog.findViewById(R.id.imgCancel);
-        //AppCompatButton closeButton = mDialog.findViewById(R.id.closeButton);
-
-        //AppCompatButton cancelButton = mDialog.findViewById(R.id.cancelButton);
-
-        /*closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
-
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });*/
-        mDialog.show();
-    }
 
     private void deleteDir(){
         File dir = new File(Environment.getExternalStoragePublicDirectory(

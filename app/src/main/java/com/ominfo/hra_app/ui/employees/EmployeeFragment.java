@@ -263,7 +263,7 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
         }
         isLoading = false;
         if(employeeAdapter.getItemCount()>1) {
-            employeeAdapter.removeLoading();
+            //employeeAdapter.removeLoading();
         }
         //  }
         // }, 0);

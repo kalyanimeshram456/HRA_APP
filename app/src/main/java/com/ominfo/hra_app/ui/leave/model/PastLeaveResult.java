@@ -11,6 +11,8 @@ public class PastLeaveResult {
 
     @SerializedName("currentpage")
     private String mCurrentpage;
+    @SerializedName("leave")
+    private List<PastLeaveList> mLeave;
     @SerializedName("message")
     private String mMessage;
     @SerializedName("nextpage")
@@ -22,15 +24,21 @@ public class PastLeaveResult {
     @SerializedName("totalpages")
     private Long mTotalpages;
     @SerializedName("totalrows")
-    private String mTotalrows;
-    @SerializedName("leave")
-    private List<PastLeave> mLeave;
+    private Object mTotalrows;
 
-    public List<PastLeave> getLeave() {
+    public String getCurrentpage() {
+        return mCurrentpage;
+    }
+
+    public void setCurrentpage(String currentpage) {
+        mCurrentpage = currentpage;
+    }
+
+    public List<PastLeaveList> getLeave() {
         return mLeave;
     }
 
-    public void setLeave(List<PastLeave> leave) {
+    public void setLeave(List<PastLeaveList> leave) {
         mLeave = leave;
     }
 
@@ -40,22 +48,6 @@ public class PastLeaveResult {
 
     public void setMessage(String message) {
         mMessage = message;
-    }
-
-    public String getStatus() {
-        return mStatus;
-    }
-
-    public void setStatus(String status) {
-        mStatus = status;
-    }
-
-    public String getCurrentpage() {
-        return mCurrentpage;
-    }
-
-    public void setCurrentpage(String currentpage) {
-        mCurrentpage = currentpage;
     }
 
     public Long getNextpage() {
@@ -74,6 +66,14 @@ public class PastLeaveResult {
         mPrevpage = prevpage;
     }
 
+    public String getStatus() {
+        return mStatus;
+    }
+
+    public void setStatus(String status) {
+        mStatus = status;
+    }
+
     public Long getTotalpages() {
         return mTotalpages;
     }
@@ -82,11 +82,11 @@ public class PastLeaveResult {
         mTotalpages = totalpages;
     }
 
-    public String getTotalrows() {
+    public Object getTotalrows() {
         return mTotalrows;
     }
 
-    public void setTotalrows(String totalrows) {
+    public void setTotalrows(Object totalrows) {
         mTotalrows = totalrows;
     }
 

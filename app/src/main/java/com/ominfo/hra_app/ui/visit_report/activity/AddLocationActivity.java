@@ -159,24 +159,25 @@ public class AddLocationActivity extends FragmentActivity implements OnMapReadyC
                     try {
                         // on below line we are getting the location
                         // from our list a first position.
-                        Address address = addressList.get(0);
-
-                        // on below line we are creating a variable for our location
-                        // where we will add our locations latitude and longitude.
-                        LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                        String locality = addressList.get(0).getAddressLine(0);
-                        String country = addressList.get(0).getCountryName();
-                        if (!locality.isEmpty() && !country.isEmpty())
-                            mTextResult.setText(locality + "  " + country);
-                        // on below line we are adding marker to that position.
-                        mMap.clear();
-                        mMap.addMarker(new MarkerOptions().position(latLng).title(location).draggable(true)
-                                .icon(BitmapFromVector(getApplicationContext(), R.drawable.ic_marker)).draggable(true));
-                        markerTitle = new MarkerOptions().position(latLng).title(location).getTitle();
-                        mTextResultTitle.setText(markerTitle);
-                        addLatLong = latLng;
-                        // below line is to animate camera to that position.
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+                        if(addressList != null && addressList.size()>0) {
+                            Address address = addressList.get(0);
+                            // on below line we are creating a variable for our location
+                            // where we will add our locations latitude and longitude.
+                            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                            String locality = addressList.get(0).getAddressLine(0);
+                            String country = addressList.get(0).getCountryName();
+                            if (!locality.isEmpty() && !country.isEmpty())
+                                mTextResult.setText(locality + "  " + country);
+                            // on below line we are adding marker to that position.
+                            mMap.clear();
+                            mMap.addMarker(new MarkerOptions().position(latLng).title(location).draggable(true)
+                                    .icon(BitmapFromVector(getApplicationContext(), R.drawable.ic_marker)).draggable(true));
+                            markerTitle = new MarkerOptions().position(latLng).title(location).getTitle();
+                            mTextResultTitle.setText(markerTitle);
+                            addLatLong = latLng;
+                            // below line is to animate camera to that position.
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+                        }
                         //marker.setDraggable(true);
                     } catch (Exception exception) {
                         exception.printStackTrace();

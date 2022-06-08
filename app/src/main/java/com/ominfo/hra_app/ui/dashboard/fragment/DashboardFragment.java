@@ -14,6 +14,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,17 +30,22 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.ominfo.hra_app.MainActivity;
@@ -55,13 +61,18 @@ import com.ominfo.hra_app.network.ApiResponse;
 import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
+import com.ominfo.hra_app.splash_slider.WelcomeActivity;
 import com.ominfo.hra_app.ui.attendance.StartAttendanceActivity;
 import com.ominfo.hra_app.ui.attendance.model.AttendanceList;
 import com.ominfo.hra_app.ui.attendance.ripple_effect.RippleBackground;
+import com.ominfo.hra_app.ui.dashboard.adapter.AttendanceDetailsAdapter;
 import com.ominfo.hra_app.ui.dashboard.adapter.TodayBirthDayAdapter;
 import com.ominfo.hra_app.ui.dashboard.model.AddHolidayRequest;
 import com.ominfo.hra_app.ui.dashboard.model.AddHolidayResponse;
 import com.ominfo.hra_app.ui.dashboard.model.AddHolidayViewModel;
+import com.ominfo.hra_app.ui.dashboard.model.AttendanceDetailsData;
+import com.ominfo.hra_app.ui.dashboard.model.AttendanceDetailsResponse;
+import com.ominfo.hra_app.ui.dashboard.model.AttendanceDetailsViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.BirthDayDobdatum;
 import com.ominfo.hra_app.ui.dashboard.model.CalenderHolidayLeave;
 import com.ominfo.hra_app.ui.dashboard.model.CalenderHolidayResponse;
@@ -169,10 +180,12 @@ public class DashboardFragment extends BaseFragment {
     CircleImageView imgBirthPro;
     @BindView(R.id.progress_barBirth)
     ProgressBar progressBar;
+    String stringAttendance = "";
     final Calendar myCalendar = Calendar.getInstance();
     public static List<CalenderHolidayLeave> calenderHolidayLeave = new ArrayList<>();
     private AppDatabase mDb;
     TodayBirthDayAdapter todayBirthDayAdapter;
+    AttendanceDetailsAdapter attendanceDetailsAdapter;
     List<BirthDayDobdatum> birthDayDobdatumList = new ArrayList<>();
     List<BirthDayDobdatum> upcomingBirthDayDobdatumList = new ArrayList<>();
     Boolean enabledPopup = false;
@@ -181,6 +194,7 @@ public class DashboardFragment extends BaseFragment {
     private GetProfileImageViewModel getProfileImageViewModel;
     private EditHolidayViewModel editHolidayViewModel;
     private EmployeeListViewModel employeeListViewModel;
+    private AttendanceDetailsViewModel attendanceDetailsViewModel;
     public static boolean activityVisible; // Variable that will check the
     final static String CONNECTIVITY_ACTION = "android.net.conn.CONNECTIVITY_CHANGE";
     IntentFilter intentFilter;
@@ -203,6 +217,8 @@ public class DashboardFragment extends BaseFragment {
     @BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout mSwipeRefreshLayout;
     Dialog mDialogLogout,dialogAddHoliday,mDialogEditHoliday;
+    @BindView(R.id.imgDashBg)
+    LinearLayoutCompat imgDashBg;
 
     private LeaveCountViewModel leaveCountViewModel;
     private AddHolidayViewModel addHolidayViewModel;
@@ -291,6 +307,9 @@ public class DashboardFragment extends BaseFragment {
 
         employeeListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EmployeeListViewModel.class);
         employeeListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_EMPLOYEES_LIST));
+
+        attendanceDetailsViewModel = ViewModelProviders.of(this, mViewModelFactory).get(AttendanceDetailsViewModel.class);
+        attendanceDetailsViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_ATTENDANCE_DETAILS));
     }
 
     public static void setTimerMillis(Context context, long millis) {
@@ -335,6 +354,23 @@ public class DashboardFragment extends BaseFragment {
         mDb = BaseApplication.getInstance(mContext).getAppDatabase();
         //requestPermission();
         setToolbar();
+        Glide.with(mContext)
+                .load(R.drawable.img_bg_bashboard)
+                .into(new CustomTarget<Drawable>() {
+                    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        imgDashBg.setBackground(resource);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                    }
+                });
+        /*Glide.with(mContext)
+                .load(R.drawable.img_bg_bashboard)
+                .into(imgDashBg);*/
         setAdapterForBirthDayList();
         setAdapterForUpcomingBirthDayList();
         loginTable = mDb.getDbDAO().getLoginData();
@@ -514,8 +550,13 @@ public class DashboardFragment extends BaseFragment {
                         }
                     }
                     if (!event) {
-                        LogUtil.printSnackBar(mContext, Color.YELLOW,((MainActivity)mContext).findViewById(android.R.id.content),"No events for " + AppUtils.convertDobDate(sDate));
-                        //LogUtil.printToastMSG(mContext, );
+                        if (loginTable.getIsadmin().equals("1")) {
+                            callAttendanceDetailsApi(sDate);
+                            stringAttendance = AppUtils.dateConvertYYYYToDD(sDate);
+                        }
+                        else {
+                            LogUtil.printSnackBar(mContext, Color.YELLOW, ((MainActivity) mContext).findViewById(android.R.id.content), "No events for " + AppUtils.convertDobDate(sDate));
+                        }
                     }
                 }catch (Exception e){
                     LogUtil.printToastMSG(mContext, "Something went wrong!");
@@ -970,6 +1011,50 @@ public class DashboardFragment extends BaseFragment {
         });
         dialogAddHoliday.show();
     }
+
+    public void showAttendanceDetailsDialog(List<AttendanceDetailsData> data) {
+        Dialog dialogAttendance = new Dialog(mContext, R.style.ThemeDialogCustom);
+        dialogAttendance.setContentView(R.layout.dialog_attendance_details);
+        dialogAttendance.setCanceledOnTouchOutside(true);
+        RelativeLayout mClose = dialogAttendance.findViewById(R.id.layCancel);
+        RecyclerView rvSalesList = dialogAttendance.findViewById(R.id.rvSalesList);
+        AppCompatTextView tvAttDate  = dialogAttendance.findViewById(R.id.tvAttDate);
+        AppCompatImageView iv_emptyLayimage = dialogAttendance.findViewById(R.id.iv_emptyLayimage);
+        LinearLayoutCompat empty_layoutActivity = dialogAttendance.findViewById(R.id.empty_layoutActivity);
+        setAdapterForAttendanceDetailsList(iv_emptyLayimage,empty_layoutActivity,rvSalesList,data);
+        tvAttDate.setText(" (Date : "+stringAttendance+")");
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogAttendance.dismiss();
+            }
+        });
+        dialogAttendance.show();
+    }
+
+    private void setAdapterForAttendanceDetailsList( AppCompatImageView iv_emptyLayimage,LinearLayoutCompat empty_layoutActivity ,RecyclerView recyclerView,List<AttendanceDetailsData> mList) {
+        if (mList != null && mList.size() > 0) {
+            attendanceDetailsAdapter = new AttendanceDetailsAdapter(mContext, mList, new AttendanceDetailsAdapter.ListItemSelectListener() {
+                @Override
+                public void onItemClick(AttendanceDetailsData mData) {
+
+                }
+            });
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
+            recyclerView.setAdapter(attendanceDetailsAdapter);
+            recyclerView.setVisibility(View.VISIBLE);
+            empty_layoutActivity.setVisibility(View.GONE);
+        } else {
+            recyclerView.setVisibility(View.GONE);
+            empty_layoutActivity.setVisibility(View.VISIBLE);
+            Glide.with(this)
+                    .load(R.drawable.img_bg_search)
+                    .into(iv_emptyLayimage);
+        }
+    }
+
+
     //set date picker view
     private void openDataPicker() {
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
@@ -1032,7 +1117,25 @@ public class DashboardFragment extends BaseFragment {
             LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
         }
     }
+    /* Call Api For Attendance Details */
+    private void callAttendanceDetailsApi(String date) {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if (loginTable != null) {
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_attendance_record_bydate);
+                RequestBody mRequestDate = RequestBody.create(MediaType.parse("text/plain"), date);
+                RequestBody mRequestEmp = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
+                RequestBody mRequestCom = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
 
+                attendanceDetailsViewModel.hitAttendanceDetailsApi(mRequestAction, mRequestDate,
+                        mRequestEmp, mRequestCom);
+            } else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
 
     /* Call Api For Profile Image */
     private void callProfileImageApi() {
@@ -1223,26 +1326,32 @@ public class DashboardFragment extends BaseFragment {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_LEAVE_COUNT)) {
                             LeaveCountResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LeaveCountResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                LoginTable loginTable = mDb.getDbDAO().getLoginData();
+                                //LoginTable loginTable = mDb.getDbDAO().getLoginData();
                                 if(loginTable!=null){
-                                    int totA = Integer.parseInt(responseModel.getResult().getCurent_month_days());
-                                    int absA = Integer.parseInt(responseModel.getResult().getTotal_absent_late());
-                                    if(!loginTable.getIsadmin().equals("0")) {
-                                        tvAttendanceTitle.setText("Today's Attendance");
-                                        tvAttendanceValue.setText(Math.abs(totA-absA)+" / "+totA);
-                                        tvLeaveTitle.setText("Today's Late Marks");
-                                        tvLeaveValue.setText(responseModel.getResult().getLate_mark());
+                                    if(loginTable.getIsadmin().equals("1")) { //admin
+                                        try {
+                                            tvAttendanceTitle.setText("Today's Attendance");
+                                            tvAttendanceValue.setText(responseModel.getResult().getTotal_active() + " / " + responseModel.getResult().getActive_employees());
+                                            tvLeaveTitle.setText("Today's Late Marks");
+                                            tvLeaveValue.setText(""+responseModel.getResult().getLate_mark());
+                                        }catch (Exception e){}
                                     }
                                     else{
-                                        tvAttendanceTitle.setText("Attendance - monthly");
+                                        try{
+                                            int totA = Integer.parseInt(responseModel.getResult().getCurent_month_days());
+                                            int absA = Integer.parseInt(responseModel.getResult().getTotal_absent_late());
+
+                                            tvAttendanceTitle.setText("Attendance - monthly");
                                         tvAttendanceValue.setText(absA+" / "+totA);
                                         tvLeaveTitle.setText("Late mark - monthly");
-                                        tvLeaveValue.setText(responseModel.getResult().getLate_mark()+" / "+totA);
+                                        tvLeaveValue.setText(""+responseModel.getResult().getLate_mark()+" / "+totA);
+                                        }catch (Exception e){}
                                     }
                                 }
                             }
                         }
-                    }catch (Exception e){e.printStackTrace();}
+                    }catch (Exception e){e.printStackTrace();
+                        LogUtil.printToastMSG(mContext,loginTable.getIsadmin()+e.getMessage());}
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_ADD_HOLIDAY)) {
                             AddHolidayResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), AddHolidayResponse.class);
@@ -1277,6 +1386,17 @@ public class DashboardFragment extends BaseFragment {
                             else{
                                 showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),
                                         false,null);
+                            }
+                        }
+                    }catch (Exception e){e.printStackTrace();}
+                    try{
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_ATTENDANCE_DETAILS)) {
+                            AttendanceDetailsResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), AttendanceDetailsResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                showAttendanceDetailsDialog(responseModel.getResult().getData());
+                            }
+                            else{
+                               LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
                             }
                         }
                     }catch (Exception e){e.printStackTrace();}
