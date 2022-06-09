@@ -620,7 +620,8 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                                 callUpdateAttendanceApi(0);
                             }
                         }else {
-                            LogUtil.printSnackBar(mContext, Color.RED,findViewById(android.R.id.content), getString(R.string.msg_location_change_in_attendance) + distance+"--"+Double.parseDouble((distanceInMeters==null||distanceInMeters.equals("")||distanceInMeters.equals("null")?"51":distanceInMeters)));
+                            LogUtil.printSnackBar(mContext, Color.RED,findViewById(android.R.id.content), getString(R.string.msg_location_change_in_attendance)
+                                    /*+ distance+"--"+Double.parseDouble((distanceInMeters==null||distanceInMeters.equals("")||distanceInMeters.equals("null")?"51":distanceInMeters))*/);
                         }
                     }
                     break;

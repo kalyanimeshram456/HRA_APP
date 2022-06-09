@@ -182,6 +182,8 @@ public class AddEmployeeActivity extends BaseActivity {
     String from = "add", empId= "0",officeLat= "",officeLong="";
     @BindView(R.id.btnDeactivate)
     AppCompatButton btnDeactivate;
+    @BindView(R.id.btnCancel)
+    AppCompatButton btnCancel;
     EmployeeList employeeList;
     EmployeeTimeAdapter employeeTimeAdapter;
     List<WorkTimingList> timingList = new ArrayList<>();
@@ -325,11 +327,13 @@ public class AddEmployeeActivity extends BaseActivity {
                 AutoComOtherLeave.setText("0");
                 tvToolbarTitle.setText(R.string.scr_lbl_add_employees);
                 btnDeactivate.setVisibility(View.GONE);
+                btnCancel.setVisibility(View.GONE);
                 callCompanyListApi();
             }
             else if(from.equals(Constants.edit)){
                 tvToolbarTitle.setText(R.string.scr_lbl_manage_employee);
                 btnDeactivate.setVisibility(View.VISIBLE);
+                btnCancel.setVisibility(View.VISIBLE);
                 Gson gson = new Gson();
                 employeeList = gson.fromJson(getIntent().getStringExtra(Constants.EMPLOYEE_OBJ), EmployeeList.class);
                 empId = employeeList.getEmpId();

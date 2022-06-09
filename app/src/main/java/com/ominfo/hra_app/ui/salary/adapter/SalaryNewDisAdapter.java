@@ -72,7 +72,7 @@ public class SalaryNewDisAdapter extends RecyclerView.Adapter<SalaryNewDisAdapte
             holder.imgEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listItemSelectListener.onItemClick(position, mListData.get(position));
+                    listItemSelectListener.onItemClick(position, mListData.get(position),mListData);
                 }
             });
         }
@@ -113,6 +113,6 @@ public class SalaryNewDisAdapter extends RecyclerView.Adapter<SalaryNewDisAdapte
     }
 
     public interface ListItemSelectListener {
-        void onItemClick(int mData, SalaryAllList SalarySheetList);
+        void onItemClick(int mData, SalaryAllList SalarySheetList,List<SalaryAllList>list);
     }
 }

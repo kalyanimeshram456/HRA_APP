@@ -25,6 +25,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.InputType;
@@ -81,7 +82,10 @@ import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
+import com.ominfo.hra_app.ui.employees.AddEmployeeActivity;
 import com.ominfo.hra_app.ui.employees.adapter.EmployeeTimeAdapter;
+import com.ominfo.hra_app.ui.employees.model.ChangePasswordResponse;
+import com.ominfo.hra_app.ui.employees.model.ChangePasswordViewModel;
 import com.ominfo.hra_app.ui.employees.model.EditEmployeeRequest;
 import com.ominfo.hra_app.ui.employees.model.EditEmployeeResponse;
 import com.ominfo.hra_app.ui.employees.model.EditEmployeeViewModel;
@@ -193,6 +197,7 @@ public class MyAccountFragment extends BaseFragment {
     private EditCompanyViewModel editCompanyViewModel;
     private LogoutViewModel logoutViewModel;
     private LogoutMobileTokenViewModel logoutMobileTokenViewModel;
+    private ChangePasswordViewModel changePasswordViewModel;
     EmployeeList employeeListResData;
     final Calendar myCalendar = Calendar.getInstance();
     private AppDatabase mDb;
@@ -364,6 +369,9 @@ public class MyAccountFragment extends BaseFragment {
                         showLogoutDialog(mContext);
                         // Do Fragment menu item stuff here
                         return true;
+                    case R.id.ResetPass:
+                        callChangePassApi();
+                        return true;
 
                     default:
                         break;
@@ -433,6 +441,22 @@ public class MyAccountFragment extends BaseFragment {
 
         logoutMobileTokenViewModel = ViewModelProviders.of(this, mViewModelFactory).get(LogoutMobileTokenViewModel.class);
         logoutMobileTokenViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_logout_mt_update));
+
+        changePasswordViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ChangePasswordViewModel.class);
+        changePasswordViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_CHANGE_PASSWORD));
+    }
+
+    /* Call Api For employee list */
+    private void callChangePassApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if (loginTable != null) {
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_changecrmemppassword);
+                RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
+                RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
+                changePasswordViewModel.hitChangePasswordAPI(mRequestAction,mRequestComId,mRequestEmployee);
+            }
+        }
     }
 
     /* Call Api For edit employee */
@@ -1495,6 +1519,30 @@ public class MyAccountFragment extends BaseFragment {
             }
         }
 
+    //show Succes register popup
+    public void showThanksForRegisterDialog(String msg) {
+        Dialog mDialog = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialog.setContentView(R.layout.dialog_thanks_for_registering);
+        //mDialog.setCanceledOnTouchOutside(true);
+        RelativeLayout mClose = mDialog.findViewById(R.id.imgCancel);
+        AppCompatTextView appcomptext = mDialog.findViewById(R.id.appcomptext);
+        appcomptext.setText(msg);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mDialog.dismiss();
+                //finish();
+            }
+        }, 2500);
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+        mDialog.show();
+    }
+
     /*Api response */
     private void consumeResponse(ApiResponse apiResponse, String tag) {
         switch (apiResponse.status) {
@@ -1662,6 +1710,19 @@ public class MyAccountFragment extends BaseFragment {
                             }
                         }
                     }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_CHANGE_PASSWORD)) {
+                            ChangePasswordResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ChangePasswordResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                showThanksForRegisterDialog(responseModel.getResult().getMessage());
+                            }
+                            else {
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                            }
+                        }
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     try {
@@ -1968,9 +2029,10 @@ public class MyAccountFragment extends BaseFragment {
         }
         if(type==0) {
             //employee
+            AutoComOfficeLocation.setEnabled(false);
+            layAddLocation.setEnabled(false);
             if(!state){
-            tvEmpName.setEnabled(state);}
-            layAddLocation.setEnabled(state);
+                tvEmpName.setEnabled(state);}
             AutoComtEEmail.setEnabled(state);
             AutoComEMobile.setEnabled(state);
             AutoComEDesi.setEnabled(state);
@@ -1985,6 +2047,7 @@ public class MyAccountFragment extends BaseFragment {
         }else {
             //company
             if(!state){
+                AutoComOfficeLocation.setEnabled(state);
                 tvEmpName.setEnabled(state);}
             layAddLocation.setEnabled(state);
             AutoComGstNo.setEnabled(state);

@@ -209,7 +209,7 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
             }
         });
         rvSalesList.setAdapter(leaveAdapter);
-        callAcceptRejectListApi("0");
+        //callAcceptRejectListApi("0");
 
         /**
          * add scroll listener while user reach in bottom load more will call
@@ -440,14 +440,11 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
     @Override
     public void onResume() {
         super.onResume();
-       /* Window window = getActivity().getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(getActivity().getResources().getColor(R.color.status_bar_color));*/
-        /*Window window = getActivity().getWindow();
-        View view = window.getDecorView();
-        BaseActivity.DarkStatusBar.setLightStatusBar(view,getActivity());*/
-
+        itemCount = 0;
+        currentPage = PAGE_START;
+        isLastPage = false;
+        leaveAdapter.clear();
+        callAcceptRejectListApi("0");
     }
 
     @Override

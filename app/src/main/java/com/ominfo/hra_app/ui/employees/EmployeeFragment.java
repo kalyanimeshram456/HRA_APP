@@ -221,7 +221,7 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
             }
         });
         //callEmployeeListApi("0");
-        tv_emptyLayTitle.setText("Search something...");
+        //tv_emptyLayTitle.setText("Search something...");
 
         try {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();

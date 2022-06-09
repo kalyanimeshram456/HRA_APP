@@ -397,6 +397,51 @@ public class AppUtils {
                 });
     }
 
+    public static void loadImageURL(Context context, String url, AppCompatImageView mImageView, ProgressBar mProgressBar) {
+        Glide.with(context)
+                .load(url)
+                .placeholder(R.drawable.bg_profile_images)
+                .apply(RequestOptions.skipMemoryCacheOf(true))
+                .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
+                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) // don't use target size, load full image
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .fitCenter()
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        // log exception
+                        Log.e("TAG", "Error loading image", e);
+                        try {
+                            mProgressBar.setVisibility(View.GONE);
+                        } catch (Exception en) {
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        try {
+                            mProgressBar.setVisibility(View.GONE);
+                        } catch (Exception en) {
+                        }
+                        return false;
+                    }
+                })
+                //.into(mImageView)
+                .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
+                .into(new CustomTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        mImageView.setImageDrawable(resource);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                    }
+                });
+    }
+
 
     public static Bitmap getBitmapFromView(AppCompatImageView imageView) {
         try {
@@ -705,7 +750,7 @@ public class AppUtils {
     }
 
     public static String convertAlarmDate(String date12){
-        SimpleDateFormat displayFormat = new SimpleDateFormat("E, MMM yyyy");
+        SimpleDateFormat displayFormat = new SimpleDateFormat("E, MMMM dd");
         SimpleDateFormat parseFormat = new SimpleDateFormat("dd/MM/yyyy");
         Date date = null;
         try {

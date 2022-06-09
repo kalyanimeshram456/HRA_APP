@@ -7,18 +7,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -27,6 +35,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -75,6 +84,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -114,6 +124,8 @@ public class SalarySlipFragment extends BaseFragment {
     AppCompatTextView tvPaymentDate;
     @BindView(R.id.tvNoOfLeavesValue)
     AppCompatTextView tvNoOfLeavesValue;
+    @BindView(R.id.addSubmitButton)
+    AppCompatButton addSubmitButton;
     @BindView(R.id.tvSalaryValue)
     AppCompatTextView tvSalaryValue;
     @BindView(R.id.tvAddValue)
@@ -123,7 +135,7 @@ public class SalarySlipFragment extends BaseFragment {
     @BindView(R.id.tvTotalValue)
     AppCompatAutoCompleteTextView tvTotalValue;
     @BindView(R.id.imgBirthPro)
-    CircleImageView imgBirthPro;
+    AppCompatImageView imgBirthPro;
     @BindView(R.id.progress_barBirth)
     ProgressBar progress_barBirth;
     @BindView(R.id.imgEdit)
@@ -150,6 +162,11 @@ public class SalarySlipFragment extends BaseFragment {
     RelativeLayout contentPrint;
     String empId = "0";
     double salary = 0.0;
+    Bitmap bitmap;
+    public static final int REQUEST_PERMISSIONS = 1;
+    boolean boolean_permission;
+    boolean boolean_save = false,boolean_downled = false,boolean_edit = false;
+
     public SalarySlipFragment() {
         // Required empty public constructor
     }
@@ -255,12 +272,10 @@ public class SalarySlipFragment extends BaseFragment {
                 MediaStore.Images.Media.insertImage(mContext.getContentResolver(),
                         bitmap,"title", null);
         Uri uri = Uri.parse(pathofBmp);
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("image/*");
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Star App");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "");
-        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-        mContext.startActivity(Intent.createChooser(shareIntent, "hello hello"));
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_VIEW);
+        shareIntent.setDataAndType(uri, "image/*");
+        startActivity(shareIntent);
     }
     /* Call Api For Leave Applications */
     private void callSalarySheetListApi() {
@@ -273,6 +288,7 @@ public class SalarySlipFragment extends BaseFragment {
                     tvDedValue.setEnabled(false);
                     tvTotalValue.setEnabled(false);
                 }else{
+                    imgEdit.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_edit_black));
                     imgEdit.setVisibility(View.VISIBLE);
                     tvAddValue.setEnabled(false);
                     tvDedValue.setEnabled(false);
@@ -357,169 +373,51 @@ public class SalarySlipFragment extends BaseFragment {
         int id = view.getId();
         switch (id) {
             case R.id.addSubmitButton:
-                Bitmap bitmap = screenShot(contentPrint);
-                share(bitmap);
+                if(!boolean_downled) {
+                   // addSubmitButton.setText("Downloading...");
+                    addSubmitButton.setVisibility(View.GONE);
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            boolean_downled= true;
+                            bitmap = screenShot(contentPrint);
+                            LogUtil.printToastMSG(mContext, "Salary slip saved to picture folder successfully.");
+                            addSubmitButton.setVisibility(View.VISIBLE);
+                            addSubmitButton.setText("View");
+                        }
+                    }, 700);
+                }else{
+                    boolean_downled= false;
+                    share(bitmap);
+                    addSubmitButton.setText(getString(R.string.scr_lbl_download));
+                }
                 break;
             case R.id.imgEdit:
-                imgEdit.setVisibility(View.VISIBLE);
-                tvAddValue.setEnabled(true);
-                tvDedValue.setEnabled(true);
-                tvTotalValue.setEnabled(true);
-        }
-    }
-
-    //set value to Search dropdown
-    private void setDropdownLeaveDuration(AppCompatAutoCompleteTextView mListDropdownView) {
-        List<String> leaveModelList = new ArrayList<>();
-        leaveModelList.add("Half Day");
-        leaveModelList.add("Full Day");
-        leaveModelList.add("Multiple Days");
-        try {
-            int pos = 0;
-            if (leaveModelList != null && leaveModelList.size() > 0) {
-                String[] mDropdownList = new String[leaveModelList.size()];
-                for (int i = 0; i < leaveModelList.size(); i++) {
-                    mDropdownList[i] = String.valueOf(leaveModelList.get(i));
+                if(!boolean_edit) {
+                    boolean_edit = true;
+                    imgEdit.setVisibility(View.VISIBLE);
+                    imgEdit.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_close));
+                    tvTotalValue.setEnabled(true);
+                    tvTotalValue.setFocusable(true);
+                    tvTotalValue.setFocusableInTouchMode(true);
+                    tvTotalValue.requestFocus();
+                    tvDedValue.setEnabled(true);
+                    tvDedValue.setFocusable(true);
+                    tvDedValue.setFocusableInTouchMode(true);
+                    tvDedValue.requestFocus();
+                    tvAddValue.setEnabled(true);
+                    tvAddValue.setFocusable(true);
+                    tvAddValue.setFocusableInTouchMode(true);
+                    tvAddValue.requestFocus();
+                }else{
+                    imgEdit.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_edit_black));
+                    boolean_edit = false;
+                    tvAddValue.setEnabled(false);
+                    tvDedValue.setEnabled(false);
+                    tvTotalValue.setEnabled(false);
                 }
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                        mContext,
-                        R.layout.row_dropdown_item,
-                        mDropdownList);
-                //tvHighlight.setThreshold(1);
-                mListDropdownView.setAdapter(adapter);
-                //mListDropdownView.setHint(mDropdownList[pos]);
-                mListDropdownView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        if(mListDropdownView.getText().toString().equals("Half Day")){
-                            layoutLeaveTime.setVisibility(View.VISIBLE);
-                            appcomptextLeaveTime.setVisibility(View.VISIBLE);
-                            viewToDate.setVisibility(View.GONE);
-                            layToDate.setVisibility(View.GONE);
-                            appcomptextNoOfDays.setText("Number of days : Half Day");
-                            noOFDays = 0;
-                        }
-                        else if(mListDropdownView.getText().toString().equals("Full Day")){
-                            viewToDate.setVisibility(View.GONE);
-                            layToDate.setVisibility(View.GONE);
-                            layoutLeaveTime.setVisibility(View.GONE);
-                            appcomptextLeaveTime.setVisibility(View.GONE);
-                            appcomptextNoOfDays.setText("Number of days : 01 Days");
-                            noOFDays = 1;
-                        }
-                        else{
-                            viewToDate.setVisibility(View.VISIBLE);
-                            layToDate.setVisibility(View.VISIBLE);
-                            layoutLeaveTime.setVisibility(View.GONE);
-                            appcomptextLeaveTime.setVisibility(View.GONE);
-                            int diff = AppUtils.getChangeDateForHisab(tvDateValueFrom.getText().toString(),tvDateValueTo.getText().toString());
-                            appcomptextNoOfDays.setText("Number of days : "+diff +" Days");
-                            noOFDays = diff;
-                        }
-                    }
-                });
-
-            } else {
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-    }
-
-    //set value to Search dropdown
-    private void setDropdownType(AppCompatAutoCompleteTextView mListDropdownView) {
-        List<String> leaveModelList = new ArrayList<>();
-        leaveModelList.add("Casual Leave");
-        leaveModelList.add("Sick Leave");
-        //leaveModelList.add("Multiple Days");
-        try {
-            int pos = 0;
-            if (leaveModelList != null && leaveModelList.size() > 0) {
-                String[] mDropdownList = new String[leaveModelList.size()];
-                for (int i = 0; i < leaveModelList.size(); i++) {
-                    mDropdownList[i] = String.valueOf(leaveModelList.get(i));
-                }
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                        mContext,
-                        R.layout.row_dropdown_item,
-                        mDropdownList);
-                //tvHighlight.setThreshold(1);
-                mListDropdownView.setAdapter(adapter);
-                //mListDropdownView.setHint(mDropdownList[pos]);
-                mListDropdownView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    }
-                });
-
-            } else {
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void OpenTimePicker(int val){
-        // TODO Auto-generated method stub
-        Calendar mcurrentTime = Calendar.getInstance();
-        int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
-        int minute = mcurrentTime.get(Calendar.MINUTE);
-        TimePickerDialog mTimePicker;
-        mTimePicker = new TimePickerDialog(mContext, new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                String am_pm = "";
-                myCalendar.set(Calendar.HOUR_OF_DAY, selectedHour);
-                myCalendar.set(Calendar.MINUTE, selectedMinute);
-                if (myCalendar.get(Calendar.AM_PM) == Calendar.AM)
-                    am_pm = "am";
-                else if (myCalendar.get(Calendar.AM_PM) == Calendar.PM)
-                    am_pm = "pm";
-                String strHrsToShow = (String.valueOf(myCalendar.get(Calendar.HOUR)).length() == 1) ? "0"+myCalendar.get(Calendar.HOUR) : myCalendar.get(Calendar.HOUR) + "";
-                //UIHelper.showLongToastInCenter(context, strHrsToShow + ":" + myCalendar.get(Calendar.MINUTE) + " " + am_pm);
-                //String min = convertDate(myCalendar.get(Calendar.MINUTE));
-                boolean isPM = (selectedHour >= 12);
-                if(val==0) {
-                    tvTimeValueTo.setText(String.format("%02d:%02d %s", (selectedHour == 12 || selectedHour == 0) ? 12 : selectedHour % 12, myCalendar.get(Calendar.MINUTE), isPM ? "pm" : "am"));
-                }
-                else{
-                    tvTimeValueFrom.setText(String.format("%02d:%02d %s", (selectedHour == 12 || selectedHour == 0) ? 12 : selectedHour % 12, myCalendar.get(Calendar.MINUTE), isPM ? "pm" : "am"));
-
-                }
-                // AutoComTextViewTime.setText(strHrsToShow + ":" + min + " " + am_pm);
-            }
-        }, hour, minute, false);//Yes 24 hour time
-        mTimePicker.setTitle("Select Time");
-        mTimePicker.show();
-    }
-
-    /*check validations on field*/
-    private boolean isDetailsValid(AppCompatAutoCompleteTextView oldPass,
-                                   TextInputLayout input_textOldPass,
-                                   AppCompatAutoCompleteTextView newPass,
-                                   TextInputLayout input_textNewPass ,
-                                   AppCompatAutoCompleteTextView ConfPass,
-                                   TextInputLayout AutoComConfirmPass
-    ) {
-        setError(input_textOldPass,"");setError(input_textNewPass, "");
-        setError(AutoComConfirmPass, "");
-        if (TextUtils.isEmpty(oldPass.getText().toString().trim())) {
-            setError(input_textOldPass, getString(R.string.err_msg_old_pass));
-            return false;
-        } else if (TextUtils.isEmpty(newPass.getText().toString().trim())) {
-            setError(input_textNewPass, getString(R.string.err_msg_new_password));
-            return false;
-        } else if (TextUtils.isEmpty(ConfPass.getText().toString().trim())) {
-            setError(AutoComConfirmPass, getString(R.string.err_msg_confirm_password));
-            return false;
-        } else if (!newPass.getText().toString().trim().equals(ConfPass.getText().toString().trim())) {
-            setError(AutoComConfirmPass, getString(R.string.err_msg_wrong_confirm_pass));
-            return false;
-        }
-        return true;
     }
 
     //set date picker view
@@ -594,6 +492,17 @@ public class SalarySlipFragment extends BaseFragment {
                 }
                 break;
 
+           /* if (requestCode == REQUEST_PERMISSIONS) {
+
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    boolean_permission = true;
+
+                } else {
+                    Toast.makeText(mContext, "Please allow the permission", Toast.LENGTH_LONG).show();
+
+                }
+            }*/
         }
     }
 
@@ -618,6 +527,8 @@ public class SalarySlipFragment extends BaseFragment {
                                         imgBirthPro,progress_barBirth);
                                 tvCompanyName.setText(responseModel.getResult().getList().get(0).getName());
                                 tvEmpName.setText(responseModel.getResult().getList().get(0).getEmpName());
+                                tvDesiValue.setText(responseModel.getResult().getList().get(0).getEmpPosition());
+                                tvPaymentDate.setText(AppUtils.convertyyyytodd(responseModel.getResult().getList().get(0).getCreatedOn()));
                                 tvMonth.setText("Payslip of "+AppUtils.convertIntToMonth(Integer.parseInt(responseModel.getResult().getList().get(0).getMonth())));
                                 tvNoOfLeavesValue.setText(responseModel.getResult().getList().get(0).getLeaves());
                                 tvSalaryValue.setText(responseModel.getResult().getList().get(0).getSalary());
@@ -637,6 +548,91 @@ public class SalarySlipFragment extends BaseFragment {
                 LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
                 break;
         }
+    }
+
+    private void createPDFWithMultipleImage(){
+        File myDir = mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        myDir.mkdirs();
+        String timeStamp = new SimpleDateFormat("yyyMMdd_HHmmss", Locale.US).format(new Date());
+        String fname = "Image_" + timeStamp + "_capture.pdf";
+        File file = new File(myDir, fname);
+        if (file != null){
+            try {
+                FileOutputStream fileOutputStream = new FileOutputStream(file);
+                PdfDocument pdfDocument = new PdfDocument();
+
+                PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), (0 + 1)).create();
+                PdfDocument.Page page = pdfDocument.startPage(pageInfo);
+                Canvas canvas = page.getCanvas();
+                Paint paint = new Paint();
+                paint.setColor(Color.BLUE);
+                canvas.drawPaint(paint);
+                canvas.drawBitmap(bitmap, 0f, 0f, null);
+                pdfDocument.finishPage(page);
+                bitmap.recycle();
+
+                pdfDocument.writeTo(fileOutputStream);
+                pdfDocument.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void createPdf(){
+        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        float hight = displaymetrics.heightPixels ;
+        float width = displaymetrics.widthPixels ;
+
+        int convertHighet = (int) hight, convertWidth = (int) width;
+
+        //        Resources mResources = getResources();
+       //        Bitmap bitmap = BitmapFactory.decodeResource(mResources, R.drawable.screenshot);
+
+        PdfDocument document = new PdfDocument();
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), 1).create();
+        PdfDocument.Page page = document.startPage(pageInfo);
+
+        Canvas canvas = page.getCanvas();
+
+
+        Paint paint = new Paint();
+        paint.setColor(Color.parseColor("#ffffff"));
+        canvas.drawPaint(paint);
+
+
+
+        bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), true);
+
+        paint.setColor(Color.BLUE);
+        canvas.drawBitmap(bitmap, 0, 0 , null);
+        document.finishPage(page);
+
+
+        // write the document content
+        File myDir = mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        myDir.mkdirs();
+        String timeStamp = new SimpleDateFormat("yyyMMdd_HHmmss", Locale.US).format(new Date());
+        String fname = "Image_" + timeStamp + "_capture.pdf";
+        File file = new File(myDir, fname);
+       // String targetPdf = "/sdcard/test.pdf";
+        File filePath = new File(file.getPath());
+        try {
+            document.writeTo(new FileOutputStream(filePath));
+            //btn_convert.setText("Check PDF");
+            LogUtil.printToastMSG(mContext,"Check PDF"+file.getPath());
+            boolean_save=true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(mContext, "Something wrong: " + e.toString(), Toast.LENGTH_LONG).show();
+        }
+
+        // close the document
+        document.close();
     }
 
 

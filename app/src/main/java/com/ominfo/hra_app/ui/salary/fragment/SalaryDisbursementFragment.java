@@ -448,35 +448,38 @@ public class SalaryDisbursementFragment extends BaseFragment {
                 if(employeeList.getStatus()!=null && !employeeList.getStatus().equals("")
                 && !employeeList.getStatus().equals("null")){
                     //call api
-                    if (NetworkCheck.isInternetAvailable(mContext)) {
-                        LoginTable loginTable = mDb.getDbDAO().getLoginData();
-                        if(loginTable!=null) {
-                            RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_update_Salary);
-                            RequestBody mRequestaddition = RequestBody.create(MediaType.parse("text/plain"), etAddition.getText().toString()==null || etAddition.getText().toString().equals("")?"0":etAddition.getText().toString());
-                            RequestBody mRequesttotal = RequestBody.create(MediaType.parse("text/plain"),  tvTotalValue.getText().toString()==null || tvTotalValue.getText().toString().equals("")?"0":tvTotalValue.getText().toString());
-                            RequestBody mRequestremark = RequestBody.create(MediaType.parse("text/plain"), etDescr.getText().toString()==null || etDescr.getText().toString().equals("")?"0":etDescr.getText().toString());
-                            RequestBody mRequestemp_id = RequestBody.create(MediaType.parse("text/plain"), employeeList.getEmpId());
-                            RequestBody mRequestdeduction = RequestBody.create(MediaType.parse("text/plain"), etDeduction.getText().toString()==null || etDeduction.getText().toString().equals("")?"0":etDeduction.getText().toString());
-                            RequestBody mRequestyear = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentYear());
-                            String monthNumber  =  AppUtils.convertMonthToInt(AutoComMonth.getText().toString().trim());
-                            RequestBody mRequestmonth = RequestBody.create(MediaType.parse("text/plain"), monthNumber);
+                    if(!TextUtils.isEmpty(etDescr.getText().toString())) {
+                        if (NetworkCheck.isInternetAvailable(mContext)) {
+                            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+                            if (loginTable != null) {
+                                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_update_Salary);
+                                RequestBody mRequestaddition = RequestBody.create(MediaType.parse("text/plain"), etAddition.getText().toString() == null || etAddition.getText().toString().equals("") ? "0" : etAddition.getText().toString());
+                                RequestBody mRequesttotal = RequestBody.create(MediaType.parse("text/plain"), tvTotalValue.getText().toString() == null || tvTotalValue.getText().toString().equals("") ? "0" : tvTotalValue.getText().toString());
+                                RequestBody mRequestremark = RequestBody.create(MediaType.parse("text/plain"), etDescr.getText().toString() == null || etDescr.getText().toString().equals("") ? "0" : etDescr.getText().toString());
+                                RequestBody mRequestemp_id = RequestBody.create(MediaType.parse("text/plain"), employeeList.getEmpId());
+                                RequestBody mRequestdeduction = RequestBody.create(MediaType.parse("text/plain"), etDeduction.getText().toString() == null || etDeduction.getText().toString().equals("") ? "0" : etDeduction.getText().toString());
+                                RequestBody mRequestyear = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentYear());
+                                String monthNumber = AppUtils.convertMonthToInt(AutoComMonth.getText().toString().trim());
+                                RequestBody mRequestmonth = RequestBody.create(MediaType.parse("text/plain"), monthNumber);
 
-                            UpdateSalaryRequest salaryRequest= new UpdateSalaryRequest();
-                            salaryRequest.setAction(mRequestAction);
-                            salaryRequest.setAddition(mRequestaddition);
-                            salaryRequest.setTotal(mRequesttotal);
-                            salaryRequest.setRemark(mRequestremark);
-                            salaryRequest.setEmp_id(mRequestemp_id);
-                            salaryRequest.setDeduction(mRequestdeduction);
-                            salaryRequest.setYear(mRequestyear);
-                            salaryRequest.setMonth(mRequestmonth);
-                            updateSalaryViewModel.hitSalaryAllListAPI(salaryRequest);
+                                UpdateSalaryRequest salaryRequest = new UpdateSalaryRequest();
+                                salaryRequest.setAction(mRequestAction);
+                                salaryRequest.setAddition(mRequestaddition);
+                                salaryRequest.setTotal(mRequesttotal);
+                                salaryRequest.setRemark(mRequestremark);
+                                salaryRequest.setEmp_id(mRequestemp_id);
+                                salaryRequest.setDeduction(mRequestdeduction);
+                                salaryRequest.setYear(mRequestyear);
+                                salaryRequest.setMonth(mRequestmonth);
+                                updateSalaryViewModel.hitSalaryAllListAPI(salaryRequest);
+                            } else {
+                                LogUtil.printToastMSG(mContext, "Something is wrong.");
+                            }
+                        } else {
+                            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
                         }
-                        else {
-                            LogUtil.printToastMSG(mContext, "Something is wrong.");
-                        }
-                    } else {
-                        LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+                    }else{
+                        LogUtil.printToastMSG(mContext,"Please add remark!");
                     }
                 }
                 else {
@@ -485,6 +488,14 @@ public class SalaryDisbursementFragment extends BaseFragment {
                 salaryAllresultList.get(pos).setSalary(tvTotalValue.getText().toString());
                 salaryAllresultList.get(pos).setSalaryThisMonth(Double.valueOf(tvTotalValue.getText().toString()));
                 salaryDisbursementAdapter.updateList(salaryAllresultList);
+                try {
+                    total = 0.0;
+                    //salaryAllresultList = mList;
+                    for (int i = 0; i < salaryAllresultList.size(); i++) {
+                        total = total + (double) (salaryAllresultList.get(i).getSalaryThisMonth());
+                    }
+                    tvTotalSalaries.setText("" + total);
+                }catch(Exception e){}
             }
         });
 
@@ -523,7 +534,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
         }
         salaryDisbursementAdapter = new SalaryNewDisAdapter(mContext, salaryAllresultList, new SalaryNewDisAdapter.ListItemSelectListener() {
             @Override
-            public void onItemClick(int mDataTicket,SalaryAllList searchresult) {
+            public void onItemClick(int mDataTicket,SalaryAllList searchresult,List<SalaryAllList> mList) {
                 showSalaryDisbursmentDialog(mDataTicket,searchresult);
             }
         });

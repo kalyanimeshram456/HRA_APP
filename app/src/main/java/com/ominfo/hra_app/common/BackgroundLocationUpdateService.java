@@ -211,7 +211,6 @@ public class BackgroundLocationUpdateService extends Service implements GoogleAp
         mLocationRequest.setInterval(Constants.INTERVAL);
         mLocationRequest.setFastestInterval(Constants.FASTEST_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.addLocationRequest(mLocationRequest);
         builder.setAlwaysShow(true);

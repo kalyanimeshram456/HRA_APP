@@ -875,8 +875,18 @@ public class PastLeaveFragment extends BaseFragment {
                     tvDateValueFrom.setText(sdf.format(myCalendar.getTime()));
                 }
                 int diff = AppUtils.getChangeDateForHisab(tvDateValueFrom.getText().toString(),tvDateValueTo.getText().toString());
-                appcomptextNoOfDays.setText("Number of days : "+diff +" Days");
-                noOFDays = diff;
+                if(AutoComTextViewDuration.getText().toString().equals("Half Day")){
+                    appcomptextNoOfDays.setText("Number of days : Half Day");
+                    noOFDays = 0;
+                }
+                else if(AutoComTextViewDuration.getText().toString().equals("Full Day")){
+                    appcomptextNoOfDays.setText("Number of days : 01 Days");
+                    noOFDays = 1;
+                }
+                else {
+                    appcomptextNoOfDays.setText("Number of days : " + Math.abs(diff) + " Days");
+                    noOFDays = diff;
+                }
             }
 
         };
@@ -887,6 +897,7 @@ public class PastLeaveFragment extends BaseFragment {
         DatePickerDialog dpDialog = new DatePickerDialog(mContext, date, myCalendar
                 .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                 myCalendar.get(Calendar.DAY_OF_MONTH));
+        dpDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
        /* if(val==0) {
             String dateRestrict = AppUtils.changeDateHisab(tvDateValueTo.getText().toString());
             dpDialog.getDatePicker().setMaxDate(getChangeDateForHisab(dateRestrict));

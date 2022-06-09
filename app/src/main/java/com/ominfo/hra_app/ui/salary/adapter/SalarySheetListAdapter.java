@@ -54,7 +54,7 @@ public class SalarySheetListAdapter extends RecyclerView.Adapter<SalarySheetList
 
         if(mListData.size()>0) {
                 holder.setIsRecyclable(false);
-                holder.tvCompanyName.setText(AppUtils.convertIntToMonth(mListData.get(position).getMonth()));
+                holder.tvCompanyName.setText(mListData.get(position).getMonth()+"-"+mListData.get(position).getYear());
                 holder.tvState.setText(mListData.get(position).getLeaves());
                 holder.tvRs.setText(mListData.get(position).getTotal());
                 holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));

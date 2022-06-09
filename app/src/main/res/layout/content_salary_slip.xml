@@ -26,167 +26,162 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <RelativeLayout
+                android:id="@+id/contentPrint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_16dp"
                 android:layout_marginBottom="@dimen/_40dp"
+                android:focusableInTouchMode="true"
+                android:focusable="true"
                 android:background="@drawable/layout_round_shape_grey_border_small"
                 android:orientation="vertical">
 
-                   <RelativeLayout
-                android:id="@+id/contentPrint"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                       android:layout_marginHorizontal="@dimen/_1dp"
-                       android:paddingBottom="@dimen/_100dp"
-                android:orientation="vertical">
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/layTop"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                       <androidx.appcompat.widget.LinearLayoutCompat
+                           android:id="@+id/layTop"
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content"
+                           android:orientation="horizontal">
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginHorizontal="@dimen/_10dp"
-                        android:layout_marginTop="@dimen/_10dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/layout_round_shape_grey_border_small_blue"
-                        android:gravity="center"
-                        android:paddingHorizontal="@dimen/_10dp"
-                        android:paddingBottom="@dimen/_16dp">
+                           <RelativeLayout
+                               android:layout_width="match_parent"
+                               android:layout_height="wrap_content"
+                               android:layout_gravity="center"
+                               android:layout_marginHorizontal="@dimen/_10dp"
+                               android:layout_marginTop="@dimen/_10dp"
+                               android:layout_weight="1"
+                               android:background="@drawable/layout_round_shape_grey_border_small_blue"
+                               android:gravity="center"
+                               android:paddingHorizontal="@dimen/_10dp"
+                               android:paddingBottom="@dimen/_16dp">
 
-                        <RelativeLayout
-                            android:id="@+id/lau"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginTop="@dimen/_10dp">
+                               <RelativeLayout
+                                   android:id="@+id/lau"
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content"
+                                   android:layout_centerHorizontal="true"
+                                   android:layout_marginTop="@dimen/_10dp">
 
-                            <RelativeLayout
-                                android:id="@+id/layBirthPro"
-                                android:layout_width="@dimen/_50dp"
-                                android:layout_height="@dimen/_50dp"
-                                android:layout_gravity="center_vertical"
-                                android:layout_weight="5">
+                                   <RelativeLayout
+                                       android:id="@+id/layBirthPro"
+                                       android:layout_width="@dimen/_50dp"
+                                       android:layout_height="@dimen/_50dp"
+                                       android:layout_gravity="center_vertical"
+                                       android:layout_weight="5">
 
-                                <LinearLayout
-                                    android:layout_width="@dimen/_50dp"
-                                    android:layout_height="@dimen/_50dp"
-                                    android:background="@android:color/transparent"
-                                    android:orientation="horizontal">
+                                       <LinearLayout
+                                           android:layout_width="@dimen/_50dp"
+                                           android:layout_height="@dimen/_50dp"
+                                           android:background="@android:color/transparent"
+                                           android:orientation="horizontal">
 
-                                    <de.hdodenhof.circleimageview.CircleImageView
-                                        android:id="@+id/imgBirthPro"
-                                        android:layout_width="@dimen/_50dp"
-                                        android:layout_height="@dimen/_50dp"
-                                        android:layout_gravity="left|center"
-                                        android:gravity="left"
-                                        android:src="@drawable/ic_user"
-                                        android:visibility="visible"
-                                        app:civ_border_color="@color/pink"
-                                        app:civ_border_width="1dp" />
+                                           <androidx.appcompat.widget.AppCompatImageView
+                                               android:id="@+id/imgBirthPro"
+                                               android:layout_width="55dp"
+                                               android:layout_height="@dimen/_60dp"
+                                               android:layout_gravity="left|center"
+                                               android:gravity="left"
+                                               android:scaleType="fitXY"
+                                               android:src="@drawable/ic_user"
+                                               android:visibility="visible"
+                                              />
 
 
-                                </LinearLayout>
-                                <!-- android:indeterminateTintMode="src_atop"-->
-                                <ProgressBar
-                                    android:id="@+id/progress_barBirth"
-                                    android:layout_width="@dimen/_50dp"
-                                    android:layout_height="@dimen/_50dp"
-                                    android:indeterminate="true"
-                                    android:indeterminateDrawable="@drawable/progress_bar_color" />
+                                       </LinearLayout>
+                                       <!-- android:indeterminateTintMode="src_atop"-->
+                                       <ProgressBar
+                                           android:id="@+id/progress_barBirth"
+                                           android:layout_width="@dimen/_50dp"
+                                           android:layout_height="@dimen/_50dp"
+                                           android:indeterminate="true"
+                                           android:indeterminateDrawable="@drawable/progress_bar_color" />
 
-                            </RelativeLayout>
+                                   </RelativeLayout>
 
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/tvCompanyName"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:layout_gravity="top"
-                                android:layout_marginLeft="@dimen/_10dp"
-                                android:layout_toRightOf="@+id/layBirthPro"
-                                android:fontFamily="@font/gilroy_bold"
-                                android:gravity="top"
-                                android:imeOptions="actionDone"
-                                android:inputType="textMultiLine"
-                                android:maxLines="2"
-                                android:text="Powertek Equipment Org private Limited"
-                                android:textColor="@color/back_text_colour"
-                                android:textColorHint="@color/back_text_colour"
-                                android:textSize="@dimen/_16sp" />
-                        </RelativeLayout>
+                                   <androidx.appcompat.widget.AppCompatTextView
+                                       android:id="@+id/tvCompanyName"
+                                       android:layout_width="wrap_content"
+                                       android:layout_height="wrap_content"
+                                       android:layout_centerVertical="true"
+                                       android:layout_gravity="top"
+                                       android:layout_marginLeft="@dimen/_10dp"
+                                       android:layout_toRightOf="@+id/layBirthPro"
+                                       android:fontFamily="@font/gilroy_bold"
+                                       android:gravity="top"
+                                       android:imeOptions="actionDone"
+                                       android:inputType="textMultiLine"
+                                       android:maxLines="2"
+                                       android:text="Powertek Equipment Org private Limited"
+                                       android:textColor="@color/back_text_colour"
+                                       android:textColorHint="@color/back_text_colour"
+                                       android:textSize="@dimen/_16sp" />
+                               </RelativeLayout>
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/tvMonth"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/lau"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/_10dp"
-                            android:fontFamily="@font/gilroy_bold"
-                            android:gravity="center"
-                            android:imeOptions="actionDone"
-                            android:inputType="textMultiLine"
-                            android:maxLines="2"
-                            android:text="Payslip of march"
-                            android:textColor="@color/back_text_colour"
-                            android:textColorHint="@color/back_text_colour"
-                            android:textSize="@dimen/_14sp" />
+                               <androidx.appcompat.widget.AppCompatTextView
+                                   android:id="@+id/tvMonth"
+                                   android:layout_width="match_parent"
+                                   android:layout_height="wrap_content"
+                                   android:layout_below="@+id/lau"
+                                   android:layout_gravity="center"
+                                   android:layout_marginTop="@dimen/_10dp"
+                                   android:fontFamily="@font/gilroy_bold"
+                                   android:gravity="center"
+                                   android:imeOptions="actionDone"
+                                   android:inputType="textMultiLine"
+                                   android:maxLines="2"
+                                   android:text="Payslip of march"
+                                   android:textColor="@color/back_text_colour"
+                                   android:textColorHint="@color/back_text_colour"
+                                   android:textSize="@dimen/_14sp" />
 
-                    </RelativeLayout>
+                           </RelativeLayout>
 
 
-                    <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom"
-                        android:layout_weight="1"
-                        android:orientation="horizontal"
-                        android:visibility="gone">
+                           <androidx.appcompat.widget.LinearLayoutCompat
+                               android:layout_width="match_parent"
+                               android:layout_height="wrap_content"
+                               android:layout_gravity="bottom"
+                               android:layout_weight="1"
+                               android:orientation="horizontal"
+                               android:visibility="gone">
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/fromDate"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="1"
-                            android:fontFamily="@font/gilroy_semibold"
-                            android:gravity="right"
-                            android:hint="@string/scr_lbl_dashboard"
-                            android:imeOptions="actionDone"
-                            android:inputType="text"
-                            android:text="20/10/2021"
-                            android:textColor="@color/back_text_colour"
-                            android:textColorHint="@color/back_text_colour"
-                            android:textSize="@dimen/_14dp" />
+                               <androidx.appcompat.widget.AppCompatTextView
+                                   android:id="@+id/fromDate"
+                                   android:layout_width="match_parent"
+                                   android:layout_height="wrap_content"
+                                   android:layout_centerVertical="true"
+                                   android:layout_gravity="center_vertical"
+                                   android:layout_weight="1"
+                                   android:fontFamily="@font/gilroy_semibold"
+                                   android:gravity="right"
+                                   android:hint="@string/scr_lbl_dashboard"
+                                   android:imeOptions="actionDone"
+                                   android:inputType="text"
+                                   android:text="20/10/2021"
+                                   android:textColor="@color/back_text_colour"
+                                   android:textColorHint="@color/back_text_colour"
+                                   android:textSize="@dimen/_14dp" />
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/toDate"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="1"
-                            android:fontFamily="@font/gilroy_semibold"
-                            android:gravity="left"
-                            android:hint="@string/scr_lbl_dashboard"
-                            android:imeOptions="actionDone"
-                            android:inputType="text"
-                            android:text="-20/10/2021"
-                            android:textColor="@color/back_text_colour"
-                            android:textColorHint="@color/back_text_colour"
-                            android:textSize="@dimen/_14dp" />
+                               <androidx.appcompat.widget.AppCompatTextView
+                                   android:id="@+id/toDate"
+                                   android:layout_width="match_parent"
+                                   android:layout_height="wrap_content"
+                                   android:layout_centerVertical="true"
+                                   android:layout_gravity="center_vertical"
+                                   android:layout_weight="1"
+                                   android:fontFamily="@font/gilroy_semibold"
+                                   android:gravity="left"
+                                   android:hint="@string/scr_lbl_dashboard"
+                                   android:imeOptions="actionDone"
+                                   android:inputType="text"
+                                   android:text="-20/10/2021"
+                                   android:textColor="@color/back_text_colour"
+                                   android:textColorHint="@color/back_text_colour"
+                                   android:textSize="@dimen/_14dp" />
 
-                    </androidx.appcompat.widget.LinearLayoutCompat>
+                           </androidx.appcompat.widget.LinearLayoutCompat>
 
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                       </androidx.appcompat.widget.LinearLayoutCompat>
 
                        <androidx.appcompat.widget.AppCompatImageView
                            android:id="@+id/imgEdit"
@@ -198,7 +193,6 @@
                            android:layout_gravity="center"
                            android:layout_marginLeft="@dimen/_10dp"
                            android:layout_marginTop="@dimen/_10dp"
-                           android:src="@drawable/ic_edit_black"
                            android:visibility="visible" />
 
                 <RelativeLayout
@@ -444,7 +438,7 @@
                         android:id="@+id/tvAddColon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/_5dp"
+                        android:layout_marginRight="@dimen/_0dp"
                         android:layout_toRightOf="@+id/tvAdd"
                         android:fontFamily="@font/gilroy_semibold"
                         android:text=" : "
@@ -460,8 +454,8 @@
                         android:background="@drawable/toggle_editext_salary_color"
                         android:fontFamily="@font/gilroy_semibold"
                         android:imeOptions="actionDone"
-                        android:text=""
                         android:inputType="numberDecimal"
+                        android:text=""
                         android:textColor="@color/back_text_colour"
                         android:textSize="@dimen/_14sp" />
 
@@ -490,7 +484,7 @@
                         android:id="@+id/tvDedColon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/_5dp"
+                        android:layout_marginRight="@dimen/_0dp"
                         android:layout_toRightOf="@+id/tvDed"
                         android:fontFamily="@font/gilroy_semibold"
                         android:text=" : "
@@ -505,9 +499,9 @@
                         android:layout_toRightOf="@+id/tvDedColon"
                         android:background="@drawable/toggle_editext_salary_color"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text=""
-                        android:inputType="numberDecimal"
                         android:imeOptions="actionDone"
+                        android:inputType="numberDecimal"
+                        android:text=""
                         android:textColor="@color/back_text_colour"
                         android:textSize="@dimen/_14sp" />
 
@@ -537,7 +531,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="Total charges       :   "
+                        android:text="Total charges       : "
                         android:textAlignment="center"
                         android:textColor="@color/color_main"
                         android:textSize="@dimen/_14sp" />
@@ -549,15 +543,13 @@
                         android:layout_toRightOf="@+id/tvBirthName"
                         android:background="@drawable/toggle_editext_salary_color"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="@string/scr_lbl_rs_0"
-                        android:inputType="numberDecimal"
                         android:imeOptions="actionDone"
+                        android:inputType="numberDecimal"
+                        android:text="@string/scr_lbl_rs_0"
                         android:textColor="@color/color_main"
                         android:textSize="@dimen/_14sp" />
 
                 </RelativeLayout>
-
-                   </RelativeLayout>
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/addSubmitButton"

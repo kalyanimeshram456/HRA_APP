@@ -1,6 +1,7 @@
 package com.ominfo.hra_app.ui.leave.fragment;
 
 import static com.ominfo.hra_app.ui.employees.PaginationListener.PAGE_START;
+import static com.ominfo.hra_app.util.AppUtils.getChangeDateForHisab;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -317,7 +318,7 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
         String mTime = AppUtils.getCurrentTime();
         tvTimeValueFrom.setText(mTime);
         tvTimeValueTo.setText(mTime);
-        int diff = AppUtils.getChangeDateForHisab(tvDateValueFrom.getText().toString(),tvDateValueTo.getText().toString());
+        int diff = getChangeDateForHisab(tvDateValueFrom.getText().toString(),tvDateValueTo.getText().toString());
         appcomptextNoOfDays.setText("Number of days : "+diff +" Days");
         noOFDays = diff;
         mClose.setOnClickListener(new View.OnClickListener() {
@@ -477,9 +478,19 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
                 else {
                     tvDateValueFrom.setText(sdf.format(myCalendar.getTime()));
                 }
-                int diff = AppUtils.getChangeDateForHisab(tvDateValueFrom.getText().toString(),tvDateValueTo.getText().toString());
-                appcomptextNoOfDays.setText("Number of days : "+diff +" Days");
-                noOFDays = diff;
+                int diff = getChangeDateForHisab(tvDateValueFrom.getText().toString(),tvDateValueTo.getText().toString());
+                if(AutoComTextViewDuration.getText().toString().equals("Half Day")){
+                    appcomptextNoOfDays.setText("Number of days : Half Day");
+                    noOFDays = 0;
+                }
+                else if(AutoComTextViewDuration.getText().toString().equals("Full Day")){
+                    appcomptextNoOfDays.setText("Number of days : 01 Days");
+                    noOFDays = 1;
+                }
+                else {
+                    appcomptextNoOfDays.setText("Number of days : " + Math.abs(diff) + " Days");
+                    noOFDays = diff;
+                }
             }
 
         };
@@ -494,10 +505,10 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
             String dateRestrict = AppUtils.changeDateHisab(tvDateValueTo.getText().toString());
             dpDialog.getDatePicker().setMaxDate(getChangeDateForHisab(dateRestrict));
         }
-        else {
-            String dateRestrict = AppUtils.changeDateHisab(tvDateValueFrom.getText().toString());
-            dpDialog.getDatePicker().setMinDate(getChangeDateForHisab(dateRestrict));
-        }*/
+        else {*/
+            //String dateRestrict = AppUtils.getDashYesterdaysDate();
+            dpDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+        //}
         dpDialog.show();
 
     }
@@ -546,7 +557,7 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
                             layToDate.setVisibility(View.VISIBLE);
                             layoutLeaveTime.setVisibility(View.GONE);
                             appcomptextLeaveTime.setVisibility(View.GONE);
-                            int diff = AppUtils.getChangeDateForHisab(tvDateValueFrom.getText().toString(),tvDateValueTo.getText().toString());
+                            int diff = getChangeDateForHisab(tvDateValueFrom.getText().toString(),tvDateValueTo.getText().toString());
                             appcomptextNoOfDays.setText("Number of days : "+diff +" Days");
                             noOFDays = diff;
                         }

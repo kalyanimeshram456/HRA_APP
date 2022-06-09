@@ -10,9 +10,14 @@
         android:title="My Plan"
          />
     <item
+        android:id="@+id/ResetPass"
+        android:icon="@drawable/ic_om_logout"
+        android:title="Reset Password"
+         />
+    <item
         android:id="@+id/logout"
         android:icon="@drawable/ic_om_logout"
         android:title="Logout"
-         />
+        />
 
 </menu>
