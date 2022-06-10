@@ -281,11 +281,13 @@ public class Service {
     }
 
     public Observable<JsonElement> executeChangePasswordAPI(RequestBody action,
+                                                                RequestBody token,
                                                                 RequestBody comId, RequestBody empId
                                                                ) {
         return networkAPIServices.changePassword(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_CHANGE_PASSWORD),
                 action,
+                token,
                 comId,
                 empId
         );

@@ -25,8 +25,8 @@ public class ChangePasswordViewModel extends ViewModel {
         return responseLiveData;
     }
 
-    public void hitChangePasswordAPI(RequestBody action,RequestBody comId,RequestBody empId) {
-        disposables.add(service.executeChangePasswordAPI(action,comId,empId)
+    public void hitChangePasswordAPI(RequestBody action,RequestBody token,RequestBody comId,RequestBody empId) {
+        disposables.add(service.executeChangePasswordAPI(action,token,comId,empId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe((d) -> responseLiveData.setValue(ApiResponse.loading()))

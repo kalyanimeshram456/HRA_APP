@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.ominfo.hra_app.ui.my_account.model.ProfileRequest;
 
 import io.reactivex.Observable;
+import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.http.Body;
@@ -412,10 +413,12 @@ public interface NetworkAPIServices {
     @POST()
     Observable<JsonElement> changePassword(@Url String url,
                                            @Part("action") RequestBody uploadType,
+                                           @Part("token") RequestBody token,
                                            @Part("company_id") RequestBody uploadTypeEmployee,
                                            @Part("employee_id") RequestBody companyId);
 
     @Multipart
+
     @POST()
     Observable<JsonElement> employeeList(@Url String url,
                                          @Part("action") RequestBody uploadType,

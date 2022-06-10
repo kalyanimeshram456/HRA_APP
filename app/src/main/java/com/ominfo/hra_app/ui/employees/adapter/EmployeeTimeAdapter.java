@@ -70,10 +70,10 @@ public class EmployeeTimeAdapter extends RecyclerView.Adapter<EmployeeTimeAdapte
             if(mListData.get(position).getMonEndTime()==null){
                 holder.tvTimeValueTo.setText(AppUtils.convert24to12Attendance("19:00:00"));
             }
-            if(mListData.get(position).getMonWorking().toLowerCase().equals("yes")){
+            if(mListData.get(position).getMonWorking().equals("Yes") || mListData.get(position).getMonWorking().equals("yes")){
                 holder.switchDay.setChecked(true);
             }
-            if(mListData.get(position).getMonWorking().toLowerCase().equals("no")){
+            if(mListData.get(position).getMonWorking().equals("No") || mListData.get(position).getMonWorking().equals("no")){
                 holder.switchDay.setChecked(false);
             }
             holder.tvDayType.setText(mListData.get(position).getMonDay());
@@ -86,7 +86,7 @@ public class EmployeeTimeAdapter extends RecyclerView.Adapter<EmployeeTimeAdapte
                 holder.layFromTime.setEnabled(true);
                 holder.layTime.setEnabled(true);
             }else{
-                holder.switchDay.setVisibility(View.INVISIBLE);
+                holder.switchDay.setVisibility(View.VISIBLE);
                 holder.layFromTime.setEnabled(false);
                 holder.layTime.setEnabled(false);
             }
@@ -103,10 +103,10 @@ public class EmployeeTimeAdapter extends RecyclerView.Adapter<EmployeeTimeAdapte
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     if(b){
-                        mListData.get(position).setMonWorking("yes");
+                        mListData.get(position).setMonWorking("Yes");
                     }
                     else{
-                        mListData.get(position).setMonWorking("no");
+                        mListData.get(position).setMonWorking("No");
                     }
                     listItemSelectListener.onItemClick(mListData.get(position), mListData,true);
                 }

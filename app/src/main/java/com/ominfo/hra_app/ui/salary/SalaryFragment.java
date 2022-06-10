@@ -155,18 +155,15 @@ public class SalaryFragment extends BaseFragment {
 
     private void init(){
         setToolbar();
-        Glide.with(this)
-                .load(R.drawable.img_bg_search)
-                .into(iv_emptyLayimage);
-        tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
-        tv_emptyLayTitle.setText("Search something...");
-        setAdapterForSalaryList();
-        callSalaryAllListApi();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Glide.with(this)
+                .load(R.drawable.img_bg_search)
+                .into(iv_emptyLayimage);
+        tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
         setAdapterForSalaryList();
         callSalaryAllListApi();
     }
@@ -224,8 +221,11 @@ public class SalaryFragment extends BaseFragment {
                 RequestBody mRequestisAd = RequestBody.create(MediaType.parse("text/plain"),  loginTable.getIsadmin());
                 //RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), pageNo);
                // RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
+
                 String mon = AppUtils.convertMonthSalary();
-                RequestBody mRequestMonth = RequestBody.create(MediaType.parse("text/plain"), mon);
+                String newMon = mon;
+                newMon = String.valueOf(Integer.parseInt(mon) == 1 ? 12 :Integer.parseInt(mon)-1);
+                RequestBody mRequestMonth = RequestBody.create(MediaType.parse("text/plain"), newMon.length()==1?"0"+newMon:newMon);
                 String year = AppUtils.getCurrentYear();
                 RequestBody mRequestYear = RequestBody.create(MediaType.parse("text/plain"), year);
 

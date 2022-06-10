@@ -133,7 +133,7 @@ public class EmployeeLeaveListAdapter extends RecyclerView.Adapter<BaseViewHolde
       super.onBind(position);
       AcceptRejectLeave item = mPostItems.get(position);
       tvStatus.setText(item.getStatus());
-      tvDays.setText(item.getDaysDiff()+" Days");
+      tvDays.setText(item.getDaysDiff().equals("0")?"Half":item.getDaysDiff()+" Days");
       tvDate.setText(AppUtils.convertyyyytoddLeave(item.getStartTime())+"-"+AppUtils.convertyyyytoddLeave(item.getEndTime()));//"2022-05-17 10:00:00
       if(item.getStatus().equals("APPROVED") || item.getStatus().equals("Approved")){
         tvStatus.setTextColor(context.getResources().getColor(R.color.green));

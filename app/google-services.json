@@ -12,33 +12,15 @@
           "package_name": "com.ominfo.hra_app"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "572524579127-qte7a2h3qtud550u2uum0vaekgmmvv2q.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.ominfo.hra_app",
-            "certificate_hash": "a7aa23aff7be5f79153c3eeafff58e2ab53582db"
-          }
-        },
-        {
-          "client_id": "572524579127-oi16vndb1v5iajgsmpkuophcp7nis57u.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAqm4o0HHu3oS1XJkU7hHJn1RDUGAvLepE"
+          "current_key": "AIzaSyAgK2UyjQysEpe3DRdL16b3ANYe_lKBV9E"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "572524579127-oi16vndb1v5iajgsmpkuophcp7nis57u.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

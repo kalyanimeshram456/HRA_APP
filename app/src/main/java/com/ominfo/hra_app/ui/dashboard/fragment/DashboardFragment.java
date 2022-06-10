@@ -1241,12 +1241,16 @@ public class DashboardFragment extends BaseFragment {
                                 } catch (Exception e) {
                                 }
                                 if (responseModel.getResult().getDobdata() != null && responseModel.getResult().getDobdata().size() > 0) {
-                                    String today = AppUtils.getCurrentDateInyyyymmdd();
+                                    String today = AppUtils.getCurrentDateBirthDay();
                                     for (int i = 0; i < responseModel.getResult().getDobdata().size(); i++) {
-                                        if (today.equals(responseModel.getResult().getDobdata().get(i).getDob())) {
-                                            birthDayDobdatumList.add(responseModel.getResult().getDobdata().get(i));
-                                        } else {
-                                            upcomingBirthDayDobdatumList.add(responseModel.getResult().getDobdata().get(i));
+                                        if(responseModel.getResult().getDobdata().get(i).getDob().trim()!=null
+                                        && !responseModel.getResult().getDobdata().get(i).getDob().trim().equals("")) {
+                                            String[] str = responseModel.getResult().getDobdata().get(i).getDob().trim().split("-");
+                                            if (today.equals(str[1] + "-" + str[2])) {
+                                                birthDayDobdatumList.add(responseModel.getResult().getDobdata().get(i));
+                                            } else {
+                                                upcomingBirthDayDobdatumList.add(responseModel.getResult().getDobdata().get(i));
+                                            }
                                         }
                                     }
                                 }

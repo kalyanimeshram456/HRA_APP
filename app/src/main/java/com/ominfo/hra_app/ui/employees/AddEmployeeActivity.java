@@ -371,9 +371,10 @@ public class AddEmployeeActivity extends BaseActivity {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if (loginTable != null) {
                 RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_changecrmemppassword);
+                RequestBody mRequestToken = RequestBody.create(MediaType.parse("text/plain"), loginTable.getToken());
                 RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
                 RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), empId);
-                changePasswordViewModel.hitChangePasswordAPI(mRequestAction,mRequestComId,mRequestEmployee);
+                changePasswordViewModel.hitChangePasswordAPI(mRequestAction,mRequestToken,mRequestComId,mRequestEmployee);
             }
         }
     }
@@ -1043,19 +1044,19 @@ public class AddEmployeeActivity extends BaseActivity {
                                 officeLat = employeeList.getOfficeLatitude();
                                 officeLong = employeeList.getOfficeLongitude();
                                 try{ timingList.removeAll(timingList);}catch (Exception e){}
-                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_mon), employeeList.getMonWorking()==null?"no":employeeList.getMonWorking(),
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_mon), employeeList.getMonWorking()==null?"No":employeeList.getMonWorking(),
                                         employeeList.getMonStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getMonStartTime(), employeeList.getMonEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getMonEndTime()));
-                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_tue), employeeList.getTueWorking()==null?"no":employeeList.getTueWorking(),
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_tue), employeeList.getTueWorking()==null?"No":employeeList.getTueWorking(),
                                         employeeList.getTueStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getTueStartTime(), employeeList.getTueEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getTueEndTime()));
-                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_wed), employeeList.getWedWorking()==null?"no":employeeList.getWedWorking(),
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_wed), employeeList.getWedWorking()==null?"No":employeeList.getWedWorking(),
                                         employeeList.getWedStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getWedStartTime(), employeeList.getWedEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getWedEndTime()));
-                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_thur), employeeList.getThursWorking()==null?"no":employeeList.getThursWorking(),
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_thur), employeeList.getThursWorking()==null?"No":employeeList.getThursWorking(),
                                         employeeList.getThursStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getThursStartTime(), employeeList.getThursEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getThursEndTime()));
-                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_fri), employeeList.getFriWorking()==null?"no":employeeList.getFriWorking(),
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_fri), employeeList.getFriWorking()==null?"No":employeeList.getFriWorking(),
                                         employeeList.getFriStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getFriStartTime(), employeeList.getFriEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getFriEndTime()));
-                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sat), employeeList.getSatWorking()==null?"no":employeeList.getSatWorking(),
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sat), employeeList.getSatWorking()==null?"No":employeeList.getSatWorking(),
                                         employeeList.getSatStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getSatStartTime(), employeeList.getSatEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getSatEndTime()));
-                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun), employeeList.getSunWorking()==null?"no":employeeList.getSunWorking(),
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun), employeeList.getSunWorking()==null?"No":employeeList.getSunWorking(),
                                         employeeList.getSunStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getSunStartTime(), employeeList.getSunEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getSunEndTime()));
                                 setAdapterForTimingList();
                             } else{
@@ -1091,19 +1092,19 @@ public class AddEmployeeActivity extends BaseActivity {
                                 officeLat = employeeResList.getOfficeLatitude();
                                 officeLong = employeeResList.getOfficeLongitude();
                                 try{ timingList.removeAll(timingList);}catch (Exception e){}
-                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_mon), employeeResList.getMonWorking()==null?"no":employeeResList.getMonWorking(),
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_mon), employeeResList.getMonWorking()==null?"No":employeeResList.getMonWorking(),
                                         employeeResList.getMonStartTime()==null?getString(R.string.scr_lbl_start_time):employeeResList.getMonStartTime(), employeeResList.getMonEndTime()==null?getString(R.string.scr_lbl_end_time):employeeResList.getMonEndTime()));
-                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_tue), employeeResList.getTueWorking()==null?"no":employeeResList.getTueWorking(),
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_tue), employeeResList.getTueWorking()==null?"No":employeeResList.getTueWorking(),
                                         employeeResList.getTueStartTime()==null?getString(R.string.scr_lbl_start_time):employeeResList.getTueStartTime(), employeeResList.getTueEndTime()==null?getString(R.string.scr_lbl_end_time):employeeResList.getTueEndTime()));
-                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_wed), employeeResList.getWedWorking()==null?"no":employeeResList.getWedWorking(),
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_wed), employeeResList.getWedWorking()==null?"No":employeeResList.getWedWorking(),
                                         employeeResList.getWedStartTime()==null?getString(R.string.scr_lbl_start_time):employeeResList.getWedStartTime(), employeeResList.getWedEndTime()==null?getString(R.string.scr_lbl_end_time):employeeResList.getWedEndTime()));
-                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_thur), employeeResList.getThrusWorking()==null?"no":employeeResList.getThrusWorking(),
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_thur), employeeResList.getThrusWorking()==null?"No":employeeResList.getThrusWorking(),
                                         employeeResList.getThrusStartTime()==null?getString(R.string.scr_lbl_start_time):employeeResList.getThrusStartTime(), employeeResList.getThrusEndTime()==null?getString(R.string.scr_lbl_end_time):employeeResList.getThrusEndTime()));
-                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_fri), employeeResList.getFriWorking()==null?"no":employeeResList.getFriWorking(),
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_fri), employeeResList.getFriWorking()==null?"No":employeeResList.getFriWorking(),
                                         employeeResList.getFriStartTime()==null?getString(R.string.scr_lbl_start_time):employeeResList.getFriStartTime(), employeeResList.getFriEndTime()==null?getString(R.string.scr_lbl_end_time):employeeResList.getFriEndTime()));
-                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sat), employeeResList.getSatWorking()==null?"no":employeeResList.getSatWorking(),
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sat), employeeResList.getSatWorking()==null?"No":employeeResList.getSatWorking(),
                                         employeeResList.getSatStartTime()==null?getString(R.string.scr_lbl_start_time):employeeResList.getSatStartTime(), employeeResList.getSatEndTime()==null?getString(R.string.scr_lbl_end_time):employeeResList.getSatEndTime()));
-                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun), employeeResList.getSunWorking()==null?"no":employeeResList.getSunWorking(),
+                                timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun), employeeResList.getSunWorking()==null?"No":employeeResList.getSunWorking(),
                                         employeeResList.getSunStartTime()==null?getString(R.string.scr_lbl_start_time):employeeResList.getSunStartTime(), employeeResList.getSunEndTime()==null?getString(R.string.scr_lbl_end_time):employeeResList.getSunEndTime()));
                                 setAdapterForTimingList();
                             }

@@ -23,6 +23,8 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.ominfo.hra_app.MainActivity;
@@ -99,6 +101,12 @@ public class LoginActivity extends BaseActivity {
         //requestPermission();
         init();
         //FirebaseApp.initializeApp();
+       /* FirebaseOptions options = new FirebaseOptions.Builder()
+                .setApplicationId("1:572524579127:android:744e808675a2f2d10472b2") // Required for Analytics.
+                .setProjectId("turanthhr") // Required for Firebase Installations.
+                .setApiKey("AIzaSyCyvJS8rtHthsF3l3gPfm4wSrojGsfh2vI") // Required for Auth.
+                .build();
+        FirebaseApp.initializeApp(this, options, "TuranthHR");*/
         createNotificationChannel();
         getToken();
         tvRegClick.setPaintFlags(tvRegClick.getPaintFlags() |  Paint.UNDERLINE_TEXT_FLAG);
@@ -167,9 +175,11 @@ public class LoginActivity extends BaseActivity {
                 }
 
                 //Token
-                String token = task.getResult();
-                recentToken = token;
-                LogUtil.printLog(TAG, "onComplete: " + token);
+                try {
+                    String token = task.getResult();
+                    recentToken = token;
+                    LogUtil.printLog(TAG, "onComplete: " + token);
+                }catch (Exception e){}
             }
         });
     }

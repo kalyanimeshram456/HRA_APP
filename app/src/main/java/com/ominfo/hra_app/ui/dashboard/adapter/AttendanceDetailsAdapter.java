@@ -67,7 +67,7 @@ public class AttendanceDetailsAdapter extends RecyclerView.Adapter<AttendanceDet
             if(mListData.get(position).getLeaveType()==null || mListData.get(position).getLeaveType().equals("")) {
                 holder.tvInTime.setText("In Time : " + AppUtils.convert24to12Attendance(mListData.get(position).getStartTime()));
                 holder.tvOutTime.setText("Out Time : " + AppUtils.convert24to12Attendance(mListData.get(position).getEndTime()));
-                if(mListData.get(position).getIs_early()!=null && (mListData.get(position).getIs_early().equals("1") || mListData.get(position).getIs_early().equals("1"))){
+                if((mListData.get(position).getIs_early()!=null && (mListData.get(position).getIs_early().equals("1")) || (mListData.get(position).getIs_late()!=null && mListData.get(position).getIs_late().equals("1")))){
                     holder.imgIndicator.setVisibility(View.VISIBLE);
                 }else{ holder.imgIndicator.setVisibility(View.GONE);}
             }else{

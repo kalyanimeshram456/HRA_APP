@@ -234,8 +234,8 @@
     <string name="scr_lbl_select_status">Select Status</string>
     <string name="scr_lbl_unavailable">Unavailable</string>
     <string name="scr_lbl_rs">₹</string>
-    <string name="scr_lbl_yes">yes</string>
-    <string name="scr_lbl_no">no</string>
+    <string name="scr_lbl_yes">Yes</string>
+    <string name="scr_lbl_no">No</string>
     <string name="scr_lbl_mon">Mon</string>
     <string name="scr_lbl_tue">Tue</string>
     <string name="scr_lbl_wed">Wed</string>

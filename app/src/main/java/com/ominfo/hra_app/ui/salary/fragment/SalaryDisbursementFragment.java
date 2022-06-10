@@ -250,15 +250,26 @@ public class SalaryDisbursementFragment extends BaseFragment {
         monthsLists.add(new EmployeeLeaveMonthsList("November","30 days"));
         monthsLists.add(new EmployeeLeaveMonthsList("December","31 days"));
 
+        List<EmployeeLeaveMonthsList> monthsListWOW = new ArrayList<>();
+        if (monthsLists.size() > 0) {
+            for (int i = 0; i < monthsLists.size(); i++) {
+               // LogUtil.printLog("month_rag",AppUtils.getCurrentMonth()+"-"+(monthsLists.get(i).getName()));
+                if (!AppUtils.getCurrentMonth().equals(monthsLists.get(i).getName())) {
+                    monthsListWOW.add(monthsLists.get(i));
+                } else {
+                    monthsListWOW.add(monthsLists.get(i));
+                    break;
+                }
+            }
+        }
+
         try {
             int pos = 0;
-            if (monthsLists != null && monthsLists.size() > 0) {
-                String[] mDropdownList = new String[monthsLists.size()];
-                for (int i = 0; i < monthsLists.size(); i++) {
-                    mDropdownList[i] = String.valueOf(monthsLists.get(i).getName());
-                    //pos = i;
-                    if(AutoComMonth.getText().toString().equals(monthsLists.get(i).getName())){
-                        tvTotalDays.setText("Total days of month : "+monthsLists.get(i).getDays());
+            if (monthsListWOW.size() > 0) {
+                String[] mDropdownList = new String[monthsListWOW.size()];
+                for (int i = 0; i < monthsListWOW.size(); i++) {
+                    if(monthsListWOW.get(i).getName()!=null) {
+                        mDropdownList[i] = String.valueOf(monthsListWOW.get(i).getName());
                     }
                 }
                 //AutoComMonth.setText(mDropdownList[pos]);
@@ -273,8 +284,8 @@ public class SalaryDisbursementFragment extends BaseFragment {
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                        try{
                         for(int i=0;i<monthsLists.size();i++){
-                            if(monthsLists.get(i).getName().equals(AutoComMonth.getText().toString().trim())){
-                                tvTotalDays.setText("Total days of month : "+monthsLists.get(i).getDays());
+                            if(monthsListWOW.get(i).getName().equals(AutoComMonth.getText().toString().trim())){
+                                tvTotalDays.setText("Total days of month : "+monthsListWOW.get(i).getDays());
                             }
                         }}catch (Exception e){}
                         callSalaryAllListApi();
@@ -288,6 +299,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
             e.printStackTrace();
         }
     }
+
 
     /* Call Api For employee list */
     private void callSalaryAllListApi() {
@@ -448,7 +460,8 @@ public class SalaryDisbursementFragment extends BaseFragment {
                 if(employeeList.getStatus()!=null && !employeeList.getStatus().equals("")
                 && !employeeList.getStatus().equals("null")){
                     //call api
-                    if(!TextUtils.isEmpty(etDescr.getText().toString())) {
+                    if(!TextUtils.isEmpty(etDescr.getText().toString())
+                    && !TextUtils.isEmpty(etAddition.getText().toString())) {
                         if (NetworkCheck.isInternetAvailable(mContext)) {
                             LoginTable loginTable = mDb.getDbDAO().getLoginData();
                             if (loginTable != null) {
@@ -479,7 +492,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
                             LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
                         }
                     }else{
-                        LogUtil.printToastMSG(mContext,"Please add remark!");
+                        LogUtil.printToastMSG(mContext,"Please add mandatory fields!");
                     }
                 }
                 else {
