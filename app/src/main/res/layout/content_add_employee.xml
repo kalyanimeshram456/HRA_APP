@@ -176,8 +176,8 @@
                             android:hint="@string/scr_lbl_mobile_number"
                             android:imeOptions="actionNext"
                             android:inputType="number"
-                            android:padding="@dimen/_10dp"
                             android:maxLength="10"
+                            android:padding="@dimen/_10dp"
                             android:textColor="@color/black_heading"
                             android:textColorHint="@color/app_gray"
                             android:textSize="@dimen/_14sp" />
@@ -425,6 +425,38 @@
                             android:textSize="@dimen/_14sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_16dp"
+                        >
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvDisable"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left|bottom"
+                            android:gravity="left|bottom"
+                            android:layout_centerVertical="true"
+                            android:layout_marginHorizontal="@dimen/_10dp"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:text="Disable office location"
+                            android:textColor="@color/black_heading"
+                            android:textSize="@dimen/_14sp" />
+
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:id="@+id/switchDisableLocation"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:layout_gravity="bottom|left"
+                            android:layout_marginHorizontal="@dimen/_10dp"
+                            android:backgroundTint="@color/color_main"
+                            android:gravity="bottom|left"
+                            android:text="" />
+
+                    </RelativeLayout>
+
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvOfficeLocation"

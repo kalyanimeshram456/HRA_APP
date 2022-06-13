@@ -763,7 +763,7 @@ public class AppUtils {
     }
 
     public static String convertDobDate(String date12){
-        SimpleDateFormat displayFormat = new SimpleDateFormat("dd, MMM yyyy");
+        SimpleDateFormat displayFormat = new SimpleDateFormat("dd, MMMM yyyy");
         SimpleDateFormat parseFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = null;
         try {

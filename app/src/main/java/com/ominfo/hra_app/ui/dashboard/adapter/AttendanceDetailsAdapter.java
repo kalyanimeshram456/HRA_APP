@@ -5,11 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -31,6 +33,7 @@ public class AttendanceDetailsAdapter extends RecyclerView.Adapter<AttendanceDet
     private List<AttendanceDetailsData> mListData;
     private Context mContext;
     private String mDate;
+    private boolean mStatus = false;
 
     public AttendanceDetailsAdapter(Context mContext) {
         this.mContext = mContext;
@@ -60,6 +63,9 @@ public class AttendanceDetailsAdapter extends RecyclerView.Adapter<AttendanceDet
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         if (mListData != null) {
+            holder.tvInLocation.setText(mListData.get(position).getOffice_start_addr()==null?"Unavailable":mListData.get(position).getOffice_start_addr()+"");
+            holder.tvOutLocation.setText(mListData.get(position).getOffice_end_addr()==null?"Unavailable":mListData.get(position).getOffice_end_addr()+"");
+            holder.imgShowLoc.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.ic_down_greyy));
             AppUtils.loadImageURL(mContext,mListData.get(position).getProfilePic(),
                     holder.imgBirthPro,  holder.progress_barBirth);
             holder.tvEmpName.setText(mListData.get(position).getEmpName());
@@ -76,6 +82,24 @@ public class AttendanceDetailsAdapter extends RecyclerView.Adapter<AttendanceDet
                 holder.imgIndicator.setVisibility(View.GONE);
             }
         }
+        holder.layCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mStatus){
+                    //not clicked
+                    mStatus = false;
+                    holder.layInLoc.setVisibility(View.GONE);
+                    holder.layOutLoc.setVisibility(View.GONE);
+                    holder.imgShowLoc.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.ic_down_greyy));
+                }else{
+                    //clicked
+                    mStatus = true;
+                    holder.layInLoc.setVisibility(View.VISIBLE);
+                    holder.layOutLoc.setVisibility(View.VISIBLE);
+                    holder.imgShowLoc.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.ic_up_greyy));
+                }
+            }
+        });
 
     }
 
@@ -94,24 +118,29 @@ public class AttendanceDetailsAdapter extends RecyclerView.Adapter<AttendanceDet
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         AppCompatTextView tvEmpName,tvInTime, tvOutTime;
-        AppCompatTextView tvDesi;
+        AppCompatTextView tvDesi,tvOutLocation,tvInLocation;
         AppCompatTextView tvLeaveBirthValue;
-        LinearLayoutCompat layClick;
-        AppCompatImageView imgDash;
+        CardView layCard;
+        AppCompatImageView imgShowLoc;
         CircleImageView imgBirthPro,imgIndicator;
         ProgressBar progress_barBirth;
+        RelativeLayout layOutLoc,layInLoc;
 
         ViewHolder(View itemView) {
             super(itemView);
+            tvOutLocation = itemView.findViewById(R.id.tvOutLocation);
+            tvInLocation = itemView.findViewById(R.id.tvInLocation);
+            layOutLoc = itemView.findViewById(R.id.layOutLoc);
+            layInLoc = itemView.findViewById(R.id.layInLoc);
             tvEmpName = itemView.findViewById(R.id.tvEmpName);
             tvInTime = itemView.findViewById(R.id.tvInTime);
             tvOutTime = itemView.findViewById(R.id.tvOutTime);
             tvDesi = itemView.findViewById(R.id.tvDesi);
             imgBirthPro = itemView.findViewById(R.id.imgBirthPro);
             progress_barBirth = itemView.findViewById(R.id.progress_barBirth);
-
+            layCard = itemView.findViewById(R.id.layCard);
             imgIndicator = itemView.findViewById(R.id.imgIndicator);
-            //tvLeaveBirthValue = itemView.findViewById(R.id.tvLeaveBirthValue);
+            imgShowLoc = itemView.findViewById(R.id.imgShowLoc);
         }
     }
 

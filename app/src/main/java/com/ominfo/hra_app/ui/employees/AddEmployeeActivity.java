@@ -28,6 +28,7 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -119,6 +120,8 @@ public class AddEmployeeActivity extends BaseActivity {
     private AppDatabase mDb;
     @BindView(R.id.progressBarHolder)
     FrameLayout mProgressBarHolder;
+    @BindView(R.id.switchDisableLocation)
+    SwitchCompat switchDisableLocation;
     //add employee fields
     @BindView(R.id.input_textName)
     TextInputLayout input_textName;
@@ -457,7 +460,11 @@ public class AddEmployeeActivity extends BaseActivity {
         if (NetworkCheck.isInternetAvailable(this)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
-                LogUtil.printLog("Token_check",loginTable.getToken());
+                String locationDis = "0";
+                if(switchDisableLocation.isChecked()){
+                    locationDis = "1";
+                }
+                //LogUtil.printLog("Token_check",loginTable.getToken());
                 RequestBody mRequestBodyTypeAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_add_employee);
                 RequestBody mRequestBodyTypeEmpName = RequestBody.create(MediaType.parse("text/plain"),AutoComName.getText().toString().trim());//loginTable.getCompanyId());
                 RequestBody mRequestBodyTypeEmpMob = RequestBody.create(MediaType.parse("text/plain"), AutoComMobile.getText().toString().trim());//loginTable.getCompanyId());
@@ -501,9 +508,11 @@ public class AddEmployeeActivity extends BaseActivity {
                 RequestBody mRequestFriEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(4).getMonEndTime());//loginTable.getCompanyId());
                 RequestBody mRequestSatEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(5).getMonEndTime());//loginTable.getCompanyId());
                 RequestBody mRequestSunEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(6).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestDisable = RequestBody.create(MediaType.parse("text/plain"),locationDis);//loginTable.getCompanyId());
 
                 AddEmployeeRequest request = new AddEmployeeRequest();
                 request.setAction(mRequestBodyTypeAction);
+                request.setLocDisable(mRequestDisable);
                 request.setEmpName(mRequestBodyTypeEmpName);
                 request.setEmpMob(mRequestBodyTypeEmpMob);
                 request.setEmpEmail(mRequestBodyTypeEmpEmail);
@@ -559,6 +568,10 @@ public class AddEmployeeActivity extends BaseActivity {
         if (NetworkCheck.isInternetAvailable(this)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
+                String locationDis = "0";
+                if(switchDisableLocation.isChecked()){
+                    locationDis = "1";
+                }
                 RequestBody mRequestBodyTypeAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_edit_employee);
                 RequestBody mRequestBodyTypeEmpName = RequestBody.create(MediaType.parse("text/plain"),AutoComName.getText().toString().trim());//loginTable.getCompanyId());
                 RequestBody mRequestBodyTypeEmpMob = RequestBody.create(MediaType.parse("text/plain"), AutoComMobile.getText().toString().trim());//loginTable.getCompanyId());
@@ -603,9 +616,11 @@ public class AddEmployeeActivity extends BaseActivity {
                 RequestBody mRequestFriEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(4).getMonEndTime());//loginTable.getCompanyId());
                 RequestBody mRequestSatEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(5).getMonEndTime());//loginTable.getCompanyId());
                 RequestBody mRequestSunEnd = RequestBody.create(MediaType.parse("text/plain"),timingList.get(6).getMonEndTime());//loginTable.getCompanyId());
+                RequestBody mRequestDisable = RequestBody.create(MediaType.parse("text/plain"),locationDis);//loginTable.getCompanyId());
 
                 EditEmployeeRequest request = new EditEmployeeRequest();
                 request.setAction(mRequestBodyTypeAction);
+                request.setLocDisable(mRequestDisable);
                 request.setEmpName(mRequestBodyTypeEmpName);
                 request.setEmpMob(mRequestBodyTypeEmpMob);
                 request.setEmpEmail(mRequestBodyTypeEmpEmail);
@@ -1079,6 +1094,11 @@ public class AddEmployeeActivity extends BaseActivity {
                                 AutoComDesi.setText(employeeResList.getEmpPosition());
                                 AutoComGender.setText(employeeResList.getEmpGender());
                                 setDropdownGender();
+                                if(employeeResList.getDisableLocation()!=null && employeeResList.getDisableLocation().equals("1")) {
+                                    switchDisableLocation.setChecked(true);
+                                }else{
+                                    switchDisableLocation.setChecked(false);
+                                }
                                 tvDateValue.setText(AppUtils.dateConvertYYYYToDD(employeeResList.getEmpDob()));
                                 AutoComAddress.setText(employeeResList.getEmpAddr());
                                 AutoComPincode.setText(employeeResList.getEmpPincode());

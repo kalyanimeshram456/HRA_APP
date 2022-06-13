@@ -23,6 +23,7 @@ public interface SharedPrefKey {
     String USERNAME = "USERNAME";
     String DESIGN = "DESIGN";
     String ATTENTION_LOC_TITLE = "ATTENTION_LOC_TITLE";
+    String NOT_FETCHED = "NOT_FETCHED";
     String ATTENTION_LOC_LAT = "ATTENTION_LOC_LAT";
     String ATTENTION_LOC_LONG = "ATTENTION_LOC_LONG";
     String TIMER_STATUS = "TIMER_STATUS";

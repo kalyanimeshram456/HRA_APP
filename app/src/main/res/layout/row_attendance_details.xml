@@ -74,6 +74,7 @@
                     android:layout_gravity="left|center_vertical"
                     android:layout_weight="1"
                     android:paddingTop="@dimen/_0dp"
+                    android:paddingLeft="@dimen/_5dp"
                     android:gravity="left|center_vertical"
                     >
 
@@ -84,6 +85,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:fontFamily="@font/gilroy_semibold"
+                        android:inputType="textMultiLine"
                         android:text="User name"
                         android:textAlignment="center"
                         android:textColor="@color/black_heading"
@@ -96,6 +98,7 @@
                         android:layout_below="@+id/tvEmpName"
                         android:layout_gravity="center"
                         android:fontFamily="@font/gilroy_regular"
+                        android:inputType="textMultiLine"
                         android:text="User designation"
                         android:textAlignment="center"
                         android:textColor="@color/gray"
@@ -107,7 +110,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right|center_vertical"
-                    android:layout_weight="1"
+                    android:layout_weight="1.1"
                     android:gravity="right|center_horizontal"
                     android:paddingTop="@dimen/_0dp">
 
@@ -154,7 +157,81 @@
                             app:civ_border_width="0dp" />
                     </RelativeLayout>
                 </RelativeLayout>
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgShowLoc"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_18dp"
+                    android:layout_marginLeft="@dimen/_4dp"
+                    android:layout_weight="1.6"
+                    />
             </androidx.appcompat.widget.LinearLayoutCompat>
+            <RelativeLayout
+                android:id="@+id/layInLoc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginHorizontal="@dimen/_10dp"
+                >
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/titleInLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/gilroy_regular"
+                    android:inputType="textMultiLine"
+                    android:text="In Location : "
+                    android:textAlignment="center"
+                    android:textColor="@color/gray"
+                    android:textSize="@dimen/_12sp" />
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvInLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_toRightOf="@+id/titleInLocation"
+                    android:fontFamily="@font/gilroy_regular"
+                    android:text="@string/scr_lbl_unavailable"
+                    android:textAlignment="center"
+                    android:inputType="textMultiLine"
+                    android:textColor="@color/back_text_colour"
+                    android:textSize="@dimen/_12sp" />
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/layOutLoc"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_2dp"
+                android:layout_marginBottom="@dimen/_6dp"
+                android:layout_marginHorizontal="@dimen/_10dp"
+                >
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/titleOutLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/gilroy_regular"
+                    android:text="Out Location : "
+                    android:textAlignment="center"
+                    android:inputType="textMultiLine"
+                    android:textColor="@color/gray"
+                    android:textSize="@dimen/_12sp" />
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvOutLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_toRightOf="@+id/titleOutLocation"
+                    android:fontFamily="@font/gilroy_regular"
+                    android:text="@string/scr_lbl_unavailable"
+                    android:textAlignment="center"
+                    android:inputType="textMultiLine"
+                    android:textColor="@color/back_text_colour"
+                    android:textSize="@dimen/_12sp" />
+
+            </RelativeLayout>
         </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.cardview.widget.CardView>
 </RelativeLayout>

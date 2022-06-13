@@ -31,13 +31,6 @@ public class GetAttendanceResult {
     public void setDist_range(String dist_range) {
         this.dist_range = dist_range;
     }
-    public List<GetAttendanceAtt> getmAtt() {
-        return mAtt;
-    }
-
-    public void setmAtt(List<GetAttendanceAtt> mAtt) {
-        this.mAtt = mAtt;
-    }
 
     public String getOffice_address() {
         return office_address;

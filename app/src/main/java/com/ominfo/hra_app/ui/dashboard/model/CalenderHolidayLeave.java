@@ -11,7 +11,7 @@ public class CalenderHolidayLeave {
     @SerializedName("company_id")
     private String mCompanyId;
     @SerializedName("created_on")
-    private Object mCreatedOn;
+    private String mCreatedOn;
     @SerializedName("date")
     private String mDate;
     @SerializedName("description")
@@ -21,7 +21,8 @@ public class CalenderHolidayLeave {
     @SerializedName("record_id")
     private String mRecordId;
     @SerializedName("updated_on")
-    private Object mUpdatedOn;
+    private String mUpdatedOn;
+
 
     public String getCompanyId() {
         return mCompanyId;
@@ -31,11 +32,11 @@ public class CalenderHolidayLeave {
         mCompanyId = companyId;
     }
 
-    public Object getCreatedOn() {
+    public String getCreatedOn() {
         return mCreatedOn;
     }
 
-    public void setCreatedOn(Object createdOn) {
+    public void setCreatedOn(String createdOn) {
         mCreatedOn = createdOn;
     }
 
@@ -71,11 +72,11 @@ public class CalenderHolidayLeave {
         mRecordId = recordId;
     }
 
-    public Object getUpdatedOn() {
+    public String getUpdatedOn() {
         return mUpdatedOn;
     }
 
-    public void setUpdatedOn(Object updatedOn) {
+    public void setUpdatedOn(String updatedOn) {
         mUpdatedOn = updatedOn;
     }
 

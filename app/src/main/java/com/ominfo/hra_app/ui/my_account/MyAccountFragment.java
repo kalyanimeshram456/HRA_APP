@@ -478,6 +478,7 @@ public class MyAccountFragment extends BaseFragment {
                 RequestBody mRequestBodyTypeupdated_by = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());//loginTable.getCompanyId());
                 RequestBody mRequestBodyTypeComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());//loginTable.getCompanyId());
                 RequestBody mRequestBodyTypeemp_id = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());//loginTable.getCompanyId());
+                RequestBody mRequestBodyDisable = RequestBody.create(MediaType.parse("text/plain"), employeeListResData.getDisableLocation()==null?"0":employeeListResData.getDisableLocation());//loginTable.getCompanyId());
                 RequestBody mRequestBodyTypeSalary = RequestBody.create(MediaType.parse("text/plain"), employeeListResData.getSalary()==null?"":employeeListResData.getSalary());//loginTable.getCompanyId());
                 RequestBody mRequestBodyOtherLeave = RequestBody.create(MediaType.parse("text/plain"), employeeListResData.getOtherLeaves()==null?"":employeeListResData.getOtherLeaves());//loginTable.getCompanyId());
                 RequestBody mRequestBodyCasualLeave = RequestBody.create(MediaType.parse("text/plain"), employeeListResData.getCasualLeaves()==null?"":employeeListResData.getCasualLeaves());//loginTable.getCompanyId());
@@ -512,6 +513,7 @@ public class MyAccountFragment extends BaseFragment {
 
                 EditEmployeeRequest request = new EditEmployeeRequest();
                 request.setAction(mRequestBodyTypeAction);
+                request.setLocDisable(mRequestBodyDisable);
                 request.setEmpName(mRequestBodyTypeEmpName);
                 request.setEmpMob(mRequestBodyTypeEmpMob);
                 request.setEmpEmail(mRequestBodyTypeEmpEmail);

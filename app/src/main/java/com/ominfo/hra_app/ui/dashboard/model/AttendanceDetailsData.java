@@ -26,7 +26,26 @@ public class AttendanceDetailsData {
     private String is_late;
     @SerializedName("is_early")
     private String is_early;
+    @SerializedName("office_start_addr")
+    private String office_start_addr;
+    @SerializedName("office_end_addr")
+    private String office_end_addr;
 
+    public String getOffice_start_addr() {
+        return office_start_addr;
+    }
+
+    public void setOffice_start_addr(String office_start_addr) {
+        this.office_start_addr = office_start_addr;
+    }
+
+    public String getOffice_end_addr() {
+        return office_end_addr;
+    }
+
+    public void setOffice_end_addr(String office_end_addr) {
+        this.office_end_addr = office_end_addr;
+    }
     public String getIs_late() {
         return is_late;
     }

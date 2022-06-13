@@ -608,7 +608,7 @@ public interface NetworkAPIServices {
                                         @Part("mon_end_time") RequestBody mon_end_time,@Part("tue_end_time") RequestBody tue_end_time,
                                         @Part("wed_end_time") RequestBody wed_end_time,@Part("thrus_end_time") RequestBody thrus_end_time,
                                         @Part("fri_end_time") RequestBody fri_end_time,@Part("sat_end_time") RequestBody sat_end_time,
-                                        @Part("sun_end_time") RequestBody sun_end_time
+                                        @Part("sun_end_time") RequestBody sun_end_time, @Part("disable_location") RequestBody disable_location
     );
 
     @Multipart
@@ -644,7 +644,7 @@ public interface NetworkAPIServices {
                                          @Part("mon_end_time") RequestBody mon_end_time,@Part("tue_end_time") RequestBody tue_end_time,
                                          @Part("wed_end_time") RequestBody wed_end_time,@Part("thrus_end_time") RequestBody thrus_end_time,
                                          @Part("fri_end_time") RequestBody fri_end_time,@Part("sat_end_time") RequestBody sat_end_time,
-                                         @Part("sun_end_time") RequestBody sun_end_time
+                                         @Part("sun_end_time") RequestBody sun_end_time, @Part("disable_location") RequestBody disable_location
     );
 
     @Multipart

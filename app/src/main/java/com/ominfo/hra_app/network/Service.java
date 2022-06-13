@@ -459,7 +459,7 @@ public class Service {
                 ,addEmployeeRequest.getMonEndTime() ,addEmployeeRequest.getTueEndTime()
                 ,addEmployeeRequest.getWedEndTime() ,addEmployeeRequest.getThursEndTime()
                 ,addEmployeeRequest.getFri_end_time() ,addEmployeeRequest.getSatEndTime()
-                 ,addEmployeeRequest.getSunEndTime()
+                 ,addEmployeeRequest.getSunEndTime(),addEmployeeRequest.getLocDisable()
         );
     }
     public Observable<JsonElement> executeEditEmployeeAPI(EditEmployeeRequest addEmployeeRequest) {
@@ -486,7 +486,7 @@ public class Service {
                         ,addEmployeeRequest.getMonEndTime() ,addEmployeeRequest.getTueEndTime()
                         ,addEmployeeRequest.getWedEndTime() ,addEmployeeRequest.getThursEndTime()
                         ,addEmployeeRequest.getFri_end_time() ,addEmployeeRequest.getSatEndTime()
-                        ,addEmployeeRequest.getSunEndTime()
+                        ,addEmployeeRequest.getSunEndTime(),addEmployeeRequest.getLocDisable()
         );
     }
 

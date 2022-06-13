@@ -1241,7 +1241,7 @@ public class DashboardFragment extends BaseFragment {
                                 } catch (Exception e) {
                                 }
                                 if (responseModel.getResult().getDobdata() != null && responseModel.getResult().getDobdata().size() > 0) {
-                                    String today = AppUtils.getCurrentDateBirthDay();
+                                    String today = AppUtils.getCurrentDateBirthDay(); //getCurrentDateInyyyymmdd
                                     for (int i = 0; i < responseModel.getResult().getDobdata().size(); i++) {
                                         if(responseModel.getResult().getDobdata().get(i).getDob().trim()!=null
                                         && !responseModel.getResult().getDobdata().get(i).getDob().trim().equals("")) {

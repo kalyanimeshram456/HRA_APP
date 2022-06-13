@@ -14,6 +14,9 @@ public class EditEmployeeRequest {
     @SerializedName("action")
     private RequestBody action;
 
+    @SerializedName("disable_location")
+    private RequestBody locDisable;
+
     @SerializedName("emp_name")
     private RequestBody empName;
 
@@ -121,6 +124,14 @@ public class EditEmployeeRequest {
     private RequestBody mWedStartTime;
     @SerializedName("wed_working")
     private RequestBody mWedWorking;
+
+    public RequestBody getLocDisable() {
+        return locDisable;
+    }
+
+    public void setLocDisable(RequestBody locDisable) {
+        this.locDisable = locDisable;
+    }
 
     public RequestBody getFri_working() {
         return fri_working;

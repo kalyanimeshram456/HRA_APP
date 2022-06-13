@@ -77,7 +77,8 @@ public class TodayBirthDayAdapter extends RecyclerView.Adapter<TodayBirthDayAdap
 
 
             String dayStr = mArr[0] + suffixes[Integer.parseInt(mArr[0])];
-            holder.tvLeaveBirthValue.setText(dayStr+mArr[1]);
+            String[] strMonth = mArr[1].split(" ");
+            holder.tvLeaveBirthValue.setText(dayStr+" "+strMonth[1]);
             AppUtils.loadImageURL(mContext,mListData.get(position).getEmpProfilePic(),
                     holder.imgBirthPro,holder.progress_barBirth);
         }

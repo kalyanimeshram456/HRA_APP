@@ -12,6 +12,8 @@ public class EmployeeList {
 
     @SerializedName("casual_leaves")
     private String mCasualLeaves;
+    @SerializedName("disable_location")
+    private String disableLocation;
     @SerializedName("company_ID")
     private String mCompanyID;
     @SerializedName("created_by")
@@ -113,6 +115,14 @@ public class EmployeeList {
     private String officeLatitude;
     @SerializedName("office_longitude")
     private String officeLongitude;
+
+    public String getDisableLocation() {
+        return disableLocation;
+    }
+
+    public void setDisableLocation(String disableLocation) {
+        this.disableLocation = disableLocation;
+    }
 
     public String getOfficeAddress() {
         return officeAddress;

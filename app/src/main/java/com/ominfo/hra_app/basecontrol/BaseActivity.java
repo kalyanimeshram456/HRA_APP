@@ -187,6 +187,8 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
 
                 try {
                     addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                    SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_LAT, String.valueOf(location.getLatitude()));
+                    SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_LONG, String.valueOf(location.getLongitude()));
                     //addresses = null;
                     if (addresses != null && addresses.size() > 0) {
                         String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
@@ -202,15 +204,23 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                         Boolean iSTimer = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.CHECK_OUT_ENABLED, false);
                         StartAttendanceActivity.tvCurrLocation.setText("Current Location : " + address);
                         StartAttendanceActivity.tvCurrLocation.setEnabled(false);
+                        SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.NOT_FETCHED, false);
                     } else {
-                        SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
-                        SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
-                        SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_TITLE, "");
+                        //SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
+                        //SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
+                        //SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_TITLE, "");
+                        String locationLat = SharedPref.getInstance(getBaseContext()).read(SharedPrefKey.ENTERED_VISIT_LAT, "0.0");
+                        String locationLng = SharedPref.getInstance(getBaseContext()).read(SharedPrefKey.ENTERED_VISIT_LNG, "0.0");
+                        String locationRes = SharedPref.getInstance(getBaseContext()).read(SharedPrefKey.LOCATION_ENTERED_TXT, "Not Available");
+                        //data.getStringExtra("result");
+                        SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.NOT_FETCHED, true);
                         StartAttendanceActivity.tvCurrLocation.setEnabled(true);
                         StartAttendanceActivity.tvCurrLocation.setPaintFlags(StartAttendanceActivity.tvCurrLocation.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
                         StartAttendanceActivity.tvCurrLocation.setText("Tap to add your current location");
 
-                        if (result != null && !result.equals("temp") && !result.equals("")) {
+                        if (result != null && !result.equals("temp") && !result.equals("") && !result.equals("Not Available")) {
+                            if(locationRes!=null && !locationRes.equals("") && !locationRes.equals("Not Available"))
+                            {result=locationRes;}
                             StartAttendanceActivity.tvCurrLocation.setText("Current Location : " + result);
                         }
                         if (tvCurrLocation.getText().toString() == null || tvCurrLocation.getText().toString().equals("Tap to add your current location") || tvCurrLocation.getText().toString().equals("Current Location : ")) {
