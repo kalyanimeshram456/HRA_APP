@@ -58,13 +58,29 @@ public class Service {
         return networkAPIServices.verifyOtp(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_VERIFY_OTP),
                 action,otp,prefix);
     }
+    public Observable<JsonElement> executeVerifyEmailOtpAPI(RequestBody action, RequestBody otp, RequestBody prefix) {
+        return networkAPIServices.verifyEmailOtp(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_VERIFY_EMAIL_OTP),
+                action,otp,prefix);
+    }
     public Observable<JsonElement> executeGetOtpAPI(RequestBody action,RequestBody contact_no) {
         return networkAPIServices.getOtp(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_OTP),
                 action,contact_no);
     }
+    public Observable<JsonElement> executeGetEmailOtpAPI(RequestBody action,RequestBody emp_username,RequestBody emp_email) {
+        return networkAPIServices.getEmailOtp(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_GET_EMAIL_OTP),
+                action,emp_username,emp_email);
+    }
     public Observable<JsonElement> executeResendOtpAPI(RequestBody action,RequestBody contact_no) {
         return networkAPIServices.getOtp(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_RESEND_OTP),
                 action,contact_no);
+    }
+    public Observable<JsonElement> executeResendEmailOtpAPI(RequestBody action,RequestBody emp_username,RequestBody emp_email) {
+        return networkAPIServices.getEmailOtp(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_RESEND_EMAIL_OTP),
+                action,emp_username,emp_email);
+    }
+    public Observable<JsonElement> executeResetPasswordAPI(RequestBody action,RequestBody emp_username) {
+        return networkAPIServices.resetPasword(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_RESET_PASSWORD),
+                action,emp_username);
     }
     public Observable<JsonElement> executeSubscriptionAPI(RequestBody action, RequestBody start, RequestBody end) {
         return networkAPIServices.subCharges(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_SUB_CHARGES),
@@ -408,6 +424,19 @@ public class Service {
                 request.getLeaveType(),request.getFromDate(),
                 request.getEndDate(),request.getPageNo(),request.getPageSize()
                 ,request.getSearchedEmp()
+        );
+    }
+    public Observable<JsonElement> executePendingLeavesAPI(RequestBody action,RequestBody emId,RequestBody comID) {
+        return networkAPIServices.pendingLeaves(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_PENDING_LEAVES),
+                action,comID,emId
+        );
+    }
+    public Observable<JsonElement> executeLeavingDateAPI(RequestBody action,RequestBody emId,RequestBody comID
+            ,RequestBody date,RequestBody remark) {
+        return networkAPIServices.leavingDate(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_LEAVING_DATE),
+                action,comID,emId,date,remark
         );
     }
     public Observable<JsonElement> executeLeaveStatusAPI(LeaveStatusRequest request) {

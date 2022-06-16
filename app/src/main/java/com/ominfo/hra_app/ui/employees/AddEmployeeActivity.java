@@ -25,6 +25,7 @@ import android.widget.RelativeLayout;
 
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -64,7 +65,9 @@ import com.ominfo.hra_app.ui.employees.model.EmployeeList;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListRequest;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListResponse;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
+import com.ominfo.hra_app.ui.employees.model.LeavingDateResponse;
 import com.ominfo.hra_app.ui.employees.model.SingleEmployeeListViewModel;
+import com.ominfo.hra_app.ui.leave.model.LeavingDateViewModel;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.my_account.model.GetCompanyList;
 import com.ominfo.hra_app.ui.my_account.model.GetCompanyResponse;
@@ -109,6 +112,7 @@ public class AddEmployeeActivity extends BaseActivity {
     private GetCompanyViewModel getCompanyViewModel;
     private SingleEmployeeListViewModel employeeListViewModel;
     private ChangePasswordViewModel changePasswordViewModel;
+    private LeavingDateViewModel leavingDateViewModel;
     @BindView(R.id.tvTitle)
     AppCompatTextView tvToolbarTitle;
     @BindView(R.id.imgBack)
@@ -185,11 +189,15 @@ public class AddEmployeeActivity extends BaseActivity {
     String from = "add", empId= "0",officeLat= "",officeLong="";
     @BindView(R.id.btnDeactivate)
     AppCompatButton btnDeactivate;
+    @BindView(R.id.btnLeavingDate)
+    AppCompatButton btnLeavingDate;
     @BindView(R.id.btnCancel)
     AppCompatButton btnCancel;
     EmployeeList employeeList;
     EmployeeTimeAdapter employeeTimeAdapter;
     List<WorkTimingList> timingList = new ArrayList<>();
+    String leaveDate = "",leaveRemark = "";
+    Dialog mDialogLeaving;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -331,12 +339,14 @@ public class AddEmployeeActivity extends BaseActivity {
                 tvToolbarTitle.setText(R.string.scr_lbl_add_employees);
                 btnDeactivate.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
+                btnLeavingDate.setVisibility(View.GONE);
                 callCompanyListApi();
             }
             else if(from.equals(Constants.edit)){
                 tvToolbarTitle.setText(R.string.scr_lbl_manage_employee);
                 btnDeactivate.setVisibility(View.VISIBLE);
                 btnCancel.setVisibility(View.VISIBLE);
+                btnLeavingDate.setVisibility(View.VISIBLE);
                 Gson gson = new Gson();
                 employeeList = gson.fromJson(getIntent().getStringExtra(Constants.EMPLOYEE_OBJ), EmployeeList.class);
                 empId = employeeList.getEmpId();
@@ -366,6 +376,9 @@ public class AddEmployeeActivity extends BaseActivity {
 
         getCompanyViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GetCompanyViewModel.class);
         getCompanyViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_COMPANY));
+
+        leavingDateViewModel = ViewModelProviders.of(this, mViewModelFactory).get(LeavingDateViewModel.class);
+        leavingDateViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_LEAVING_DATE));
     }
 
      /* Call Api For employee list */
@@ -409,6 +422,28 @@ public class AddEmployeeActivity extends BaseActivity {
                 request.setFilterEmpIsActive(filter_emp_isActive);
 */
                 employeeListViewModel.hitSingleEmployeeList(request);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    /* Call Api For leaving date */
+    private void callLeavingDateApi(String date,String remark) {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_leaving_date);
+                RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
+                RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), empId);
+                RequestBody mRequestDate = RequestBody.create(MediaType.parse("text/plain"),AppUtils.dateReminder(date));
+                RequestBody mRequestRemark = RequestBody.create(MediaType.parse("text/plain"), remark);
+
+                leavingDateViewModel.hitLeavingDateAPI(mRequestAction,mRequestEmployee,mRequestComId
+                ,mRequestDate,mRequestRemark);
             }
             else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
@@ -713,7 +748,8 @@ public class AddEmployeeActivity extends BaseActivity {
 
     //perform click actions
     @OnClick({R.id.btnSubmit,R.id.btnCancel,R.id.btnDeactivate,R.id.layCalender,
-            R.id.imgToDate,R.id.layJoiningDate, R.id.imgJoiningDate,R.id.layAddLocation})
+            R.id.imgToDate,R.id.layJoiningDate, R.id.imgJoiningDate,R.id.layAddLocation,
+    R.id.btnLeavingDate})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
@@ -728,6 +764,9 @@ public class AddEmployeeActivity extends BaseActivity {
                 else{
                     tvMissing.setVisibility(View.VISIBLE);
                 }
+                break;
+            case R.id.btnLeavingDate:
+                showLeavingDateDialog();
                 break;
             case R.id.layCalender:
                 openDataPicker(0);
@@ -748,6 +787,30 @@ public class AddEmployeeActivity extends BaseActivity {
                 //launchScreen(mContext,AddLocationActivity.class);
                 break;
         }
+    }
+
+    //set date picker view
+    private void openDataPickerForLeaving(AppCompatTextView tvDateValue) {
+        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                // TODO Auto-generated method stub
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                String myFormat = "dd/MM/yyyy"; //In which you need put here
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+                tvDateValue.setText(sdf.format(myCalendar.getTime()));
+            }
+        };
+        DatePickerDialog dpDialog = new DatePickerDialog(mContext, date, myCalendar
+                .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                myCalendar.get(Calendar.DAY_OF_MONTH));
+        dpDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+        dpDialog.show();
+
     }
 
     @Override
@@ -872,6 +935,60 @@ public class AddEmployeeActivity extends BaseActivity {
         });
         mDialogDiscard.show();
     }
+
+    public void showLeavingDateDialog() {
+        mDialogLeaving = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialogLeaving.setContentView(R.layout.dialog_leaving_date);
+        mDialogLeaving.setCanceledOnTouchOutside(true);
+        RelativeLayout mClose = mDialogLeaving.findViewById(R.id.imgCancel);
+        LinearLayoutCompat layFromDate = mDialogLeaving.findViewById(R.id.layFromDatNew);
+        AppCompatTextView tvDateValueFrom = mDialogLeaving.findViewById(R.id.tvDateValueFrom);
+        AppCompatButton addReceiptButton = mDialogLeaving.findViewById(R.id.addReceiptButton);
+        AppCompatEditText etDescr = mDialogLeaving.findViewById(R.id.etDescr);
+        //test
+        if(leaveDate!=null && !leaveDate.equals("")){
+            addReceiptButton.setText("okay");
+            layFromDate.setEnabled(false);
+            layFromDate.setClickable(false);
+            etDescr.setEnabled(false);
+            tvDateValueFrom.setText(AppUtils.dateConvertYYYYToDD(leaveDate));
+            etDescr.setText(leaveRemark);
+        }else {
+            layFromDate.setEnabled(true);
+            layFromDate.setClickable(true);
+            etDescr.setEnabled(true);
+            etDescr.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            etDescr.setRawInputType(InputType.TYPE_CLASS_TEXT);
+            tvDateValueFrom.setText(AppUtils.getCurrentDateTime_());
+            addReceiptButton.setText("Submit");
+        }
+        layFromDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openDataPickerForLeaving(tvDateValueFrom);
+            }
+        });
+
+        addReceiptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(leaveDate!=null && !leaveDate.equals("")) {
+                    mDialogLeaving.dismiss();
+                }else{//api
+                    callLeavingDateApi(tvDateValueFrom.getText().toString().trim(),
+                            etDescr.getText().toString().trim());
+                     }
+            }
+        });
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogLeaving.dismiss();
+            }
+        });
+        mDialogLeaving.show();
+    }
+
     /*check validations on field*/
     private boolean isDetailsValid() {
         input_textName.setErrorEnabled(false);input_textEmailId.setErrorEnabled(false);
@@ -1049,7 +1166,20 @@ public class AddEmployeeActivity extends BaseActivity {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_LEAVING_DATE)) {
+                            LeavingDateResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LeavingDateResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                mDialogLeaving.dismiss();
+                                showSuccessDialogEmp(responseModel.getResult().getMessage(),false,AddEmployeeActivity.this);
+                            }
+                            else {
+                                LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_COMPANY)) {
                             GetCompanyResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetCompanyResponse.class);
@@ -1089,10 +1219,18 @@ public class AddEmployeeActivity extends BaseActivity {
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 EmployeeList employeeResList = responseModel.getResult().getList().get(0);
                                 AutoComName.setText(employeeResList.getEmpName());
-                                AutoComEmailId.setText(employeeResList.getEmpEmail());
-                                AutoComMobile.setText(employeeResList.getEmpMob());
-                                AutoComDesi.setText(employeeResList.getEmpPosition());
-                                AutoComGender.setText(employeeResList.getEmpGender());
+                                leaveDate = employeeResList.getLeaving_date();//2022-06-15
+                                leaveRemark = employeeResList.getLeaving_remark();
+                                //leaveDate = null; leaveRemark = null;
+                                if(leaveDate!=null && !leaveDate.equals("")){
+                                    btnLeavingDate.setText("View Leaving date");
+                                }else{
+                                    btnLeavingDate.setText("Employee leaving date");
+                                }
+                                AutoComEmailId.setText(employeeResList.getEmpEmail()+"");
+                                AutoComMobile.setText(employeeResList.getEmpMob()+"");
+                                AutoComDesi.setText(employeeResList.getEmpPosition()+"");
+                                AutoComGender.setText(employeeResList.getEmpGender()+"");
                                 setDropdownGender();
                                 if(employeeResList.getDisableLocation()!=null && employeeResList.getDisableLocation().equals("1")) {
                                     switchDisableLocation.setChecked(true);

@@ -81,6 +81,7 @@ import com.ominfo.hra_app.ui.attendance.model.LocationPerHourResponse;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
 import com.ominfo.hra_app.ui.leave.model.LeaveCountResponse;
 import com.ominfo.hra_app.ui.leave.model.LeaveCountViewModel;
+import com.ominfo.hra_app.ui.login.LoginActivity;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.notifications.model.NotificationDetailsResponse;
@@ -189,6 +190,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                     addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
                     SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_LAT, String.valueOf(location.getLatitude()));
                     SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_LONG, String.valueOf(location.getLongitude()));
+                    SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_TITLE, getString(R.string.scr_lbl_unavailable));
                     //addresses = null;
                     if (addresses != null && addresses.size() > 0) {
                         String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
@@ -220,10 +222,13 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
 
                         if (result != null && !result.equals("temp") && !result.equals("") && !result.equals("Not Available")) {
                             if(locationRes!=null && !locationRes.equals("") && !locationRes.equals("Not Available"))
-                            {result=locationRes;}
+                            {
+                                result=locationRes;
+                                //SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_TITLE, locationRes);
+                            }
                             StartAttendanceActivity.tvCurrLocation.setText("Current Location : " + result);
                         }
-                        if (tvCurrLocation.getText().toString() == null || tvCurrLocation.getText().toString().equals("Tap to add your current location") || tvCurrLocation.getText().toString().equals("Current Location : ")) {
+                        if (tvCurrLocation.getText().toString() == null || tvCurrLocation.getText().toString().equals("Tap to add your current location") || tvCurrLocation.getText().toString().equals("Current Location : Fetching...")) {
                         LogUtil.printSnackBar(getBaseContext(), R.color.white, findViewById(android.R.id.content),
                                 "Sorry, We are unable to fetch your location! \nPlease select it manually.");}
                     }
@@ -582,13 +587,87 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
         AppCompatImageView imgError = mDialog.findViewById(R.id.imgError);
         mTextViewTitle.setText(msg);
         if (status) {
-            imgError.setImageDrawable(context.getDrawable(R.drawable.ic_error_load_grey));
+            imgError.setImageDrawable(context.getDrawable(R.drawable.ic_error_red/*R.drawable.ic_error_load_grey*/));
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mDialog.dismiss();
                     if (status) {
                         //activity.finish();
+                    }
+                }
+            }, 2500);
+        } else {
+            imgError.setImageDrawable(context.getDrawable(R.drawable.ic_done));
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mDialog.dismiss();
+                    if (!status) {
+                        //activity.finish();
+                    }
+                }
+            }, 1100);
+        }
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDialog.dismiss();
+                finish();
+            }
+        });
+        //AppCompatButton appCompatButton = mDialog.findViewById(R.id.btn_done);
+        //LinearLayoutCompat appCompatLayout = mDialog.findViewById(R.id.layPopup);
+        /*appCompatButton.setVisibility(View.VISIBLE);
+        appCompatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(TextUtils.isEmpty(mEditTextNote.getText().toString()))
+                {
+                    LogUtil.printToastMSG(mContext,getString(R.string.val_msg_please_enter_note));
+                }
+                else {
+                    callUpdateMarkApi(mEditTextNote.getText().toString());
+                    mDialog.dismiss();
+                }
+            }
+        });*/
+        mDialog.show();
+    }
+
+    public void showAccountDeactivatedDialog(String msg, boolean status, Activity activity) {
+        Dialog mDialog = new Dialog(this, R.style.ThemeDialogCustom);
+        mDialog.setContentView(R.layout.dialog_weight_submitted);
+        //mDialog.setCanceledOnTouchOutside(true);
+        AppCompatTextView mTextViewTitle = mDialog.findViewById(R.id.tv_dialogTitle);
+        AppCompatButton button = mDialog.findViewById(R.id.okayButton);
+        AppCompatImageView imgError = mDialog.findViewById(R.id.imgError);
+        mTextViewTitle.setText(msg);
+        if (status) {
+            imgError.setImageDrawable(context.getDrawable(R.drawable.ic_error_red/*R.drawable.ic_error_load_grey*/));
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mDialog.dismiss();
+                    if (status) {
+                        finishAffinity();
+                        launchScreen(activity, LoginActivity.class);
+                        SharedPref.getInstance(activity).write(SharedPrefKey.IS_LOGGED_IN, false);
+                        SharedPref.getInstance(activity).write(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
+                        SharedPref.getInstance(activity).write(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
+                        SharedPref.getInstance(activity).write(SharedPrefKey.ENTERED_VISIT_LAT, "0.0");
+                        SharedPref.getInstance(activity).write(SharedPrefKey.ENTERED_VISIT_LNG, "0.0");
+                        SharedPref.getInstance(activity).write(SharedPrefKey.ATTENTION_LOC_TITLE, getString(R.string.scr_lbl_unavailable));
+                        SharedPref.getInstance(activity).write(SharedPrefKey.LOCATION_ENTERED_TXT, getString(R.string.scr_lbl_unavailable));
+
+                        try {
+                            mDb.getDbDAO().deleteLoginData();
+                            mDb.getDbDAO().deleteLocationData();
+                            mDb.getDbDAO().deleteAttendanceData();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }, 2500);
@@ -934,6 +1013,9 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                                     }
                                     SharedPref.getInstance(this).write(SharedPrefKey.IS_NOTIFY_COUNT, String.valueOf(responseModel.getResult().getNotifdata().size()));
                                     imgNotifyCount.setText(String.valueOf(responseModel.getResult().getNotifdata().size()));
+                                    if(responseModel.getResult().getIsActive().equals("0")){
+                                        showAccountDeactivatedDialog("Your Account has been Deactivated! Please contact Admin.",true,this);
+                                    }
                                 } catch (Exception e) {
                                     //LogUtil.printToastMSG(this,e.getMessage());
                                     e.printStackTrace();

@@ -789,6 +789,7 @@
                         android:maxLength="4"
                         android:maxLines="1"
                         android:visibility="gone"
+                        android:imeOptions="actionDone"
                         android:outlineAmbientShadowColor="@color/white"
                         android:outlineSpotShadowColor="@color/white"
                         android:singleLine="true"

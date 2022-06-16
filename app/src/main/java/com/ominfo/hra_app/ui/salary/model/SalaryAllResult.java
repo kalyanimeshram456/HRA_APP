@@ -24,7 +24,16 @@ public class SalaryAllResult {
     private Long mTotalpages;
     @SerializedName("totalrows")
     private Long mTotalrows;
+    @SerializedName("last_month_dis_sal")
+    private String last_month_dis_sal;
 
+    public String getLast_month_dis_sal() {
+        return last_month_dis_sal;
+    }
+
+    public void setLast_month_dis_sal(String last_month_dis_sal) {
+        this.last_month_dis_sal = last_month_dis_sal;
+    }
     public String getCurrentpage() {
         return mCurrentpage;
     }

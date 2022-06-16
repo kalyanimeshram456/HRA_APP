@@ -20,10 +20,16 @@ import com.ominfo.hra_app.ui.employees.model.SingleEmployeeListViewModel;
 import com.ominfo.hra_app.ui.leave.model.AcceptRejectLeaveListViewModel;
 import com.ominfo.hra_app.ui.leave.model.ActiveEmployeeListViewModel;
 import com.ominfo.hra_app.ui.leave.model.LeaveCountViewModel;
+import com.ominfo.hra_app.ui.leave.model.LeavingDateViewModel;
 import com.ominfo.hra_app.ui.leave.model.PastLeaveListViewModel;
+import com.ominfo.hra_app.ui.leave.model.PendingLeavesViewModel;
+import com.ominfo.hra_app.ui.login.model.GetEmailOtpViewModel;
 import com.ominfo.hra_app.ui.login.model.LoginViewModel;
 import com.ominfo.hra_app.ui.login.model.LogoutMobileTokenViewModel;
 import com.ominfo.hra_app.ui.login.model.LogoutViewModel;
+import com.ominfo.hra_app.ui.login.model.ResendEmailOtpViewModel;
+import com.ominfo.hra_app.ui.login.model.ResetPasswordOtpViewModel;
+import com.ominfo.hra_app.ui.login.model.VerifyEmailOtpViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveViewModel;
 import com.ominfo.hra_app.ui.my_account.model.ChangeProfileImageViewModel;
 import com.ominfo.hra_app.ui.my_account.model.EditCompanyViewModel;
@@ -255,6 +261,19 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
              return (T) new LogoutMobileTokenViewModel(service);
          }else  if (modelClass.isAssignableFrom(AttendanceDetailsViewModel.class)) {
              return (T) new AttendanceDetailsViewModel(service);
+         }else  if (modelClass.isAssignableFrom(PendingLeavesViewModel.class)) {
+             return (T) new PendingLeavesViewModel(service);
+         }else  if (modelClass.isAssignableFrom(LeavingDateViewModel.class)) {
+             return (T) new LeavingDateViewModel(service);
+         }
+         else  if (modelClass.isAssignableFrom(VerifyEmailOtpViewModel.class)) {
+             return (T) new VerifyEmailOtpViewModel(service);
+         }else  if (modelClass.isAssignableFrom(GetEmailOtpViewModel.class)) {
+             return (T) new GetEmailOtpViewModel(service);
+         }else  if (modelClass.isAssignableFrom(ResendEmailOtpViewModel.class)) {
+             return (T) new ResendEmailOtpViewModel(service);
+         }else  if (modelClass.isAssignableFrom(ResetPasswordOtpViewModel.class)) {
+             return (T) new ResetPasswordOtpViewModel(service);
          }
 
         throw new IllegalArgumentException("Unknown class name");

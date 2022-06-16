@@ -305,7 +305,7 @@ public class BaseFragment extends Fragment {
         AppCompatImageView imgError= mDialog.findViewById(R.id.imgError);
         mTextViewTitle.setText(msg);
         if(!status) {
-            imgError.setImageDrawable(context.getDrawable(R.drawable.ic_error_load_grey));
+            imgError.setImageDrawable(context.getDrawable(R.drawable.ic_error_red));
         }
         else{
             imgError.setImageDrawable(context.getDrawable(R.drawable.ic_done));

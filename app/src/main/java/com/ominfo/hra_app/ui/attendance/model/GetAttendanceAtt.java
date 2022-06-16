@@ -30,16 +30,7 @@ public class GetAttendanceAtt {
     private String mStartLongitude;
     @SerializedName("start_time")
     private String mStartTime;
-    @SerializedName("disable_location")
-    private String disable_location;
 
-    public String getDisable_location() {
-        return disable_location;
-    }
-
-    public void setDisable_location(String disable_location) {
-        this.disable_location = disable_location;
-    }
 
     public String getDate() {
         return mDate;

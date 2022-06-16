@@ -58,8 +58,6 @@ public class EmployeeList {
     private String mIsAdmin;
     @SerializedName("joining_date")
     private String mJoiningDate;
-    @SerializedName("leaving_date")
-    private String mLeavingDate;
     @SerializedName("mobiletoken")
     private String mMobiletoken;
     @SerializedName("mon_end_time")
@@ -115,6 +113,26 @@ public class EmployeeList {
     private String officeLatitude;
     @SerializedName("office_longitude")
     private String officeLongitude;
+    @SerializedName("leaving_date")
+    private String leaving_date;
+    @SerializedName("leaving_remark")
+    private String leaving_remark;
+
+    public String getLeaving_date() {
+        return leaving_date;
+    }
+
+    public void setLeaving_date(String leaving_date) {
+        this.leaving_date = leaving_date;
+    }
+
+    public String getLeaving_remark() {
+        return leaving_remark;
+    }
+
+    public void setLeaving_remark(String leaving_remark) {
+        this.leaving_remark = leaving_remark;
+    }
 
     public String getDisableLocation() {
         return disableLocation;
@@ -330,14 +348,6 @@ public class EmployeeList {
 
     public void setJoiningDate(String joiningDate) {
         mJoiningDate = joiningDate;
-    }
-
-    public String getLeavingDate() {
-        return mLeavingDate;
-    }
-
-    public void setLeavingDate(String leavingDate) {
-        mLeavingDate = leavingDate;
     }
 
     public String getMobiletoken() {

@@ -52,6 +52,9 @@ import com.ominfo.hra_app.ui.leave.model.PastLeaveList;
 import com.ominfo.hra_app.ui.leave.model.PastLeaveListRequest;
 import com.ominfo.hra_app.ui.leave.model.PastLeaveListResponse;
 import com.ominfo.hra_app.ui.leave.model.PastLeaveListViewModel;
+import com.ominfo.hra_app.ui.leave.model.PendingLeave;
+import com.ominfo.hra_app.ui.leave.model.PendingLeaveResponse;
+import com.ominfo.hra_app.ui.leave.model.PendingLeavesViewModel;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveRequest;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveResponse;
@@ -110,6 +113,7 @@ public class PastLeaveFragment extends BaseFragment {
     ViewModelFactory mViewModelFactory;
     private PastLeaveListViewModel pastLeaveListViewModel;
     private ActiveEmployeeListViewModel activeEmployeeListViewModel;
+    private PendingLeavesViewModel pendingLeavesViewModel;
     List<EnquiryPagermodel> enquiryPageList = new ArrayList<>();
     @BindView(R.id.rvEnquiryPager)
     RecyclerView rvEnquiryPager;
@@ -240,6 +244,28 @@ public class PastLeaveFragment extends BaseFragment {
 
         activeEmployeeListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ActiveEmployeeListViewModel.class);
         activeEmployeeListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_ACTIVE_EMP_LIST));
+
+        pendingLeavesViewModel = ViewModelProviders.of(this, mViewModelFactory).get(PendingLeavesViewModel.class);
+        pendingLeavesViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_PENDING_LEAVES));
+    }
+
+    //Call Api For  record
+    private void callPendingLeaveListApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_pending_leaves);
+                RequestBody mRequestemp_id = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
+                RequestBody mRequestcom_id = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
+
+                pendingLeavesViewModel.hitPendingLeavesAPI(mRequestAction,mRequestemp_id,mRequestcom_id);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
     }
 
     private void setPagerEnquiryList(long pageNo){
@@ -371,12 +397,12 @@ public class PastLeaveFragment extends BaseFragment {
         int id = view.getId();
         switch (id) {
             case R.id.imgAddLeave:
-                showLeaveFormDialog();
+                callPendingLeaveListApi();
                 break;
         }
     }
     //show leave form popup
-    public void showLeaveFormDialog() {
+    public void showLeaveFormDialog(PendingLeave pendingLeave) {
         mDialogChangePass = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialogChangePass.setContentView(R.layout.dialog_add_leave_form);
         mDialogChangePass.setCanceledOnTouchOutside(true);
@@ -418,7 +444,7 @@ public class PastLeaveFragment extends BaseFragment {
             }
         });
         setDropdownLeaveDuration(AutoComTextViewDuration);
-        setDropdownType(AutoComTextViewLeaveType);
+        setDropdownType(AutoComTextViewLeaveType,pendingLeave);
         tvDateValueFrom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -505,7 +531,13 @@ public class PastLeaveFragment extends BaseFragment {
 
                 RequestBody mRequestBodyStartTime = RequestBody.create(MediaType.parse("text/plain"), startDateTimeStamp+" "+startTimeStamp);
                 RequestBody mRequestBodyEndTime = RequestBody.create(MediaType.parse("text/plain"), endDateTimeStamp+" "+endTimeStamp);
-                RequestBody mRequestBodyLeaveType = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewLeaveType.getText().toString());
+                String[] test = new String[1];
+                if(!AutoComTextViewLeaveType.getText().toString().equals("Unpaid Leave")){
+                    test = AutoComTextViewLeaveType.getText().toString().trim().split(" \\(");
+                }else{
+                    test[0] = AutoComTextViewLeaveType.getText().toString();
+                }
+                RequestBody mRequestBodyLeaveType = RequestBody.create(MediaType.parse("text/plain"), test[0].trim());
                 RequestBody mRequestBodyComment = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewComment.getText().toString());
                 // RequestBody mRequestBodyLeaveStatus = RequestBody.create(MediaType.parse("text/plain") , "approved");
                 ///RequestBody mRequestBodyUpdatedBy = RequestBody.create(MediaType.parse("text/plain"),"12"  /*loginTable.getManagerId()*/);
@@ -667,11 +699,31 @@ public class PastLeaveFragment extends BaseFragment {
     }
 
     //set value to Search dropdown
-    private void setDropdownType(AppCompatAutoCompleteTextView mListDropdownView) {
+    private void setDropdownType(AppCompatAutoCompleteTextView mListDropdownView, PendingLeave pendingLeave) {
         List<String> leaveModelList = new ArrayList<>();
-        leaveModelList.add("Casual Leave");
-        leaveModelList.add("Sick Leave");
-        leaveModelList.add("Other Leave");
+
+        if((pendingLeave.getLeftCl()!=null && (pendingLeave.getLeftCl()==0)))
+        { leaveModelList.add("Casual Leave (0) - Not available");
+        }else{leaveModelList.add("Casual Leave ("+pendingLeave.getLeftCl()+")");}
+        if((pendingLeave.getLeftSl()!=null && (pendingLeave.getLeftSl()==0)))
+        { leaveModelList.add("Sick Leave (0) - Not available");
+        }else{ leaveModelList.add("Sick Leave ("+pendingLeave.getLeftSl()+")");}
+        if((pendingLeave.getLeftOl()!=null && (pendingLeave.getLeftOl()==0)))
+        { leaveModelList.add("Other Leave (0) - Not available");
+        }else{leaveModelList.add("Other Leave ("+pendingLeave.getLeftOl()+")");}
+        if((pendingLeave.getLeftCl()!=null && (pendingLeave.getLeftCl()==0))
+                && (pendingLeave.getLeftSl()!=null && (pendingLeave.getLeftSl()==0))
+                && (pendingLeave.getLeftOl()!=null && (pendingLeave.getLeftOl()==0)))
+        {
+            leaveModelList.add("Unpaid Leave");}
+
+        if(pendingLeave.getLeftCl()==null && pendingLeave.getLeftSl()==null && pendingLeave.getLeftOl()==null){
+            leaveModelList.removeAll(leaveModelList);
+            leaveModelList.add("Casual Leave (0) - Not available");
+            leaveModelList.add("Sick Leave (0) - Not available");
+            leaveModelList.add("Other Leave (0) - Not available");
+            leaveModelList.add("Unpaid Leave");
+        }
         try {
             int pos = 0;
             if (leaveModelList != null && leaveModelList.size() > 0) {
@@ -689,7 +741,18 @@ public class PastLeaveFragment extends BaseFragment {
                 mListDropdownView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        ///if(leaveModelList.size()==4){
+                        if(mListDropdownView.getText().toString().equals("Unpaid Leave")){
 
+                        }
+                        else{
+                            String[] temp = mListDropdownView.getText().toString().trim().split("\\(");
+                            String[] count = temp[1].split("\\)");
+                            if(count[0].equals("0")){
+                                mListDropdownView.setText("");
+                                LogUtil.printToastMSG(mContext,getString(R.string.msg_cannot_select_leave));
+                            }
+                        }
                     }
                 });
 
@@ -1010,6 +1073,17 @@ public class PastLeaveFragment extends BaseFragment {
                       /*  ((BaseActivity)mContext).showSuccessDialog("Leave application upload failed.",
                                 true,getActivity());
                         e.printStackTrace();*/
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_PENDING_LEAVES)) {
+                            PendingLeaveResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), PendingLeaveResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                showLeaveFormDialog(responseModel.getResult().getLeave().get(0));
+                            }else{
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                            }
+                        }
+                    }catch (Exception e){
                     }
                 }
                 break;

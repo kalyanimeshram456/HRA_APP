@@ -1,5 +1,6 @@
 package com.ominfo.hra_app.ui.salary;
 
+import static com.ominfo.hra_app.MainActivity.bottomNavigationView;
 import static com.ominfo.hra_app.ui.employees.PaginationListener.PAGE_START;
 
 import android.app.DatePickerDialog;
@@ -259,6 +260,7 @@ public class SalaryFragment extends BaseFragment {
             public void onClick(View view) {
                 Fragment fragment = new DashboardFragment();
                 ((BaseActivity)mContext).moveFragment(mContext,fragment);
+                bottomNavigationView.setSelectedItemId(R.id.home);
             }
         });
         imgNotify.setOnClickListener(new View.OnClickListener() {

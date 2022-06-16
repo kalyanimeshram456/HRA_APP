@@ -216,15 +216,23 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
         //tvCheckInTime.setText(AppUtils.convert24to12Attendance(startTime));
         //tvCheckOutTime.setText(AppUtils.getCurrentTime());
         textVisitNo.setText(mDate);
-        String locationLat = SharedPref.getInstance(mContext).read(SharedPrefKey.ENTERED_VISIT_LAT, "0.0");
+       /* String locationLat = SharedPref.getInstance(mContext).read(SharedPrefKey.ENTERED_VISIT_LAT, "0.0");
         String locationLng = SharedPref.getInstance(mContext).read(SharedPrefKey.ENTERED_VISIT_LNG, "0.0");
         String location = SharedPref.getInstance(mContext).read(SharedPrefKey.LOCATION_ENTERED_TXT, "Not Available");
+        //SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_TITLE, location);
         result=location;//data.getStringExtra("result");
         //String str = "<b>"+result+"</b>";
         //LogUtil.printToastMSG(mContext,result);
         tvCurrLocation.setText("Current Location : "+result); //Current Location : Fetching...
         currlat = locationLat;
-        currlng = locationLng;
+        currlng = locationLng;*/
+        SharedPref.getInstance(mContext).write(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
+        SharedPref.getInstance(mContext).write(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
+        SharedPref.getInstance(mContext).write(SharedPrefKey.ENTERED_VISIT_LAT, "0.0");
+        SharedPref.getInstance(mContext).write(SharedPrefKey.ENTERED_VISIT_LNG, "0.0");
+        SharedPref.getInstance(mContext).write(SharedPrefKey.ATTENTION_LOC_TITLE, getString(R.string.scr_lbl_unavailable));
+        SharedPref.getInstance(mContext).write(SharedPrefKey.LOCATION_ENTERED_TXT, getString(R.string.scr_lbl_unavailable));
+
     }
 
     @Override
@@ -317,10 +325,19 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                 RequestBody mRequestdate = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentDateInyyyymmdd());
 
                 String cTime = AppUtils.getCurrentTimeIn24hr();
-                String clocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
-                String clocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
-                String dataLoc = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_TITLE, getString(R.string.scr_lbl_unavailable));
-
+                String clocationLat = "0.0";
+                String clocationLng = "0.0";
+                String dataLoc = "Unavailable";
+                boolean isLocationFetched = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.NOT_FETCHED, false);
+                if(!isLocationFetched){
+                     clocationLat = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
+                     clocationLng = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
+                     dataLoc = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_TITLE, getString(R.string.scr_lbl_unavailable));
+                }else{
+                     clocationLat = SharedPref.getInstance(mContext).read(SharedPrefKey.ENTERED_VISIT_LAT, "0.0");
+                     clocationLng = SharedPref.getInstance(mContext).read(SharedPrefKey.ENTERED_VISIT_LNG, "0.0");
+                     dataLoc = result;
+                }
                 RequestBody mRequestStartTime = RequestBody.create(MediaType.parse("text/plain"), cTime);
                 RequestBody mRequestBodyAddr = RequestBody.create(MediaType.parse("text/plain"), dataLoc);
                 RequestBody mRequestBodyStartLat = RequestBody.create(MediaType.parse("text/plain"), clocationLat);
@@ -622,43 +639,49 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                         currlat = locationLat;
                         currlng = locationLng;
                         if(locationDisable!=null && locationDisable.equals("0")) {
-                            boolean isLocationFetched = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.NOT_FETCHED, false);
-                            if (isLocationFetched) {
-                                Double distanceMatchurr = AppUtils.meterDistanceBetweenPoints(Float.parseFloat(startlocationLat),
-                                        Float.parseFloat(startlocationLng),
-                                        Float.parseFloat(currlat), Float.parseFloat(currlng));
-                                Double distanceMatchOff = AppUtils.meterDistanceBetweenPoints(Float.parseFloat(currlat),
-                                        Float.parseFloat(currlng),
-                                        Float.parseFloat(offlat), Float.parseFloat(offlng));
-                                LogUtil.printToastMSG(mContext, distanceInMeters+"dist bet cur and map - " + distanceMatchurr + " lat" +
+                            if(distanceInMeters == null || distanceInMeters.equals("") || distanceInMeters.equals("null") ||distanceInMeters.equals("0") || distanceInMeters.equals("0.00") )
+                            {
+                                LogUtil.printSnackBar(mContext, Color.RED, findViewById(android.R.id.content), "Some company configurations are pending, Please contact admin.");
+
+                            }else {
+                                boolean isLocationFetched = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.NOT_FETCHED, false);
+                                if (isLocationFetched) {
+                                    Double distanceMatchurr = AppUtils.meterDistanceBetweenPoints(Float.parseFloat(startlocationLat),
+                                            Float.parseFloat(startlocationLng),
+                                            Float.parseFloat(currlat), Float.parseFloat(currlng));
+                                    Double distanceMatchOff = AppUtils.meterDistanceBetweenPoints(Float.parseFloat(currlat),
+                                            Float.parseFloat(currlng),
+                                            Float.parseFloat(offlat), Float.parseFloat(offlng));
+                               /* LogUtil.printToastMSG(mContext, distanceInMeters+"dist bet cur and map - " + distanceMatchurr + " lat" +
                                         startlocationLat + "," + startlocationLng + "," + currlat + "," + currlng + "next" +
                                         "dist bet off and map - " + distanceMatchOff + " lat" +
                                         offlat + "," + offlng + "," + currlat + "," + currlng);
-
-                                if ((Math.floor(distanceMatchOff) < Double.parseDouble((distanceInMeters == null || distanceInMeters.equals("")
-                                        || distanceInMeters.equals("null") ? "51.00" : distanceInMeters)))
-                                        && (Math.floor(distanceMatchurr) < 11)) {
-                                    if (getAttendanceAttList != null && getAttendanceAttList.size() > 0) {
-                                        callUpdateAttendanceApi(1);
+*/
+                                    if ((Math.floor(distanceMatchOff) <= Double.parseDouble((distanceInMeters == null || distanceInMeters.equals("")
+                                            || distanceInMeters.equals("null") ? "51.00" : distanceInMeters)))
+                                            && (Math.floor(distanceMatchurr) <= 51)) {
+                                        if (getAttendanceAttList != null && getAttendanceAttList.size() > 0) {
+                                            callUpdateAttendanceApi(1);
+                                        } else {
+                                            callUpdateAttendanceApi(0);
+                                        }
                                     } else {
-                                        callUpdateAttendanceApi(0);
+                                        LogUtil.printSnackBar(mContext, Color.RED, findViewById(android.R.id.content), getString(R.string.msg_location_change_in_attendance)
+                                                /*+ distance+"--"+Double.parseDouble((distanceInMeters==null||distanceInMeters.equals("")||distanceInMeters.equals("null")?"51":distanceInMeters))*/);
                                     }
                                 } else {
-                                    LogUtil.printSnackBar(mContext, Color.RED, findViewById(android.R.id.content), getString(R.string.msg_location_change_in_attendance)
-                                            /*+ distance+"--"+Double.parseDouble((distanceInMeters==null||distanceInMeters.equals("")||distanceInMeters.equals("null")?"51":distanceInMeters))*/);
-                                }
-                            } else {
-                                Double distance = AppUtils.meterDistanceBetweenPoints(Float.parseFloat(startlocationLat),
-                                        Float.parseFloat(startlocationLng), Float.parseFloat(offlat), Float.parseFloat(offlng));
-                                if (Math.floor(distance) < Double.parseDouble((distanceInMeters == null || distanceInMeters.equals("") || distanceInMeters.equals("null") ? "51" : distanceInMeters))) {
-                                    if (getAttendanceAttList != null && getAttendanceAttList.size() > 0) {
-                                        callUpdateAttendanceApi(1);
+                                    Double distance = AppUtils.meterDistanceBetweenPoints(Float.parseFloat(startlocationLat),
+                                            Float.parseFloat(startlocationLng), Float.parseFloat(offlat), Float.parseFloat(offlng));
+                                    if (Math.floor(distance) <= Double.parseDouble((distanceInMeters == null || distanceInMeters.equals("") || distanceInMeters.equals("null") ? "51" : distanceInMeters))) {
+                                        if (getAttendanceAttList != null && getAttendanceAttList.size() > 0) {
+                                            callUpdateAttendanceApi(1);
+                                        } else {
+                                            callUpdateAttendanceApi(0);
+                                        }
                                     } else {
-                                        callUpdateAttendanceApi(0);
+                                        LogUtil.printSnackBar(mContext, Color.RED, findViewById(android.R.id.content), getString(R.string.msg_location_change_in_attendance)
+                                                /*+ distance+"--"+Double.parseDouble((distanceInMeters==null||distanceInMeters.equals("")||distanceInMeters.equals("null")?"51":distanceInMeters))*/);
                                     }
-                                } else {
-                                    LogUtil.printSnackBar(mContext, Color.RED, findViewById(android.R.id.content), getString(R.string.msg_location_change_in_attendance)
-                                            /*+ distance+"--"+Double.parseDouble((distanceInMeters==null||distanceInMeters.equals("")||distanceInMeters.equals("null")?"51":distanceInMeters))*/);
                                 }
                             }
                         }else{
@@ -700,6 +723,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                 String locationLat = SharedPref.getInstance(mContext).read(SharedPrefKey.ENTERED_VISIT_LAT, "0.0");
                 String locationLng = SharedPref.getInstance(mContext).read(SharedPrefKey.ENTERED_VISIT_LNG, "0.0");
                 String location = SharedPref.getInstance(mContext).read(SharedPrefKey.LOCATION_ENTERED_TXT, "Not Available");
+                //SharedPref.getInstance(getBaseContext()).write(SharedPrefKey.ATTENTION_LOC_TITLE, location);
                 result=location;//data.getStringExtra("result");
                 //String str = "<b>"+result+"</b>";
                 //LogUtil.printToastMSG(mContext,result);
@@ -772,6 +796,9 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_GET_ATTENDANCE)) {
                             GetAttendanceResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), GetAttendanceResponse.class);
                             if(responseModel.getResult()!=null){
+                                locationDisable = (responseModel.getResult().getDisable_location()==null
+                                        || responseModel.getResult().getDisable_location().equals(""))?"0"
+                                        :responseModel.getResult().getDisable_location();
                                 distanceInMeters = responseModel.getResult().getDist_range()+"";
                                 try {
                                     Geocoder geocoder = new Geocoder(StartAttendanceActivity.this);
@@ -799,9 +826,9 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                                 //LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                                 final Handler handler = new Handler();
                                 getAttendanceAttList = responseModel.getResult().getAtt();
-                                locationDisable = responseModel.getResult().getAtt().get(0).getDisable_location()==null
-                                        || responseModel.getResult().getAtt().get(0).getDisable_location().equals("")?"0"
-                                :responseModel.getResult().getAtt().get(0).getDisable_location();
+                                locationDisable = (responseModel.getResult().getDisable_location()==null
+                                        || responseModel.getResult().getDisable_location().equals(""))?"0"
+                                :responseModel.getResult().getDisable_location();
                                 if(responseModel.getResult().getAtt()==null) {
                                     layBottomCheckOut.setVisibility(View.INVISIBLE);
                                     handler.postDelayed(new Runnable() {
@@ -810,8 +837,6 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                                             dismissSmallProgressBar(mProgressBarHolder);
                                             doBounceAnimationOnce(tvCheckInName);
                                             tvCheckInName.setText("Check In");
-                                            String address = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_TITLE, "Unavailable");
-
                                         }
                                     }, 1600);
                                 }else{
@@ -842,7 +867,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                                              if (result != null && !result.equals("temp") && !result.equals("")) {
                                                 tvCurrLocation.setText("Current Location : " + result);
                                             }
-                                            if (tvCurrLocation.getText().toString() == null || tvCurrLocation.getText().toString().equals("Tap to add your current location") || tvCurrLocation.getText().toString().equals("Current Location : ")) {
+                                            if (tvCurrLocation.getText().toString() == null || tvCurrLocation.getText().toString().equals("Tap to add your current location") || tvCurrLocation.getText().toString().equals("Current Location : Fetching...")) {
                                                 LogUtil.printSnackBar(getBaseContext(), R.color.white, findViewById(android.R.id.content),
                                                         "Sorry, We are unable to fetch your location! \nPlease select it manually.");}
 
@@ -878,6 +903,9 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                                     }
                                 }, 1700);*/
                             } else {
+                                locationDisable = (responseModel.getResult().getDisable_location()==null
+                                        || responseModel.getResult().getDisable_location().equals(""))?"0"
+                                        :responseModel.getResult().getDisable_location();
                                 layBottomCheckOut.setVisibility(View.INVISIBLE);
                                 final Handler handler = new Handler();
                                 handler.postDelayed(new Runnable() {
@@ -886,8 +914,6 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                                         dismissSmallProgressBar(mProgressBarHolder);
                                         doBounceAnimationOnce(tvCheckInName);
                                         tvCheckInName.setText("Check In");
-                                        String address = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENTION_LOC_TITLE, "Unavailable");
-
                                     }
                                 }, 1600);
                                 //LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());

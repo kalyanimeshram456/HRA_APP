@@ -152,12 +152,32 @@ public interface NetworkAPIServices {
                                         @Part("action") RequestBody uploadType,
                                         @Part("otp") RequestBody otp,
                                       @Part("contact_no") RequestBody contact_no);
+    @Multipart
+    @POST()
+    Observable<JsonElement> verifyEmailOtp(@Url String url,
+                                      @Part("action") RequestBody uploadType,
+                                      @Part("otp") RequestBody otp,
+                                      @Part("emp_username") RequestBody emp_username);
+
 
     @Multipart
     @POST()
     Observable<JsonElement> getOtp(@Url String url,
                                         @Part("action") RequestBody uploadType,
                                         @Part("contact_no") RequestBody contact_no);
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> getEmailOtp(@Url String url,
+                                   @Part("action") RequestBody uploadType,
+                                   @Part("emp_username") RequestBody emp_username,
+                                   @Part("emp_email") RequestBody emp_email);
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> resetPasword(@Url String url,
+                                        @Part("action") RequestBody uploadType,
+                                        @Part("emp_username") RequestBody emp_username);
 
     @Multipart
     @POST()
@@ -546,6 +566,24 @@ public interface NetworkAPIServices {
                                              @Part("pageno") RequestBody pageno,
                                              @Part("pagesize") RequestBody pagesize,
                                              @Part("searched_emp") RequestBody searched_emp
+    );
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> pendingLeaves(@Url String url,
+                                             @Part("action") RequestBody uploadType,
+                                             @Part("company_id") RequestBody company_id,
+                                             @Part("emp_id") RequestBody emp_id
+    );
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> leavingDate(@Url String url,
+                                          @Part("action") RequestBody uploadType,
+                                          @Part("company_id") RequestBody company_id,
+                                          @Part("emp_id") RequestBody emp_id,
+                                        @Part("leaving_date") RequestBody leaving_date,
+                                        @Part("leaving_remark") RequestBody leaving_remark
     );
 
     @Multipart

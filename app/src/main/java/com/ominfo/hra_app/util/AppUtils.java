@@ -627,6 +627,26 @@ public class AppUtils {
         return sDateFormate;
     }
 
+    public static String getCurrentMonthInInt() {
+        String sDateFormate = "";
+        String sDate = getCurrentDateInyyyymmdd();
+        try {
+            String pattern = "MM";
+            String inputPattern = "yyyy-MM-dd";
+
+            SimpleDateFormat fmt = new SimpleDateFormat(inputPattern);
+            Date date = fmt.parse(sDate);
+
+            SimpleDateFormat fmtOut = new SimpleDateFormat(pattern);
+            sDateFormate = fmtOut.format(date);
+
+            LogUtil.printLog(TAG, "sDateFormate: " + sDateFormate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sDateFormate;
+    }
+
 
     public static String getOSVersion() {
 

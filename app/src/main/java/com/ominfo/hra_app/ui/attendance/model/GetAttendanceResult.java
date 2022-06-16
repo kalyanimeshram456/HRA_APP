@@ -23,6 +23,16 @@ public class GetAttendanceResult {
     private String office_latitude;
     @SerializedName("dist_range")
     private String dist_range;
+    @SerializedName("disable_location")
+    private String disable_location;
+
+    public String getDisable_location() {
+        return disable_location;
+    }
+
+    public void setDisable_location(String disable_location) {
+        this.disable_location = disable_location;
+    }
 
     public String getDist_range() {
         return dist_range;

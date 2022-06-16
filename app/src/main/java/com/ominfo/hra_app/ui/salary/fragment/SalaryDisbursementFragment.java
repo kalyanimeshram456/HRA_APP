@@ -164,6 +164,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
     AppCompatTextView tvTotalSalaries;
     String selectedActiveEmpid = "0";
     double total = 0.0;
+    int monthRes = 0,monthCurrent = 0;
     public SalaryDisbursementFragment() {
         // Required empty public constructor
     }
@@ -215,6 +216,8 @@ public class SalaryDisbursementFragment extends BaseFragment {
         AutoComMonth.setText(AppUtils.getCurrentMonth());
         setDropdownMonth();
         AutoComAddEmp.setText("All");
+        btnSubmit.setEnabled(true);
+        btnSubmit.setBackground(getResources().getDrawable(R.drawable.bg_button_round_corner_5));
         callGetActiveEmployeeListApi();
         setAdapterForSalaryAllList();
         callSalaryAllListApi();
@@ -286,6 +289,14 @@ public class SalaryDisbursementFragment extends BaseFragment {
                         for(int i=0;i<monthsLists.size();i++){
                             if(monthsListWOW.get(i).getName().equals(AutoComMonth.getText().toString().trim())){
                                 tvTotalDays.setText("Total days of month : "+monthsListWOW.get(i).getDays());
+                                int monthTest = Integer.parseInt(AppUtils.convertMonthToInt(AutoComMonth.getText().toString().trim()));
+                                if(monthTest<=monthRes){
+                                    btnSubmit.setEnabled(false);
+                                    btnSubmit.setBackground(getResources().getDrawable(R.drawable.bg_button_round_corner_5_cancel));
+                                }else{
+                                    btnSubmit.setEnabled(true);
+                                    btnSubmit.setBackground(getResources().getDrawable(R.drawable.bg_button_round_corner_5));
+                                }
                             }
                         }}catch (Exception e){}
                         callSalaryAllListApi();
@@ -1005,8 +1016,18 @@ public class SalaryDisbursementFragment extends BaseFragment {
                                     salaryAllresultList= new ArrayList<>();
                                     salaryAllresultList = responseModel.getResult().getList();
                                 }
+                                 monthRes = Integer.parseInt(responseModel.getResult().getLast_month_dis_sal()==null?"0":responseModel.getResult().getLast_month_dis_sal());
+                                int monthTest = Integer.parseInt(AppUtils.getCurrentMonthInInt());
+                                if(monthTest<=monthRes){
+                                    btnSubmit.setEnabled(false);
+                                    btnSubmit.setBackground(getResources().getDrawable(R.drawable.bg_button_round_corner_5_cancel));
+                                }else{
+                                    btnSubmit.setEnabled(true);
+                                    btnSubmit.setBackground(getResources().getDrawable(R.drawable.bg_button_round_corner_5));
+                                }
                                 setAdapterForSalaryAllList();
-                            }                        }
+                            }
+                        }
                     }catch (Exception e){
                         e.printStackTrace();
                     }

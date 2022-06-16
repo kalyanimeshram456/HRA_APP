@@ -1,5 +1,6 @@
 package com.ominfo.hra_app.ui.my_account;
 
+import static com.ominfo.hra_app.MainActivity.bottomNavigationView;
 import static com.ominfo.hra_app.util.AppUtils.dateConvertYYYYToDD;
 import static com.ominfo.hra_app.util.AppUtils.getChangeDateForHisab;
 
@@ -82,7 +83,6 @@ import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
-import com.ominfo.hra_app.ui.employees.AddEmployeeActivity;
 import com.ominfo.hra_app.ui.employees.adapter.EmployeeTimeAdapter;
 import com.ominfo.hra_app.ui.employees.model.ChangePasswordResponse;
 import com.ominfo.hra_app.ui.employees.model.ChangePasswordViewModel;
@@ -1389,6 +1389,7 @@ public class MyAccountFragment extends BaseFragment {
             public void onClick(View view) {
                 Fragment fragment = new DashboardFragment();
                 ((BaseActivity)mContext).moveFragment(mContext,fragment);
+                bottomNavigationView.setSelectedItemId(R.id.home);
             }
         });
         imgNotify.setOnClickListener(new View.OnClickListener() {
@@ -1648,16 +1649,17 @@ public class MyAccountFragment extends BaseFragment {
                             getActivity().finishAffinity();
                             launchScreen(getActivity(), LoginActivity.class);
                             SharedPref.getInstance(mContext).write(SharedPrefKey.IS_LOGGED_IN, false);
+                            SharedPref.getInstance(mContext).write(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
+                            SharedPref.getInstance(mContext).write(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
+                            SharedPref.getInstance(mContext).write(SharedPrefKey.ENTERED_VISIT_LAT, "0.0");
+                            SharedPref.getInstance(mContext).write(SharedPrefKey.ENTERED_VISIT_LNG, "0.0");
+                            SharedPref.getInstance(mContext).write(SharedPrefKey.ATTENTION_LOC_TITLE, getString(R.string.scr_lbl_unavailable));
+                            SharedPref.getInstance(mContext).write(SharedPrefKey.LOCATION_ENTERED_TXT, getString(R.string.scr_lbl_unavailable));
+
                             try {
                                 mDb.getDbDAO().deleteLoginData();
                                 mDb.getDbDAO().deleteLocationData();
                                 mDb.getDbDAO().deleteAttendanceData();
-                                AsyncTask.execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        //deleteReminderViewModel.DeleteReminder();
-                                    }
-                                });
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -1770,7 +1772,7 @@ public class MyAccountFragment extends BaseFragment {
                                 AutoComEmailId.setText(employeeList.getEmailId()+"");
                                 AutoComMobile.setText(employeeList.getContactNo()+"");
                                 etOfAddress.setText(employeeList.getOfficeAddress()==null?"":employeeList.getOfficeAddress()+"");
-                                AutoComDistRange.setText(employeeList.getDist_range()==null?"50":employeeList.getDist_range());
+                                AutoComDistRange.setText(employeeList.getDist_range()==null?"0":employeeList.getDist_range());
                                 AutoComOPincode.setText(employeeList.getPincode()+"");
                                 AutoComGstNo.setText(employeeList.getGstNo()==null?"":employeeList.getGstNo()+"");
                                 AutoComStaff.setText(employeeList.getStaffStrength()+"");

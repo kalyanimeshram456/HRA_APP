@@ -37,7 +37,6 @@ public class SalaryAllList {
     @SerializedName("year")
     private String year;
 
-
     public String getMonth() {
         return month;
     }

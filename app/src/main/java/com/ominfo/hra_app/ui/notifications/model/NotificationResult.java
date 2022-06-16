@@ -15,6 +15,16 @@ public class NotificationResult {
     private List<NotificationData> mNotifdata;
     @SerializedName("status")
     private String mStatus;
+    @SerializedName("isActive")
+    private String isActive;
+
+    public String getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(String isActive) {
+        this.isActive = isActive;
+    }
 
     public String getMessage() {
         return mMessage;

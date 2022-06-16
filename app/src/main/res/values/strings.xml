@@ -406,5 +406,6 @@
     <string name="scr_lbl_resent_otp">Resent OTP</string>
     <string name="scr_lbl_renew_plan">Renew plan</string>
     <string name="scr_lbl_my_planes">My Plan</string>
+    <string name="msg_cannot_select_leave">Sorry, You cannot select this leave type!</string>
 
 </resources>

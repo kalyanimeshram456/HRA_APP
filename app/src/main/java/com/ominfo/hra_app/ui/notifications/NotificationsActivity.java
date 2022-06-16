@@ -8,6 +8,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -36,6 +37,9 @@ import com.ominfo.hra_app.network.ApiResponse;
 import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
+import com.ominfo.hra_app.ui.leave.model.PendingLeave;
+import com.ominfo.hra_app.ui.leave.model.PendingLeaveResponse;
+import com.ominfo.hra_app.ui.leave.model.PendingLeavesViewModel;
 import com.ominfo.hra_app.ui.login.LoginActivity;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.my_account.model.ApplyLeaveRequest;
@@ -116,6 +120,7 @@ public class NotificationsActivity extends BaseActivity {
     private MarkPresentViewModel markPresentViewModel;
     private UnpaidLeaveViewModel unpaidLeaveViewModel;
     private MarkNotLateViewModel markNotLateViewModel;
+    private PendingLeavesViewModel pendingLeavesViewModel;
     private AppDatabase mDb;
     private Dialog mDialogPaidLeave,mDialogDeductLeave;
     LinearLayoutCompat layoutLeaveTime;
@@ -127,6 +132,7 @@ public class NotificationsActivity extends BaseActivity {
     AppCompatTextView tvStartMonth,tvEndMonth,tvStartTime,tvEndTime;
     Dialog mDialogAbsentMark,mDialogLateMark;
     final Calendar myCalendar = Calendar.getInstance();
+    NotificationDetailsNotify mDataPaidLeave ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -229,6 +235,9 @@ public class NotificationsActivity extends BaseActivity {
 
         applyLeaveViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ApplyLeaveViewModel.class);
         applyLeaveViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_APPLY_LEAVE));
+
+        pendingLeavesViewModel = ViewModelProviders.of(this, mViewModelFactory).get(PendingLeavesViewModel.class);
+        pendingLeavesViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_PENDING_LEAVES));
     }
 
     /* Call Api Notification */
@@ -270,13 +279,13 @@ public class NotificationsActivity extends BaseActivity {
     }
 
     //show leave form popup
-    public void showPaidLeaveDialog(NotificationDetailsNotify data) {
+    public void showPaidLeaveDialog(PendingLeave pendingLeave,NotificationDetailsNotify data) {
         mDialogPaidLeave = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialogPaidLeave.setContentView(R.layout.dialog_paid_leave);
         mDialogPaidLeave.setCanceledOnTouchOutside(true);
         AppCompatAutoCompleteTextView AutoComTextViewLeaveType = mDialogPaidLeave.findViewById(R.id.AutoComTextViewLeaveType);
         AppCompatButton submitButton = mDialogPaidLeave.findViewById(R.id.submitButton);
-        setDropdownType(AutoComTextViewLeaveType);
+        setDropdownType(AutoComTextViewLeaveType,pendingLeave);
         RelativeLayout layClose = mDialogPaidLeave.findViewById(R.id.layClose);
         layClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -288,12 +297,81 @@ public class NotificationsActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                //paid leave api
-                record_id = data.getRecordId();
-                rm_id = data.getRmId();
-                callApplyLeaveApi(AutoComTextViewLeaveType);
+                if(!TextUtils.isEmpty(AutoComTextViewLeaveType.getText().toString().trim())) {
+                    record_id = data.getRecordId();
+                    rm_id = data.getRmId();
+                    callApplyLeaveApi(AutoComTextViewLeaveType);
+                }else{
+                    LogUtil.printToastMSG(mContext,"Please select leave type.");
+                }
             }
         });
         mDialogPaidLeave.show();
+    }
+    //set value to Search dropdown
+    private void setDropdownType(AppCompatAutoCompleteTextView mListDropdownView, PendingLeave pendingLeave) {
+        List<String> leaveModelList = new ArrayList<>();
+
+        if((pendingLeave.getLeftCl()!=null && (pendingLeave.getLeftCl()==0)))
+        { leaveModelList.add("Casual Leave (0) - Not available");
+        }else{leaveModelList.add("Casual Leave ("+pendingLeave.getLeftCl()+")");}
+        if((pendingLeave.getLeftSl()!=null && (pendingLeave.getLeftSl()==0)))
+        { leaveModelList.add("Sick Leave (0) - Not available");
+        }else{ leaveModelList.add("Sick Leave ("+pendingLeave.getLeftSl()+")");}
+        if((pendingLeave.getLeftOl()!=null && (pendingLeave.getLeftOl()==0)))
+        { leaveModelList.add("Other Leave (0) - Not available");
+        }else{leaveModelList.add("Other Leave ("+pendingLeave.getLeftOl()+")");}
+        if((pendingLeave.getLeftCl()!=null && (pendingLeave.getLeftCl()==0))
+                && (pendingLeave.getLeftSl()!=null && (pendingLeave.getLeftSl()==0))
+               && (pendingLeave.getLeftOl()!=null && (pendingLeave.getLeftOl()==0)))
+        {
+            leaveModelList.add("Unpaid Leave");}
+
+        if(pendingLeave.getLeftCl()==null && pendingLeave.getLeftSl()==null && pendingLeave.getLeftOl()==null){
+            leaveModelList.removeAll(leaveModelList);
+            leaveModelList.add("Casual Leave (0) - Not available");
+            leaveModelList.add("Sick Leave (0) - Not available");
+            leaveModelList.add("Other Leave (0) - Not available");
+            leaveModelList.add("Unpaid Leave");
+        }
+        try {
+            int pos = 0;
+            if (leaveModelList != null && leaveModelList.size() > 0) {
+                String[] mDropdownList = new String[leaveModelList.size()];
+                for (int i = 0; i < leaveModelList.size(); i++) {
+                    mDropdownList[i] = String.valueOf(leaveModelList.get(i));
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        mContext,
+                        R.layout.row_dropdown_item,
+                        mDropdownList);
+                //tvHighlight.setThreshold(1);
+                mListDropdownView.setAdapter(adapter);
+                //mListDropdownView.setHint(mDropdownList[pos]);
+                mListDropdownView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        ///if(leaveModelList.size()==4){
+                            if(mListDropdownView.getText().toString().equals("Unpaid Leave")){
+
+                            }
+                           else{
+                            String[] temp = mListDropdownView.getText().toString().trim().split("\\(");
+                            String[] count = temp[1].split("\\)");
+                            if(count[0].equals("0")){
+                                mListDropdownView.setText("");
+                                LogUtil.printToastMSG(mContext,getString(R.string.msg_cannot_select_leave));
+                            }
+                        }
+                    }
+                });
+
+            } else {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //show leave form popup
@@ -425,6 +503,25 @@ public class NotificationsActivity extends BaseActivity {
             e.printStackTrace();
         }
     }
+
+    //Call Api For  record
+    private void callPendingLeaveListApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_pending_leaves);
+                RequestBody mRequestemp_id = RequestBody.create(MediaType.parse("text/plain"),mDataPaidLeave.getRmId());
+                RequestBody mRequestcom_id = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
+                pendingLeavesViewModel.hitPendingLeavesAPI(mRequestAction,mRequestemp_id,mRequestcom_id);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
     /* Call Api For Apply Leave */
     private void callApplyLeaveApi(AppCompatAutoCompleteTextView AutoComTextViewLeaveType) {
         if (NetworkCheck.isInternetAvailable(mContext)) {
@@ -436,7 +533,13 @@ public class NotificationsActivity extends BaseActivity {
                 String startTimeStamp = "00:00:00",endTimeStamp = "23:59:00";
                 RequestBody mRequestBodyStartTime = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentDateInyyyymmdd()+" "+startTimeStamp);
                 RequestBody mRequestBodyEndTime = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentDateInyyyymmdd()+" "+endTimeStamp);
-                RequestBody mRequestBodyLeaveType = RequestBody.create(MediaType.parse("text/plain"), AutoComTextViewLeaveType.getText().toString());
+                String[] test = new String[1];
+                if(!AutoComTextViewLeaveType.getText().toString().equals("Unpaid Leave")){
+                    test = AutoComTextViewLeaveType.getText().toString().trim().split(" \\(");
+                }else{
+                    test[0] = AutoComTextViewLeaveType.getText().toString();
+                }
+                RequestBody mRequestBodyLeaveType = RequestBody.create(MediaType.parse("text/plain"), test[0].trim());
                 RequestBody mRequestBodyComment = RequestBody.create(MediaType.parse("text/plain"), "This is marked as paid leave from notifications");
                 // RequestBody mRequestBodyLeaveStatus = RequestBody.create(MediaType.parse("text/plain") , "approved");
                 ///RequestBody mRequestBodyUpdatedBy = RequestBody.create(MediaType.parse("text/plain"),"12"  /*loginTable.getManagerId()*/);
@@ -528,7 +631,8 @@ public class NotificationsActivity extends BaseActivity {
                 mDialogAbsentMark.dismiss();
                 record_id = data.getRecordId();
                 rm_id = data.getRmId();
-               showPaidLeaveDialog(data);
+                mDataPaidLeave = data;
+                callPendingLeaveListApi();
             }
         });
         mDialogAbsentMark.show();
@@ -595,41 +699,6 @@ public class NotificationsActivity extends BaseActivity {
             });
             mDialogLateMark.show();
         }catch (Exception e){}
-    }
-
-    //set value to Search dropdown
-    private void setDropdownType(AppCompatAutoCompleteTextView mListDropdownView) {
-        List<String> leaveModelList = new ArrayList<>();
-        leaveModelList.add("Casual Leave");
-        leaveModelList.add("Sick Leave");
-        leaveModelList.add("Other Leave");
-        try {
-            int pos = 0;
-            if (leaveModelList != null && leaveModelList.size() > 0) {
-                String[] mDropdownList = new String[leaveModelList.size()];
-                for (int i = 0; i < leaveModelList.size(); i++) {
-                    mDropdownList[i] = String.valueOf(leaveModelList.get(i));
-                }
-                mListDropdownView.setText(mDropdownList[pos]);
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                        mContext,
-                        R.layout.row_dropdown_item,
-                        mDropdownList);
-                //tvHighlight.setThreshold(1);
-                mListDropdownView.setAdapter(adapter);
-                mListDropdownView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    }
-                });
-
-            } else {
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     /* Call Api delete Notification */
@@ -780,11 +849,14 @@ public class NotificationsActivity extends BaseActivity {
                             NotificationDetailsResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), NotificationDetailsResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 NotificationDetailsNotify notify = responseModel.getResult().getNotify().get(0);
+                                if(notify.getType()!=null && !notify.getType().equals("")){
                                 if(notify.getType().equals("Late")){
                                     showLateMarkDialog(responseModel.getResult().getNotify().get(0));
                                 }
                                 if(notify.getType().equals("Absent")){
                                     showAbsentMarkDialog(responseModel.getResult().getNotify().get(0));
+                                }}else{
+                                    LogUtil.printToastMSG(mContext,"No data available.");
                                 }
                             }
                             else {
@@ -884,6 +956,17 @@ public class NotificationsActivity extends BaseActivity {
                         e.printStackTrace();
                     }
                     try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_PENDING_LEAVES)) {
+                            PendingLeaveResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), PendingLeaveResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                showPaidLeaveDialog(responseModel.getResult().getLeave().get(0),mDataPaidLeave);
+                            }else{
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                            }
+                        }
+                    }catch (Exception e){
+                    }
+                    try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_APPLY_LEAVE)) {
                             ApplyLeaveResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ApplyLeaveResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
@@ -895,7 +978,7 @@ public class NotificationsActivity extends BaseActivity {
                             else {
                                 mDialogPaidLeave.dismiss();
                                 showSuccessDialog(responseModel.getResult().getMessage(),
-                                        false,NotificationsActivity.this);
+                                        true,NotificationsActivity.this);
                             }
                         }
                     }catch (Exception e){

@@ -1,5 +1,6 @@
 package com.ominfo.hra_app.ui.employees;
 
+import static com.ominfo.hra_app.MainActivity.bottomNavigationView;
 import static com.ominfo.hra_app.ui.employees.PaginationListener.PAGE_START;
 
 import android.app.DatePickerDialog;
@@ -462,6 +463,7 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
             public void onClick(View view) {
                 Fragment fragment = new DashboardFragment();
                 ((BaseActivity) mContext).moveFragment(mContext, fragment);
+                bottomNavigationView.setSelectedItemId(R.id.home);
             }
         });
         imgNotify.setOnClickListener(new View.OnClickListener() {
@@ -558,6 +560,7 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
                             }
                         }
                     } catch (Exception e) {
+                        LogUtil.printLog("tet_error",e.getMessage());
                         e.printStackTrace();
                     }
                 }

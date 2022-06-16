@@ -18,6 +18,8 @@ public class DynamicAPIPath {
     public static final String POST_SALES= BASE+"?action=get_all_product";
     public static final String POST_SUB_CHARGES= BASE+"?action=get_subs_price";
     public static final String POST_ACCEPT_REJECT_LIST=  BASE+"?action=get_leave_records";
+    public static final String POST_PENDING_LEAVES=  BASE+"?action=left_leavescount";
+    public static final String POST_LEAVING_DATE=  BASE+"?action=emp_leave_date";
     public static final String POST_LEAVE_STATUS= BASE+"?action=apply_leave_updated";
     public static final String POST_GET_PAST_LEAVE= BASE+"?action=get_pastleave_record";
     public static final String POST_CALENDER_HOLIDAY=BASE+"?action=get_company_holiday";
@@ -33,9 +35,13 @@ public class DynamicAPIPath {
     public static final String POST_LATE_ABSENT_COUNT = BASE+"?action=absent_mark_count_months";
     public static final String POST_CHECK_COUPON= BASE+"?action=checkcoupon_validity";
     public static final String POST_GET_OTP = BASE+"?action=get_sms_otp";
+    public static final String POST_GET_EMAIL_OTP = BASE+"?action=forget_password";
+    public static final String POST_RESET_PASSWORD = BASE+"?action=forget_password_email";
     public static final String POST_RESEND_OTP = BASE+"?action=resend_otp";
+    public static final String POST_RESEND_EMAIL_OTP = BASE+"?action=resend_email_otp";
     public static final String POST_CHANGE_PROFILE = BASE+"?action=updatecrmempprofilepic";
     public static final String POST_VERIFY_OTP = BASE+"?action=verify_otp";
+    public static final String POST_VERIFY_EMAIL_OTP = BASE+"?action=verify_email_otp";
     public static final String POST_PLANT= BASE+"?action=getBranchList";
     public static final String POST_GET_VEHICLE= BASE+"?action=getVehWiseLRs";
     public static final String POST_VEHICLE_DETAILS= BASE+"?action=getVehWiseLRTransaction";
@@ -88,6 +94,7 @@ public class DynamicAPIPath {
     public static final String POST_FETCH_KATA_CHITTI = "index_with_DRapp.php?action=getKantaChitthi";
     public static final String action_login = "login";
     public static final String action_get_tour = "tourget";
+    public static final String action_pending_leaves = "left_leavescount";
     public static final String action_logout = "logout";
     public static final String action_add_holiday = "add_company_holiday";
     public static final String action_get_single_notify = "get_late_nofitydetails";
@@ -99,15 +106,17 @@ public class DynamicAPIPath {
     public static final String action_get_past_leave = "get_pastleave_record";
     public static final String action_edit_company = "edit_company";
     public static final String action_get_subs_price = "get_subs_price";
-    public static final String action_get_visit = "visitget";
+    public static final String action_leaving_date = "emp_leave_date";
     public static final String action_get_top_customer = "top_customer";
     public static final String action_deactivate_employee = "deactivate_employee";
     public static final String action_changecrmemppassword = "changecrmemppassword";
     public static final String action_check_coupon_validity = "checkcoupon_validity";
     public static final String action_get_sms_otp = "get_sms_otp";
-    public static final String action_get_leave_app = "get_leave_records";
+    public static final String action_get_email_otp = "forget_password";
+    public static final String action_forget_password_email = "forget_password_email";
     public static final String action_update_active_holiday = "update_active_holiday";
     public static final String action_resend_otp = "resend_otp";
+    public static final String action_resend_email_otp = "resend_email_otp";
     public static final String action_get_quotation = "get_quotation_record";
     public static final String action_get_sales_credit = "salescreditreport";
     public static final String action_get_dispatch_pend = "dispatchpendingdets";
@@ -115,6 +124,7 @@ public class DynamicAPIPath {
     public static final String action_get_profile_img = "getcrmempprofilepic";
     public static final String action_change_profile_img = "updatecrmempprofilepic";
     public static final String action_verify_otp = "verify_otp";
+    public static final String action_verify_email_otp = "verify_email_otp";
     public static final String action_apply_leave = "apply_leave";
     public static final String action_get_company_details = "get_company_details";
     public static final String action_employee_list = "get_employee_list";
