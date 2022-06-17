@@ -53,6 +53,7 @@ import com.ominfo.hra_app.ui.employees.model.EmployeeListResponse;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
+import com.ominfo.hra_app.ui.salary.model.SalaryAllList;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
 import com.ominfo.hra_app.util.SharedPref;
@@ -60,6 +61,8 @@ import com.ominfo.hra_app.util.SharedPref;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -245,6 +248,17 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
 
                 @Override
                 public void run() {*/
+        Collections.sort(employeeListArrayList, new Comparator<EmployeeList>() {
+            @Override
+            public int compare(EmployeeList o1, EmployeeList o2) {
+                return Long.valueOf(o2.getIsActive()==null||o2.getIsActive()
+                        .equals("")?"0":o2.getIsActive()).compareTo(Long.valueOf(o1.getIsActive()==null ||
+                        o1.getIsActive().equals("")?"0":o1.getIsActive()));
+            }
+            @Override
+            public boolean equals(Object obj) {
+                return false;
+            }});
         for (int i = 0; i < employeeListArrayList.size(); i++) {
             items.add(employeeListArrayList.get(i));
         }
