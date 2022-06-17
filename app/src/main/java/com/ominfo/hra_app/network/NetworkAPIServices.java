@@ -508,6 +508,13 @@ public interface NetworkAPIServices {
 
     @Multipart
     @POST()
+    Observable<JsonElement> markEarly(@Url String url,
+                                        @Part("action") RequestBody uploadType,
+                                        @Part("record_id") RequestBody addition
+    );
+
+    @Multipart
+    @POST()
     Observable<JsonElement> deductLeave(@Url String url,
                                         @Part("action") RequestBody uploadType,
                                         @Part("emp_id") RequestBody emp_id,

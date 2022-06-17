@@ -37,6 +37,8 @@
                     android:layout_marginVertical="@dimen/_16dp"
                     android:background="@drawable/layout_round_shape_corners"
                     android:orientation="vertical"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
                     android:paddingBottom="@dimen/_10dp">
 
                     <androidx.appcompat.widget.AppCompatTextView

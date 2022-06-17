@@ -313,7 +313,7 @@ public class RegistrationActivity extends BaseActivity {
                 }
             }
         });
-        AutoComMobileNo.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        /*AutoComMobileNo.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
                 if(!b){
@@ -325,7 +325,7 @@ public class RegistrationActivity extends BaseActivity {
                     }
                 }
             }
-        });
+        });*/
         AutoComEmpStrength.addTextChangedListener(new TextWatcher() {
 
             @Override

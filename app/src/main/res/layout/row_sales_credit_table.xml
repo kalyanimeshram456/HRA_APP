@@ -7,8 +7,9 @@
     android:paddingHorizontal="@dimen/_10dp"
     android:clickable="true"
     android:focusable="true"
+    android:gravity="center_horizontal"
     android:orientation="horizontal"
-    android:paddingVertical="@dimen/_12dp">
+    android:paddingVertical="@dimen/_0dp">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvCompanyName"
@@ -22,6 +23,7 @@
         android:maxLines="2"
         android:hint="@string/scr_lbl_unavailable"
         android:text=""
+        android:layout_gravity="center_vertical"
         android:gravity="center_vertical"
         android:layout_weight="0.5"
         android:textColor="@color/back_text_colour"
@@ -41,6 +43,7 @@
         android:imeOptions="actionDone"
         android:inputType="textMultiLine"
         android:text=""
+        android:layout_gravity="center_vertical"
         android:hint="@string/scr_lbl_unavailable"
         android:layout_marginLeft="@dimen/_16dp"
         android:textColor="@color/back_text_colour"
@@ -59,10 +62,23 @@
         android:imeOptions="actionDone"
         android:inputType="textMultiLine"
         android:text=""
+        android:layout_gravity="center_vertical"
+        android:paddingRight="@dimen/_10dp"
         android:hint="@string/scr_lbl_unavailable"
         android:textColor="@color/Dark_Red"
         android:textColorHint="@color/back_text_colour"
         android:textSize="@dimen/_12sp" />
 
-
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imgSlip"
+        android:layout_width="@dimen/_22dp"
+        android:layout_height="@dimen/_26dp"
+        android:layout_alignParentEnd="true"
+        android:fontFamily="@font/gilroy_regular"
+        android:gravity="center_vertical|right"
+        android:layout_weight="0.5"
+        android:layout_marginVertical="@dimen/_5dp"
+        android:layout_marginLeft="@dimen/_0dp"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_invoice_slip"/>
 </androidx.appcompat.widget.LinearLayoutCompat>

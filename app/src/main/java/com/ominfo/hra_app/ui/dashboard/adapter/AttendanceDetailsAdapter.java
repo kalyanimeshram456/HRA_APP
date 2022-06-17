@@ -71,15 +71,21 @@ public class AttendanceDetailsAdapter extends RecyclerView.Adapter<AttendanceDet
             holder.tvEmpName.setText(mListData.get(position).getEmpName());
             holder.tvDesi.setText(mListData.get(position).getEmpPosition());
             if(mListData.get(position).getLeaveType()==null || mListData.get(position).getLeaveType().equals("")) {
-                holder.tvInTime.setText("In Time : " + AppUtils.convert24to12Attendance(mListData.get(position).getStartTime()));
-                holder.tvOutTime.setText("Out Time : " + AppUtils.convert24to12Attendance(mListData.get(position).getEndTime()));
-                if((mListData.get(position).getIs_early()!=null && (mListData.get(position).getIs_early().equals("1")) || (mListData.get(position).getIs_late()!=null && mListData.get(position).getIs_late().equals("1")))){
+                holder.tvInTime.setText("In : " + AppUtils.convert24to12Attendance(mListData.get(position).getStartTime()));
+                holder.tvOutTime.setText("Out : " + AppUtils.convert24to12Attendance(mListData.get(position).getEndTime()));
+                if(/*(mListData.get(position).getIs_early()!=null && (mListData.get(position).getIs_early().equals("1")) || */(mListData.get(position).getIs_late()!=null && mListData.get(position).getIs_late().equals("1"))){
                     holder.imgIndicator.setVisibility(View.VISIBLE);
                 }else{ holder.imgIndicator.setVisibility(View.GONE);}
+                holder.imgShowLoc.setVisibility(View.VISIBLE);
+                holder.layCard.setEnabled(true);
+                holder.layCard.setClickable(true);
             }else{
                 holder.tvInTime.setText(mListData.get(position).getLeaveType());
                 holder.tvOutTime.setVisibility(View.GONE);
                 holder.imgIndicator.setVisibility(View.GONE);
+                holder.imgShowLoc.setVisibility(View.INVISIBLE);
+                holder.layCard.setEnabled(false);
+                holder.layCard.setClickable(false);
             }
         }
         holder.layCard.setOnClickListener(new View.OnClickListener() {

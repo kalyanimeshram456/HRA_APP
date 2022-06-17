@@ -552,7 +552,9 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
                                 LoginTable loginTable = mDb.getDbDAO().getLoginData();
                                 if (!loginTable.getIsadmin().equals("0")){
                                     tvEmployeeActive.setVisibility(View.VISIBLE);
-                                    tvEmployeeActive.setText(responseModel.getResult().getTotal_prest_emp() + " / " + responseModel.getResult().getTotalactiveemp() + " Employees active");
+                                    tvEmployeeActive.setText(((responseModel.getResult().getTotal_prest_emp()==null || responseModel.getResult().getTotal_prest_emp().equals(""))?"0":
+                                            responseModel.getResult().getTotal_prest_emp())+ " / " + ((responseModel.getResult().getTotalactiveemp()==null || responseModel.getResult().getTotalactiveemp().equals(""))?
+                                                    "0":responseModel.getResult().getTotalactiveemp())+ " Employees active");
                                    }
 
                             }else{

@@ -1206,6 +1206,10 @@ public class DashboardFragment extends BaseFragment {
     }
 
     private void setDefaultCalender(){
+        try{calenderHolidayLeave=new ArrayList<>();
+            descHashMap = new HashMap<>();dateHashmap = new HashMap<>();}catch (Exception e){}
+            dateHashmap.put(1, "default");
+        custom_calendar.setDate(calendar, dateHashmap);
         TextView current_date = custom_calendar.getMonthYearTextView();
         String calMon = AppUtils.convertMonthToIntMMM(current_date.getText().toString());
         String[] strDate = AppUtils.getCurrentDateInyyyymmdd().split("-");
@@ -1249,7 +1253,12 @@ public class DashboardFragment extends BaseFragment {
                                             if (today.equals(str[1] + "-" + str[2])) {
                                                 birthDayDobdatumList.add(responseModel.getResult().getDobdata().get(i));
                                             } else {
-                                                upcomingBirthDayDobdatumList.add(responseModel.getResult().getDobdata().get(i));
+                                                SimpleDateFormat sdf = new SimpleDateFormat("MM-dd");
+                                                Date date1 = sdf.parse(today);
+                                                Date date2 = sdf.parse(str[1] + "-" + str[2]);
+                                                if(date2.compareTo(date1) == 1) {
+                                                    upcomingBirthDayDobdatumList.add(responseModel.getResult().getDobdata().get(i));
+                                                }
                                             }
                                         }
                                     }
@@ -1295,9 +1304,7 @@ public class DashboardFragment extends BaseFragment {
                                 if (responseModel.getResult().getLeave()!=null &&
                                         responseModel.getResult().getLeave().size()>0) {
                                     calenderHolidayLeave = responseModel.getResult().getLeave();
-                                    try {
-                                        if (calenderHolidayLeave != null && calenderHolidayLeave.size() > 0) {
-                                            try{
+                                    try{
                                             String[] strTest = calenderHolidayLeave.get(0).getDate().split("-");
                                             String[] strDate = AppUtils.getCurrentDateInyyyymmdd().split("-");
                                             if(Integer.parseInt(strTest[1])==Integer.parseInt(strDate[1])){
@@ -1310,12 +1317,9 @@ public class DashboardFragment extends BaseFragment {
                                             // set date
                                             // custom_calendar.setNextButtonColor(R.color.colorAccent);
                                             custom_calendar.setDate(calendar, dateHashmap);
-                                        }
-                                    }catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
                                 }
-                                else{  setDefaultCalender();}
+                                else{
+                                    setDefaultCalender();}
                                // LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
                             } else {
                                 setDefaultCalender();

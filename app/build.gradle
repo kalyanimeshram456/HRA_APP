@@ -12,7 +12,7 @@ android {
         applicationId "com.ominfo.hra_app"//also change in rate us app
         minSdk 21
         targetSdk 31
-        versionCode 8
+        versionCode 12
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {

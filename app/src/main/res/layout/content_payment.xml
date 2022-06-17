@@ -63,8 +63,9 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
                             android:fontFamily="@font/gilroy_semibold"
-                            android:text="0"
+                            android:hint="0"
                             android:layout_marginTop="@dimen/_16dp"
+                            android:textColorHint="@color/white"
                             android:textColor="@color/white"
                             android:textSize="38sp" />
 

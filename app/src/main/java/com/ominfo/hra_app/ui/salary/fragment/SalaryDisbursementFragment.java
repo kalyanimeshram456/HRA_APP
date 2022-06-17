@@ -83,6 +83,8 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -218,7 +220,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
         AutoComAddEmp.setText("All");
         btnSubmit.setEnabled(true);
         btnSubmit.setBackground(getResources().getDrawable(R.drawable.bg_button_round_corner_5));
-        callGetActiveEmployeeListApi();
+        setDropdownActiveEmpList();//callGetActiveEmployeeListApi();
         setAdapterForSalaryAllList();
         callSalaryAllListApi();
     }
@@ -289,14 +291,6 @@ public class SalaryDisbursementFragment extends BaseFragment {
                         for(int i=0;i<monthsLists.size();i++){
                             if(monthsListWOW.get(i).getName().equals(AutoComMonth.getText().toString().trim())){
                                 tvTotalDays.setText("Total days of month : "+monthsListWOW.get(i).getDays());
-                                int monthTest = Integer.parseInt(AppUtils.convertMonthToInt(AutoComMonth.getText().toString().trim()));
-                                if(monthTest<=monthRes){
-                                    btnSubmit.setEnabled(false);
-                                    btnSubmit.setBackground(getResources().getDrawable(R.drawable.bg_button_round_corner_5_cancel));
-                                }else{
-                                    btnSubmit.setEnabled(true);
-                                    btnSubmit.setBackground(getResources().getDrawable(R.drawable.bg_button_round_corner_5));
-                                }
                             }
                         }}catch (Exception e){}
                         callSalaryAllListApi();
@@ -319,7 +313,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
             if(loginTable!=null) {
                 RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_salary_all_list);
                 RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
-                RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), selectedActiveEmpid);
+                RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId()/*selectedActiveEmpid*/);
                 RequestBody mRequestisAd = RequestBody.create(MediaType.parse("text/plain"),  loginTable.getIsadmin());
                 //RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), pageNo);
                 //RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
@@ -535,6 +529,17 @@ public class SalaryDisbursementFragment extends BaseFragment {
 
     private void setAdapterForSalaryAllList() {
         if (salaryAllresultList!=null && salaryAllresultList.size() > 0) {
+            Collections.sort(salaryAllresultList, new Comparator<SalaryAllList>() {
+                @Override
+                public int compare(SalaryAllList o1, SalaryAllList o2) {
+                    return Long.valueOf(o2.getIsActive()==null||o2.getIsActive()
+                            .equals("")?"0":o2.getIsActive()).compareTo(Long.valueOf(o1.getIsActive()==null ||
+                            o1.getIsActive().equals("")?"0":o1.getIsActive()));
+                }
+                @Override
+                public boolean equals(Object obj) {
+                    return false;
+                }});
             rvSalesList.setVisibility(View.VISIBLE);
             emptyLayout.setVisibility(View.GONE);
             btnSubmit.setVisibility(View.VISIBLE);
@@ -1017,12 +1022,24 @@ public class SalaryDisbursementFragment extends BaseFragment {
                                     salaryAllresultList = responseModel.getResult().getList();
                                 }
                                  monthRes = Integer.parseInt(responseModel.getResult().getLast_month_dis_sal()==null?"0":responseModel.getResult().getLast_month_dis_sal());
-                                int monthTest = Integer.parseInt(AppUtils.getCurrentMonthInInt());
+                               /* int monthTest = Integer.parseInt(AppUtils.getCurrentMonthInInt());
                                 if(monthTest<=monthRes){
                                     btnSubmit.setEnabled(false);
+                                    btnSubmit.setClickable(false);
                                     btnSubmit.setBackground(getResources().getDrawable(R.drawable.bg_button_round_corner_5_cancel));
                                 }else{
                                     btnSubmit.setEnabled(true);
+                                    btnSubmit.setClickable(true);
+                                    btnSubmit.setBackground(getResources().getDrawable(R.drawable.bg_button_round_corner_5));
+                                }*/
+                                int monthTest = Integer.parseInt(AppUtils.convertMonthToInt(AutoComMonth.getText().toString().trim()));
+                                if(monthTest<=monthRes){
+                                    btnSubmit.setEnabled(false);
+                                    btnSubmit.setClickable(false);
+                                    btnSubmit.setBackground(getResources().getDrawable(R.drawable.bg_button_round_corner_5_cancel));
+                                }else{
+                                    btnSubmit.setEnabled(true);
+                                    btnSubmit.setClickable(true);
                                     btnSubmit.setBackground(getResources().getDrawable(R.drawable.bg_button_round_corner_5));
                                 }
                                 setAdapterForSalaryAllList();
@@ -1072,7 +1089,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
                                 if(responseModel.getResult().getEmpData()!=null &&
                                         responseModel.getResult().getEmpData().size()>0){
                                     //activeEmployeeList.add(new ActiveEmployeeListEmpDatum("","All"));
-                                    activeEmployeeList = responseModel.getResult().getEmpData();
+                                    //activeEmployeeList = responseModel.getResult().getEmpData();
                                     setDropdownActiveEmpList();
                                 }
                             }

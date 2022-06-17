@@ -357,6 +357,11 @@ public class Service {
                 DynamicAPIPath.POST_MARK_NOT_LATE),act,id
         );
     }
+    public Observable<JsonElement> executeMarkNotEarlyAPI(RequestBody act,RequestBody id) {
+        return networkAPIServices.markEarly(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_MARK_NOT_EARLY),act,id
+        );
+    }
     public Observable<JsonElement> executeDeductLeaveAPI(RequestBody act,RequestBody emp_id
             ,RequestBody date,RequestBody status,RequestBody leave_type,RequestBody leave_days) {
         return networkAPIServices.deductLeave(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",

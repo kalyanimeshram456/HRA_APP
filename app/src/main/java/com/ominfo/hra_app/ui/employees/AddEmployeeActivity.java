@@ -185,10 +185,12 @@ public class AddEmployeeActivity extends BaseActivity {
     AppCompatAutoCompleteTextView AutoComOtherLeave;
     @BindView(R.id.AutoComOfficeLocation)
     AppCompatAutoCompleteTextView AutoComOfficeLocation;
-    Dialog mDialogDeactivate,mDialogDiscard;
+    Dialog mDialogDeactivate,mDialogDiscard,mDialogReset;
     String from = "add", empId= "0",officeLat= "",officeLong="";
     @BindView(R.id.btnDeactivate)
     AppCompatButton btnDeactivate;
+    @BindView(R.id.btnSubmit)
+    AppCompatButton btnSubmit;
     @BindView(R.id.btnLeavingDate)
     AppCompatButton btnLeavingDate;
     @BindView(R.id.btnCancel)
@@ -305,7 +307,7 @@ public class AddEmployeeActivity extends BaseActivity {
                 }
             }
         });
-        AutoComMobile.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+      /*  AutoComMobile.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
                 if(!b){
@@ -317,7 +319,7 @@ public class AddEmployeeActivity extends BaseActivity {
                     }
                 }
             }
-        });
+        });*/
     }
 
     @Override
@@ -775,7 +777,7 @@ public class AddEmployeeActivity extends BaseActivity {
                 openDataPicker(1);
                 break;
             case R.id.btnCancel:
-                callChangePassApi();
+                showResetPassworfDialog();
                 break;
             case R.id.btnDeactivate:
                 showDeactivateAccountDialog(this);
@@ -936,6 +938,36 @@ public class AddEmployeeActivity extends BaseActivity {
         mDialogDiscard.show();
     }
 
+    public void showResetPassworfDialog() {
+        mDialogReset = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialogReset.setContentView(R.layout.dialog_deactive_account);
+        mDialogReset.setCanceledOnTouchOutside(true);
+        AppCompatImageView mClose = mDialogReset.findViewById(R.id.imgCancel);
+        AppCompatButton okayButton = mDialogReset.findViewById(R.id.uploadButton);
+        AppCompatButton cancelButton = mDialogReset.findViewById(R.id.cancelButton);
+        AppCompatTextView tvTitle = mDialogReset.findViewById(R.id.tvStart);
+        tvTitle.setText("Are you sure you want to reset this employee's password ?");
+        okayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callChangePassApi();
+            }
+        });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogReset.dismiss();
+            }
+        });
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogReset.dismiss();
+            }
+        });
+        mDialogReset.show();
+    }
+
     public void showLeavingDateDialog() {
         mDialogLeaving = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialogLeaving.setContentView(R.layout.dialog_leaving_date);
@@ -946,7 +978,7 @@ public class AddEmployeeActivity extends BaseActivity {
         AppCompatButton addReceiptButton = mDialogLeaving.findViewById(R.id.addReceiptButton);
         AppCompatEditText etDescr = mDialogLeaving.findViewById(R.id.etDescr);
         //test
-        if(leaveDate!=null && !leaveDate.equals("")){
+        if(leaveDate!=null && !leaveDate.equals("") && !leaveDate.equals("1947-01-01")){
             addReceiptButton.setText("okay");
             layFromDate.setEnabled(false);
             layFromDate.setClickable(false);
@@ -972,7 +1004,7 @@ public class AddEmployeeActivity extends BaseActivity {
         addReceiptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(leaveDate!=null && !leaveDate.equals("")) {
+                if(leaveDate!=null && !leaveDate.equals("")&& !leaveDate.equals("1947-01-01")) {
                     mDialogLeaving.dismiss();
                 }else{//api
                     callLeavingDateApi(tvDateValueFrom.getText().toString().trim(),
@@ -1105,11 +1137,13 @@ public class AddEmployeeActivity extends BaseActivity {
         switch (apiResponse.status) {
 
             case LOADING:
-                showSmallProgressBar(mProgressBarHolder);
+                //showSmallProgressBar(mProgressBarHolder);
+                showProgressLoader(getString(R.string.scr_message_please_wait));
                 break;
 
             case SUCCESS:
-                dismissSmallProgressBar(mProgressBarHolder);
+                //dismissSmallProgressBar(mProgressBarHolder);
+                dismissLoader();
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
                     try {
@@ -1143,6 +1177,7 @@ public class AddEmployeeActivity extends BaseActivity {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_CHANGE_PASSWORD)) {
                             ChangePasswordResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), ChangePasswordResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                mDialogReset.dismiss();
                                 showThanksForRegisterDialog(responseModel.getResult().getMessage());
                             }
                             else {
@@ -1264,6 +1299,18 @@ public class AddEmployeeActivity extends BaseActivity {
                                         employeeResList.getSatStartTime()==null?getString(R.string.scr_lbl_start_time):employeeResList.getSatStartTime(), employeeResList.getSatEndTime()==null?getString(R.string.scr_lbl_end_time):employeeResList.getSatEndTime()));
                                 timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun), employeeResList.getSunWorking()==null?"No":employeeResList.getSunWorking(),
                                         employeeResList.getSunStartTime()==null?getString(R.string.scr_lbl_start_time):employeeResList.getSunStartTime(), employeeResList.getSunEndTime()==null?getString(R.string.scr_lbl_end_time):employeeResList.getSunEndTime()));
+
+                                if(employeeResList.getIsActive().equals("0")){
+                                    btnDeactivate.setVisibility(View.GONE);
+                                    btnCancel.setVisibility(View.GONE);
+                                    //btnLeavingDate.setVisibility(View.GONE);
+                                    btnSubmit.setVisibility(View.GONE);
+                                }else{
+                                    btnDeactivate.setVisibility(View.VISIBLE);
+                                    btnCancel.setVisibility(View.VISIBLE);
+                                    btnLeavingDate.setVisibility(View.VISIBLE);
+                                    btnSubmit.setVisibility(View.VISIBLE);
+                                }
                                 setAdapterForTimingList();
                             }
                             else{
@@ -1277,7 +1324,8 @@ public class AddEmployeeActivity extends BaseActivity {
                 }
                 break;
             case ERROR:
-                dismissSmallProgressBar(mProgressBarHolder);
+                //(mProgressBarHolder);
+                dismissLoader();
                 LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
                 break;
         }

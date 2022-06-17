@@ -54,11 +54,17 @@ public class SalarySheetListAdapter extends RecyclerView.Adapter<SalarySheetList
 
         if(mListData.size()>0) {
                 holder.setIsRecyclable(false);
-                holder.tvCompanyName.setText(mListData.get(position).getMonth()+"-"+mListData.get(position).getYear());
+                try{String mon = AppUtils.convertIntToMonthMMM(mListData.get(position).getMonth());
+                holder.tvCompanyName.setText(mon+" "+mListData.get(position).getYear());}catch (Exception e){}
                 holder.tvState.setText(mListData.get(position).getLeaves());
                 holder.tvRs.setText(mListData.get(position).getTotal());
                 holder.tvRs.setTextColor(mContext.getResources().getColor(R.color.back_text_colour));
                 //holder.imgIndicator.setVisibility(View.GONE);
+                if(position==0){
+                    holder.imgSlip.setVisibility(View.VISIBLE);
+                }else{
+                    holder.imgSlip.setVisibility(View.INVISIBLE);
+                }
 
                 if (position % 2 != 0) {
                 holder.layClick.setBackground(mContext.getResources().getDrawable(R.drawable.shape_round_white_left_right_border_dialog));
@@ -78,7 +84,7 @@ public class SalarySheetListAdapter extends RecyclerView.Adapter<SalarySheetList
                 //Toast.makeText(mContext, "View where A: " + position + " is Clicked", Toast.LENGTH_SHORT).show();
             }
         });*/
-        holder.tvState.setOnClickListener(new View.OnClickListener() {
+        holder.imgSlip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
@@ -96,7 +102,7 @@ public class SalarySheetListAdapter extends RecyclerView.Adapter<SalarySheetList
             @Override
             public void onClick(View v) {
                 //LogUtil.printToastMSG(mContext,"from adapter");
-                listItemSelectListener.onItemClick(position,mListData.get(position));
+                //listItemSelectListener.onItemClick(position,mListData.get(position));
             }
         });
 
@@ -112,7 +118,7 @@ public class SalarySheetListAdapter extends RecyclerView.Adapter<SalarySheetList
     public class ViewHolder extends RecyclerView.ViewHolder {
         AppCompatTextView tvCompanyName , tvState , tvRs;
         LinearLayoutCompat layClick;
-        AppCompatImageView imgDash;
+        AppCompatImageView imgSlip;
         //CircleImageView imgIndicator;
 
         ViewHolder(View itemView) {
@@ -121,11 +127,12 @@ public class SalarySheetListAdapter extends RecyclerView.Adapter<SalarySheetList
             tvCompanyName = itemView.findViewById(R.id.tvCompanyName);
             tvState = itemView.findViewById(R.id.tvState);
             tvRs = itemView.findViewById(R.id.tvRS);
+            imgSlip = itemView.findViewById(R.id.imgSlip);
             //imgIndicator = itemView.findViewById(R.id.imgIndicator);
           /*  tvTitle = itemView.findViewById(R.id.tvTitle);
             tvRs = itemView.findViewById(R.id.tvRs);
             layClick = itemView.findViewById(R.id.layClick);
-            imgDash = itemView.findViewById(R.id.imgDash);
+
        */ }
     }
 

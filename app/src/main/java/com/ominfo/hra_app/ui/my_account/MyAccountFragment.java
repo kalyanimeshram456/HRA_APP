@@ -390,7 +390,6 @@ public class MyAccountFragment extends BaseFragment {
         AppCompatImageView mClose = mDialogLogout.findViewById(R.id.imgCancel);
         AppCompatButton okayButton = mDialogLogout.findViewById(R.id.uploadButton);
         AppCompatButton cancelButton = mDialogLogout.findViewById(R.id.cancelButton);
-
         okayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -586,6 +585,7 @@ public class MyAccountFragment extends BaseFragment {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if (loginTable != null) {
+                ((BaseActivity)mContext).showProgressLoader(getString(R.string.scr_message_please_wait));
                 RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_logout_mt_update);
                 RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
                 logoutMobileTokenViewModel.hitLogoutMobileTokenApi(mRequestBodyAction, mRequestBodyTypeEmployee);
@@ -1596,7 +1596,7 @@ public class MyAccountFragment extends BaseFragment {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.action_edit_employee)) {
                             EditEmployeeResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), EditEmployeeResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                showSuccessDialogFragment(mContext,"Employee Edited successfully !",true, null);
+                                showSuccessDialogFragment(mContext,"Account Edited successfully !",true, null);
                             }
                             else {
                                 showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),false, null);
@@ -1612,7 +1612,7 @@ public class MyAccountFragment extends BaseFragment {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EDIT_COMPANY)) {
                             EditCompanyResonse responseModel = new Gson().fromJson(apiResponse.data.toString(), EditCompanyResonse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
-                                showSuccessDialogFragment(mContext,"Company Edited successfully !",true, null);
+                                showSuccessDialogFragment(mContext,"Account Edited successfully !",true, null);
                             }
                             else {
                                 showSuccessDialogFragment(mContext,responseModel.getResult().getMessage(),false, null);
@@ -1645,6 +1645,7 @@ public class MyAccountFragment extends BaseFragment {
                             LogoutResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LogoutResponse.class);
                             //if (responseModel != null && responseModel.getResult().getStatus().equals("Success")) {
                             //LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                            ((BaseActivity)mContext).dismissLoader();
                             mDialogLogout.dismiss();
                             getActivity().finishAffinity();
                             launchScreen(getActivity(), LoginActivity.class);

@@ -56,6 +56,15 @@ public class SalaryNewDisAdapter extends RecyclerView.Adapter<SalaryNewDisAdapte
 
         if(mListData.size()>0) {
             SalaryAllList item = mListData.get(position);
+            if(mListData.get(position).getIsActive().equals("0")){
+                holder.tvActive.setText("Inactive");
+                holder.tvActive.setTextColor(mContext.getResources().getColor(R.color.deep_red));
+                holder.imgEdit.setVisibility(View.INVISIBLE);
+            }else{
+                holder.tvActive.setText("Active");
+                holder.tvActive.setTextColor(mContext.getResources().getColor(R.color.green));
+                holder.imgEdit.setVisibility(View.VISIBLE);
+            }
             holder.tvBirthName.setText(mListData.get(position).getEmpName().trim());
             holder.tvBirthValue.setText(mListData.get(position).getEmpPosition().trim());
             holder.tvLeave.setText(mListData.get(position).getLeaveCountCurMon());
@@ -92,7 +101,7 @@ public class SalaryNewDisAdapter extends RecyclerView.Adapter<SalaryNewDisAdapte
     public class ViewHolder extends RecyclerView.ViewHolder {
         AppCompatImageView imgEdit;
         CardView cardClick;
-        AppCompatTextView tvBirthName;
+        AppCompatTextView tvBirthName,tvActive;
         AppCompatTextView tvBirthValue;
         AppCompatTextView tvLeave;
         AppCompatTextView tvSalary;
@@ -104,6 +113,7 @@ public class SalaryNewDisAdapter extends RecyclerView.Adapter<SalaryNewDisAdapte
             imgEdit = itemView.findViewById(R.id.imgEdit);
             cardClick = itemView.findViewById(R.id.cardClick);
             tvBirthName = itemView.findViewById(R.id.tvBirthName);
+            tvActive = itemView.findViewById(R.id.tvActive);
             tvBirthValue = itemView.findViewById(R.id.tvBirthValue);
             tvLeave = itemView.findViewById(R.id.tvLeave);
             tvSalary = itemView.findViewById(R.id.tvSalary);

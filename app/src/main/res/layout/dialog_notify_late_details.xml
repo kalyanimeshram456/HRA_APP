@@ -23,6 +23,7 @@
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvTitleDialog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -170,7 +171,7 @@
             android:fontFamily="@font/gilroy_semibold"
             android:gravity="center"
             android:paddingTop="@dimen/_1dp"
-            android:text="ignore"
+            android:text="ignore for now"
             android:textColor="@color/white"
             android:textSize="@dimen/_16sp" />
 

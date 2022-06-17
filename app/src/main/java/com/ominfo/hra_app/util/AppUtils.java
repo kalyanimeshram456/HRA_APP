@@ -1,5 +1,6 @@
 package com.ominfo.hra_app.util;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -7,6 +8,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -20,6 +22,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.DisplayMetrics;
@@ -176,6 +180,18 @@ public class AppUtils {
         String month_name = month_date.format(cal.getTime());
         return month_name;
        }
+        catch(Exception e) { }
+        return ""+monthnum;
+    }
+
+    public static String convertIntToMonthMMM(String monthnum){
+        try{
+            Calendar cal=Calendar.getInstance();
+            SimpleDateFormat month_date = new SimpleDateFormat("MMM");
+            cal.set(Calendar.MONTH, Integer.parseInt(monthnum));
+            String month_name = month_date.format(cal.getTime());
+            return month_name;
+        }
         catch(Exception e) { }
         return ""+monthnum;
     }
@@ -550,6 +566,31 @@ public class AppUtils {
         return sDateFormate;
     }
 
+    public static String dateConvertPastLeave(String sDate) {
+        String sDateFormate = "";
+        try {
+            String pattern = "dd/MM/yyyy";
+            String inputPattern = "yyyy-MM-dd";
+            /*SimpleDateFormat simpleDateFormat = new SimpleDateFormat(inputPattern);
+            Date date = simpleDateFormat.parse(sDate);
+            SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+            sDateFormate = sdf.format(date.getTime());
+            System.out.println(sDateFormate);*/
+
+            SimpleDateFormat fmt = new SimpleDateFormat(inputPattern);
+            Date date = fmt.parse(sDate);
+
+            SimpleDateFormat fmtOut = new SimpleDateFormat(pattern);
+            sDateFormate = fmtOut.format(date);
+
+            LogUtil.printLog(TAG, "sDateFormate: " + sDateFormate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sDateFormate;
+    }
+
+
     public static String convertyyyytodd(String sDate) {
         String sDateFormate = "";
         try {
@@ -815,7 +856,36 @@ public class AppUtils {
         String YYYY = separated[2];
         return YYYY + "-" + MM + "-" + DD;
     }
+    public static String getIMEINumber(Context context) {
 
+        String deviceId;
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+            } else {
+                final TelephonyManager mTelephony = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (context.checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                        return "";
+                    }
+                }
+                assert mTelephony != null;
+                if (mTelephony.getDeviceId() != null) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        deviceId = mTelephony.getImei();
+                    } else {
+                        deviceId = mTelephony.getDeviceId();
+                    }
+                } else {
+                    deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+                }
+            }
+            //Log.d("deviceId", deviceId);
+            return deviceId;
+        }catch (Exception e){
+            return "";
+        }
+    }
 
     /**
      * Returns the consumer friendly device name

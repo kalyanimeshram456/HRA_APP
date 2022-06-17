@@ -46,6 +46,7 @@ import com.ominfo.hra_app.ui.notifications.model.DeleteNotificationViewModel;
 import com.ominfo.hra_app.ui.notifications.model.GetSingleRecordViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LateMarkCountViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LeaveStatusViewModel;
+import com.ominfo.hra_app.ui.notifications.model.MarkNotEarlyViewModel;
 import com.ominfo.hra_app.ui.notifications.model.NotificationViewModel;
 import com.ominfo.hra_app.ui.payment.model.AddUserViewModel;
 import com.ominfo.hra_app.ui.payment.model.MyPlanViewModel;
@@ -274,6 +275,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
              return (T) new ResendEmailOtpViewModel(service);
          }else  if (modelClass.isAssignableFrom(ResetPasswordOtpViewModel.class)) {
              return (T) new ResetPasswordOtpViewModel(service);
+         }else  if (modelClass.isAssignableFrom(MarkNotEarlyViewModel.class)) {
+             return (T) new MarkNotEarlyViewModel(service);
          }
 
         throw new IllegalArgumentException("Unknown class name");

@@ -101,6 +101,18 @@
                         android:textAlignment="center"
                         android:textColor="@color/gray"
                         android:textSize="@dimen/_14sp" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvActive"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tvDesi"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/gilroy_semibold"
+                        android:inputType="textMultiLine"
+                        android:text="Active"
+                        android:textAlignment="center"
+                        android:textColor="@color/green"
+                        android:textSize="@dimen/_10sp" />
 
                 </RelativeLayout>
 

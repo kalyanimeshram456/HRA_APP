@@ -354,7 +354,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                         Date date = sdf30.parse(savedDate);
                         Calendar calendar30 = Calendar.getInstance();
                         calendar30.setTime(date);
-                        calendar30.add(Calendar.MINUTE, 15);
+                        calendar30.add(Calendar.MINUTE, 10);
                         Date date1 = sdf.parse(sdf30.format(calendar30.getTime()));//saved + 15
                         Date date2 = sdf.parse(currDate); //curr
                         if (date2.compareTo(date1) > 0) {

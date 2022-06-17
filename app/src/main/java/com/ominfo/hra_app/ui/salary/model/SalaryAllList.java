@@ -36,6 +36,16 @@ public class SalaryAllList {
     private String month;
     @SerializedName("year")
     private String year;
+    @SerializedName("isActive")
+    private String isActive;
+
+    public String getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(String isActive) {
+        this.isActive = isActive;
+    }
 
     public String getMonth() {
         return month;

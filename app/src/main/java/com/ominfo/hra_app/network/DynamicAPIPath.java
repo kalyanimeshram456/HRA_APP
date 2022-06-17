@@ -55,6 +55,7 @@ public class DynamicAPIPath {
     public static final String POST_MARK_PRESENT= BASE+"?action=mark_as_present";
     public static final String POST_DEDUCT_LEAVE= BASE+"?action=leave_deduct";
     public static final String POST_MARK_NOT_LATE= BASE+"?action=mark_as_not_late";
+    public static final String POST_MARK_NOT_EARLY= BASE+"?action=mark_as_not_early";
     public static final String POST_MY_PLANS= BASE+"?action=get_current_subs_plan";
     public static final String POST_RENEW_PLANS= BASE+"?action=get_renew_plan_details";
     public static final String POST_PAY_RENEW_PLAN= BASE+"?action=renew_subs_plan";
@@ -140,6 +141,7 @@ public class DynamicAPIPath {
     public static final String action_mark_as_persent = "mark_as_present";
     public static final String action_leave_deduct = "leave_deduct";
     public static final String action_mark_as_not_late = "mark_as_not_late";
+    public static final String action_mark_as_not_early = "mark_as_not_early";
     public static final String action_get_current_subs_plan = "get_current_subs_plan";
     public static final String action_get_renew_plan_details = "get_renew_plan_details";
     public static final String action_renew_subs_plan = "renew_subs_plan";

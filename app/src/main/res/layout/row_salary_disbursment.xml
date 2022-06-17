@@ -87,8 +87,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:fontFamily="@font/gilroy_semibold"
-                        android:text="User name"
                         android:inputType="textMultiLine"
+                        android:text="User name"
                         android:textAlignment="center"
                         android:textColor="@color/black_heading"
                         android:textSize="@dimen/_14sp" />
@@ -105,6 +105,19 @@
                         android:textAlignment="center"
                         android:textColor="@color/gray"
                         android:textSize="@dimen/_12sp" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvActive"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tvBirthValue"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/gilroy_semibold"
+                        android:inputType="textMultiLine"
+                        android:text="Active"
+                        android:textAlignment="center"
+                        android:textColor="@color/green"
+                        android:textSize="@dimen/_10sp" />
 
                 </RelativeLayout>
 

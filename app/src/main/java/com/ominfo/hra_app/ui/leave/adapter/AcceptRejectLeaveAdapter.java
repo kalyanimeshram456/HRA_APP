@@ -138,6 +138,14 @@ public class AcceptRejectLeaveAdapter extends RecyclerView.Adapter<BaseViewHolde
       super.onBind(position);
       AcceptRejectLeave item = mPostItems.get(position);
       tvDiffACC.setText(item.getDaysDiff()+" Days");
+      if(item.getDaysDiff()==0){
+        tvDiffACC.setText("Half Day");
+      }
+      if(item.getDaysDiff()==1){
+        tvDiffACC.setText(item.getDaysDiff()+" Day");
+      }
+      //tvDiffACC.setText(item.getDaysDiff().equals("0")?"Half":item.getDaysDiff()+" Days");
+      //tvDiffACC.setText(item.getDaysDiff()+" Days");
       tvDateACC.setText(AppUtils.convertyyyytoddLeave(item.getStartTime())+"-"+AppUtils.convertyyyytoddLeave(item.getEndTime()));//"2022-05-17 10:00:00
       textViewTitle.setText(item.getEmpName());
       textViewDescription.setText(item.getLeaveType());

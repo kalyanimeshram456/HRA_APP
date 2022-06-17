@@ -63,6 +63,8 @@ import com.ominfo.hra_app.util.LogUtil;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -172,6 +174,17 @@ public class SalaryFragment extends BaseFragment {
     private void setAdapterForSalaryList() {
         LoginTable loginTable = mDb.getDbDAO().getLoginData();
         if (salaryAllresultList!=null && salaryAllresultList.size() > 0) {
+            Collections.sort(salaryAllresultList, new Comparator<SalaryAllList>() {
+                @Override
+                public int compare(SalaryAllList o1, SalaryAllList o2) {
+                    return Long.valueOf(o2.getIsActive()==null||o2.getIsActive()
+                    .equals("")?"0":o2.getIsActive()).compareTo(Long.valueOf(o1.getIsActive()==null ||
+                            o1.getIsActive().equals("")?"0":o1.getIsActive()));
+                }
+                @Override
+                public boolean equals(Object obj) {
+                    return false;
+                }});
             rvSalesList.setVisibility(View.VISIBLE);
             emptyLayout.setVisibility(View.GONE);
             if(loginTable!=null){

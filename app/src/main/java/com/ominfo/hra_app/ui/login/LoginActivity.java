@@ -251,6 +251,7 @@ public class LoginActivity extends BaseActivity {
         /*Window window = getWindow();
         View view = window.getDecorView();
         DarkStatusBar.setLightStatusBar(view,this);*/
+        //LogUtil.printLog("imei_tetsing ",AppUtils.getIMEINumber(mContext));
     }
 
     // set error if input field is blank

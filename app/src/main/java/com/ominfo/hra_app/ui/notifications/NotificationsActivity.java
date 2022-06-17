@@ -54,6 +54,7 @@ import com.ominfo.hra_app.ui.notifications.model.GetSingleRecordViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LateMarkCountViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LateMarkResponse;
 import com.ominfo.hra_app.ui.notifications.model.LeaveStatusViewModel;
+import com.ominfo.hra_app.ui.notifications.model.MarkNotEarlyViewModel;
 import com.ominfo.hra_app.ui.notifications.model.NotificationData;
 import com.ominfo.hra_app.ui.notifications.model.NotificationDetailsNotify;
 import com.ominfo.hra_app.ui.notifications.model.NotificationDetailsResponse;
@@ -120,6 +121,7 @@ public class NotificationsActivity extends BaseActivity {
     private MarkPresentViewModel markPresentViewModel;
     private UnpaidLeaveViewModel unpaidLeaveViewModel;
     private MarkNotLateViewModel markNotLateViewModel;
+    private MarkNotEarlyViewModel markNotEarlyViewModel;
     private PendingLeavesViewModel pendingLeavesViewModel;
     private AppDatabase mDb;
     private Dialog mDialogPaidLeave,mDialogDeductLeave;
@@ -130,7 +132,7 @@ public class NotificationsActivity extends BaseActivity {
     String record_id = "0",rm_id = "0";
     int notiId = 0;
     AppCompatTextView tvStartMonth,tvEndMonth,tvStartTime,tvEndTime;
-    Dialog mDialogAbsentMark,mDialogLateMark;
+    Dialog mDialogAbsentMark,mDialogLateMark,mDialogEarlyMark;
     final Calendar myCalendar = Calendar.getInstance();
     NotificationDetailsNotify mDataPaidLeave ;
 
@@ -238,6 +240,9 @@ public class NotificationsActivity extends BaseActivity {
 
         pendingLeavesViewModel = ViewModelProviders.of(this, mViewModelFactory).get(PendingLeavesViewModel.class);
         pendingLeavesViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_PENDING_LEAVES));
+
+        markNotEarlyViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MarkNotEarlyViewModel.class);
+        markNotEarlyViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_MARK_NOT_EARLY));
     }
 
     /* Call Api Notification */
@@ -701,6 +706,73 @@ public class NotificationsActivity extends BaseActivity {
         }catch (Exception e){}
     }
 
+    //show leave form popup
+    public void showEarlyMarkDialog(NotificationDetailsNotify data) {
+        try {
+            mDialogEarlyMark = new Dialog(mContext, R.style.ThemeDialogCustom);
+            mDialogEarlyMark.setContentView(R.layout.dialog_notify_late_details);
+            mDialogEarlyMark.setCanceledOnTouchOutside(true);
+            RelativeLayout layClose = mDialogEarlyMark.findViewById(R.id.layClose);
+            AppCompatTextView tvTitle = mDialogEarlyMark.findViewById(R.id.tvTitle);
+            AppCompatTextView tvTitleDialog = mDialogEarlyMark.findViewById(R.id.tvTitleDialog);
+            AppCompatTextView tvStartTime = mDialogEarlyMark.findViewById(R.id.tvStartTime);
+            AppCompatTextView tvEndTime = mDialogEarlyMark.findViewById(R.id.tvEndTime);
+            AppCompatTextView tvAbsentMark = mDialogEarlyMark.findViewById(R.id.tvAbsentMark);
+            tvStartMonth = mDialogEarlyMark.findViewById(R.id.tvStartMonth);
+            tvEndMonth = mDialogEarlyMark.findViewById(R.id.tvEndMonth);
+            tvTitleDialog.setText("Early Logout");
+            tvAbsentMark.setText("Previous early logout");
+            AppCompatButton MarkButton = mDialogEarlyMark.findViewById(R.id.MarkButton);
+            AppCompatButton ignoreButton = mDialogEarlyMark.findViewById(R.id.ignoreButton);
+            AppCompatButton DeductButton = mDialogEarlyMark.findViewById(R.id.DeductButton);
+            MarkButton.setText("Mark as not early");
+            tvTitle.setText(data.getNotifText());
+            tvStartTime.setText("Actual time : " + AppUtils.convert24to12Attendance(data.getStnd_start_tym()));
+            tvEndTime.setText("Start time : " + AppUtils.convert24to12Attendance(data.getStartTime()));
+            callLateMarkCountApi(data.getRelatedId());
+            layClose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mDialogEarlyMark.dismiss();
+                }
+            });
+            MarkButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (NetworkCheck.isInternetAvailable(mContext)) {
+                        LoginTable loginTable = mDb.getDbDAO().getLoginData();
+                        if (loginTable != null) {
+                            record_id = data.getRecordId();
+                            rm_id = data.getRmId();
+                            RequestBody mRequestBodyAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_mark_as_not_early);
+                            RequestBody mRequestBodyrecord_id = RequestBody.create(MediaType.parse("text/plain"), data.getRelatedId());
+                            markNotEarlyViewModel.hitMarkNotEarlyAPI(mRequestBodyAction, mRequestBodyrecord_id);
+                        } else {
+                            LogUtil.printToastMSG(mContext, "Something is wrong.");
+                        }
+                    } else {
+                        LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+                    }
+                }
+            });
+            ignoreButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mDialogEarlyMark.dismiss();
+                    callDeleteNotificationApi(data.getRecordId(),data.getRmId());
+                }
+            });
+            DeductButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mDialogEarlyMark.dismiss();
+                    showDeductLeaveDialog(data);
+                }
+            });
+            mDialogEarlyMark.show();
+        }catch (Exception e){}
+    }
+
     /* Call Api delete Notification */
     private void callDeleteNotificationApi(String notifyID,String rmId) {
         if (NetworkCheck.isInternetAvailable(NotificationsActivity.this)) {
@@ -820,6 +892,7 @@ public class NotificationsActivity extends BaseActivity {
                 dismissSmallProgressBar(mProgressBarHolder);
                 if (!apiResponse.data.isJsonNull()) {
                     LogUtil.printLog(tag, apiResponse.data.toString());
+                    try{
                     if (tag.equalsIgnoreCase(DynamicAPIPath.POST_NOTIFICATION)) {
                         NotificationResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), NotificationResponse.class);
                         if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
@@ -832,6 +905,9 @@ public class NotificationsActivity extends BaseActivity {
                             //notificationList.add(new NotificationResult("Static Test Demo Leave","Tap to perform Action...","INFO"));
                             setAdapterForNotificationList();
                         }
+                    }
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
                     try{
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_DEL_NOTIFICATION)) {
@@ -855,7 +931,11 @@ public class NotificationsActivity extends BaseActivity {
                                 }
                                 if(notify.getType().equals("Absent")){
                                     showAbsentMarkDialog(responseModel.getResult().getNotify().get(0));
-                                }}else{
+                                }
+                                if(notify.getType().equals("Early")){
+                                    showEarlyMarkDialog(responseModel.getResult().getNotify().get(0));
+                                }
+                                }else{
                                     LogUtil.printToastMSG(mContext,"No data available.");
                                 }
                             }
@@ -902,6 +982,21 @@ public class NotificationsActivity extends BaseActivity {
                             UpdateLeaveStatusResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), UpdateLeaveStatusResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 mDialogLateMark.dismiss();
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                                callDeleteNotificationApi(record_id,rm_id);
+                            }
+                            else {
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    try{
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_MARK_NOT_EARLY)) {
+                            UpdateLeaveStatusResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), UpdateLeaveStatusResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                mDialogEarlyMark.dismiss();
                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
                                 callDeleteNotificationApi(record_id,rm_id);
                             }
@@ -960,11 +1055,13 @@ public class NotificationsActivity extends BaseActivity {
                             PendingLeaveResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), PendingLeaveResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 showPaidLeaveDialog(responseModel.getResult().getLeave().get(0),mDataPaidLeave);
+                                //LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
                             }else{
                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
                             }
                         }
                     }catch (Exception e){
+                        LogUtil.printToastMSG(mContext,getString(R.string.msg_no_date_leave));
                     }
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_APPLY_LEAVE)) {

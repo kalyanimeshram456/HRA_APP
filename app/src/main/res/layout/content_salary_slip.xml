@@ -22,22 +22,32 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true"
-            android:paddingTop="@dimen/_16dp"
+            android:paddingTop="@dimen/_10dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <RelativeLayout
                 android:id="@+id/contentPrint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/_16dp"
-                android:layout_marginBottom="@dimen/_40dp"
+                android:layout_marginHorizontal="@dimen/_10dp"
                 android:focusableInTouchMode="true"
                 android:focusable="true"
+                android:paddingVertical="@dimen/_6dp"
+                android:layout_marginBottom="@dimen/_45dp"
+                android:background="@color/white"
+                android:orientation="vertical">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_6dp"
+                android:focusableInTouchMode="true"
+                android:focusable="true"
+                android:paddingBottom="@dimen/_16dp"
                 android:background="@drawable/layout_round_shape_grey_border_small"
                 android:orientation="vertical">
 
 
-                       <androidx.appcompat.widget.LinearLayoutCompat
+                <androidx.appcompat.widget.LinearLayoutCompat
                            android:id="@+id/layTop"
                            android:layout_width="match_parent"
                            android:layout_height="wrap_content"
@@ -183,17 +193,16 @@
 
                        </androidx.appcompat.widget.LinearLayoutCompat>
 
-                       <androidx.appcompat.widget.AppCompatImageView
-                           android:id="@+id/imgEdit"
-                           android:layout_width="@dimen/_24dp"
-                           android:layout_height="@dimen/_24dp"
-                           android:layout_below="@+id/layTop"
-                           android:layout_alignParentStart="true"
-                           android:layout_centerVertical="true"
-                           android:layout_gravity="center"
-                           android:layout_marginLeft="@dimen/_10dp"
-                           android:layout_marginTop="@dimen/_10dp"
-                           android:visibility="visible" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgEdit"
+                    android:layout_width="@dimen/_24dp"
+                    android:layout_height="@dimen/_24dp"
+                    android:layout_below="@+id/layTop"
+                    android:layout_alignParentStart="true"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:visibility="visible" />
 
                 <RelativeLayout
                     android:id="@+id/layRM"
@@ -519,11 +528,11 @@
                 <RelativeLayout
                     android:layout_below="@+id/layBorder"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left|center_vertical"
+                    android:layout_height="@dimen/_200dp"
+                    android:layout_gravity="left|top"
                     android:layout_marginHorizontal="@dimen/_10dp"
                     android:layout_marginTop="@dimen/_10dp"
-                    android:gravity="left|center_vertical">
+                    android:gravity="left|top">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvBirthName"
@@ -567,6 +576,8 @@
                     android:text="@string/scr_lbl_download"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_14sp" />
+
+            </RelativeLayout>
 
             </RelativeLayout>
 

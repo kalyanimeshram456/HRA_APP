@@ -58,6 +58,13 @@ public class SalaryNewAdapter extends RecyclerView.Adapter<SalaryNewAdapter.View
 
         if(mListData.size()>0) {
             SalaryAllList item = mListData.get(position);
+            if(mListData.get(position).getIsActive().equals("0")){
+                holder.tvActive.setText("Inactive");
+                holder.tvActive.setTextColor(mContext.getResources().getColor(R.color.deep_red));
+            }else{
+                holder.tvActive.setText("Active");
+                holder.tvActive.setTextColor(mContext.getResources().getColor(R.color.green));
+            }
             holder.tvAmount.setText(AppUtils.dateConvertYYYYToDD(item.getLastSalpaidDate()));
             holder.textViewTitle.setText(item.getEmpName());
             holder.textViewDescription.setText(item.getEmpPosition());
@@ -85,7 +92,7 @@ public class SalaryNewAdapter extends RecyclerView.Adapter<SalaryNewAdapter.View
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        AppCompatTextView textViewTitle;
+        AppCompatTextView textViewTitle,tvActive;
         AppCompatTextView textViewDescription;
         AppCompatTextView tvDate;
         AppCompatTextView tvAmount;
@@ -95,6 +102,7 @@ public class SalaryNewAdapter extends RecyclerView.Adapter<SalaryNewAdapter.View
 
         ViewHolder(View itemView) {
             super(itemView);
+            tvActive = itemView.findViewById(R.id.tvActive);
             textViewTitle = itemView.findViewById(R.id.tvEmpName);
             textViewDescription = itemView.findViewById(R.id.tvDesi);
             tvDate = itemView.findViewById(R.id.tvDate);

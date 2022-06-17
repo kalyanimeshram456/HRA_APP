@@ -892,6 +892,7 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
                             }
                         }
                     }catch (Exception e){
+                        LogUtil.printToastMSG(mContext,getString(R.string.msg_no_date_leave));
                     }
                     try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_APPLY_LEAVE)) {

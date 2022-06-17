@@ -1084,6 +1084,7 @@ public class PastLeaveFragment extends BaseFragment {
                             }
                         }
                     }catch (Exception e){
+                        LogUtil.printToastMSG(mContext,getString(R.string.msg_no_date_leave));
                     }
                 }
                 break;

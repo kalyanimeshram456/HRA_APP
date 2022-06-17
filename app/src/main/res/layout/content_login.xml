@@ -175,19 +175,21 @@
                                 android:textSize="@dimen/_14sp" />
 
                         </com.google.android.material.textfield.TextInputLayout>
+
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvResetPass"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="right"
-                            android:paddingTop="@dimen/_10dp"
-                            android:paddingBottom="@dimen/_6dp"
-                            android:paddingHorizontal="@dimen/_10dp"
                             android:layout_toRightOf="@+id/tvReg"
                             android:fontFamily="@font/gilroy_semibold"
-                            android:text="Forget password?"
+                            android:paddingHorizontal="@dimen/_10dp"
+                            android:paddingTop="@dimen/_10dp"
+                            android:paddingBottom="@dimen/_6dp"
+                            android:text="Forgot password?"
                             android:textColor="@color/color_main"
                             android:textSize="@dimen/_13sp" />
+
                         <androidx.appcompat.widget.AppCompatButton
                             android:id="@+id/loginButton"
                             android:layout_width="match_parent"
