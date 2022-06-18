@@ -193,6 +193,12 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
 
         imgChecked.setVisibility(View.GONE);
         showSmallProgressBar(mProgressBarHolder);
+        SharedPref.getInstance(mContext).write(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
+        SharedPref.getInstance(mContext).write(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
+        SharedPref.getInstance(mContext).write(SharedPrefKey.ENTERED_VISIT_LAT, "0.0");
+        SharedPref.getInstance(mContext).write(SharedPrefKey.ENTERED_VISIT_LNG, "0.0");
+        SharedPref.getInstance(mContext).write(SharedPrefKey.ATTENTION_LOC_TITLE, getString(R.string.scr_lbl_unavailable));
+        SharedPref.getInstance(mContext).write(SharedPrefKey.LOCATION_ENTERED_TXT, getString(R.string.scr_lbl_unavailable));
         if (!isGPSEnabled(mContext)) {
             requestPermission();
         } else {
@@ -226,13 +232,6 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
         tvCurrLocation.setText("Current Location : "+result); //Current Location : Fetching...
         currlat = locationLat;
         currlng = locationLng;*/
-        SharedPref.getInstance(mContext).write(SharedPrefKey.ATTENTION_LOC_LAT, "0.0");
-        SharedPref.getInstance(mContext).write(SharedPrefKey.ATTENTION_LOC_LONG, "0.0");
-        SharedPref.getInstance(mContext).write(SharedPrefKey.ENTERED_VISIT_LAT, "0.0");
-        SharedPref.getInstance(mContext).write(SharedPrefKey.ENTERED_VISIT_LNG, "0.0");
-        SharedPref.getInstance(mContext).write(SharedPrefKey.ATTENTION_LOC_TITLE, getString(R.string.scr_lbl_unavailable));
-        SharedPref.getInstance(mContext).write(SharedPrefKey.LOCATION_ENTERED_TXT, getString(R.string.scr_lbl_unavailable));
-
     }
 
     @Override

@@ -68,6 +68,7 @@
                         android:layout_height="@dimen/_18dp"
                         android:layout_gravity="left|center"
                         android:gravity="left"
+                        android:scaleType="centerInside"
                         android:layout_marginRight="@dimen/_14dp"
                         android:src="@drawable/ic_om_arrow_back"
                         android:visibility="visible" />
@@ -177,6 +178,7 @@
                         android:layout_toRightOf="@+id/imgReport"
                         android:clickable="true"
                         android:onClick="onClick"
+                        android:scaleType="centerInside"
                         android:layout_alignParentEnd="true"
                         android:src="@drawable/ic_om_notify"
                         android:visibility="visible" />

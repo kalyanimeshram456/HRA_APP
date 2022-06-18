@@ -162,6 +162,7 @@
                         android:clickable="true"
                         android:fontFamily="@font/gilroy_semibold"
                         android:onClick="onClick"
+                        android:scaleType="centerInside"
                         android:text="@string/scr_lbl_end_start"
                         android:textAllCaps="false"
                         android:textColor="@color/color_main"

@@ -80,7 +80,7 @@ public class AddLocationActivity extends FragmentActivity implements OnMapReadyC
     AppCompatImageView imgLocation;
     @BindView(R.id.idSearchView)
     SearchView searchView;
-    int zoom = 17;
+    int zoom = 19;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

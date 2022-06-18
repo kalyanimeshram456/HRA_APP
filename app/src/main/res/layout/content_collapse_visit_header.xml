@@ -160,6 +160,7 @@
                         android:layout_toRightOf="@+id/imgReport"
                         android:clickable="true"
                         android:onClick="onClick"
+                        android:scaleType="centerInside"
                         android:src="@drawable/ic_om_notify"
                         android:visibility="visible" />
 

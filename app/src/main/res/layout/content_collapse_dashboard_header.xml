@@ -157,6 +157,7 @@
                         android:layout_toRightOf="@+id/imgReport"
                         android:clickable="true"
                         android:onClick="onClick"
+                        android:scaleType="centerInside"
                         android:src="@drawable/ic_om_notify"
                         android:visibility="visible" />
 
@@ -165,7 +166,7 @@
                         android:id="@+id/tvNotifyCount"
                         android:layout_width="@dimen/_15dp"
                         android:layout_height="@dimen/_15dp"
-                        android:layout_marginLeft="@dimen/_12dp"
+                        android:layout_marginLeft="@dimen/_14dp"
                         android:layout_toRightOf="@+id/imgReport"
                         android:background="@drawable/layout_round_shape_corners_15_light_blue"
                         android:fontFamily="@font/gilroy_semibold"

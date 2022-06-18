@@ -33,6 +33,7 @@
                 android:layout_height="@dimen/_18dp"
                 android:layout_gravity="left|center"
                 android:gravity="left"
+                android:scaleType="centerInside"
                 android:layout_marginRight="@dimen/_14dp"
                 android:src="@drawable/ic_back"
                 android:visibility="visible" />

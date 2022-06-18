@@ -129,6 +129,12 @@ public class AddEmployeeActivity extends BaseActivity {
     //add employee fields
     @BindView(R.id.input_textName)
     TextInputLayout input_textName;
+    @BindView(R.id.layJoiningDate)
+    RelativeLayout layJoiningDate;
+    @BindView(R.id.layCalender)
+    RelativeLayout layCalender;
+    @BindView(R.id.layAddLocation)
+    LinearLayoutCompat layAddLocation;
     @BindView(R.id.AutoComName)
     AppCompatAutoCompleteTextView AutoComName;
     @BindView(R.id.input_textEmailId)
@@ -147,6 +153,8 @@ public class AddEmployeeActivity extends BaseActivity {
     TextInputLayout input_textGender;
     @BindView(R.id.AutoComGender)
     AppCompatAutoCompleteTextView AutoComGender;
+    @BindView(R.id.appcomptext)
+    AppCompatTextView appcomptext;
     @BindView(R.id.tvDateValue)
     AppCompatTextView tvDateValue;
     @BindView(R.id.tvJoiningDate)
@@ -230,7 +238,7 @@ public class AddEmployeeActivity extends BaseActivity {
         timingList.add(new WorkTimingList(true,getString(R.string.scr_lbl_fri),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
         timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sat),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
         timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun),getString(R.string.scr_lbl_yes),getString(R.string.scr_lbl_start_time_values),getString(R.string.scr_lbl_end_start_value)));
-        setAdapterForTimingList();
+        setAdapterForTimingList(true,true);
         getIntentData();
         tvMissing.setVisibility(View.GONE);
         setDropdownGender();
@@ -476,9 +484,9 @@ public class AddEmployeeActivity extends BaseActivity {
         }
     }
 
-    private void setAdapterForTimingList() {
+    private void setAdapterForTimingList(boolean first,boolean sec) {
             if (timingList!=null && timingList.size() > 0) {
-            employeeTimeAdapter = new EmployeeTimeAdapter(true,true,mContext, timingList, new EmployeeTimeAdapter.ListItemSelectListener() {
+            employeeTimeAdapter = new EmployeeTimeAdapter(first,sec,mContext, timingList, new EmployeeTimeAdapter.ListItemSelectListener() {
                 @Override
                 public void onItemClick(WorkTimingList mDataTicket, List<WorkTimingList> workTimingListList, boolean status) {
                     timingList = workTimingListList;
@@ -1238,7 +1246,7 @@ public class AddEmployeeActivity extends BaseActivity {
                                         employeeList.getSatStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getSatStartTime(), employeeList.getSatEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getSatEndTime()));
                                 timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun), employeeList.getSunWorking()==null?"No":employeeList.getSunWorking(),
                                         employeeList.getSunStartTime()==null?getString(R.string.scr_lbl_start_time):employeeList.getSunStartTime(), employeeList.getSunEndTime()==null?getString(R.string.scr_lbl_end_time):employeeList.getSunEndTime()));
-                                setAdapterForTimingList();
+                                setAdapterForTimingList(true,true);
                             } else{
                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
                             }
@@ -1265,6 +1273,18 @@ public class AddEmployeeActivity extends BaseActivity {
                                 AutoComEmailId.setText(employeeResList.getEmpEmail()+"");
                                 AutoComMobile.setText(employeeResList.getEmpMob()+"");
                                 AutoComDesi.setText(employeeResList.getEmpPosition()+"");
+                                AutoComName.requestFocus();
+                                AutoComName.setFocusable(true);
+                                AutoComName.setSelection(AutoComName.getText().length());
+                                input_textEmailId.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                                int color=Color.TRANSPARENT;
+                                input_textEmailId.setEndIconTintList(ColorStateList.valueOf(color));
+                                input_textEmailId.setErrorEnabled(false);
+
+                                input_textMobile.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+                                int color1=Color.TRANSPARENT;
+                                input_textMobile.setEndIconTintList(ColorStateList.valueOf(color1));
+                                input_textMobile.setErrorEnabled(false);
                                 AutoComGender.setText(employeeResList.getEmpGender()+"");
                                 setDropdownGender();
                                 if(employeeResList.getDisableLocation()!=null && employeeResList.getDisableLocation().equals("1")) {
@@ -1300,18 +1320,19 @@ public class AddEmployeeActivity extends BaseActivity {
                                 timingList.add(new WorkTimingList(false,getString(R.string.scr_lbl_sun), employeeResList.getSunWorking()==null?"No":employeeResList.getSunWorking(),
                                         employeeResList.getSunStartTime()==null?getString(R.string.scr_lbl_start_time):employeeResList.getSunStartTime(), employeeResList.getSunEndTime()==null?getString(R.string.scr_lbl_end_time):employeeResList.getSunEndTime()));
 
+                                setAdapterForTimingList(true,true);
                                 if(employeeResList.getIsActive().equals("0")){
                                     btnDeactivate.setVisibility(View.GONE);
                                     btnCancel.setVisibility(View.GONE);
                                     //btnLeavingDate.setVisibility(View.GONE);
                                     btnSubmit.setVisibility(View.GONE);
+                                    setAllEmployeeOFf();
                                 }else{
                                     btnDeactivate.setVisibility(View.VISIBLE);
                                     btnCancel.setVisibility(View.VISIBLE);
                                     btnLeavingDate.setVisibility(View.VISIBLE);
                                     btnSubmit.setVisibility(View.VISIBLE);
                                 }
-                                setAdapterForTimingList();
                             }
                             else{
                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
@@ -1329,6 +1350,37 @@ public class AddEmployeeActivity extends BaseActivity {
                 LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
                 break;
         }
+    }
+
+    private void setAllEmployeeOFf(){
+        boolean status = false;
+        AutoComName.setEnabled(status);
+        AutoComEmailId.setEnabled(status);
+        input_textEmailId.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+        int color=Color.TRANSPARENT;
+        input_textEmailId.setEndIconTintList(ColorStateList.valueOf(color));
+        input_textEmailId.setErrorEnabled(false);
+        AutoComMobile.setEnabled(status);
+        input_textMobile.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_close_reject));
+        int color1=Color.TRANSPARENT;
+        input_textMobile.setEndIconTintList(ColorStateList.valueOf(color1));
+        input_textMobile.setErrorEnabled(false);
+        AutoComDesi.setEnabled(status);
+        AutoComGender.setEnabled(status);
+        switchDisableLocation.setEnabled(status);
+        tvDateValue.setEnabled(status);
+        AutoComAddress.setEnabled(status);
+        AutoComPincode.setEnabled(status);
+        AutoComCurrSalary.setEnabled(status);
+        layJoiningDate.setEnabled(status);
+        layCalender.setEnabled(status);
+        layAddLocation.setEnabled(status);
+        AutoComCasualLeave.setEnabled(status);
+        AutoComSickLeave.setEnabled(status);
+        AutoComOtherLeave.setEnabled(status);
+        AutoComOfficeLocation.setEnabled(status);
+
+        setAdapterForTimingList(false,false);
     }
 
 

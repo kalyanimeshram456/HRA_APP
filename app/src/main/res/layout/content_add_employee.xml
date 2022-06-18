@@ -481,7 +481,7 @@
                             android:id="@+id/input_textOfficeLocation"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/_50dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginHorizontal="@dimen/_10dp"
                             android:layout_marginTop="@dimen/_6dp"
                             android:layout_weight="1"
@@ -498,7 +498,7 @@
                             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                                 android:id="@+id/AutoComOfficeLocation"
                                 android:layout_width="match_parent"
-                                android:layout_height="@dimen/_50dp"
+                                android:layout_height="wrap_content"
                                 android:background="@drawable/toggle_add_reminder_edt"
                                 android:clickable="true"
                                 android:focusable="true"
@@ -518,9 +518,9 @@
                             android:id="@+id/layAddLocation"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_50dp"
-                            android:layout_marginTop="@dimen/_6dp"
                             android:layout_marginRight="@dimen/_10dp"
                             android:layout_weight="5"
+                            android:layout_gravity="center_vertical"
                             android:background="@drawable/toggle_add_reminder_edt"
                             android:gravity="center">
 

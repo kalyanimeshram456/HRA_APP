@@ -248,17 +248,21 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
 
                 @Override
                 public void run() {*/
-        Collections.sort(employeeListArrayList, new Comparator<EmployeeList>() {
-            @Override
-            public int compare(EmployeeList o1, EmployeeList o2) {
-                return Long.valueOf(o2.getIsActive()==null||o2.getIsActive()
-                        .equals("")?"0":o2.getIsActive()).compareTo(Long.valueOf(o1.getIsActive()==null ||
-                        o1.getIsActive().equals("")?"0":o1.getIsActive()));
-            }
-            @Override
-            public boolean equals(Object obj) {
-                return false;
-            }});
+        try {
+            Collections.sort(employeeListArrayList, new Comparator<EmployeeList>() {
+                @Override
+                public int compare(EmployeeList o1, EmployeeList o2) {
+                    return Long.valueOf(o2.getIsActive() == null || o2.getIsActive()
+                            .equals("") ? "0" : o2.getIsActive()).compareTo(Long.valueOf(o1.getIsActive() == null ||
+                            o1.getIsActive().equals("") ? "0" : o1.getIsActive()));
+                }
+
+                @Override
+                public boolean equals(Object obj) {
+                    return false;
+                }
+            });
+        }catch (Exception e){}
         for (int i = 0; i < employeeListArrayList.size(); i++) {
             items.add(employeeListArrayList.get(i));
         }
