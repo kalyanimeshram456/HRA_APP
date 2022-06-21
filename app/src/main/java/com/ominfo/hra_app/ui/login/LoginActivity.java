@@ -115,6 +115,7 @@ public class LoginActivity extends BaseActivity {
     Dialog mDialogResetPass;
     AppCompatAutoCompleteTextView AutoComUsername,AutoComEmailId;
     TextInputLayout input_textUsername,input_textEmailId;
+    String imei = "000000000000000";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -251,7 +252,8 @@ public class LoginActivity extends BaseActivity {
         /*Window window = getWindow();
         View view = window.getDecorView();
         DarkStatusBar.setLightStatusBar(view,this);*/
-        //LogUtil.printLog("imei_tetsing ",AppUtils.getIMEINumber(mContext));
+        try{imei = AppUtils.getIMEINumber(mContext);
+        LogUtil.printLog("imei_tetsing ",imei);}catch (Exception e){}
     }
 
     // set error if input field is blank
@@ -290,7 +292,9 @@ public class LoginActivity extends BaseActivity {
             RequestBody mRequestBodyTypeImage = RequestBody.create(MediaType.parse("text/plain"), editTextEmail.getEditableText().toString().trim());
             RequestBody mRequestBodyTypeImage1 = RequestBody.create(MediaType.parse("text/plain"), editTextPassword.getEditableText().toString().trim());
             RequestBody mRequestBodyTypeToken = RequestBody.create(MediaType.parse("text/plain"), recentToken);
-            mLoginViewModel.hitLoginApi(mRequestBodyType,mRequestBodyTypeImage,mRequestBodyTypeImage1,mRequestBodyTypeToken);
+            RequestBody mRequestBodyTypeimei_no = RequestBody.create(MediaType.parse("text/plain"), imei);
+
+            mLoginViewModel.hitLoginApi(mRequestBodyType,mRequestBodyTypeImage,mRequestBodyTypeImage1,mRequestBodyTypeToken,mRequestBodyTypeimei_no);
         } else {
             LogUtil.printToastMSG(LoginActivity.this, getString(R.string.err_msg_connection_was_refused));
         }
@@ -351,7 +355,8 @@ public class LoginActivity extends BaseActivity {
 
     /*check validations on field*/
     private boolean isOTPDetailsValid() {
-        input_textUsername.setErrorEnabled(false);input_textEmailId.setErrorEnabled(false);
+        input_textUsername.setErrorEnabled(false);
+        input_textEmailId.setErrorEnabled(false);
         if (TextUtils.isEmpty(AutoComUsername.getText().toString().trim())) {
             setError(0, input_textUsername, "Please enter username");
             return false;
@@ -362,10 +367,41 @@ public class LoginActivity extends BaseActivity {
         return true;
     }
 
+    public void showDiscardDialog() {
+        Dialog mDialogDiscardOTP = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialogDiscardOTP.setContentView(R.layout.dialog_deactive_account);
+        mDialogDiscardOTP.setCanceledOnTouchOutside(true);
+        AppCompatImageView mClose = mDialogDiscardOTP.findViewById(R.id.imgCancel);
+        AppCompatButton okayButton = mDialogDiscardOTP.findViewById(R.id.uploadButton);
+        AppCompatButton cancelButton = mDialogDiscardOTP.findViewById(R.id.cancelButton);
+        AppCompatTextView tvTitle = mDialogDiscardOTP.findViewById(R.id.tvStart);
+        tvTitle.setText("Are you sure you want to discard the reset password process?");
+        okayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogResetPass.dismiss();
+                mDialogDiscardOTP.dismiss();
+            }
+        });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogDiscardOTP.dismiss();
+            }
+        });
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogDiscardOTP.dismiss();
+            }
+        });
+        mDialogDiscardOTP.show();
+    }
+
     public void showResetPassDialog() {
         mDialogResetPass = new Dialog(mContext, R.style.ThemeDialogCustom);
         mDialogResetPass.setContentView(R.layout.dialog_reset_password);
-        mDialogResetPass.setCanceledOnTouchOutside(true);
+        //mDialogResetPass.setCanceledOnTouchOutside(true);
         RelativeLayout mClose = mDialogResetPass.findViewById(R.id.layCancelNEw);
         edtOpt = mDialogResetPass.findViewById(R.id.edtOpt);
         tvResendOtp = mDialogResetPass.findViewById(R.id.tvResendOtp);
@@ -383,7 +419,8 @@ public class LoginActivity extends BaseActivity {
         mClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDialogResetPass.dismiss();
+                //mDialogResetPass.dismiss();
+                showDiscardDialog();
             }
         });
         tvResendOtp.setOnClickListener(new View.OnClickListener() {
@@ -484,6 +521,11 @@ public class LoginActivity extends BaseActivity {
                     int color=Color.RED;
                     input_textUsername.setEndIconTintList(ColorStateList.valueOf(color));
                     setError(0, input_textUsername, "Please enter username.");
+                }if(s.length()>0){
+                    //input_textEmailId.setEndIconDrawable(getResources().getDrawable(R.drawable.ic_right_accept));
+                    int color=Color.TRANSPARENT;
+                    input_textUsername.setEndIconTintList(ColorStateList.valueOf(color));
+                    input_textUsername.setErrorEnabled(false);
                 }
             }
         });

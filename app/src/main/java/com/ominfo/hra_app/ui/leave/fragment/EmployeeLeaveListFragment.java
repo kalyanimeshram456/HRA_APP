@@ -57,6 +57,7 @@ import com.ominfo.hra_app.ui.leave.model.ActiveEmployeeListEmpDatum;
 import com.ominfo.hra_app.ui.leave.model.ActiveEmployeeListViewModel;
 import com.ominfo.hra_app.ui.leave.model.EmployeeLeaveMonthsList;
 import com.ominfo.hra_app.ui.leave.model.LeaveAcceptRejectResponse;
+import com.ominfo.hra_app.ui.leave.model.LeavesPendingLeavesViewModel;
 import com.ominfo.hra_app.ui.leave.model.PastLeaveListViewModel;
 import com.ominfo.hra_app.ui.leave.model.PendingLeave;
 import com.ominfo.hra_app.ui.leave.model.PendingLeaveResponse;
@@ -119,6 +120,7 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
     private PastLeaveListViewModel pastLeaveListViewModel;
     private ActiveEmployeeListViewModel activeEmployeeListViewModel;
     private PendingLeavesViewModel pendingLeavesViewModel;
+    private LeavesPendingLeavesViewModel LeavesDetailsViewModel;
     List<EnquiryPagermodel> enquiryPageList = new ArrayList<>();
     @BindView(R.id.swipeRefresh)
     SwipeRefreshLayout swipeRefresh;
@@ -239,6 +241,9 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
         pendingLeavesViewModel = ViewModelProviders.of(this, mViewModelFactory).get(PendingLeavesViewModel.class);
         pendingLeavesViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_PENDING_LEAVES));
 
+        LeavesDetailsViewModel = ViewModelProviders.of(this, mViewModelFactory).get(LeavesPendingLeavesViewModel.class);
+        LeavesDetailsViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, "Latest_Leave"));
+
         applyLeaveViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ApplyLeaveViewModel.class);
         applyLeaveViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_APPLY_LEAVE));
     }
@@ -280,18 +285,47 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
     }
 
     //perform click actions
-    @OnClick({R.id.layPast,R.id.imgAddLeave})
+    @OnClick({R.id.layPast,R.id.imgAddLeave,R.id.layLeaveInfo})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
             case R.id.imgAddLeave:
                callPendingLeaveListApi();
                 break;
+            case R.id.layLeaveInfo:
+                callNewPendingLeaveListApi();
+                break;
             case R.id.layPast:
                 PastLeaveFragment pastLeaveFragment = new PastLeaveFragment();
                 moveFromFragment(pastLeaveFragment,mContext);
                 break;
         }
+    }
+    public void showLeaveDetailsDialog(PendingLeave pendingLeave) {
+        Dialog mDialogLeaveDetails = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialogLeaveDetails.setContentView(R.layout.dialog_leave_count_details);
+        mDialogLeaveDetails.setCanceledOnTouchOutside(true);
+        RelativeLayout mClose = mDialogLeaveDetails.findViewById(R.id.imgCancel);
+        AppCompatButton okayButton = mDialogLeaveDetails.findViewById(R.id.okayButton);
+        AppCompatTextView tvCasual = mDialogLeaveDetails.findViewById(R.id.tvCasual);
+        AppCompatTextView tvSick = mDialogLeaveDetails.findViewById(R.id.tvSick);
+        AppCompatTextView tvOther = mDialogLeaveDetails.findViewById(R.id.tvOther);
+        tvCasual.setText(""+pendingLeave.getLeftCl());
+        tvSick.setText(""+pendingLeave.getLeftSl());
+        tvOther.setText(""+pendingLeave.getLeftOl());
+        okayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogLeaveDetails.dismiss();
+            }
+        });
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogLeaveDetails.dismiss();
+            }
+        });
+        mDialogLeaveDetails.show();
     }
 
     //show leave form popup
@@ -710,7 +744,23 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
         }
     }
 
+    private void callNewPendingLeaveListApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_pending_leaves);
+                RequestBody mRequestemp_id = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
+                RequestBody mRequestcom_id = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
 
+                LeavesDetailsViewModel.hitPendingLeavesAPI(mRequestAction,mRequestemp_id,mRequestcom_id);
+            }
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
     //set value to month dropdown
     private void setDropdownMonth() {
         List<EmployeeLeaveMonthsList> monthsLists = new ArrayList<>();
@@ -887,6 +937,18 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
                             PendingLeaveResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), PendingLeaveResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                               showLeaveFormDialog(responseModel.getResult().getLeave().get(0));
+                            }else{
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                            }
+                        }
+                    }catch (Exception e){
+                        LogUtil.printToastMSG(mContext,getString(R.string.msg_no_date_leave));
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase("Latest_Leave")) {
+                            PendingLeaveResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), PendingLeaveResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                showLeaveDetailsDialog(responseModel.getResult().getLeave().get(0));
                             }else{
                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
                             }

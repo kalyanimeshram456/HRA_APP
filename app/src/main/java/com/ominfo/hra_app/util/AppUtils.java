@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -21,6 +22,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.DisplayMetrics;
@@ -117,7 +120,36 @@ public class AppUtils {
     public static String getDeviceModel() {
         return Build.MODEL;
     }
+    public static String getIMEINumber(Context context) {
 
+            String deviceId;
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+                } else {
+                    final TelephonyManager mTelephony = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (context.checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                            return "";
+                        }
+                    }
+                    assert mTelephony != null;
+                    if (mTelephony.getDeviceId() != null) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            deviceId = mTelephony.getImei();
+                        } else {
+                            deviceId = mTelephony.getDeviceId();
+                        }
+                    } else {
+                        deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+                    }
+                }
+                //Log.d("deviceId", deviceId);
+                return deviceId;
+            }catch (Exception e){
+                return "";
+            }
+        }
     public static String changeToSlashToDash(String Date1){
         try {
             String dt = Date1;  // Start date

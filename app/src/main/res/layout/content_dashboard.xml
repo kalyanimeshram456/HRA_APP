@@ -551,14 +551,14 @@
 
             <com.ominfo.hra_app.ui.attendance.ripple_effect.RippleBackground
                 android:id="@+id/rippleEffect"
-                android:layout_width="@dimen/_50dp"
-                android:layout_height="@dimen/_50dp"
+                android:layout_width="@dimen/_80dp"
+                android:layout_height="@dimen/_80dp"
                 android:layout_alignParentRight="true"
                 android:layout_gravity="right|bottom"
                 android:background="@drawable/layout_ripple_round"
                 android:clickable="true"
                 android:layout_marginRight="@dimen/_25dp"
-                android:layout_marginBottom="@dimen/_60dp"
+                android:layout_marginBottom="@dimen/_40dp"
                 android:focusable="true"
                 android:foreground="?selectableItemBackground"
                 android:visibility="visible"
@@ -567,7 +567,7 @@
                 app:rb_radius="@dimen/_6dp"
                 app:rb_rippleAmount="6"
                 app:rb_scale="6"
-                app:rb_strokeWidth="@dimen/_10dp"
+                app:rb_strokeWidth="@dimen/_4dp"
                 app:rb_type="fillRipple">
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton

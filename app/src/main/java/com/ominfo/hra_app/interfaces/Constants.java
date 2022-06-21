@@ -19,6 +19,7 @@ public interface Constants {
     String TABLET = "Tablet";
     String PHONE = "Phone";
     //For decrypt Token
+    int LOADER_TIMEOUT = 30000;
     String SECRET_KEY = "TheBestSecretKey";
     String INTERNAL_FOLDER_NAME = "send_bits";
     int DEFAULT_IMAGE_SIZE = 240;

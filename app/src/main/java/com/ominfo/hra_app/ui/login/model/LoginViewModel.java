@@ -27,10 +27,10 @@ public class LoginViewModel extends ViewModel {
 
 
     public void hitLoginApi(RequestBody mRequestBodyType,RequestBody mRequestBodyType1
-            ,RequestBody mRequestBodyType2,RequestBody mRequestBodyToken) {
+            ,RequestBody mRequestBodyType2,RequestBody mRequestBodyToken,RequestBody imei_no) {
 
         disposables.add(service.executeLoginAPI(mRequestBodyType,mRequestBodyType1,mRequestBodyType2
-        ,mRequestBodyToken)
+        ,mRequestBodyToken,imei_no)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe((d) -> responseLiveData.setValue(ApiResponse.loading()))

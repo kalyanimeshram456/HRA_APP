@@ -16,6 +16,26 @@ public class LateMarkResult {
     private String mStatus;
     @SerializedName("this_month_count")
     private String mThisMonthCount;
+    @SerializedName("current_leave_deduction_count")
+    private String current_leave_deduction_count;
+    @SerializedName("prev_leave_deduction_count")
+    private String prev_leave_deduction_count;
+
+    public String getCurrent_leave_deduction_count() {
+        return current_leave_deduction_count;
+    }
+
+    public void setCurrent_leave_deduction_count(String current_leave_deduction_count) {
+        this.current_leave_deduction_count = current_leave_deduction_count;
+    }
+
+    public String getPrev_leave_deduction_count() {
+        return prev_leave_deduction_count;
+    }
+
+    public void setPrev_leave_deduction_count(String prev_leave_deduction_count) {
+        this.prev_leave_deduction_count = prev_leave_deduction_count;
+    }
 
     public String getMessage() {
         return mMessage;

@@ -86,8 +86,10 @@ public class Service {
         return networkAPIServices.subCharges(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_SUB_CHARGES),
                 action,start,end);
     }
-    public Observable<JsonElement> executeLoginAPI(RequestBody mRequestBodyType,RequestBody mRequestBodyType1,RequestBody mRequestBodyType2,RequestBody mRequestBodyToken) {
-        return networkAPIServices.login(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_LOGIN),mRequestBodyType,mRequestBodyType1,mRequestBodyType2,mRequestBodyToken);
+    public Observable<JsonElement> executeLoginAPI(RequestBody mRequestBodyType,RequestBody mRequestBodyType1,RequestBody mRequestBodyType2,
+                                                   RequestBody mRequestBodyToken,RequestBody imei_no) {
+        return networkAPIServices.login(DynamicAPIPath.makeDynamicEndpointAPIGateWay("", DynamicAPIPath.POST_LOGIN),mRequestBodyType,mRequestBodyType1,
+                mRequestBodyType2,mRequestBodyToken,imei_no);
     }
 
     public Observable<JsonElement> executeLogoutAPI(RequestBody action,RequestBody id) {
@@ -461,6 +463,12 @@ public class Service {
     public Observable<JsonElement> executeDeactivateEmployeeAPI(RequestBody action,RequestBody updateby,RequestBody empId) {
         return networkAPIServices.deactivateEmployee(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_DEACT_EMPLOYEE),
+                action,updateby,empId
+        );
+    }
+    public Observable<JsonElement> executeChangeDeviceAPI(RequestBody action,RequestBody updateby,RequestBody empId) {
+        return networkAPIServices.changeDevice(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_IMEI_RESET),
                 action,updateby,empId
         );
     }

@@ -77,6 +77,7 @@
     <color name="black_heading">#122448</color>
     <color name="light_grey">#4D707070</color>
     <color name="light_grey_100">#FF707070</color>
+    <color name="light_grey_80">#878585</color>
     <color name="black_sub_heading">#060606</color>
     <color name="bg_screen">#eef2fb</color>
     <color name="bg_calender_screen">#F5F6F8</color>

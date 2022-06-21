@@ -13,6 +13,7 @@ import com.ominfo.hra_app.ui.dashboard.model.CalenderHolidaysListViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.EditHolidayViewModel;
 import com.ominfo.hra_app.ui.dashboard.model.GetBirthDayListViewModel;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeViewModel;
+import com.ominfo.hra_app.ui.employees.model.ChangeDeviceViewModel;
 import com.ominfo.hra_app.ui.employees.model.ChangePasswordViewModel;
 import com.ominfo.hra_app.ui.employees.model.DeactivateEmployeeViewModel;
 import com.ominfo.hra_app.ui.employees.model.EditEmployeeViewModel;
@@ -20,6 +21,7 @@ import com.ominfo.hra_app.ui.employees.model.SingleEmployeeListViewModel;
 import com.ominfo.hra_app.ui.leave.model.AcceptRejectLeaveListViewModel;
 import com.ominfo.hra_app.ui.leave.model.ActiveEmployeeListViewModel;
 import com.ominfo.hra_app.ui.leave.model.LeaveCountViewModel;
+import com.ominfo.hra_app.ui.leave.model.LeavesPendingLeavesViewModel;
 import com.ominfo.hra_app.ui.leave.model.LeavingDateViewModel;
 import com.ominfo.hra_app.ui.leave.model.PastLeaveListViewModel;
 import com.ominfo.hra_app.ui.leave.model.PendingLeavesViewModel;
@@ -43,6 +45,7 @@ import com.ominfo.hra_app.ui.my_account.model.RaiseTicketViewModel;
 import com.ominfo.hra_app.ui.my_account.model.UpdateTicketViewModel;
 import com.ominfo.hra_app.ui.notifications.model.AbsentMarkCountViewModel;
 import com.ominfo.hra_app.ui.notifications.model.DeleteNotificationViewModel;
+import com.ominfo.hra_app.ui.notifications.model.EarlyMarkCountViewModel;
 import com.ominfo.hra_app.ui.notifications.model.GetSingleRecordViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LateMarkCountViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LeaveStatusViewModel;
@@ -277,6 +280,12 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
              return (T) new ResetPasswordOtpViewModel(service);
          }else  if (modelClass.isAssignableFrom(MarkNotEarlyViewModel.class)) {
              return (T) new MarkNotEarlyViewModel(service);
+         }else  if (modelClass.isAssignableFrom(ChangeDeviceViewModel.class)) {
+             return (T) new ChangeDeviceViewModel(service);
+         }else  if (modelClass.isAssignableFrom(EarlyMarkCountViewModel.class)) {
+             return (T) new EarlyMarkCountViewModel(service);
+         }else  if (modelClass.isAssignableFrom(LeavesPendingLeavesViewModel.class)) {
+             return (T) new LeavesPendingLeavesViewModel(service);
          }
 
         throw new IllegalArgumentException("Unknown class name");

@@ -343,7 +343,8 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                 RequestBody mRequestBodyStartLong = RequestBody.create(MediaType.parse("text/plain"), clocationLng);
 
                 if(isUpdate==0) {
-                    String timeApi = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENDANCE_START_TIME, "00:00:00");
+                    String timeApi = SharedPref.getInstance(getApplicationContext()).read(SharedPrefKey.ATTENDANCE_START_TIME, "10:00:00");
+                    LogUtil.printLog("test_date_att",timeApi);
                     String currDate = AppUtils.getCurrentDateTime_() + " " + AppUtils.getCurrentTimeIn24hr();
                     String savedDate = AppUtils.getCurrentDateTime_() + " " + timeApi;
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -356,7 +357,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                         calendar30.add(Calendar.MINUTE, 10);
                         Date date1 = sdf.parse(sdf30.format(calendar30.getTime()));//saved + 15
                         Date date2 = sdf.parse(currDate); //curr
-                        if (date2.compareTo(date1) > 0) {
+                        if (date2.compareTo(date1)== 1) {
                             isTime = "1";
                         }
                     }catch (Exception e){
@@ -931,7 +932,7 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
                                 final Animation animation = AnimationUtils.loadAnimation(this, R.anim.bounce_out);
                                 imgChecked.startAnimation(animation);
                                 //set toggle
-                                SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_IN_BUTTON, false);
+                                SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_IN_BUTTON, true);
                                 SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_OUT_ENABLED, false);
                                 SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_OUT_TIME, AppUtils.getCurrentDateTime_() + " " + AppUtils.getCurrentTimeIn24hr());
                                 stopService(new Intent(mContext, BackgroundAttentionService.class));

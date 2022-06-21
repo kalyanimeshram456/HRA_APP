@@ -111,7 +111,8 @@ public interface NetworkAPIServices {
                                   @Part("action") RequestBody uploadType,
                                   @Part("username") RequestBody uploadTypeImage,
                                   @Part("password") RequestBody uploadTypeImage1,
-                                  @Part("mobiletoken") RequestBody mobiletoken);
+                                  @Part("mobiletoken") RequestBody mobiletoken,
+                                  @Part("imei_no") RequestBody imei_no);
 
     @Multipart
     @POST()
@@ -629,6 +630,15 @@ public interface NetworkAPIServices {
                                                @Part("updated_by") RequestBody updated_by,
                                                @Part("emp_id") RequestBody emp_id
     );
+
+    @Multipart
+    @POST()
+    Observable<JsonElement> changeDevice(@Url String url,
+                                               @Part("action") RequestBody uploadType,
+                                               @Part("updated_by") RequestBody updated_by,
+                                               @Part("emp_id") RequestBody emp_id
+    );
+
 
     @Multipart
     @POST()

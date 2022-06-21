@@ -1014,7 +1014,7 @@ public class BaseActivity extends AppCompatActivity implements ServiceCallBackIn
                                     SharedPref.getInstance(this).write(SharedPrefKey.IS_NOTIFY_COUNT, String.valueOf(responseModel.getResult().getNotifdata().size()));
                                     imgNotifyCount.setText(String.valueOf(responseModel.getResult().getNotifdata().size()));
                                     if(responseModel.getResult().getIsActive().equals("0")){
-                                        showAccountDeactivatedDialog("Your Account has been Deactivated! Please contact Admin.",true,this);
+                                        showAccountDeactivatedDialog("Your Account has been Logged out! Please contact your Admin for details.",true,this);
                                     }
                                 } catch (Exception e) {
                                     //LogUtil.printToastMSG(this,e.getMessage());

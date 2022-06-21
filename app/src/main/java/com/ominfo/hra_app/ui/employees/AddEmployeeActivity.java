@@ -54,6 +54,7 @@ import com.ominfo.hra_app.ui.employees.adapter.EmployeeTimeAdapter;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeRequest;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeResponse;
 import com.ominfo.hra_app.ui.employees.model.AddEmployeeViewModel;
+import com.ominfo.hra_app.ui.employees.model.ChangeDeviceViewModel;
 import com.ominfo.hra_app.ui.employees.model.ChangePasswordResponse;
 import com.ominfo.hra_app.ui.employees.model.ChangePasswordViewModel;
 import com.ominfo.hra_app.ui.employees.model.DeactivateEmployeeResponse;
@@ -108,6 +109,7 @@ public class AddEmployeeActivity extends BaseActivity {
     ViewModelFactory mViewModelFactory;
     private AddEmployeeViewModel addEmployeeViewModel;
     private DeactivateEmployeeViewModel deactivateEmployeeViewModel;
+    private ChangeDeviceViewModel changeDeviceViewModel;
     private EditEmployeeViewModel editEmployeeViewModel;
     private GetCompanyViewModel getCompanyViewModel;
     private SingleEmployeeListViewModel employeeListViewModel;
@@ -203,11 +205,13 @@ public class AddEmployeeActivity extends BaseActivity {
     AppCompatButton btnLeavingDate;
     @BindView(R.id.btnCancel)
     AppCompatButton btnCancel;
+    @BindView(R.id.btnImei)
+    AppCompatButton btnImei;
     EmployeeList employeeList;
     EmployeeTimeAdapter employeeTimeAdapter;
     List<WorkTimingList> timingList = new ArrayList<>();
     String leaveDate = "",leaveRemark = "";
-    Dialog mDialogLeaving;
+    Dialog mDialogLeaving, mDialogResetDevice ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -350,6 +354,7 @@ public class AddEmployeeActivity extends BaseActivity {
                 btnDeactivate.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
                 btnLeavingDate.setVisibility(View.GONE);
+                btnImei.setVisibility(View.GONE);
                 callCompanyListApi();
             }
             else if(from.equals(Constants.edit)){
@@ -357,6 +362,7 @@ public class AddEmployeeActivity extends BaseActivity {
                 btnDeactivate.setVisibility(View.VISIBLE);
                 btnCancel.setVisibility(View.VISIBLE);
                 btnLeavingDate.setVisibility(View.VISIBLE);
+                btnImei.setVisibility(View.VISIBLE);
                 Gson gson = new Gson();
                 employeeList = gson.fromJson(getIntent().getStringExtra(Constants.EMPLOYEE_OBJ), EmployeeList.class);
                 empId = employeeList.getEmpId();
@@ -374,6 +380,9 @@ public class AddEmployeeActivity extends BaseActivity {
 
         deactivateEmployeeViewModel = ViewModelProviders.of(this, mViewModelFactory).get(DeactivateEmployeeViewModel.class);
         deactivateEmployeeViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_deactivate_employee));
+
+        changeDeviceViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ChangeDeviceViewModel.class);
+        changeDeviceViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_imei_reset));
 
         editEmployeeViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EditEmployeeViewModel.class);
         editEmployeeViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.action_edit_employee));
@@ -736,6 +745,25 @@ public class AddEmployeeActivity extends BaseActivity {
             LogUtil.printToastMSG(this, getString(R.string.err_msg_connection_was_refused));
         }
     }
+    /* Call Api For reset device employee */
+    private void callResetDeviceApi() {
+        if (NetworkCheck.isInternetAvailable(this)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if(loginTable!=null) {
+                RequestBody mRequestBodyTypeAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_imei_reset);
+                RequestBody mRequestBodyUpdatedBy = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());//loginTable.getCompanyId());
+                RequestBody mRequestBodyEmpId = RequestBody.create(MediaType.parse("text/plain"), empId);//loginTable.getCompanyId());
+
+                changeDeviceViewModel.executeChangeDeviceAPI(mRequestBodyTypeAction,
+                        mRequestBodyUpdatedBy,mRequestBodyEmpId);
+            }
+            else {
+                LogUtil.printToastMSG(this, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(this, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
 
     private void setToolbar() {
         //set toolbar title
@@ -759,7 +787,7 @@ public class AddEmployeeActivity extends BaseActivity {
     //perform click actions
     @OnClick({R.id.btnSubmit,R.id.btnCancel,R.id.btnDeactivate,R.id.layCalender,
             R.id.imgToDate,R.id.layJoiningDate, R.id.imgJoiningDate,R.id.layAddLocation,
-    R.id.btnLeavingDate})
+    R.id.btnLeavingDate,R.id.btnImei})
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
@@ -786,6 +814,9 @@ public class AddEmployeeActivity extends BaseActivity {
                 break;
             case R.id.btnCancel:
                 showResetPassworfDialog();
+                break;
+            case R.id.btnImei:
+                showResetDevicefDialog();
                 break;
             case R.id.btnDeactivate:
                 showDeactivateAccountDialog(this);
@@ -974,6 +1005,36 @@ public class AddEmployeeActivity extends BaseActivity {
             }
         });
         mDialogReset.show();
+    }
+
+    public void showResetDevicefDialog() {
+        mDialogResetDevice = new Dialog(mContext, R.style.ThemeDialogCustom);
+        mDialogResetDevice.setContentView(R.layout.dialog_deactive_account);
+        mDialogResetDevice.setCanceledOnTouchOutside(true);
+        AppCompatImageView mClose = mDialogResetDevice.findViewById(R.id.imgCancel);
+        AppCompatButton okayButton = mDialogResetDevice.findViewById(R.id.uploadButton);
+        AppCompatButton cancelButton = mDialogResetDevice.findViewById(R.id.cancelButton);
+        AppCompatTextView tvTitle = mDialogResetDevice.findViewById(R.id.tvStart);
+        tvTitle.setText("Do you want to reset this employee's device configurations?");
+        okayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callResetDeviceApi();
+            }
+        });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogResetDevice.dismiss();
+            }
+        });
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogResetDevice.dismiss();
+            }
+        });
+        mDialogResetDevice.show();
     }
 
     public void showLeavingDateDialog() {
@@ -1210,6 +1271,20 @@ public class AddEmployeeActivity extends BaseActivity {
                         e.printStackTrace();
                     }
                     try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.action_imei_reset)) {
+                            DeactivateEmployeeResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), DeactivateEmployeeResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                mDialogResetDevice.dismiss();
+                                showSuccessDialogEmp("Reset employee device configurations successfully.",false,AddEmployeeActivity.this);
+                            }
+                            else {
+                                LogUtil.printToastMSG(mContext, responseModel.getResult().getMessage());
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    try {
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_LEAVING_DATE)) {
                             LeavingDateResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LeavingDateResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
@@ -1265,7 +1340,7 @@ public class AddEmployeeActivity extends BaseActivity {
                                 leaveDate = employeeResList.getLeaving_date();//2022-06-15
                                 leaveRemark = employeeResList.getLeaving_remark();
                                 //leaveDate = null; leaveRemark = null;
-                                if(leaveDate!=null && !leaveDate.equals("")){
+                                if(leaveDate!=null && !leaveDate.equals("") && !leaveDate.equals("1947-01-01")){
                                     btnLeavingDate.setText("View Leaving date");
                                 }else{
                                     btnLeavingDate.setText("Employee leaving date");
@@ -1326,11 +1401,13 @@ public class AddEmployeeActivity extends BaseActivity {
                                     btnCancel.setVisibility(View.GONE);
                                     //btnLeavingDate.setVisibility(View.GONE);
                                     btnSubmit.setVisibility(View.GONE);
+                                    btnImei.setVisibility(View.GONE);
                                     setAllEmployeeOFf();
                                 }else{
                                     btnDeactivate.setVisibility(View.VISIBLE);
                                     btnCancel.setVisibility(View.VISIBLE);
                                     btnLeavingDate.setVisibility(View.VISIBLE);
+                                    btnImei.setVisibility(View.VISIBLE);
                                     btnSubmit.setVisibility(View.VISIBLE);
                                 }
                             }

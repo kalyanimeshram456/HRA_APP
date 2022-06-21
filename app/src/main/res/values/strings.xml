@@ -408,5 +408,6 @@
     <string name="scr_lbl_my_planes">My Plan</string>
     <string name="msg_cannot_select_leave">Sorry, You cannot select this leave type!</string>
     <string name="msg_no_date_leave">Sorry, No data available.</string>
+    <string name="scr_lbl_available_leaves">Available Leaves</string>
 
 </resources>

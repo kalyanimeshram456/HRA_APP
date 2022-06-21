@@ -151,6 +151,35 @@
                             android:textColor="@color/back_text_colour"
                             android:textSize="@dimen/_12sp" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/layLeaveInfo"
+                        android:layout_width="@dimen/_80dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_2dp"
+                        android:layout_toRightOf="@+id/layPast"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/imgLeaveInfo"
+                            android:layout_width="@dimen/_40dp"
+                            android:layout_height="@dimen/_40dp"
+                            android:layout_marginLeft="@dimen/_28dp"
+                            android:layout_marginTop="@dimen/_16dp"
+                            android:src="@drawable/ic_leaves_info" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvLeaveInfo"
+                            android:layout_width="@dimen/_80dp"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/imgPastLeave"
+                            android:layout_marginLeft="@dimen/_10dp"
+                            android:layout_marginTop="@dimen/_5dp"
+                            android:textAlignment="center"
+                            android:fontFamily="@font/gilroy_regular"
+                            android:text="Available \nLeaves"
+                            android:textColor="@color/back_text_colour"
+                            android:textSize="@dimen/_12sp" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
                 </RelativeLayout>
 
                 <androidx.appcompat.widget.LinearLayoutCompat

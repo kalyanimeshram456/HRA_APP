@@ -88,6 +88,7 @@ import com.ominfo.hra_app.ui.employees.model.EmployeeList;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListRequest;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListResponse;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
+import com.ominfo.hra_app.ui.employees.model.SingleEmployeeListViewModel;
 import com.ominfo.hra_app.ui.leave.model.LeaveCountResponse;
 import com.ominfo.hra_app.ui.leave.model.LeaveCountViewModel;
 import com.ominfo.hra_app.ui.login.LoginActivity;
@@ -194,7 +195,7 @@ public class DashboardFragment extends BaseFragment {
     ViewModelFactory mViewModelFactory;
     private GetProfileImageViewModel getProfileImageViewModel;
     private EditHolidayViewModel editHolidayViewModel;
-    private EmployeeListViewModel employeeListViewModel;
+    private SingleEmployeeListViewModel employeeListViewModel;
     private AttendanceDetailsViewModel attendanceDetailsViewModel;
     public static boolean activityVisible; // Variable that will check the
     final static String CONNECTIVITY_ACTION = "android.net.conn.CONNECTIVITY_CHANGE";
@@ -285,6 +286,8 @@ public class DashboardFragment extends BaseFragment {
         callLeaveCountApi();
         callCalenderHolidaysApi();
         callDashboardApi();
+        callEmployeeListApi();
+
     }
 
     private void injectAPI() {
@@ -306,8 +309,8 @@ public class DashboardFragment extends BaseFragment {
         editHolidayViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EditHolidayViewModel.class);
         editHolidayViewModel.getResponse().observe(this, apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_EDIT_HOLIDAY));
 
-        employeeListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EmployeeListViewModel.class);
-        employeeListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_EMPLOYEES_LIST));
+        employeeListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(SingleEmployeeListViewModel.class);
+        employeeListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_SINLE_EMPLOYEES_LIST));
 
         attendanceDetailsViewModel = ViewModelProviders.of(this, mViewModelFactory).get(AttendanceDetailsViewModel.class);
         attendanceDetailsViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_ATTENDANCE_DETAILS));
@@ -586,13 +589,13 @@ public class DashboardFragment extends BaseFragment {
         Boolean iSTimer = SharedPref.getInstance(mContext).read(SharedPrefKey.CHECK_IN_BUTTON, false);
         //if(!iSTimer){
         List<AttendanceList> attendanceListList = new ArrayList<>();
-        attendanceListList.add(new AttendanceList(loginDays.getMonDay(), loginDays.getMonWorking() == null ? "no" : loginDays.getMonWorking(), loginDays.getMonStartTime(), loginDays.getMonEndTime()));
-        attendanceListList.add(new AttendanceList(loginDays.getTueDay(), loginDays.getTueWorking() == null ? "no" : loginDays.getTueWorking(), loginDays.getTueStartTime(), loginDays.getTueEndTime()));
-        attendanceListList.add(new AttendanceList(loginDays.getWedDay(), loginDays.getWedWorking() == null ? "no" : loginDays.getWedWorking(), loginDays.getWedStartTime(), loginDays.getWedEndTime()));
-        attendanceListList.add(new AttendanceList(loginDays.getThrusDay(), loginDays.getThrusWorking() == null ? "no" : loginDays.getThrusWorking(), loginDays.getThrusStartTime(), loginDays.getThrusEndTime()));
-        attendanceListList.add(new AttendanceList(loginDays.getFriDay(), loginDays.getFriWorking() == null ? "no" : loginDays.getFriWorking(), loginDays.getFriStartTime(), loginDays.getFriEndTime()));
-        attendanceListList.add(new AttendanceList(loginDays.getSatDay(), loginDays.getSatWorking() == null ? "no" : loginDays.getSatWorking(), loginDays.getSatStartTime(), loginDays.getSatStartTime()));
-        attendanceListList.add(new AttendanceList(loginDays.getSunDay(), loginDays.getSunWorking() == null ? "no" : loginDays.getSunWorking(), loginDays.getSunStartTime(), loginDays.getSunEndTime()));
+        attendanceListList.add(new AttendanceList(loginDays.getMonDay(), loginDays.getMonWorking() == null ? "No" : loginDays.getMonWorking(), loginDays.getMonStartTime(), loginDays.getMonEndTime()));
+        attendanceListList.add(new AttendanceList(loginDays.getTueDay(), loginDays.getTueWorking() == null ? "No" : loginDays.getTueWorking(), loginDays.getTueStartTime(), loginDays.getTueEndTime()));
+        attendanceListList.add(new AttendanceList(loginDays.getWedDay(), loginDays.getWedWorking() == null ? "No" : loginDays.getWedWorking(), loginDays.getWedStartTime(), loginDays.getWedEndTime()));
+        attendanceListList.add(new AttendanceList(loginDays.getThrusDay(), loginDays.getThrusWorking() == null ? "No" : loginDays.getThrusWorking(), loginDays.getThrusStartTime(), loginDays.getThrusEndTime()));
+        attendanceListList.add(new AttendanceList(loginDays.getFriDay(), loginDays.getFriWorking() == null ? "No" : loginDays.getFriWorking(), loginDays.getFriStartTime(), loginDays.getFriEndTime()));
+        attendanceListList.add(new AttendanceList(loginDays.getSatDay(), loginDays.getSatWorking() == null ? "No" : loginDays.getSatWorking(), loginDays.getSatStartTime(), loginDays.getSatStartTime()));
+        attendanceListList.add(new AttendanceList(loginDays.getSunDay(), loginDays.getSunWorking() == null ? "No" : loginDays.getSunWorking(), loginDays.getSunStartTime(), loginDays.getSunEndTime()));
         String weekDay;
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
 
@@ -601,14 +604,14 @@ public class DashboardFragment extends BaseFragment {
         SharedPref.getInstance(mContext).write(SharedPrefKey.ATTENDANCE_START_TIME, "00:00:00");
         //LogUtil.printToastMSG(mContext,"att_before_Test-"+weekDay);
         for (int i = 0; i < attendanceListList.size(); i++) {
-            if (weekDay.toLowerCase().equals(attendanceListList.get(i).getMonDay().toLowerCase()) && attendanceListList.get(i).getMonWorking().equals("yes")) {
+            if (weekDay.equals(attendanceListList.get(i).getMonDay()) && (attendanceListList.get(i).getMonWorking().equals("Yes")||attendanceListList.get(i).getMonWorking().equals("yes"))) {
                 //LogUtil.printToastMSG(mContext,"att_Test"+weekDay);
                 SharedPref.getInstance(mContext).write(SharedPrefKey.ATTENDANCE_START_TIME, attendanceListList.get(i).getMonStartTime());
                 String startDate = AppUtils.getCurrentDateTime_() + " " + AppUtils.getCurrentTimeIn24hr(),
-                        endDate = attendanceListList.get(i).getMonStartTime() == null ||
-                                attendanceListList.get(i).getMonStartTime().equals("00:00:00") ? AppUtils.getCurrentDateTime_() + " " + "10:00:00" : AppUtils.getCurrentDateTime_() + " " + attendanceListList.get(i).getMonStartTime(),
-                        attEndDate = attendanceListList.get(i).getMonEndTime() == null ||
-                                attendanceListList.get(i).getMonEndTime().equals("00:00:00") ? AppUtils.getCurrentDateTime_() + " " + "19:00:00" : AppUtils.getCurrentDateTime_() + " " + attendanceListList.get(i).getMonEndTime();
+                        endDate = (attendanceListList.get(i).getMonStartTime() == null ||
+                                attendanceListList.get(i).getMonStartTime().equals("00:00:00") )? AppUtils.getCurrentDateTime_() + " " + "10:00:00" : AppUtils.getCurrentDateTime_() + " " + attendanceListList.get(i).getMonStartTime(),
+                        attEndDate = (attendanceListList.get(i).getMonEndTime() == null ||
+                                attendanceListList.get(i).getMonEndTime().equals("00:00:00") )? AppUtils.getCurrentDateTime_() + " " + "19:00:00" : AppUtils.getCurrentDateTime_() + " " + attendanceListList.get(i).getMonEndTime();
                 String Min30LaterTime = "", Min60LaterTime = "";
                 try {
                     SimpleDateFormat sdf30 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -643,9 +646,10 @@ public class DashboardFragment extends BaseFragment {
                     LogUtil.printLog("att_60 ", Min60LaterTime);
                     Date date5 = sdf.parse(attEndDate);
                     LogUtil.printLog("att_realend ", attEndDate);
-                    Boolean iSActiveChill = SharedPref.getInstance(mContext).read(SharedPrefKey.CHECK_OUT_ENABLED, false);
+                    Boolean iSActiveChill = SharedPref.getInstance(mContext).read(SharedPrefKey.CHECK_IN_BUTTON, false);
                     String iSCheckInDoneChill = SharedPref.getInstance(mContext).read(SharedPrefKey.CHECK_OUT_TIME, AppUtils.getCurrentDateTime_() + " " + "00:00:00");
                     Date dateEnd = sdf.parse(iSCheckInDoneChill);
+
                     //String[] valll = iSCheckInDoneChill.split(" ");
                     //if (iSActiveChill) {
                         // LogUtil.printToastMSG(mContext,iSActiveChill+"-"+iSCheckInDoneChill);
@@ -663,12 +667,16 @@ public class DashboardFragment extends BaseFragment {
                         }*/
                    // }
                    // if (!iSActiveChill) {
-                        /*if ((date1.compareTo(date2) == -1) || (dateEnd.compareTo(date2) == 1) && (dateEnd.compareTo(date5) == -1)) {
+                        if ((date1.compareTo(date2) == -1) || (dateEnd.compareTo(date2) == 1) || (date1.compareTo(date5) == 1) || iSActiveChill){
                             // Outputs -1 as date1 is before date2
                             rippleEffect.stopRippleAnimation();
                             add_attendance.setVisibility(View.VISIBLE);
                             rippleEffect.setVisibility(View.VISIBLE);
-                        } else*/ if (date1.compareTo(date2) == 1 && date1.compareTo(date3) == -1) {
+                            //rippleEffect.startRippleAnimation(2, mContext);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                add_attendance.setForeground(mContext.getDrawable(R.drawable.attention_gradient_blue));
+                            }
+                        } else if (date1.compareTo(date2) == 1 && date1.compareTo(date3) == -1) {
                             // Outputs -1 as date3 is before date2
                             // Outputs 0 as the dates are now equal
                             rippleEffect.startRippleAnimation(2, mContext);
@@ -690,14 +698,16 @@ public class DashboardFragment extends BaseFragment {
                                 add_attendance.setForeground(mContext.getDrawable(R.drawable.attention_gradient_red));
                             }
                         } else if (date1.compareTo(date5) == 1) {
+                            SharedPref.getInstance(mContext).write(SharedPrefKey.CHECK_IN_BUTTON, false);
+
                             // Outputs 1 as date4 is after date3
-                            rippleEffect.stopRippleAnimation();
+                            /*rippleEffect.stopRippleAnimation();
                             add_attendance.setVisibility(View.VISIBLE);
                             rippleEffect.setVisibility(View.VISIBLE);
                             try {
-                                ((BaseActivity) mContext).stopService(new Intent(mContext, BackgroundAttentionService.class));
+                                //((BaseActivity) mContext).stopService(new Intent(mContext, BackgroundAttentionService.class));
                             } catch (Exception e) {
-                            }
+                            }*/
                         }
                   //  }
 
@@ -790,59 +800,30 @@ public class DashboardFragment extends BaseFragment {
         });
     }
 
+
     /* Call Api For employee list */
     private void callEmployeeListApi() {
-        try {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
-            if (loginTable != null) {
-                if(!loginTable.getIsadmin().equals("0")){
-                    if (NetworkCheck.isInternetAvailable(mContext)) {
-                        if(loginTable!=null) {
-                            LogUtil.printToastMSG(mContext,"id"+loginTable.getIsadmin());
-                            RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_employee_list);
-                            RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
-                            RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
-                            RequestBody mRequestToken = RequestBody.create(MediaType.parse("text/plain"),  loginTable.getToken());
-                            RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), "0");
-                            RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
-                            RequestBody mRequestfilter_emp_name = RequestBody.create(MediaType.parse("text/plain"), "");
-                            RequestBody mRequestfilter_emp_position = RequestBody.create(MediaType.parse("text/plain"),  "");
-                            String status = "1";
-                            RequestBody filter_emp_isActive = RequestBody.create(MediaType.parse("text/plain"),  status);
+            if(loginTable!=null) {
+                if(loginTable.getIsadmin().equals("0")) {
+                    RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_get_single_employee_list);
+                    RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getCompanyId());
+                    RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
 
-                            EmployeeListRequest request = new EmployeeListRequest();
-                            request.setAction(mRequestAction);
-                            request.setCompanyId(mRequestComId);
-                            request.setEmployee(mRequestEmployee);
-                            request.setToken(mRequestToken);
-                            request.setPageNumber(mRequestpage_number);
-                            request.setPageSize(mRequestpage_size);
-                            request.setFilterEmpName(mRequestfilter_emp_name);
-                            request.setFilterEmpPosition(mRequestfilter_emp_position);
-                            request.setFilterEmpIsActive(filter_emp_isActive);
+                    EmployeeListRequest request = new EmployeeListRequest();
+                    request.setAction(mRequestAction);
+                    request.setCompanyId(mRequestComId);
+                    request.setEmployee(mRequestEmployee);
 
-                            employeeListViewModel.executeEmployeeListAPI(request);
-                        }
-                        else {
-                            LogUtil.printToastMSG(mContext, "Something is wrong.");
-                        }
-                    } else {
-                        LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
-                        try {
-                            AttendanceDaysTable loginAttendance = mDb.getDbDAO().getTestAttendanceData(); //check
-                            if (loginAttendance != null) {
-                                setAttendanceFloatingButtons(loginAttendance.getLoginDays());
-                            } else {
-                                LogUtil.printToastMSG(mContext, "Something went wrong ,Please re-login.");
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    employeeListViewModel.hitSingleEmployeeList(request);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
         }
     }
 
@@ -1410,39 +1391,39 @@ public class DashboardFragment extends BaseFragment {
                         }
                     }catch (Exception e){e.printStackTrace();}
                     try {
-                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EMPLOYEES_LIST)) {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_SINLE_EMPLOYEES_LIST)) {
                             EmployeeListResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), EmployeeListResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 mDb.getDbDAO().deleteAttendanceData();
                                 EmployeeList employeeListResData = responseModel.getResult().getList().get(0);
                                 AttendanceDaysTable daysTable = new AttendanceDaysTable();
                                 DayData dayData = new DayData();
-                                dayData.setMonDay("Monday");dayData.setMonWorking(employeeListResData.getMonWorking()==null?"yes":employeeListResData.getMonWorking());
+                                dayData.setMonDay("Monday");dayData.setMonWorking(employeeListResData.getMonWorking()==null?"No":employeeListResData.getMonWorking());
                                 dayData.setMonStartTime(employeeListResData.getMonStartTime()==null?"10:00:00":employeeListResData.getMonStartTime());
                                 dayData.setMonEndTime(employeeListResData.getMonEndTime()==null?"19:00:00":employeeListResData.getMonEndTime());
-                                dayData.setTueDay("Tuesday");dayData.setTueWorking(employeeListResData.getTueWorking()==null?"yes":employeeListResData.getTueWorking());
+                                dayData.setTueDay("Tuesday");dayData.setTueWorking(employeeListResData.getTueWorking()==null?"No":employeeListResData.getTueWorking());
                                 dayData.setTueStartTime(employeeListResData.getTueStartTime()==null?"10:00:00":employeeListResData.getTueStartTime());
                                 dayData.setTueEndTime(employeeListResData.getTueEndTime()==null?"19:00:00":employeeListResData.getTueEndTime());
-                                dayData.setWedDay("Wednesday");dayData.setWedWorking(employeeListResData.getWedWorking()==null?"yes":employeeListResData.getWedWorking());
+                                dayData.setWedDay("Wednesday");dayData.setWedWorking(employeeListResData.getWedWorking()==null?"No":employeeListResData.getWedWorking());
                                 dayData.setWedStartTime(employeeListResData.getWedStartTime()==null?"10:00:00":employeeListResData.getWedStartTime());
                                 dayData.setWedEndTime(employeeListResData.getWedEndTime()==null?"19:00:00":employeeListResData.getWedEndTime());
-                                dayData.setThrusDay("Thursday");dayData.setThrusWorking(employeeListResData.getThrusWorking()==null?"yes":employeeListResData.getThrusWorking());
+                                dayData.setThrusDay("Thursday");dayData.setThrusWorking(employeeListResData.getThrusWorking()==null?"No":employeeListResData.getThrusWorking());
                                 dayData.setThrusStartTime(employeeListResData.getThrusStartTime()==null?"10:00:00":employeeListResData.getThrusStartTime());
                                 dayData.setThrusEndTime(employeeListResData.getThrusEndTime()==null?"19:00:00":employeeListResData.getThrusEndTime());
-                                dayData.setFriDay("Friday");dayData.setFriWorking(employeeListResData.getFriWorking()==null?"yes":employeeListResData.getFriWorking());
+                                dayData.setFriDay("Friday");dayData.setFriWorking(employeeListResData.getFriWorking()==null?"No":employeeListResData.getFriWorking());
                                 dayData.setFriStartTime(employeeListResData.getFriStartTime()==null?"10:00:00":employeeListResData.getFriStartTime());
                                 dayData.setFriEndTime(employeeListResData.getFriEndTime()==null?"19:00:00":employeeListResData.getFriStartTime());
-                                dayData.setSatDay("Saturday");dayData.setSatWorking(employeeListResData.getSatWorking()==null?"yes":employeeListResData.getSatWorking());
+                                dayData.setSatDay("Saturday");dayData.setSatWorking(employeeListResData.getSatWorking()==null?"No":employeeListResData.getSatWorking());
                                 dayData.setSatStartTime(employeeListResData.getSatStartTime()==null?"10:00:00":employeeListResData.getSatStartTime());
                                 dayData.setSatEndTime(employeeListResData.getSatEndTime()==null?"19:00:00":employeeListResData.getSatEndTime());
-                                dayData.setSunDay("Sunday");dayData.setSunWorking(employeeListResData.getSunWorking()==null?"yes":employeeListResData.getSunWorking());
+                                dayData.setSunDay("Sunday");dayData.setSunWorking(employeeListResData.getSunWorking()==null?"No":employeeListResData.getSunWorking());
                                 dayData.setSunStartTime(employeeListResData.getSunStartTime()==null?"10:00:00":employeeListResData.getSunStartTime());
                                 dayData.setSunEndTime(employeeListResData.getSunEndTime()==null?"19:00:00":employeeListResData.getSunEndTime());
                                 daysTable.setLoginDays(dayData);
                                 mDb.getDbDAO().insertAttendanceData(daysTable);
-                                AttendanceDaysTable loginAttendance = mDb.getDbDAO().getTestAttendanceData(); //check
-                                if (loginAttendance != null) {
-                                    setAttendanceFloatingButtons(loginAttendance.getLoginDays());
+                                //AttendanceDaysTable loginAttendance = mDb.getDbDAO().getTestAttendanceData(); //check
+                                if (dayData != null) {
+                                    setAttendanceFloatingButtons(dayData);
                                 }
                                }
                         }

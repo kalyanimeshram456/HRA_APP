@@ -21,6 +21,7 @@ public class DynamicAPIPath {
     public static final String POST_PENDING_LEAVES=  BASE+"?action=left_leavescount";
     public static final String POST_LEAVING_DATE=  BASE+"?action=emp_leave_date";
     public static final String POST_LEAVE_STATUS= BASE+"?action=apply_leave_updated";
+    public static final String POST_EARLY_MARK_STATUS= BASE+"?action=early_mark_count_months";
     public static final String POST_GET_PAST_LEAVE= BASE+"?action=get_pastleave_record";
     public static final String POST_CALENDER_HOLIDAY=BASE+"?action=get_company_holiday";
     public static final String POST_ACTIVE_EMP_LIST=BASE+"?action=get_emp_list";
@@ -65,6 +66,7 @@ public class DynamicAPIPath {
     public static final String POST_ADD_EMPLOYEES= BASE+"?action=add_employee";
     public static final String POST_EDIT_EMPLOYEES= BASE+"?action=edit_employee";
     public static final String POST_DEACT_EMPLOYEE= BASE+"?action=deactivate_employee";
+    public static final String POST_IMEI_RESET= BASE+"?action=imei_reset";
     public static final String POST_CHANGE_PASSWORD= BASE+"?action=changecrmemppassword";
     public static final String POST_LEAVE_COUNT = BASE+"?action=get_leave_count";
     public static final String POST_GET_SALES_CREDIT= BASE+"?action=salescreditreport";
@@ -110,6 +112,7 @@ public class DynamicAPIPath {
     public static final String action_leaving_date = "emp_leave_date";
     public static final String action_get_top_customer = "top_customer";
     public static final String action_deactivate_employee = "deactivate_employee";
+    public static final String action_imei_reset = "imei_reset";
     public static final String action_changecrmemppassword = "changecrmemppassword";
     public static final String action_check_coupon_validity = "checkcoupon_validity";
     public static final String action_get_sms_otp = "get_sms_otp";
@@ -149,6 +152,7 @@ public class DynamicAPIPath {
     public static final String action_emp_sal_slip = "emp_sal_slip";
     public static final String action_accept_reject_List = "get_leave_records";
     public static final String action_apply_leave_updated = "apply_leave_updated";
+    public static final String action_early_mark_count_months = "early_mark_count_months";
     public static final String action_leave_count = "get_leave_count";
     public static final String action_get_active_emp_list = "get_emp_list";
     public static final String action_get_company_holiday = "get_company_holiday";

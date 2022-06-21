@@ -3,14 +3,17 @@ package com.ominfo.hra_app.dialog;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Build;
+import android.os.Handler;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatTextView;
 
 import com.ominfo.hra_app.R;
+import com.ominfo.hra_app.interfaces.Constants;
 
 public class ViewDialog {
 
@@ -41,7 +44,29 @@ public class ViewDialog {
         dialog.setContentView(view);
         //dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         AppCompatTextView appCompatTextView = dialog.findViewById(R.id.mMessage);
-        appCompatTextView.setText(message);
+        AppCompatButton imgClose = dialog.findViewById(R.id.closeButton);
+        imgClose.setVisibility(View.GONE);
+        appCompatTextView.setVisibility(View.GONE);
+        try {
+            final Handler ha = new Handler();
+            ha.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //call function
+                    //ha.postDelayed(this, 10000);
+                    imgClose.setVisibility(View.VISIBLE);
+                    appCompatTextView.setVisibility(View.VISIBLE);
+                    appCompatTextView.setText("Sorry, Something went wrong.\n Please try again later.");
+                }
+            }, Constants.LOADER_TIMEOUT);
+            imgClose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            appCompatTextView.setText(message);
+        }catch (Exception e){e.printStackTrace();}
         //...initialize the imageView form infalted layout
         //  ImageView gifImageView = dialog.findViewById(R.id.custom_loading_imageView);
 

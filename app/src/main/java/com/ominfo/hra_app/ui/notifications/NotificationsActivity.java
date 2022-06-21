@@ -50,6 +50,7 @@ import com.ominfo.hra_app.ui.notifications.model.AbsentMarkCountViewModel;
 import com.ominfo.hra_app.ui.notifications.model.AbsentMarkResponse;
 import com.ominfo.hra_app.ui.notifications.model.DeleteNotificationResponse;
 import com.ominfo.hra_app.ui.notifications.model.DeleteNotificationViewModel;
+import com.ominfo.hra_app.ui.notifications.model.EarlyMarkCountViewModel;
 import com.ominfo.hra_app.ui.notifications.model.GetSingleRecordViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LateMarkCountViewModel;
 import com.ominfo.hra_app.ui.notifications.model.LateMarkResponse;
@@ -117,6 +118,7 @@ public class NotificationsActivity extends BaseActivity {
     private LateMarkCountViewModel lateMarkCountViewModel;
     private AbsentMarkCountViewModel absentMarkCountViewModel;
     private GetSingleRecordViewModel getSingleRecordViewModel;
+    private EarlyMarkCountViewModel earlyMarkCountViewModel;
     private LeaveStatusViewModel leaveStatusViewModel;
     private MarkPresentViewModel markPresentViewModel;
     private UnpaidLeaveViewModel unpaidLeaveViewModel;
@@ -131,7 +133,7 @@ public class NotificationsActivity extends BaseActivity {
     RelativeLayout layToDate;
     String record_id = "0",rm_id = "0";
     int notiId = 0;
-    AppCompatTextView tvStartMonth,tvEndMonth,tvStartTime,tvEndTime;
+    AppCompatTextView tvStartMonth,tvEndMonth,tvStartTime,tvEndTime,tvDeductStartMonth,tvDeductEndMonth;
     Dialog mDialogAbsentMark,mDialogLateMark,mDialogEarlyMark;
     final Calendar myCalendar = Calendar.getInstance();
     NotificationDetailsNotify mDataPaidLeave ;
@@ -214,9 +216,9 @@ public class NotificationsActivity extends BaseActivity {
         getSingleRecordViewModel = ViewModelProviders.of(NotificationsActivity.this, mViewModelFactory).get(GetSingleRecordViewModel.class);
         getSingleRecordViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_GET_SINGLE_NOTIFY));
 
-        /*leaveStatusViewModel = ViewModelProviders.of(NotificationsActivity.this, mViewModelFactory).get(LeaveStatusViewModel.class);
-        leaveStatusViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_LEAVE_STATUS));
-*/
+        earlyMarkCountViewModel = ViewModelProviders.of(NotificationsActivity.this, mViewModelFactory).get(EarlyMarkCountViewModel.class);
+        earlyMarkCountViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_EARLY_MARK_STATUS));
+
         markPresentViewModel = ViewModelProviders.of(NotificationsActivity.this, mViewModelFactory).get(MarkPresentViewModel.class);
         markPresentViewModel.getResponse().observe(this, apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_MARK_PRESENT));
 
@@ -710,7 +712,7 @@ public class NotificationsActivity extends BaseActivity {
     public void showEarlyMarkDialog(NotificationDetailsNotify data) {
         try {
             mDialogEarlyMark = new Dialog(mContext, R.style.ThemeDialogCustom);
-            mDialogEarlyMark.setContentView(R.layout.dialog_notify_late_details);
+            mDialogEarlyMark.setContentView(R.layout.dialog_early_logout_details);
             mDialogEarlyMark.setCanceledOnTouchOutside(true);
             RelativeLayout layClose = mDialogEarlyMark.findViewById(R.id.layClose);
             AppCompatTextView tvTitle = mDialogEarlyMark.findViewById(R.id.tvTitle);
@@ -720,6 +722,8 @@ public class NotificationsActivity extends BaseActivity {
             AppCompatTextView tvAbsentMark = mDialogEarlyMark.findViewById(R.id.tvAbsentMark);
             tvStartMonth = mDialogEarlyMark.findViewById(R.id.tvStartMonth);
             tvEndMonth = mDialogEarlyMark.findViewById(R.id.tvEndMonth);
+            tvDeductStartMonth = mDialogEarlyMark.findViewById(R.id.tvyDeductStartMonth);
+            tvDeductEndMonth = mDialogEarlyMark.findViewById(R.id.tvyDeductEndMonth);
             tvTitleDialog.setText("Early Logout");
             tvAbsentMark.setText("Previous early logout");
             AppCompatButton MarkButton = mDialogEarlyMark.findViewById(R.id.MarkButton);
@@ -729,7 +733,7 @@ public class NotificationsActivity extends BaseActivity {
             tvTitle.setText(data.getNotifText());
             tvStartTime.setText("Actual time : " + AppUtils.convert24to12Attendance(data.getStnd_start_tym()));
             tvEndTime.setText("Start time : " + AppUtils.convert24to12Attendance(data.getStartTime()));
-            callLateMarkCountApi(data.getRelatedId());
+            callEarlyMarkCountApi(data.getRelatedId());
             layClose.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -808,6 +812,24 @@ public class NotificationsActivity extends BaseActivity {
             LogUtil.printToastMSG(NotificationsActivity.this, getString(R.string.err_msg_connection_was_refused));
         }
     }
+
+    /* Call Api late mark count */
+    private void callEarlyMarkCountApi(String record_id) {
+        if (NetworkCheck.isInternetAvailable(NotificationsActivity.this)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if (loginTable != null) {
+                RequestBody mRequestBodyType = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_early_mark_count_months);
+                RequestBody mRequestBodyTypeEmployee = RequestBody.create(MediaType.parse("text/plain"),record_id);
+
+                earlyMarkCountViewModel.hitLateMarkCountApi(mRequestBodyType
+                        ,mRequestBodyTypeEmployee);
+
+            }
+        } else {
+            LogUtil.printToastMSG(NotificationsActivity.this, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
 
     /* Call Api absent mark count */
     private void callAbsentMarkCountApi(String id) {
@@ -1028,6 +1050,23 @@ public class NotificationsActivity extends BaseActivity {
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 tvStartMonth.setText("This month : "+responseModel.getResult().getThisMonthCount());
                                 tvEndMonth.setText("Last month : "+responseModel.getResult().getPrevMonthCount());
+                            }
+                            else {
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    try{
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EARLY_MARK_STATUS)) {
+                            LateMarkResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), LateMarkResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                tvStartMonth.setText("This month : "+responseModel.getResult().getThisMonthCount());
+                                tvEndMonth.setText("Last month : "+responseModel.getResult().getPrevMonthCount());
+
+                                tvDeductStartMonth.setText("This month : "+responseModel.getResult().getCurrent_leave_deduction_count());
+                                tvDeductEndMonth.setText("Last month : "+responseModel.getResult().getPrev_leave_deduction_count());
                             }
                             else {
                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
