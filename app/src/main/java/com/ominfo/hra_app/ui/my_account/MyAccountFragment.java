@@ -75,6 +75,7 @@ import com.ominfo.hra_app.R;
 import com.ominfo.hra_app.basecontrol.BaseActivity;
 import com.ominfo.hra_app.basecontrol.BaseApplication;
 import com.ominfo.hra_app.basecontrol.BaseFragment;
+import com.ominfo.hra_app.common.BackgroundAttentionService;
 import com.ominfo.hra_app.database.AppDatabase;
 import com.ominfo.hra_app.interfaces.Constants;
 import com.ominfo.hra_app.interfaces.SharedPrefKey;
@@ -1664,6 +1665,9 @@ public class MyAccountFragment extends BaseFragment {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+                            try{
+                                mContext.stopService(new Intent(mContext, BackgroundAttentionService.class));
+                            }catch (Exception e){}
                             progressBar.setVisibility(View.GONE);
                             /*}
                             else{
@@ -1916,9 +1920,11 @@ public class MyAccountFragment extends BaseFragment {
     }
 
     private void convertToBase64(String path){
-        String mBase64 = AppUtils.getBase64images(path);
-        base64Path = /*"data:image/png;base64," +*/ mBase64;
-        callUploadProfileImageApi();
+        try {
+            String mBase64 = AppUtils.getBase64images(path);
+            base64Path = /*"data:image/png;base64," +*/ mBase64;
+            callUploadProfileImageApi();
+        }catch (Exception e){}
     }
 
     //set value to Search dropdown

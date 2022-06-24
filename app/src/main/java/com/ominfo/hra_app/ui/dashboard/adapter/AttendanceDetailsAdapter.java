@@ -1,6 +1,7 @@
 package com.ominfo.hra_app.ui.dashboard.adapter;
 
 import android.content.Context;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,8 +67,15 @@ public class AttendanceDetailsAdapter extends RecyclerView.Adapter<AttendanceDet
             holder.tvInLocation.setText(mListData.get(position).getOffice_start_addr()==null?"Unavailable":mListData.get(position).getOffice_start_addr()+"");
             holder.tvOutLocation.setText(mListData.get(position).getOffice_end_addr()==null?"Unavailable":mListData.get(position).getOffice_end_addr()+"");
             holder.imgShowLoc.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.ic_down_greyy));
-            AppUtils.loadImageURL(mContext,mListData.get(position).getProfilePic(),
-                    holder.imgBirthPro,  holder.progress_barBirth);
+
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    AppUtils.loadImageURL(mContext, mListData.get(position).getProfilePic(),
+                            holder.imgBirthPro, holder.progress_barBirth);
+                }
+            });
+
             holder.tvEmpName.setText(mListData.get(position).getEmpName());
             holder.tvDesi.setText(mListData.get(position).getEmpPosition());
             if(mListData.get(position).getLeaveType()==null || mListData.get(position).getLeaveType().equals("")) {

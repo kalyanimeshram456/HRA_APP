@@ -17,6 +17,8 @@ import com.ominfo.hra_app.ui.employees.BaseViewHolder;
 import com.ominfo.hra_app.ui.employees.model.EmployeeList;
 import com.ominfo.hra_app.util.AppUtils;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -74,6 +76,21 @@ public class EmployeeListRecyclerAdapter extends RecyclerView.Adapter<BaseViewHo
 
   public void addItems(List<EmployeeList> postItems) {
     mPostItems.addAll(postItems);
+    try {
+      Collections.sort(mPostItems, new Comparator<EmployeeList>() {
+        @Override
+        public int compare(EmployeeList o1, EmployeeList o2) {
+          return Long.valueOf(o2.getIsActive() == null || o2.getIsActive()
+                  .equals("") ? "0" : o2.getIsActive()).compareTo(Long.valueOf(o1.getIsActive() == null ||
+                  o1.getIsActive().equals("") ? "0" : o1.getIsActive()));
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+          return false;
+        }
+      });
+    }catch (Exception e){}
     notifyDataSetChanged();
   }
 

@@ -1,5 +1,7 @@
 package com.ominfo.hra_app.ui.attendance;
 
+import static com.ominfo.hra_app.interfaces.Constants.INTERVAL_M;
+
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
@@ -521,7 +523,9 @@ public class StartAttendanceActivity extends BaseActivity implements GoogleApiCl
         long INTERVAL = Constants.INTERVAL_ATTENDENCE; //5 min
         long FASTEST_INTERVAL = Constants.FASTEST_INTERVAL_ATTENDENCE; //2 min
         LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        //locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        locationRequest.setSmallestDisplacement(INTERVAL_M); //higher priority
         locationRequest.setInterval(INTERVAL);
         locationRequest.setFastestInterval(FASTEST_INTERVAL);
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()

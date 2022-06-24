@@ -20,7 +20,7 @@
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:fillViewport="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -28,41 +28,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="visible"
-                android:orientation="vertical">
-
-                <androidx.appcompat.widget.SearchView
-                    android:id="@+id/searchView"
-                    style="@style/AppSearchView"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_45dp"
-                    android:layout_marginHorizontal="@dimen/_16dp"
-                    android:layout_marginTop="@dimen/_10dp"
-                    android:background="@drawable/layout_round_shape_corners_8"
-                    android:layoutDirection="rtl"
-                    app:defaultQueryHint=""
-                    android:visibility="gone"
-                    app:queryHint="" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvSearch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/_34dp"
-                    android:layout_marginTop="@dimen/_22dp"
-                    android:fontFamily="@font/gilroy_semibold"
-                    android:text="Search"
-                    android:visibility="gone"
-                    android:textColor="@color/light_grey"
-                    android:textSize="@dimen/_16sp" />
-
+                >
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/layAll"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginHorizontal="@dimen/_10dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_16dp"
+                    android:layout_marginBottom="@dimen/_1dp"
                     android:orientation="vertical">
-
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvEmployeeActive"
                         android:layout_width="match_parent"
@@ -73,9 +47,9 @@
                         android:text="0 / 0 Employees active"
                         android:textColor="@color/gray"
                         android:textSize="@dimen/_14sp"
+                        android:layout_marginHorizontal="@dimen/_10dp"
                         android:visibility="gone" />
-
-
+                    <include layout="@layout/content_empty_activity_layout" />
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvSalesList"
                         android:layout_width="match_parent"
@@ -85,15 +59,99 @@
                         android:focusable="false"
                         android:focusableInTouchMode="false"
                         android:nestedScrollingEnabled="true"
-                        android:paddingBottom="@dimen/_16dp"
+                        android:layout_marginHorizontal="@dimen/_10dp"
                         android:visibility="visible"
+                        android:layout_marginBottom="@dimen/_1dp"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         tools:listitem="@layout/row_employee" />
 
-                    <include layout="@layout/content_empty_activity_layout" />
-
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/layAttendancecard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/layAll"
+                    android:visibility="gone"
+                    android:background="@drawable/layout_round_shape_corners_bottom_radius_top"
+                    android:orientation="vertical"
+                    android:paddingBottom="@dimen/_16dp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvMonth"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginHorizontal="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_16dp"
+                        android:fontFamily="@font/gilroy_semibold"
+                        android:text="@string/scr_lbl_month"
+                        android:textColor="@color/black_heading"
+                        android:textSize="@dimen/_14sp" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/input_textMonth"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_45dp"
+                        android:layout_marginHorizontal="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_6dp"
+                        app:boxCornerRadiusBottomEnd="@dimen/_10dp"
+                        app:boxCornerRadiusBottomStart="@dimen/_10dp"
+                        app:boxCornerRadiusTopEnd="@dimen/_10dp"
+                        app:boxCornerRadiusTopStart="@dimen/_10dp"
+                        app:hintEnabled="false"
+                        app:hintTextAppearance="@style/Editext.Theme"
+                        app:placeholderTextAppearance="@style/Editext.Theme"
+                        app:startIconContentDescription="$">
+
+                        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                            android:id="@+id/AutoComMonth"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_45dp"
+                            android:background="@drawable/toggle_add_reminder_edt"
+                            android:dropDownHeight="@dimen/_300dp"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            android:fontFamily="@font/gilroy_semibold"
+                            android:hint="Select"
+                            android:imeOptions="actionDone"
+                            android:inputType="text"
+                            android:padding="@dimen/_10dp"
+                            android:text=""
+                            android:textColor="@color/black_heading"
+                            android:textColorHint="@color/app_gray"
+                            android:textSize="@dimen/_14sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvTitleError"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginHorizontal="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_16dp"
+                        android:fontFamily="@font/gilroy_semibold"
+                        android:text=""
+                        android:textColor="@color/green"
+                        android:textSize="@dimen/_14sp" />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvAttendanceList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@color/white"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:nestedScrollingEnabled="true"
+                        android:layout_marginTop="@dimen/_10dp"
+                        android:layout_marginHorizontal="@dimen/_10dp"
+                        android:paddingBottom="@dimen/_16dp"
+                        android:visibility="visible"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:listitem="@layout/row_employee_attendance" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
             </RelativeLayout>
 

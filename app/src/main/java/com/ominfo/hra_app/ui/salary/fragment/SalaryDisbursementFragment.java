@@ -210,7 +210,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
                 .load(R.drawable.img_bg_search)
                 .into(iv_emptyLayimage);
         tv_emptyLayTitle.setText(R.string.scr_message_please_wait);
-        tv_emptyLayTitle.setText("Search something...");
+        //tv_emptyLayTitle.setText("Search something...");
         LoginTable loginTable = mDb.getDbDAO().getLoginData();
         if(loginTable!=null) {
             selectedActiveEmpid = loginTable.getEmployeeId();
@@ -311,6 +311,7 @@ public class SalaryDisbursementFragment extends BaseFragment {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if(loginTable!=null) {
+                tv_emptyLayTitle.setText(R.string.scr_message_please_wait);
                 RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_salary_all_list);
                 RequestBody mRequestComId = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
                 RequestBody mRequestEmployee = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId()/*selectedActiveEmpid*/);
@@ -1041,6 +1042,12 @@ public class SalaryDisbursementFragment extends BaseFragment {
                                     btnSubmit.setEnabled(true);
                                     btnSubmit.setClickable(true);
                                     btnSubmit.setBackground(getResources().getDrawable(R.drawable.bg_button_round_corner_5));
+                                }
+                                if(monthTest==1 && monthRes==12){
+                                    btnSubmit.setEnabled(true);
+                                    btnSubmit.setClickable(true);
+                                    btnSubmit.setBackground(getResources().getDrawable(R.drawable.bg_button_round_corner_5));
+
                                 }
                                 setAdapterForSalaryAllList();
                             }

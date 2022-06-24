@@ -47,6 +47,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.ominfo.hra_app.MainActivity;
 import com.ominfo.hra_app.R;
@@ -221,7 +222,7 @@ public class DashboardFragment extends BaseFragment {
     Dialog mDialogLogout,dialogAddHoliday,mDialogEditHoliday;
     @BindView(R.id.imgDashBg)
     LinearLayoutCompat imgDashBg;
-
+    Snackbar snackbar;
     private LeaveCountViewModel leaveCountViewModel;
     private AddHolidayViewModel addHolidayViewModel;
     AppCompatTextView tvDateValueFrom;
@@ -287,7 +288,9 @@ public class DashboardFragment extends BaseFragment {
         callCalenderHolidaysApi();
         callDashboardApi();
         callEmployeeListApi();
-
+        try{
+            mContext.stopService(new Intent(mContext, BackgroundAttentionService.class));
+        }catch (Exception e){}
     }
 
     private void injectAPI() {
@@ -1104,6 +1107,7 @@ public class DashboardFragment extends BaseFragment {
         if (NetworkCheck.isInternetAvailable(mContext)) {
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if (loginTable != null) {
+                snackbar = LogUtil.printSnackBarTest(mContext,R.color.white,((MainActivity) mContext).findViewById(android.R.id.content),"Attendance records are getting ready...");
                 RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_attendance_record_bydate);
                 RequestBody mRequestDate = RequestBody.create(MediaType.parse("text/plain"), date);
                 RequestBody mRequestEmp = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
@@ -1381,6 +1385,8 @@ public class DashboardFragment extends BaseFragment {
                     }catch (Exception e){e.printStackTrace();}
                     try{
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_ATTENDANCE_DETAILS)) {
+                           try{  snackbar.dismiss();
+                           }catch (Exception e){}
                             AttendanceDetailsResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), AttendanceDetailsResponse.class);
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 showAttendanceDetailsDialog(responseModel.getResult().getData());

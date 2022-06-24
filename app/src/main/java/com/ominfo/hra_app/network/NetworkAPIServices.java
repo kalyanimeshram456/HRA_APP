@@ -455,6 +455,14 @@ public interface NetworkAPIServices {
 
     @Multipart
     @POST()
+    Observable<JsonElement> attendanceEmployeeList(@Url String url,
+                                         @Part("action") RequestBody uploadType,
+                                         @Part("emp_id") RequestBody company_id,
+                                         @Part("month") RequestBody month
+    );
+
+    @Multipart
+    @POST()
     Observable<JsonElement> singleEmployeeList(@Url String url,
                                          @Part("action") RequestBody uploadType,
                                          @Part("company_id") RequestBody company_id,
@@ -569,8 +577,8 @@ public interface NetworkAPIServices {
                                              @Part("company_id") RequestBody company_id,
                                              @Part("emp_id") RequestBody emp_id,
                                              @Part("leave_type") RequestBody leave_type,
-                                             @Part("from_date") RequestBody from_date,
-                                             @Part("end_date") RequestBody end_date,
+                                            /* @Part("from_date") RequestBody from_date,
+                                             @Part("end_date") RequestBody end_date,*/
                                              @Part("pageno") RequestBody pageno,
                                              @Part("pagesize") RequestBody pagesize,
                                              @Part("searched_emp") RequestBody searched_emp

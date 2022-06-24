@@ -46,13 +46,19 @@ import com.ominfo.hra_app.network.DynamicAPIPath;
 import com.ominfo.hra_app.network.NetworkCheck;
 import com.ominfo.hra_app.network.ViewModelFactory;
 import com.ominfo.hra_app.ui.dashboard.fragment.DashboardFragment;
+import com.ominfo.hra_app.ui.employees.adapter.AttendanceEmployeeAdapter;
 import com.ominfo.hra_app.ui.employees.adapter.EmployeeListRecyclerAdapter;
+import com.ominfo.hra_app.ui.employees.model.AttendanceEmployeeListData;
+import com.ominfo.hra_app.ui.employees.model.AttendanceEmployeeListResponse;
+import com.ominfo.hra_app.ui.employees.model.AttendanceEmployeeListViewModel;
 import com.ominfo.hra_app.ui.employees.model.EmployeeList;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListRequest;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListResponse;
+import com.ominfo.hra_app.ui.leave.model.EmployeeLeaveMonthsList;
 import com.ominfo.hra_app.ui.login.model.LoginTable;
 import com.ominfo.hra_app.ui.notifications.NotificationsActivity;
 import com.ominfo.hra_app.ui.employees.model.EmployeeListViewModel;
+import com.ominfo.hra_app.ui.salary.adapter.SalaryNewDisAdapter;
 import com.ominfo.hra_app.ui.salary.model.SalaryAllList;
 import com.ominfo.hra_app.util.AppUtils;
 import com.ominfo.hra_app.util.LogUtil;
@@ -84,9 +90,11 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
 
     Context mContext;
     EmployeeListRecyclerAdapter employeeAdapter;
-    //AddTagAdapter addTagAdapter;
+    AttendanceEmployeeAdapter attendanceEmployeeAdapter;
     @BindView(R.id.rvSalesList)
     RecyclerView rvSalesList;
+    @BindView(R.id.rvAttendanceList)
+    RecyclerView rvAttendanceList;
     @BindView(R.id.imgBack)
     LinearLayoutCompat imgBack;
     @BindView(R.id.imgNotify)
@@ -97,12 +105,11 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
     AppCompatTextView tvEmployeeActive;
     @BindView(R.id.tv_emptyLayTitle)
     AppCompatTextView tv_emptyLayTitle;
+    @BindView(R.id.tvTitleError)
+    AppCompatTextView tvTitleError;
     private AppDatabase mDb;
     List<EmployeeList> employeeListArrayList = new ArrayList<>();
-    @BindView(R.id.searchView)
-    SearchView searchView;
-    @BindView(R.id.tvSearch)
-    AppCompatTextView textViewSearch;
+    List<AttendanceEmployeeListData> attendanceEmployeeListDataList = new ArrayList<>();
     @BindView(R.id.progressBarHolder)
     FrameLayout mProgressBarHolder;
     @BindView(R.id.empty_layoutActivity)
@@ -113,10 +120,13 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
     AppCompatTextView tvNotifyCount;
     @BindView(R.id.tvFilterCount)
     AppCompatTextView tvFilterCount;
+    @BindView(R.id.layAttendancecard)
+    LinearLayoutCompat layAttendancecard;
     final Calendar myCalendar = Calendar.getInstance();
     @Inject
     ViewModelFactory mViewModelFactory;
     private EmployeeListViewModel employeeListViewModel;
+    private AttendanceEmployeeListViewModel attendanceEmployeeListViewModel;
     AppCompatAutoCompleteTextView AutoComFilterStatus, AutoComFilterName, AutoComFilterDesi;
     @BindView(R.id.swipeRefresh)
     SwipeRefreshLayout swipeRefresh;
@@ -124,6 +134,8 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
     AppCompatImageView imgReport;
     @BindView(R.id.imgAddEmployee)
     FloatingActionButton imgAddEmployee;
+    @BindView(R.id.AutoComMonth)
+    AppCompatAutoCompleteTextView AutoComMonth;
     private int currentPage = PAGE_START;
     private boolean isLastPage = false;
     private long totalPage = 0;
@@ -169,6 +181,7 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
 
     private void init() {
         setToolbar();
+        layAttendancecard.setVisibility(View.GONE);
         Glide.with(this)
                 .load(R.drawable.img_bg_search)
                 .into(iv_emptyLayimage);
@@ -176,7 +189,8 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
         tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
         showFilterEmployeeDialog(1);
         swipeRefresh.setOnRefreshListener(this);
-
+        AutoComMonth.setText(AppUtils.getCurrentMonth());
+        setDropdownMonth();
         rvSalesList.setHasFixedSize(true);
         // use a linear layout manager
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
@@ -232,9 +246,13 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
             if (loginTable != null) {
                 if (loginTable.getIsadmin().equals("0")) {
                     imgAddEmployee.setVisibility(View.GONE);
+                    setAdapterForAttendanceList();
+                    callAttendanceEmployeeListApi();
+                    layAttendancecard.setVisibility(View.VISIBLE);
                     //tvEmployeeActive.setVisibility(View.VISIBLE);
                 }else {
                     imgAddEmployee.setVisibility(View.VISIBLE);
+                    layAttendancecard.setVisibility(View.GONE);
                     //tvEmployeeActive.setVisibility(View.GONE);
                 }
             }
@@ -242,27 +260,72 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
         }
     }
 
+    //set value to month dropdown
+    private void setDropdownMonth() {
+        List<EmployeeLeaveMonthsList> monthsLists = new ArrayList<>();
+        monthsLists.add(new EmployeeLeaveMonthsList("January","31 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("February","28 days in a common year and 29 days in leap years"));
+        monthsLists.add(new EmployeeLeaveMonthsList("March","31 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("April","30 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("May","31 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("June","30 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("July","31 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("August","31 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("September","30 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("October","31 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("November","30 days"));
+        monthsLists.add(new EmployeeLeaveMonthsList("December","31 days"));
+
+        List<EmployeeLeaveMonthsList> monthsListWOW = new ArrayList<>();
+        if (monthsLists.size() > 0) {
+            for (int i = 0; i < monthsLists.size(); i++) {
+                // LogUtil.printLog("month_rag",AppUtils.getCurrentMonth()+"-"+(monthsLists.get(i).getName()));
+                if (!AppUtils.getCurrentMonth().equals(monthsLists.get(i).getName())) {
+                    monthsListWOW.add(monthsLists.get(i));
+                } else {
+                    monthsListWOW.add(monthsLists.get(i));
+                    break;
+                }
+            }
+        }
+
+        try {
+            int pos = 0;
+            if (monthsListWOW.size() > 0) {
+                String[] mDropdownList = new String[monthsListWOW.size()];
+                for (int i = 0; i < monthsListWOW.size(); i++) {
+                    if(monthsListWOW.get(i).getName()!=null) {
+                        mDropdownList[i] = String.valueOf(monthsListWOW.get(i).getName());
+                    }
+                }
+                //AutoComMonth.setText(mDropdownList[pos]);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        mContext,
+                        R.layout.row_dropdown_item,
+                        mDropdownList);
+                //tvHighlight.setThreshold(1);
+                AutoComMonth.setAdapter(adapter);
+                AutoComMonth.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                       setAdapterForAttendanceList();
+                       callAttendanceEmployeeListApi();
+                    }
+                });
+
+            } else {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     private void doApiCall() {
         final ArrayList<EmployeeList> items = new ArrayList<>();
            /* new Handler().postDelayed(new Runnable() {
 
                 @Override
                 public void run() {*/
-        try {
-            Collections.sort(employeeListArrayList, new Comparator<EmployeeList>() {
-                @Override
-                public int compare(EmployeeList o1, EmployeeList o2) {
-                    return Long.valueOf(o2.getIsActive() == null || o2.getIsActive()
-                            .equals("") ? "0" : o2.getIsActive()).compareTo(Long.valueOf(o1.getIsActive() == null ||
-                            o1.getIsActive().equals("") ? "0" : o1.getIsActive()));
-                }
-
-                @Override
-                public boolean equals(Object obj) {
-                    return false;
-                }
-            });
-        }catch (Exception e){}
         for (int i = 0; i < employeeListArrayList.size(); i++) {
             items.add(employeeListArrayList.get(i));
         }
@@ -306,6 +369,9 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
     private void injectAPI() {
         employeeListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(EmployeeListViewModel.class);
         employeeListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_EMPLOYEES_LIST));
+
+        attendanceEmployeeListViewModel = ViewModelProviders.of(this, mViewModelFactory).get(AttendanceEmployeeListViewModel.class);
+        attendanceEmployeeListViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, DynamicAPIPath.POST_ATTENDANCE_EMPLOYEES_LIST));
     }
 
     /* Call Api For employee list */
@@ -343,6 +409,26 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
                 request.setFilterEmpIsActive(filter_emp_isActive);
 
                 employeeListViewModel.executeEmployeeListAPI(request);
+            } else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
+        }
+    }
+
+    /* Call Api For Attendance employee list */
+    private void callAttendanceEmployeeListApi() {
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if (loginTable != null) {
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_late_monthly_details);
+                RequestBody mRequestEmpId = RequestBody.create(MediaType.parse("text/plain"), "46"/*loginTable.getEmployeeId()*/);
+                String monthNumber  =  AppUtils.convertMonthToInt(AutoComMonth.getText().toString().trim());
+                RequestBody mRequestMonth = RequestBody.create(MediaType.parse("text/plain"), monthNumber);
+
+                attendanceEmployeeListViewModel.hitAttendanceEmployeeListAPI(mRequestAction,
+                        mRequestEmpId,mRequestMonth);
             } else {
                 LogUtil.printToastMSG(mContext, "Something is wrong.");
             }
@@ -580,8 +666,34 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
                             }
                         }
                     } catch (Exception e) {
-                        LogUtil.printLog("tet_error",e.getMessage());
+                       // LogUtil.printLog("tet_error",e.getMessage());
                         e.printStackTrace();
+                    }
+                    try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_ATTENDANCE_EMPLOYEES_LIST)) {
+                            AttendanceEmployeeListResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), AttendanceEmployeeListResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                attendanceEmployeeListDataList.removeAll(attendanceEmployeeListDataList);
+                                if (responseModel.getResult().getData() != null && responseModel.getResult().getData().size()>0) {
+                                    attendanceEmployeeListDataList = responseModel.getResult().getData();
+                                    setAdapterForAttendanceList();
+                                }else{
+                                    tvTitleError.setVisibility(View.VISIBLE);
+                                    tvTitleError.setText("Congrats ! You dont have any Late check in OR Early check out record" +
+                                            " for "+AutoComMonth.getText().toString().toString()+" Month.");
+                                }
+
+                            }else{
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                                attendanceEmployeeListDataList.removeAll(attendanceEmployeeListDataList);
+                                setAdapterForAttendanceList();
+                            }
+                        }
+                    } catch (Exception e) {
+                       // LogUtil.printLog("tet_error",e.getMessage());
+                        e.printStackTrace();
+                        attendanceEmployeeListDataList.removeAll(attendanceEmployeeListDataList);
+                        setAdapterForAttendanceList();
                     }
                 }
                 break;
@@ -589,8 +701,28 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
                 ((BaseActivity) mContext).dismissSmallProgressBar(mProgressBarHolder);
                 LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
                 break;
+
         }
     }
 
+    private void setAdapterForAttendanceList() {
+        if (attendanceEmployeeListDataList!=null && attendanceEmployeeListDataList.size() > 0) {
+            rvAttendanceList.setVisibility(View.VISIBLE);
+            tvTitleError.setVisibility(View.GONE);
+        } else {
+
+        }
+        attendanceEmployeeAdapter = new AttendanceEmployeeAdapter(mContext, attendanceEmployeeListDataList, new AttendanceEmployeeAdapter.ListItemSelectListener() {
+            @Override
+            public void onItemClick(int mDataTicket,AttendanceEmployeeListData searchresult,List<AttendanceEmployeeListData> mList) {
+
+            }
+        });
+        rvAttendanceList.setHasFixedSize(true);
+        rvAttendanceList.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
+        rvAttendanceList.setAdapter(attendanceEmployeeAdapter);
+        final boolean[] check = {false};
+
+    }
 
 }

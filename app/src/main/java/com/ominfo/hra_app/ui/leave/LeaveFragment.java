@@ -278,8 +278,8 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
                 tvDateValue.setText(AppUtils.dateConvertYYYYToDD(getMonth[1]));
                 SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_LEAVE_NAME, AutoComFilterName.getText().toString().trim());
                 SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_TYPE, AutoComFilterStatus.getText().toString().trim());
-                SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_FROM, tvDateValueFrom.getText().toString().trim());
-                SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_TO, tvDateValue.getText().toString().trim());
+                //SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_FROM, tvDateValueFrom.getText().toString().trim());
+                //SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_TO, tvDateValue.getText().toString().trim());
             }
             });
 
@@ -289,8 +289,8 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
                 mDialog.dismiss();
                 SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_LEAVE_NAME, AutoComFilterName.getText().toString().trim());
                 SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_TYPE, AutoComFilterStatus.getText().toString().trim());
-                SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_FROM, tvDateValueFrom.getText().toString().trim());
-                SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_TO, tvDateValue.getText().toString().trim());
+                //SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_FROM, tvDateValueFrom.getText().toString().trim());
+                //SharedPref.getInstance(mContext).write(SharedPrefKey.FILTER_TO, tvDateValue.getText().toString().trim());
                 itemCount = 0;
                 currentPage = PAGE_START;
                 isLastPage = false;
@@ -381,10 +381,10 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
                 RequestBody mRequestcom_id = RequestBody.create(MediaType.parse("text/plain"),loginTable.getCompanyId());
                 String status = AutoComFilterStatus.getText().toString().equals("All")?"": AutoComFilterStatus.getText().toString();
                 RequestBody mRequestleave_type = RequestBody.create(MediaType.parse("text/plain"),status);
-                String startD = AppUtils.changeToSlashToDash(tvDateValueFrom.getText().toString());
-                String endD = AppUtils.changeToSlashToDash(tvDateValue.getText().toString());
-                RequestBody mRequestfrom_date = RequestBody.create(MediaType.parse("text/plain"), startD);
-                RequestBody mRequestend_date = RequestBody.create(MediaType.parse("text/plain"), endD);
+                //String startD = AppUtils.changeToSlashToDash(tvDateValueFrom.getText().toString());
+                //String endD = AppUtils.changeToSlashToDash(tvDateValue.getText().toString());
+                //RequestBody mRequestfrom_date = RequestBody.create(MediaType.parse("text/plain"), startD);
+                //RequestBody mRequestend_date = RequestBody.create(MediaType.parse("text/plain"), endD);
                 RequestBody mRequestName = RequestBody.create(MediaType.parse("text/plain"),AutoComFilterName.getText().toString());
                 RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), pageNo);
                 RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
@@ -394,8 +394,8 @@ public class LeaveFragment extends BaseFragment implements SwipeRefreshLayout.On
                 request.setEmpId(mRequestemp_id);
                 request.setSearchedEmp(mRequestName);
                 request.setLeaveType(mRequestleave_type);
-                request.setFromDate(mRequestfrom_date);
-                request.setEndDate(mRequestend_date);
+                //request.setFromDate(mRequestfrom_date);
+                //request.setEndDate(mRequestend_date);
                 request.setPageNo(mRequestpage_number);
                 request.setPageSize(mRequestpage_size);
                 request.setCompany_id(mRequestcom_id);

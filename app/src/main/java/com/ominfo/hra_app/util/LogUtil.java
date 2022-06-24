@@ -67,4 +67,26 @@ public class LogUtil {
             //snackbar.show();
         }
     }
+    public static Snackbar printSnackBarTest(Context context,int colour,View id, String object) {
+        //findViewById(android.R.id.content)
+        if (isEnableToast && object!=null) {
+            final Snackbar snackBar = Snackbar.make(id, object.trim(), Snackbar.LENGTH_LONG)
+                    .setActionTextColor(Color.WHITE)
+                    .setTextColor(context.getResources().getColor(R.color.white))
+                    .setBackgroundTint(context.getResources().getColor(R.color.color_main))
+                    .setTextMaxLines(3);
+            snackBar.setAction("Ok", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Call your action method here
+                    snackBar.dismiss();
+                }
+            });
+            snackBar.show();
+            return snackBar;
+        }
+        return null;
+            //snackbar.show();
+        }
+
 }

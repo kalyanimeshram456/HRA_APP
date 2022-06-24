@@ -321,6 +321,13 @@ public class Service {
                 employeeListRequest.getFilterEmpIsActive()
         );
     }
+
+    public Observable<JsonElement> executeAttendanceEmployeeListAPI(RequestBody act,RequestBody empID,RequestBody month) {
+        return networkAPIServices.attendanceEmployeeList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
+                DynamicAPIPath.POST_ATTENDANCE_EMPLOYEES_LIST),
+                act,empID,month
+        );
+    }
     public Observable<JsonElement> executeSingleEmployeeListAPI(EmployeeListRequest employeeListRequest) {
         return networkAPIServices.singleEmployeeList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_SINLE_EMPLOYEES_LIST),
@@ -428,8 +435,8 @@ public class Service {
         return networkAPIServices.acceptRejectList(DynamicAPIPath.makeDynamicEndpointAPIGateWay("",
                 DynamicAPIPath.POST_ACCEPT_REJECT_LIST),
                 request.getAction(),request.getCompany_id(),request.getEmpId(),
-                request.getLeaveType(),request.getFromDate(),
-                request.getEndDate(),request.getPageNo(),request.getPageSize()
+                request.getLeaveType(),/*request.getFromDate(),
+                request.getEndDate(),*/request.getPageNo(),request.getPageSize()
                 ,request.getSearchedEmp()
         );
     }

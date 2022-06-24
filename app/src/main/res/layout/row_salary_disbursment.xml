@@ -85,11 +85,10 @@
                         android:id="@+id/tvBirthName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:fontFamily="@font/gilroy_semibold"
                         android:inputType="textMultiLine"
                         android:text="User name"
-                        android:textAlignment="center"
+                        android:textAlignment="viewStart"
                         android:textColor="@color/black_heading"
                         android:textSize="@dimen/_14sp" />
 
@@ -98,11 +97,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/tvBirthName"
-                        android:layout_gravity="center"
                         android:fontFamily="@font/gilroy_regular"
                         android:inputType="textMultiLine"
                         android:text="User designation"
-                        android:textAlignment="center"
+                        android:textAlignment="viewStart"
                         android:textColor="@color/gray"
                         android:textSize="@dimen/_12sp" />
 

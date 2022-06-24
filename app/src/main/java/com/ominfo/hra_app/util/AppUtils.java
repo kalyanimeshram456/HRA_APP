@@ -206,7 +206,7 @@ public class AppUtils {
         try{
             Calendar cal=Calendar.getInstance();
             SimpleDateFormat month_date = new SimpleDateFormat("MMM");
-            cal.set(Calendar.MONTH, Integer.parseInt(monthnum));
+            cal.set(Calendar.MONTH, Integer.parseInt((monthnum==null || monthnum.equals("")|| monthnum.equals("0"))?"1":monthnum)-1);
             String month_name = month_date.format(cal.getTime());
             return month_name;
         }
@@ -352,7 +352,7 @@ public class AppUtils {
         Glide.with(context)
                 .load(url)
                 .placeholder(R.drawable.ic_camera_with_card)
-                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) // don't use target size, load full image
+                //.override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) // don't use target size, load full image
                 //.diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
@@ -387,13 +387,18 @@ public class AppUtils {
      * @param mImageView target view
      */
     public static void loadImageURL(Context context, String url, CircleImageView mImageView, ProgressBar mProgressBar) {
+        RequestOptions myOptions = new RequestOptions()
+                .fitCenter() // or centerCrop
+                .override(100, 100);
+
         Glide.with(context)
                 .load(url)
                 .placeholder(R.drawable.bg_profile_images)
                 .apply(RequestOptions.skipMemoryCacheOf(true))
-                .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
-                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) // don't use target size, load full image
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .apply(myOptions)
+                //.override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) // don't use target size, load full image
+                //.diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .fitCenter()
                 .listener(new RequestListener<Drawable>() {
                     @Override

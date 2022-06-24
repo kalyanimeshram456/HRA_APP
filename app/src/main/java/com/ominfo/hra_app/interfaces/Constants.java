@@ -73,9 +73,10 @@ public interface Constants {
     String FORGOT_PASSWORD = "forgot_password";
     String CONFIRM_PIN = "confirm_pin";
     String SEND_MONEY = "send_money";
-    long INTERVAL = 5 * 1000;
-    long FASTEST_INTERVAL = 2 * 1000;
-    long INTERVAL_ATTENDENCE = 60 * 1 * 1000;
-    long FASTEST_INTERVAL_ATTENDENCE = 30 * 1 * 1000;
+    long INTERVAL_M =  10;
+    long INTERVAL =  60000;
+    long FASTEST_INTERVAL = 5 * 1000;
+    long INTERVAL_ATTENDENCE = 60000;//60 * 1 * 1000; //60 sec
+    long FASTEST_INTERVAL_ATTENDENCE = 5 * 1000;//30 * 1 * 1000; //30 sec
 
 }

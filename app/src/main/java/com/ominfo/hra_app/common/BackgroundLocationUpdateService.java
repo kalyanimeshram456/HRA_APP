@@ -1,5 +1,7 @@
 package com.ominfo.hra_app.common;
 
+import static com.ominfo.hra_app.interfaces.Constants.INTERVAL_M;
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.Notification;
@@ -210,7 +212,9 @@ public class BackgroundLocationUpdateService extends Service implements GoogleAp
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(Constants.INTERVAL);
         mLocationRequest.setFastestInterval(Constants.FASTEST_INTERVAL);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        //mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        mLocationRequest.setSmallestDisplacement(INTERVAL_M); //higher priority
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.addLocationRequest(mLocationRequest);
         builder.setAlwaysShow(true);

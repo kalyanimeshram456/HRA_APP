@@ -119,6 +119,7 @@
             android:layout_marginHorizontal="@dimen/_10dp"
             android:fontFamily="@font/gilroy_semibold"
             android:text="@string/scr_lbl_leave_date"
+            android:visibility="gone"
             android:textColor="@color/back_text_colour"
             android:textSize="@dimen/_14sp" />
 
@@ -127,6 +128,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_10dp"
             android:layout_marginTop="@dimen/_6dp"
+            android:visibility="gone"
             android:orientation="horizontal">
 
             <RelativeLayout

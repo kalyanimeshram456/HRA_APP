@@ -47,6 +47,7 @@ public class DynamicAPIPath {
     public static final String POST_GET_VEHICLE= BASE+"?action=getVehWiseLRs";
     public static final String POST_VEHICLE_DETAILS= BASE+"?action=getVehWiseLRTransaction";
     public static final String POST_EMPLOYEES_LIST = BASE+"?action=get_employee_list";
+    public static final String POST_ATTENDANCE_EMPLOYEES_LIST = BASE+"?action=late_monthly_details";
     public static final String POST_SINLE_EMPLOYEES_LIST = BASE+"?action=get_single_employee_list";
     public static final String POST_SALARY_ALL_LIST = BASE+"?action=get_emplist_sal";
     public static final String POST_ADD_SALARY = BASE+"?action=add_sal_disbursment";
@@ -133,6 +134,7 @@ public class DynamicAPIPath {
     public static final String action_get_company_details = "get_company_details";
     public static final String action_employee_list = "get_employee_list";
     public static final String action_get_single_employee_list = "get_single_employee_list";
+    public static final String action_late_monthly_details = "late_monthly_details";
     public static final String action_salary_all_list = "get_emplist_sal";
     public static final String action_salary_sheet = "emp_monthly_sal_crd";
     public static final String action_notification = "getempnotification";

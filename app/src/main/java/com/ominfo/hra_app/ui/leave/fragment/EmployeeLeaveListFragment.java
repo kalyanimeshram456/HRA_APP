@@ -195,8 +195,8 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
         tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
         tv_emptyLayTitle.setText("Search something...");
         swipeRefresh.setOnRefreshListener(this);
-        AutoComMonth.setText(AppUtils.getCurrentMonth());
-        setDropdownMonth();
+        //AutoComMonth.setText(AppUtils.getCurrentMonth());
+        //setDropdownMonth();
         rvSalesList.setHasFixedSize(true);
         // use a linear layout manager
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
@@ -695,10 +695,10 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
                 RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_accept_reject_List);
                 RequestBody mRequestemp_id = RequestBody.create(MediaType.parse("text/plain"),loginTable.getEmployeeId());
                 RequestBody mRequestleave_type = RequestBody.create(MediaType.parse("text/plain"),"");
-                String monthNumber  =  AppUtils.convertMonthToInt(AutoComMonth.getText().toString().trim());
-                String[] mon = AppUtils.startEndMonthfromInt(Integer.parseInt(monthNumber)).split("~");
-                RequestBody mRequestfrom_date = RequestBody.create(MediaType.parse("text/plain"), mon[0]);
-                RequestBody mRequestend_date = RequestBody.create(MediaType.parse("text/plain"), mon[1]);
+                //String monthNumber  =  AppUtils.convertMonthToInt(AutoComMonth.getText().toString().trim());
+                //String[] mon = AppUtils.startEndMonthfromInt(Integer.parseInt(monthNumber)).split("~");
+                //RequestBody mRequestfrom_date = RequestBody.create(MediaType.parse("text/plain"), mon[0]);
+                //RequestBody mRequestend_date = RequestBody.create(MediaType.parse("text/plain"), mon[1]);
                 RequestBody mRequestName = RequestBody.create(MediaType.parse("text/plain"),loginTable.getName());
                 RequestBody mRequestpage_number = RequestBody.create(MediaType.parse("text/plain"), pageNo);
                 RequestBody mRequestpage_size = RequestBody.create(MediaType.parse("text/plain"), Constants.PAG_SIZE);
@@ -709,8 +709,8 @@ public class EmployeeLeaveListFragment extends BaseFragment implements SwipeRefr
                 request.setEmpId(mRequestemp_id);
                 request.setSearchedEmp(mRequestName);
                 request.setLeaveType(mRequestleave_type);
-                request.setFromDate(mRequestfrom_date);
-                request.setEndDate(mRequestend_date);
+                //request.setFromDate(mRequestfrom_date);
+                //request.setEndDate(mRequestend_date);
                 request.setPageNo(mRequestpage_number);
                 request.setPageSize(mRequestpage_size);
                 request.setCompany_id(mRequestcom_id);

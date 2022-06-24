@@ -1,5 +1,7 @@
 package com.ominfo.hra_app.common;
 
+import static com.ominfo.hra_app.interfaces.Constants.INTERVAL_M;
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.Notification;
@@ -208,8 +210,9 @@ public class BackgroundAttentionService extends Service implements GoogleApiClie
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(Constants.INTERVAL_ATTENDENCE);
         mLocationRequest.setFastestInterval(Constants.FASTEST_INTERVAL_ATTENDENCE);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
+        //mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        mLocationRequest.setSmallestDisplacement(INTERVAL_M); //higher priority
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.addLocationRequest(mLocationRequest);
         builder.setAlwaysShow(true);

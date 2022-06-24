@@ -1,5 +1,7 @@
 package com.ominfo.hra_app;
 
+import static com.ominfo.hra_app.interfaces.Constants.INTERVAL_M;
+
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -54,6 +56,7 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ominfo.hra_app.basecontrol.BaseActivity;
 import com.ominfo.hra_app.basecontrol.BaseApplication;
+import com.ominfo.hra_app.common.BackgroundAttentionService;
 import com.ominfo.hra_app.common.BackgroundLocationUpdateService;
 import com.ominfo.hra_app.database.AppDatabase;
 import com.ominfo.hra_app.interfaces.Constants;
@@ -622,7 +625,9 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
         long INTERVAL = Constants.INTERVAL; //5 min
         long FASTEST_INTERVAL = Constants.FASTEST_INTERVAL; //2 min
         LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        //locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        locationRequest.setSmallestDisplacement(INTERVAL_M); //higher priority
         locationRequest.setInterval(INTERVAL);
         locationRequest.setFastestInterval(FASTEST_INTERVAL);
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
@@ -680,6 +685,13 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try{
+            stopService(new Intent(mContext, BackgroundAttentionService.class));
+        }catch (Exception e){}
+    }
 }
 
 

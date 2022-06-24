@@ -37,6 +37,7 @@
                     android:background="@drawable/layout_round_shape_corners_bottom_radius"
                     android:orientation="vertical"
                     android:paddingHorizontal="@dimen/_6dp"
+                    android:visibility="gone"
                     android:paddingBottom="@dimen/_16dp">
 
                     <androidx.appcompat.widget.AppCompatTextView
