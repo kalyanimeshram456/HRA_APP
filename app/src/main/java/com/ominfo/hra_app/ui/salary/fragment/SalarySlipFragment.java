@@ -72,6 +72,9 @@ import com.ominfo.hra_app.ui.salary.model.SalarySheetResponse;
 import com.ominfo.hra_app.ui.salary.model.SalarySheetViewModel;
 import com.ominfo.hra_app.ui.salary.model.SalarySlipResponse;
 import com.ominfo.hra_app.ui.salary.model.SalarySlipViewModel;
+import com.ominfo.hra_app.ui.salary.model.UpdateSalaryRequest;
+import com.ominfo.hra_app.ui.salary.model.UpdateSalaryResponse;
+import com.ominfo.hra_app.ui.salary.model.UpdateSalaryViewModel;
 import com.ominfo.hra_app.ui.sales_credit.adapter.EnquiryPageAdapter;
 import com.ominfo.hra_app.ui.sales_credit.model.EnquiryPagermodel;
 import com.ominfo.hra_app.util.AppUtils;
@@ -145,12 +148,13 @@ public class SalarySlipFragment extends BaseFragment {
     @Inject
     ViewModelFactory mViewModelFactory;
     private SalarySlipViewModel salarySlipViewModel;
+    private UpdateSalaryViewModel updateSalaryViewModel;
     private Dialog mDialogChangePass;
     LinearLayoutCompat layoutLeaveTime;
     AppCompatTextView appcomptextLeaveTime;
     View viewToDate;
     RelativeLayout layToDate;
-    int cam = 0,noOFDays = 0;
+    int monthSlip = 1,noOFDays = 0;
     AppCompatTextView appcomptextNoOfDays;
     AppCompatTextView tvDateValueFrom;
     AppCompatTextView tvDateValueTo,tvTimeValueFrom,tvTimeValueTo ;
@@ -257,6 +261,9 @@ public class SalarySlipFragment extends BaseFragment {
     }
 
     private void injectAPI() {
+        updateSalaryViewModel = ViewModelProviders.of(this, mViewModelFactory).get(UpdateSalaryViewModel.class);
+        updateSalaryViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_UPDATE_SALARY));
+
         salarySlipViewModel = ViewModelProviders.of(this, mViewModelFactory).get(SalarySlipViewModel.class);
         salarySlipViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_SALARY_SLIP));
    }
@@ -416,7 +423,40 @@ public class SalarySlipFragment extends BaseFragment {
                     tvAddValue.setEnabled(false);
                     tvDedValue.setEnabled(false);
                     tvTotalValue.setEnabled(false);
+                    callSalaryUpdate();
                 }
+        }
+    }
+
+    private void callSalaryUpdate(){
+        if (NetworkCheck.isInternetAvailable(mContext)) {
+            LoginTable loginTable = mDb.getDbDAO().getLoginData();
+            if (loginTable != null) {
+                RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_update_Salary);
+                RequestBody mRequestaddition = RequestBody.create(MediaType.parse("text/plain"), tvAddValue.getText().toString() == null || tvAddValue.getText().toString().equals("") ? "0" : tvAddValue.getText().toString());
+                RequestBody mRequesttotal = RequestBody.create(MediaType.parse("text/plain"), tvTotalValue.getText().toString() == null || tvTotalValue.getText().toString().equals("") ? "0" : tvTotalValue.getText().toString());
+                RequestBody mRequestremark = RequestBody.create(MediaType.parse("text/plain"), "Updated from salary slip");
+                RequestBody mRequestemp_id = RequestBody.create(MediaType.parse("text/plain"), empId);
+                RequestBody mRequestdeduction = RequestBody.create(MediaType.parse("text/plain"), tvDedValue.getText().toString() == null || tvDedValue.getText().toString().equals("") ? "0" : tvDedValue.getText().toString());
+                RequestBody mRequestyear = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getCurrentYear());
+                String monthNumber = String.valueOf(monthSlip).length()==1?"0"+monthSlip:String.valueOf(monthSlip);
+                RequestBody mRequestmonth = RequestBody.create(MediaType.parse("text/plain"), monthNumber);
+
+                UpdateSalaryRequest salaryRequest = new UpdateSalaryRequest();
+                salaryRequest.setAction(mRequestAction);
+                salaryRequest.setAddition(mRequestaddition);
+                salaryRequest.setTotal(mRequesttotal);
+                salaryRequest.setRemark(mRequestremark);
+                salaryRequest.setEmp_id(mRequestemp_id);
+                salaryRequest.setDeduction(mRequestdeduction);
+                salaryRequest.setYear(mRequestyear);
+                salaryRequest.setMonth(mRequestmonth);
+                updateSalaryViewModel.hitSalaryAllListAPI(salaryRequest);
+            } else {
+                LogUtil.printToastMSG(mContext, "Something is wrong.");
+            }
+        } else {
+            LogUtil.printToastMSG(mContext, getString(R.string.err_msg_connection_was_refused));
         }
     }
 
@@ -529,13 +569,27 @@ public class SalarySlipFragment extends BaseFragment {
                                 tvEmpName.setText(responseModel.getResult().getList().get(0).getEmpName());
                                 tvDesiValue.setText(responseModel.getResult().getList().get(0).getEmpPosition());
                                 tvPaymentDate.setText(AppUtils.convertyyyytodd(responseModel.getResult().getList().get(0).getCreatedOn()));
-                                tvMonth.setText("Payslip of "+AppUtils.convertIntToMonth(Integer.parseInt(responseModel.getResult().getList().get(0).getMonth())));
+                                int month = Integer.parseInt(responseModel.getResult().getList().get(0).getMonth()==null?"0":
+                                        responseModel.getResult().getList().get(0).getMonth());
+                                tvMonth.setText("Payslip of "+AppUtils.convertIntToMonth(month==1?12:month-1));
+                                monthSlip = Integer.parseInt(responseModel.getResult().getList().get(0).getMonth());
                                 tvNoOfLeavesValue.setText(responseModel.getResult().getList().get(0).getLeaves());
                                 tvSalaryValue.setText(responseModel.getResult().getList().get(0).getSalary());
                                 salary = Double.parseDouble(tvSalaryValue.getText().toString());
                                 tvAddValue.setText(responseModel.getResult().getList().get(0).getAddition());
                                 tvDedValue.setText(responseModel.getResult().getList().get(0).getDeduction());
                                 tvTotalValue.setText(responseModel.getResult().getList().get(0).getTotal());
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }try {
+                        if (tag.equalsIgnoreCase(DynamicAPIPath.POST_UPDATE_SALARY)) {
+                            UpdateSalaryResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), UpdateSalaryResponse.class);
+                            if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
+                            }else{
+                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
                             }
                         }
                     }catch (Exception e){

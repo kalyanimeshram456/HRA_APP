@@ -245,6 +245,7 @@ public class AppUtils {
     }
 
     public static double meterDistanceBetweenPoints(float lat_a, float lng_a, float lat_b, float lng_b) {
+
         float pk = (float) (180.f/Math.PI);
 
         float a1 = lat_a / pk;

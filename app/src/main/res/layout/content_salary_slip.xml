@@ -547,7 +547,7 @@
 
                     <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                         android:id="@+id/tvTotalValue"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_toRightOf="@+id/tvBirthName"
                         android:background="@drawable/toggle_editext_salary_color"

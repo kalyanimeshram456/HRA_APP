@@ -598,8 +598,8 @@ public class SalaryDisbursementFragment extends BaseFragment {
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment fragment = new DashboardFragment();
-                ((BaseActivity)mContext).moveFragment(mContext,fragment);
+                SalaryDisbursementFragment myFrag = new SalaryDisbursementFragment();
+                removeFragment(myFrag);
             }
         });
         imgNotify.setOnClickListener(new View.OnClickListener() {

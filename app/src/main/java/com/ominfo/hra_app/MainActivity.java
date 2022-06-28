@@ -27,6 +27,7 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Handler;
@@ -252,7 +253,13 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.Connec
                         temp = new MyAccountFragment();
                 }
 
-                getSupportFragmentManager().beginTransaction().add(R.id.framecontainer, temp).addToBackStack(null).commit();
+                //HomeFragment fragment=new HomeFragment();
+                FragmentTransaction fragmentTransaction=getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.framecontainer,temp,"");
+                fragmentTransaction.commit();
+               /* getSupportFragmentManager().beginTransaction().replace(R.id.framecontainer, temp).
+                        addToBackStack(null).commit();
+                getFragmentManager().popBackStack();*/
                 return true;
             }
         });

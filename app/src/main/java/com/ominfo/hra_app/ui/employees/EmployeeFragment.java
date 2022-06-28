@@ -15,7 +15,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +27,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.appcompat.widget.SearchView;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -77,6 +80,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 //https://github.com/PhilJay/MPAndroidChart/wiki/Modifying-the-Viewport
@@ -105,8 +109,8 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
     AppCompatTextView tvEmployeeActive;
     @BindView(R.id.tv_emptyLayTitle)
     AppCompatTextView tv_emptyLayTitle;
-    @BindView(R.id.tvTitleError)
-    AppCompatTextView tvTitleError;
+    /*@BindView(R.id.tvTitleError)
+    AppCompatTextView tvTitleError;*/
     private AppDatabase mDb;
     List<EmployeeList> employeeListArrayList = new ArrayList<>();
     List<AttendanceEmployeeListData> attendanceEmployeeListDataList = new ArrayList<>();
@@ -116,12 +120,24 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
     LinearLayoutCompat emptyLayout;
     @BindView(R.id.iv_emptyLayimage)
     AppCompatImageView iv_emptyLayimage;
+    @BindView(R.id.empty_layoutActivityEmp)
+    LinearLayoutCompat emptyLayoutEmp;
+    @BindView(R.id.iv_emptyLayimageEmp)
+    AppCompatImageView iv_emptyLayimageEmp;
+    @BindView(R.id.tv_emptyLayTitleEmp)
+    AppCompatTextView tv_emptyLayTitleEmp;
+    @BindView(R.id.tv_emptyLayMsgEmp)
+    AppCompatTextView tv_emptyLayMsgEmp;
     @BindView(R.id.tvNotifyCount)
     AppCompatTextView tvNotifyCount;
     @BindView(R.id.tvFilterCount)
     AppCompatTextView tvFilterCount;
     @BindView(R.id.layAttendancecard)
     LinearLayoutCompat layAttendancecard;
+    @BindView(R.id.mainLayoutColour)
+    LinearLayoutCompat mainLayoutColour;
+    @BindView(R.id.layAll)
+    LinearLayoutCompat layAll;
     final Calendar myCalendar = Calendar.getInstance();
     @Inject
     ViewModelFactory mViewModelFactory;
@@ -136,6 +152,18 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
     FloatingActionButton imgAddEmployee;
     @BindView(R.id.AutoComMonth)
     AppCompatAutoCompleteTextView AutoComMonth;
+    @BindView(R.id.tvEmpName)
+    TextView textViewTitle;
+    @BindView(R.id.tvDesi)
+    TextView textViewDescription;
+    @BindView(R.id.tvStatus)
+    AppCompatTextView tvStatus;
+    @BindView(R.id.layCard)
+    RelativeLayout layCard;
+    @BindView(R.id.imgBirthPro)
+    CircleImageView imgBirthPro;
+    @BindView(R.id.progress_barBirth)
+    ProgressBar progress_barBirth;
     private int currentPage = PAGE_START;
     private boolean isLastPage = false;
     private long totalPage = 0;
@@ -249,11 +277,16 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
                     setAdapterForAttendanceList();
                     callAttendanceEmployeeListApi();
                     layAttendancecard.setVisibility(View.VISIBLE);
+                    layAll.setVisibility(View.GONE);
+                    layCard.setVisibility(View.VISIBLE);
+                    mainLayoutColour.setBackgroundColor(getResources().getColor(R.color.white));
                     //tvEmployeeActive.setVisibility(View.VISIBLE);
                 }else {
                     imgAddEmployee.setVisibility(View.VISIBLE);
                     layAttendancecard.setVisibility(View.GONE);
-                    //tvEmployeeActive.setVisibility(View.GONE);
+                    layAll.setVisibility(View.VISIBLE);
+                    layCard.setVisibility(View.GONE);
+                    mainLayoutColour.setBackgroundColor(getResources().getColor(R.color.bg_screen));
                 }
             }
         } catch (Exception e) {
@@ -423,7 +456,7 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
             LoginTable loginTable = mDb.getDbDAO().getLoginData();
             if (loginTable != null) {
                 RequestBody mRequestAction = RequestBody.create(MediaType.parse("text/plain"), DynamicAPIPath.action_late_monthly_details);
-                RequestBody mRequestEmpId = RequestBody.create(MediaType.parse("text/plain"), "46"/*loginTable.getEmployeeId()*/);
+                RequestBody mRequestEmpId = RequestBody.create(MediaType.parse("text/plain"), loginTable.getEmployeeId());
                 String monthNumber  =  AppUtils.convertMonthToInt(AutoComMonth.getText().toString().trim());
                 RequestBody mRequestMonth = RequestBody.create(MediaType.parse("text/plain"), monthNumber);
 
@@ -647,19 +680,36 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
                         if (tag.equalsIgnoreCase(DynamicAPIPath.POST_EMPLOYEES_LIST)) {
                             EmployeeListResponse responseModel = new Gson().fromJson(apiResponse.data.toString(), EmployeeListResponse.class);
                             totalPage = responseModel.getResult().getTotalrows();
+                            LoginTable loginTable = mDb.getDbDAO().getLoginData();
                             if (responseModel != null && responseModel.getResult().getStatus().equals("success")) {
                                 if (responseModel.getResult().getList() != null && responseModel.getResult().getList().size()>0) {
-                                    employeeListArrayList = responseModel.getResult().getList();
-                                    emptyLayout.setVisibility(View.GONE);
-                                    doApiCall();
-                                }
-                                LoginTable loginTable = mDb.getDbDAO().getLoginData();
+                                    if(loginTable.getIsadmin().equals("1")) {
+                                        employeeListArrayList = responseModel.getResult().getList();
+                                        emptyLayout.setVisibility(View.GONE);
+                                        doApiCall();
+                                    } else{
+                                            if (responseModel.getResult().getList().get(0).getIsActive()!=null && responseModel.getResult().getList().get(0).getIsActive().equals("1")) {
+                                                tvStatus.setTextColor(getResources().getColor(R.color.green));
+                                                tvStatus.setText("Active");
+                                            } else {
+                                                tvStatus.setTextColor(getResources().getColor(R.color.deep_red));
+                                                tvStatus.setText("Inactive");
+                                            }
+                                            textViewTitle.setText(responseModel.getResult().getList().get(0).getEmpName());
+                                            textViewDescription.setText(responseModel.getResult().getList().get(0).getEmpPosition());
+                                            AppUtils.loadImageURL(mContext, "https://ominfo.in/o_hr/" + responseModel.getResult().getList().get(0).getEmpProfilePic(),
+                                                    imgBirthPro, progress_barBirth);
+                                            emptyLayout.setVisibility(View.GONE);
+                                            doApiCall();
+                                    }
+                                    }
+
                                 if (!loginTable.getIsadmin().equals("0")){
                                     tvEmployeeActive.setVisibility(View.VISIBLE);
                                     tvEmployeeActive.setText(((responseModel.getResult().getTotal_prest_emp()==null || responseModel.getResult().getTotal_prest_emp().equals(""))?"0":
                                             responseModel.getResult().getTotal_prest_emp())+ " / " + ((responseModel.getResult().getTotalactiveemp()==null || responseModel.getResult().getTotalactiveemp().equals(""))?
                                                     "0":responseModel.getResult().getTotalactiveemp())+ " Employees active");
-                                   }
+                                }
 
                             }else{
                                 LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
@@ -678,22 +728,17 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
                                     attendanceEmployeeListDataList = responseModel.getResult().getData();
                                     setAdapterForAttendanceList();
                                 }else{
-                                    tvTitleError.setVisibility(View.VISIBLE);
-                                    tvTitleError.setText("Congrats ! You dont have any Late check in OR Early check out record" +
-                                            " for "+AutoComMonth.getText().toString().toString()+" Month.");
+                                    clearEmployeeAtte(responseModel.getResult().getMessage());
                                 }
 
                             }else{
-                                LogUtil.printToastMSG(mContext,responseModel.getResult().getMessage());
-                                attendanceEmployeeListDataList.removeAll(attendanceEmployeeListDataList);
-                                setAdapterForAttendanceList();
+                              clearEmployeeAtte(responseModel.getResult().getMessage());
                             }
                         }
                     } catch (Exception e) {
                        // LogUtil.printLog("tet_error",e.getMessage());
                         e.printStackTrace();
-                        attendanceEmployeeListDataList.removeAll(attendanceEmployeeListDataList);
-                        setAdapterForAttendanceList();
+                        clearEmployeeAtte("Something went wrong!");
                     }
                 }
                 break;
@@ -705,11 +750,31 @@ public class EmployeeFragment extends BaseFragment implements SwipeRefreshLayout
         }
     }
 
+    private void clearEmployeeAtte(String msg){
+        LogUtil.printToastMSG(mContext,msg);
+        Glide.with(this)
+                .load(R.drawable.img_attendance_all)
+                .into(iv_emptyLayimageEmp);
+        emptyLayoutEmp.setVisibility(View.VISIBLE);
+        tv_emptyLayTitleEmp.setText("Good Job!");
+        tv_emptyLayMsgEmp.setText("You've been punctual this month.");
+
+        attendanceEmployeeListDataList.removeAll(attendanceEmployeeListDataList);
+        setAdapterForAttendanceList();
+    }
+
     private void setAdapterForAttendanceList() {
         if (attendanceEmployeeListDataList!=null && attendanceEmployeeListDataList.size() > 0) {
             rvAttendanceList.setVisibility(View.VISIBLE);
-            tvTitleError.setVisibility(View.GONE);
+            //tvTitleError.setVisibility(View.GONE);
+            emptyLayoutEmp.setVisibility(View.GONE);
         } else {
+            Glide.with(this)
+                    .load(R.drawable.img_attendance_all)
+                    .into(iv_emptyLayimageEmp);
+            emptyLayoutEmp.setVisibility(View.VISIBLE);
+            tv_emptyLayTitleEmp.setText("Good Job!");
+            tv_emptyLayMsgEmp.setText("You've been punctual this month.");
 
         }
         attendanceEmployeeAdapter = new AttendanceEmployeeAdapter(mContext, attendanceEmployeeListDataList, new AttendanceEmployeeAdapter.ListItemSelectListener() {

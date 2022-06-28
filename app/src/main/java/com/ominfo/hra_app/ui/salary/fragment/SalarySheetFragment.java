@@ -191,20 +191,34 @@ public class SalarySheetFragment extends BaseFragment {
 
     private void init(){
         setToolbar();
-        Glide.with(this)
+       /* Glide.with(this)
                 .load(R.drawable.img_bg_search)
                 .into(iv_emptyLayimage);
         tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
-        tv_emptyLayTitle.setText("Search something...");
+        //tv_emptyLayTitle.setText("Search something...");
         setEnquiryPagerList(1);
         setAdapterForLeaveList();
-        callSalarySheetListApi("0");
+        callSalarySheetListApi("0");*/
     }
 
     private void injectAPI() {
         salarySheetViewModel = ViewModelProviders.of(this, mViewModelFactory).get(SalarySheetViewModel.class);
         salarySheetViewModel.getResponse().observe(getViewLifecycleOwner(), apiResponse ->consumeResponse(apiResponse, DynamicAPIPath.POST_SALARY_SHEET));
    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Glide.with(this)
+                .load(R.drawable.img_bg_search)
+                .into(iv_emptyLayimage);
+        tv_emptyLayTitle.setText(R.string.scr_lbl_no_data_available);
+        //tv_emptyLayTitle.setText("Search something...");
+        setEnquiryPagerList(1);
+        setAdapterForLeaveList();
+        callSalarySheetListApi("0");
+    }
+
     private void setEnquiryPagerList(long pageNo) {
         enquiryPageList.clear();
         if(pageNo==0) {

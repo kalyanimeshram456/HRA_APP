@@ -1779,7 +1779,9 @@ public class MyAccountFragment extends BaseFragment {
                                 etOfAddress.setText(employeeList.getOfficeAddress()==null?"":employeeList.getOfficeAddress()+"");
                                 AutoComDistRange.setText(employeeList.getDist_range()==null?"0":employeeList.getDist_range());
                                 AutoComOPincode.setText(employeeList.getPincode()+"");
-                                AutoComGstNo.setText(employeeList.getGstNo()==null?"":employeeList.getGstNo()+"");
+                                AutoComGstNo.setText(employeeList.getGstNo()==null ||
+                                        employeeList.getGstNo().equals("null") || employeeList.getGstNo().equals("")
+                                        ?"":employeeList.getGstNo()+"");
                                 AutoComStaff.setText(employeeList.getStaffStrength()+"");
                                 AutoComPrefix.setText(employeeList.getUserPrefix()+"");
                                 officeLat = employeeList.getOfficeLatitude()+"";
